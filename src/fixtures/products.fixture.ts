@@ -6,14 +6,27 @@ import occultantImg from "@/assets/catalog/rideau-occultant.jpg";
 import packImg from "@/assets/catalog/pack-rideau-voilage.jpg";
 import colRideaux from "@/assets/col-rideaux.jpg";
 import colVoilages from "@/assets/col-voilages.jpg";
+import { HEADER_LABELS, MATERIAL_LABELS } from "@/domain/product/product.constants";
+import {
+  EYELET_OPTIONS_BY_MATERIAL,
+  HEADER_DETAIL_IMAGES,
+  MATERIAL_TEXTURES,
+  THERMAL_LINING_SURCHARGE_MINOR,
+  buildDetails,
+  buildLongDescription,
+  buildSeo,
+} from "@/fixtures/product-enrichment";
 import type {
   CurtainHeader,
+  CurtainLining,
   CurtainMaterial,
   CurtainSellingMode,
+  EyeletColor,
   OpacityLevel,
   Product,
   ProductAvailability,
   ProductColor,
+  ProductImage,
   ProductVariant,
 } from "@/domain/product/product.types";
 import { money } from "@/lib/money/money";

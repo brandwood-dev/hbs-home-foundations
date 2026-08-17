@@ -9,6 +9,7 @@ import type {
 import { filterProducts, matchesScope } from "@/services/catalog/catalog.filters";
 import { paginate } from "@/services/catalog/catalog.pagination";
 import { sortProducts } from "@/services/catalog/catalog.sort";
+import { getRelatedProducts } from "@/services/product/product-recommendations";
 
 /**
  * In-memory catalogue backed by demo fixtures.
@@ -33,5 +34,11 @@ export class MockProductRepository implements ProductRepository {
 
   async listScope(scope?: CatalogScope): Promise<Product[]> {
     return this.products.filter((product) => matchesScope(product, scope));
+  }
+
+  async listRelated(slug: string, limit = 4): Promise<Product[]> {
+    const base = await this.getBySlug(slug);
+    if (!base) return [];
+    return getRelatedProducts(base, this.products, limit);
   }
 }
