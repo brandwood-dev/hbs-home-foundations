@@ -6,11 +6,13 @@ import { DesktopMegaMenu } from "@/components/layout/DesktopMegaMenu";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { mainNavigation } from "@/fixtures/navigation.fixture";
 import { storeConfig } from "@/config/store.config";
+import { useCartCount } from "@/components/cart/CartCountBadge";
+import { openCartDrawer } from "@/hooks/cart/useCartDrawer";
 
 export function SiteHeader() {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const cartCount = 0;
+  const { count: cartCount, label: cartLabel } = useCartCount();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur">
