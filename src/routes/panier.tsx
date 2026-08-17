@@ -9,6 +9,7 @@ import { CartSummary } from "@/components/cart/CartSummary";
 import { ClearCartDialog } from "@/components/cart/ClearCartDialog";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { AppLink } from "@/components/ui/app-link";
+import { features } from "@/config/features.config";
 import { useCart } from "@/hooks/cart/useCart";
 import {
   useClearCartMutation,
