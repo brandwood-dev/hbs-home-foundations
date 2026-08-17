@@ -16,26 +16,26 @@ export const mainNavigation: NavItem[] = [
       {
         title: "Par matière",
         links: [
-          { label: "Velours", href: "/rideaux" },
-          { label: "Satin", href: "/rideaux" },
-          { label: "Lin", href: "/rideaux" },
+          { label: "Velours", href: "/rideaux/velours" },
+          { label: "Satin", href: "/rideaux/satin" },
+          { label: "Lin", href: "/rideaux/lin" },
           { label: "Tous les rideaux", href: "/rideaux" },
         ],
       },
       {
         title: "Par besoin",
         links: [
-          { label: "Occultants", href: "/rideaux" },
-          { label: "Tamisants", href: "/rideaux" },
-          { label: "Thermiques", href: "/rideaux" },
-          { label: "Grande largeur", href: "/rideaux" },
+          { label: "Occultants", href: "/rideaux/occultants" },
+          { label: "Tamisants", href: "/rideaux/tamisants" },
+          { label: "Thermiques", href: "/rideaux/thermiques" },
+          { label: "Packs rideau et voilage", href: "/rideaux/packs" },
         ],
       },
       {
         title: "Par finition",
         links: [
-          { label: "À œillets", href: "/rideaux" },
-          { label: "Pour rail", href: "/rideaux" },
+          { label: "À œillets", href: "/rideaux/oeillets" },
+          { label: "Pour rail", href: "/rideaux/rail" },
           { label: "À galon fronceur", href: "/rideaux" },
         ],
       },

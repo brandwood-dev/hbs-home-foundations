@@ -29,12 +29,22 @@ import { Route as PanierRouteImport } from './routes/panier'
 import { Route as ProfessionnelsRouteImport } from './routes/professionnels'
 import { Route as PromotionsRouteImport } from './routes/promotions'
 import { Route as RechercheRouteImport } from './routes/recherche'
-import { Route as RideauxRouteImport } from './routes/rideaux'
 import { Route as StoresRouteImport } from './routes/stores'
 import { Route as SuiviCommandeRouteImport } from './routes/suivi-commande'
 import { Route as SurMesureRouteImport } from './routes/sur-mesure'
 import { Route as TringlesRouteImport } from './routes/tringles'
 import { Route as VoilagesRouteImport } from './routes/voilages'
+import { Route as ProduitSlugRouteImport } from './routes/produit.$slug'
+import { Route as RideauxIndexRouteImport } from './routes/rideaux.index'
+import { Route as RideauxLinRouteImport } from './routes/rideaux.lin'
+import { Route as RideauxOccultantsRouteImport } from './routes/rideaux.occultants'
+import { Route as RideauxOeilletsRouteImport } from './routes/rideaux.oeillets'
+import { Route as RideauxPacksRouteImport } from './routes/rideaux.packs'
+import { Route as RideauxRailRouteImport } from './routes/rideaux.rail'
+import { Route as RideauxSatinRouteImport } from './routes/rideaux.satin'
+import { Route as RideauxTamisantsRouteImport } from './routes/rideaux.tamisants'
+import { Route as RideauxThermiquesRouteImport } from './routes/rideaux.thermiques'
+import { Route as RideauxVeloursRouteImport } from './routes/rideaux.velours'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -136,11 +146,6 @@ const RechercheRoute = RechercheRouteImport.update({
   path: '/recherche',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RideauxRoute = RideauxRouteImport.update({
-  id: '/rideaux',
-  path: '/rideaux',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const StoresRoute = StoresRouteImport.update({
   id: '/stores',
   path: '/stores',
@@ -166,6 +171,61 @@ const VoilagesRoute = VoilagesRouteImport.update({
   path: '/voilages',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProduitSlugRoute = ProduitSlugRouteImport.update({
+  id: '/produit/$slug',
+  path: '/produit/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RideauxIndexRoute = RideauxIndexRouteImport.update({
+  id: '/rideaux/',
+  path: '/rideaux/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RideauxLinRoute = RideauxLinRouteImport.update({
+  id: '/rideaux/lin',
+  path: '/rideaux/lin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RideauxOccultantsRoute = RideauxOccultantsRouteImport.update({
+  id: '/rideaux/occultants',
+  path: '/rideaux/occultants',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RideauxOeilletsRoute = RideauxOeilletsRouteImport.update({
+  id: '/rideaux/oeillets',
+  path: '/rideaux/oeillets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RideauxPacksRoute = RideauxPacksRouteImport.update({
+  id: '/rideaux/packs',
+  path: '/rideaux/packs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RideauxRailRoute = RideauxRailRouteImport.update({
+  id: '/rideaux/rail',
+  path: '/rideaux/rail',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RideauxSatinRoute = RideauxSatinRouteImport.update({
+  id: '/rideaux/satin',
+  path: '/rideaux/satin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RideauxTamisantsRoute = RideauxTamisantsRouteImport.update({
+  id: '/rideaux/tamisants',
+  path: '/rideaux/tamisants',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RideauxThermiquesRoute = RideauxThermiquesRouteImport.update({
+  id: '/rideaux/thermiques',
+  path: '/rideaux/thermiques',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RideauxVeloursRoute = RideauxVeloursRouteImport.update({
+  id: '/rideaux/velours',
+  path: '/rideaux/velours',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -188,12 +248,22 @@ export interface FileRoutesByFullPath {
   '/professionnels': typeof ProfessionnelsRoute
   '/promotions': typeof PromotionsRoute
   '/recherche': typeof RechercheRoute
-  '/rideaux': typeof RideauxRoute
   '/stores': typeof StoresRoute
   '/suivi-commande': typeof SuiviCommandeRoute
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
   '/voilages': typeof VoilagesRoute
+  '/produit/$slug': typeof ProduitSlugRoute
+  '/rideaux/lin': typeof RideauxLinRoute
+  '/rideaux/occultants': typeof RideauxOccultantsRoute
+  '/rideaux/oeillets': typeof RideauxOeilletsRoute
+  '/rideaux/packs': typeof RideauxPacksRoute
+  '/rideaux/rail': typeof RideauxRailRoute
+  '/rideaux/satin': typeof RideauxSatinRoute
+  '/rideaux/tamisants': typeof RideauxTamisantsRoute
+  '/rideaux/thermiques': typeof RideauxThermiquesRoute
+  '/rideaux/velours': typeof RideauxVeloursRoute
+  '/rideaux/': typeof RideauxIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -216,12 +286,22 @@ export interface FileRoutesByTo {
   '/professionnels': typeof ProfessionnelsRoute
   '/promotions': typeof PromotionsRoute
   '/recherche': typeof RechercheRoute
-  '/rideaux': typeof RideauxRoute
   '/stores': typeof StoresRoute
   '/suivi-commande': typeof SuiviCommandeRoute
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
   '/voilages': typeof VoilagesRoute
+  '/produit/$slug': typeof ProduitSlugRoute
+  '/rideaux/lin': typeof RideauxLinRoute
+  '/rideaux/occultants': typeof RideauxOccultantsRoute
+  '/rideaux/oeillets': typeof RideauxOeilletsRoute
+  '/rideaux/packs': typeof RideauxPacksRoute
+  '/rideaux/rail': typeof RideauxRailRoute
+  '/rideaux/satin': typeof RideauxSatinRoute
+  '/rideaux/tamisants': typeof RideauxTamisantsRoute
+  '/rideaux/thermiques': typeof RideauxThermiquesRoute
+  '/rideaux/velours': typeof RideauxVeloursRoute
+  '/rideaux': typeof RideauxIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -245,12 +325,22 @@ export interface FileRoutesById {
   '/professionnels': typeof ProfessionnelsRoute
   '/promotions': typeof PromotionsRoute
   '/recherche': typeof RechercheRoute
-  '/rideaux': typeof RideauxRoute
   '/stores': typeof StoresRoute
   '/suivi-commande': typeof SuiviCommandeRoute
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
   '/voilages': typeof VoilagesRoute
+  '/produit/$slug': typeof ProduitSlugRoute
+  '/rideaux/lin': typeof RideauxLinRoute
+  '/rideaux/occultants': typeof RideauxOccultantsRoute
+  '/rideaux/oeillets': typeof RideauxOeilletsRoute
+  '/rideaux/packs': typeof RideauxPacksRoute
+  '/rideaux/rail': typeof RideauxRailRoute
+  '/rideaux/satin': typeof RideauxSatinRoute
+  '/rideaux/tamisants': typeof RideauxTamisantsRoute
+  '/rideaux/thermiques': typeof RideauxThermiquesRoute
+  '/rideaux/velours': typeof RideauxVeloursRoute
+  '/rideaux/': typeof RideauxIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -275,12 +365,22 @@ export interface FileRouteTypes {
     | '/professionnels'
     | '/promotions'
     | '/recherche'
-    | '/rideaux'
     | '/stores'
     | '/suivi-commande'
     | '/sur-mesure'
     | '/tringles'
     | '/voilages'
+    | '/produit/$slug'
+    | '/rideaux/lin'
+    | '/rideaux/occultants'
+    | '/rideaux/oeillets'
+    | '/rideaux/packs'
+    | '/rideaux/rail'
+    | '/rideaux/satin'
+    | '/rideaux/tamisants'
+    | '/rideaux/thermiques'
+    | '/rideaux/velours'
+    | '/rideaux/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -303,12 +403,22 @@ export interface FileRouteTypes {
     | '/professionnels'
     | '/promotions'
     | '/recherche'
-    | '/rideaux'
     | '/stores'
     | '/suivi-commande'
     | '/sur-mesure'
     | '/tringles'
     | '/voilages'
+    | '/produit/$slug'
+    | '/rideaux/lin'
+    | '/rideaux/occultants'
+    | '/rideaux/oeillets'
+    | '/rideaux/packs'
+    | '/rideaux/rail'
+    | '/rideaux/satin'
+    | '/rideaux/tamisants'
+    | '/rideaux/thermiques'
+    | '/rideaux/velours'
+    | '/rideaux'
   id:
     | '__root__'
     | '/'
@@ -331,12 +441,22 @@ export interface FileRouteTypes {
     | '/professionnels'
     | '/promotions'
     | '/recherche'
-    | '/rideaux'
     | '/stores'
     | '/suivi-commande'
     | '/sur-mesure'
     | '/tringles'
     | '/voilages'
+    | '/produit/$slug'
+    | '/rideaux/lin'
+    | '/rideaux/occultants'
+    | '/rideaux/oeillets'
+    | '/rideaux/packs'
+    | '/rideaux/rail'
+    | '/rideaux/satin'
+    | '/rideaux/tamisants'
+    | '/rideaux/thermiques'
+    | '/rideaux/velours'
+    | '/rideaux/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -360,12 +480,22 @@ export interface RootRouteChildren {
   ProfessionnelsRoute: typeof ProfessionnelsRoute
   PromotionsRoute: typeof PromotionsRoute
   RechercheRoute: typeof RechercheRoute
-  RideauxRoute: typeof RideauxRoute
   StoresRoute: typeof StoresRoute
   SuiviCommandeRoute: typeof SuiviCommandeRoute
   SurMesureRoute: typeof SurMesureRoute
   TringlesRoute: typeof TringlesRoute
   VoilagesRoute: typeof VoilagesRoute
+  ProduitSlugRoute: typeof ProduitSlugRoute
+  RideauxLinRoute: typeof RideauxLinRoute
+  RideauxOccultantsRoute: typeof RideauxOccultantsRoute
+  RideauxOeilletsRoute: typeof RideauxOeilletsRoute
+  RideauxPacksRoute: typeof RideauxPacksRoute
+  RideauxRailRoute: typeof RideauxRailRoute
+  RideauxSatinRoute: typeof RideauxSatinRoute
+  RideauxTamisantsRoute: typeof RideauxTamisantsRoute
+  RideauxThermiquesRoute: typeof RideauxThermiquesRoute
+  RideauxVeloursRoute: typeof RideauxVeloursRoute
+  RideauxIndexRoute: typeof RideauxIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -510,13 +640,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RechercheRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/rideaux': {
-      id: '/rideaux'
-      path: '/rideaux'
-      fullPath: '/rideaux'
-      preLoaderRoute: typeof RideauxRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/stores': {
       id: '/stores'
       path: '/stores'
@@ -552,6 +675,83 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VoilagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/produit/$slug': {
+      id: '/produit/$slug'
+      path: '/produit/$slug'
+      fullPath: '/produit/$slug'
+      preLoaderRoute: typeof ProduitSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rideaux/': {
+      id: '/rideaux/'
+      path: '/rideaux'
+      fullPath: '/rideaux/'
+      preLoaderRoute: typeof RideauxIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rideaux/lin': {
+      id: '/rideaux/lin'
+      path: '/rideaux/lin'
+      fullPath: '/rideaux/lin'
+      preLoaderRoute: typeof RideauxLinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rideaux/occultants': {
+      id: '/rideaux/occultants'
+      path: '/rideaux/occultants'
+      fullPath: '/rideaux/occultants'
+      preLoaderRoute: typeof RideauxOccultantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rideaux/oeillets': {
+      id: '/rideaux/oeillets'
+      path: '/rideaux/oeillets'
+      fullPath: '/rideaux/oeillets'
+      preLoaderRoute: typeof RideauxOeilletsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rideaux/packs': {
+      id: '/rideaux/packs'
+      path: '/rideaux/packs'
+      fullPath: '/rideaux/packs'
+      preLoaderRoute: typeof RideauxPacksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rideaux/rail': {
+      id: '/rideaux/rail'
+      path: '/rideaux/rail'
+      fullPath: '/rideaux/rail'
+      preLoaderRoute: typeof RideauxRailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rideaux/satin': {
+      id: '/rideaux/satin'
+      path: '/rideaux/satin'
+      fullPath: '/rideaux/satin'
+      preLoaderRoute: typeof RideauxSatinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rideaux/tamisants': {
+      id: '/rideaux/tamisants'
+      path: '/rideaux/tamisants'
+      fullPath: '/rideaux/tamisants'
+      preLoaderRoute: typeof RideauxTamisantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rideaux/thermiques': {
+      id: '/rideaux/thermiques'
+      path: '/rideaux/thermiques'
+      fullPath: '/rideaux/thermiques'
+      preLoaderRoute: typeof RideauxThermiquesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rideaux/velours': {
+      id: '/rideaux/velours'
+      path: '/rideaux/velours'
+      fullPath: '/rideaux/velours'
+      preLoaderRoute: typeof RideauxVeloursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -576,12 +776,22 @@ const rootRouteChildren: RootRouteChildren = {
   ProfessionnelsRoute: ProfessionnelsRoute,
   PromotionsRoute: PromotionsRoute,
   RechercheRoute: RechercheRoute,
-  RideauxRoute: RideauxRoute,
   StoresRoute: StoresRoute,
   SuiviCommandeRoute: SuiviCommandeRoute,
   SurMesureRoute: SurMesureRoute,
   TringlesRoute: TringlesRoute,
   VoilagesRoute: VoilagesRoute,
+  ProduitSlugRoute: ProduitSlugRoute,
+  RideauxLinRoute: RideauxLinRoute,
+  RideauxOccultantsRoute: RideauxOccultantsRoute,
+  RideauxOeilletsRoute: RideauxOeilletsRoute,
+  RideauxPacksRoute: RideauxPacksRoute,
+  RideauxRailRoute: RideauxRailRoute,
+  RideauxSatinRoute: RideauxSatinRoute,
+  RideauxTamisantsRoute: RideauxTamisantsRoute,
+  RideauxThermiquesRoute: RideauxThermiquesRoute,
+  RideauxVeloursRoute: RideauxVeloursRoute,
+  RideauxIndexRoute: RideauxIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
