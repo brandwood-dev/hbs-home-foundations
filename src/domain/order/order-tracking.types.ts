@@ -1,12 +1,7 @@
 import type { DeliveryMethod } from "@/domain/checkout/checkout.types";
 import type { OrderItemSnapshot, OrderStatus, OrderTotals } from "@/domain/order/order.types";
 
-export type OrderTrackingStepKey =
-  | "received"
-  | "confirmed"
-  | "preparing"
-  | "shipped"
-  | "delivered";
+export type OrderTrackingStepKey = "received" | "confirmed" | "preparing" | "shipped" | "delivered";
 
 export type OrderTrackingStepState = "completed" | "current" | "upcoming" | "cancelled";
 

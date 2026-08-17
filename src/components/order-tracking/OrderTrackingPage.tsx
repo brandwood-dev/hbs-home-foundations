@@ -49,12 +49,7 @@ export function OrderTrackingPage() {
         />
       </div>
 
-      <div
-        ref={resultRef}
-        tabIndex={-1}
-        aria-live="polite"
-        className="mt-10 outline-none"
-      >
+      <div ref={resultRef} tabIndex={-1} aria-live="polite" className="mt-10 outline-none">
         {mutation.isPending ? <OrderTrackingSkeleton /> : null}
         {!mutation.isPending && notFound ? (
           <OrderTrackingEmptyState onRetry={() => mutation.reset()} />

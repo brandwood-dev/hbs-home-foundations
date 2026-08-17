@@ -16,7 +16,10 @@ export function OrderTrackingDelivery({ result }: { result: OrderTrackingResult 
       </h2>
       {result.deliveryMethod === "home_delivery" ? (
         <p className="text-foreground-muted">
-          {[location?.city, location?.governorate ? getGovernorateLabel(location.governorate) : null]
+          {[
+            location?.city,
+            location?.governorate ? getGovernorateLabel(location.governorate) : null,
+          ]
             .filter(Boolean)
             .join(" — ") || "Zone de livraison non précisée"}
         </p>

@@ -24,7 +24,9 @@ export function OrderTrackingStatus({ result }: { result: OrderTrackingResult })
         {cancelled ? (
           <p className="text-foreground-muted">
             {ORDER_TRACKING_CANCELLED_NOTICE}
-            {(storeConfig.customerServicePhone as string) ? ` (${storeConfig.customerServicePhone})` : ""}
+            {(storeConfig.customerServicePhone as string)
+              ? ` (${storeConfig.customerServicePhone})`
+              : ""}
           </p>
         ) : null}
       </div>

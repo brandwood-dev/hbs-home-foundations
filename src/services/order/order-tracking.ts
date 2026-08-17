@@ -6,11 +6,7 @@ import {
   ORDER_TRACKING_STATUS_TITLES,
   ORDER_TRACKING_STEPS,
 } from "@/domain/order/order-tracking.constants";
-import {
-  getStatusStepIndex,
-  isCancelled,
-  isOrderStatus,
-} from "@/services/order/order-status";
+import { getStatusStepIndex, isCancelled, isOrderStatus } from "@/services/order/order-status";
 import { maskPhoneNumber, normalizeTunisianPhone } from "@/services/checkout/phone-normalization";
 
 /** Fonction pure : aucune date n'est inventée lorsque la donnée n'existe pas. */
