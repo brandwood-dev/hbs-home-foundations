@@ -103,9 +103,9 @@ export function AdminTopbar({ onOpenMenu }: { onOpenMenu: () => void }) {
         <MenuIcon className="size-5" />
       </Button>
 
-      <Link to="/admin" className="text-sm font-medium">
+      <AppLink href="/admin" className="text-sm font-medium">
         Back-office
-      </Link>
+      </AppLink>
 
       <div className="ml-auto flex items-center gap-3">
         {adminConfig.demoMode ? (
