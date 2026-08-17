@@ -101,8 +101,22 @@ function PanierPage() {
               </div>
             </div>
 
-            <div className="lg:sticky lg:top-28 lg:self-start">
+            <div className="space-y-3 lg:sticky lg:top-28 lg:self-start">
               <CartSummary cart={cart} />
+              {features.checkout ? (
+                cart.hasUnavailableItems ? (
+                  <p className="rounded-sm border border-border bg-surface-muted p-3 text-xs text-foreground-muted">
+                    Retirez les articles indisponibles pour passer commande.
+                  </p>
+                ) : (
+                  <AppLink
+                    href="/commande"
+                    className="flex min-h-[52px] items-center justify-center rounded-sm bg-accent px-6 text-sm font-medium text-accent-foreground hover:bg-accent-dark"
+                  >
+                    Commander
+                  </AppLink>
+                )
+              ) : null}
             </div>
           </div>
         )}
