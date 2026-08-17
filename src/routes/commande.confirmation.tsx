@@ -6,6 +6,7 @@ import { OrderItemsRecap } from "@/components/order/OrderItemsRecap";
 import { OrderSummaryCard } from "@/components/order/OrderSummaryCard";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { AppLink } from "@/components/ui/app-link";
+import { features } from "@/config/features.config";
 import { ORDER_CONFIRMATION_NEXT_STEPS, ORDER_DEMO_NOTICE } from "@/domain/order/order.constants";
 import { useLastOrder } from "@/hooks/order/useLastOrder";
 import { formatTunisianPhone } from "@/services/checkout/phone-normalization";
