@@ -1,5 +1,5 @@
 import { Sparkles } from "lucide-react";
-import { adminConfigSafeDataProvider as dataProvider } from "@/components/order-tracking/tracking-demo.config";
+import { dataProvider } from "@/config/features.config";
 import { DEMO_TRACKING_SHOWCASE } from "@/fixtures/order-tracking.fixture";
 
 export interface DemoOrderTrackingHelperProps {
