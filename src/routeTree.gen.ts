@@ -35,6 +35,7 @@ import { Route as SurMesureRouteImport } from './routes/sur-mesure'
 import { Route as TringlesRouteImport } from './routes/tringles'
 import { Route as VoilagesRouteImport } from './routes/voilages'
 import { Route as CommandeIndexRouteImport } from './routes/commande.index'
+import { Route as CommandeConfirmationRouteImport } from './routes/commande.confirmation'
 import { Route as ProduitSlugRouteImport } from './routes/produit.$slug'
 import { Route as RideauxIndexRouteImport } from './routes/rideaux.index'
 import { Route as RideauxLinRouteImport } from './routes/rideaux.lin'
@@ -177,6 +178,11 @@ const CommandeIndexRoute = CommandeIndexRouteImport.update({
   path: '/commande/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommandeConfirmationRoute = CommandeConfirmationRouteImport.update({
+  id: '/commande/confirmation',
+  path: '/commande/confirmation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProduitSlugRoute = ProduitSlugRouteImport.update({
   id: '/produit/$slug',
   path: '/produit/$slug',
@@ -259,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
   '/voilages': typeof VoilagesRoute
+  '/commande/confirmation': typeof CommandeConfirmationRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
   '/rideaux/occultants': typeof RideauxOccultantsRoute
@@ -298,6 +305,7 @@ export interface FileRoutesByTo {
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
   '/voilages': typeof VoilagesRoute
+  '/commande/confirmation': typeof CommandeConfirmationRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
   '/rideaux/occultants': typeof RideauxOccultantsRoute
@@ -338,6 +346,7 @@ export interface FileRoutesById {
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
   '/voilages': typeof VoilagesRoute
+  '/commande/confirmation': typeof CommandeConfirmationRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
   '/rideaux/occultants': typeof RideauxOccultantsRoute
@@ -379,6 +388,7 @@ export interface FileRouteTypes {
     | '/sur-mesure'
     | '/tringles'
     | '/voilages'
+    | '/commande/confirmation'
     | '/produit/$slug'
     | '/rideaux/lin'
     | '/rideaux/occultants'
@@ -418,6 +428,7 @@ export interface FileRouteTypes {
     | '/sur-mesure'
     | '/tringles'
     | '/voilages'
+    | '/commande/confirmation'
     | '/produit/$slug'
     | '/rideaux/lin'
     | '/rideaux/occultants'
@@ -457,6 +468,7 @@ export interface FileRouteTypes {
     | '/sur-mesure'
     | '/tringles'
     | '/voilages'
+    | '/commande/confirmation'
     | '/produit/$slug'
     | '/rideaux/lin'
     | '/rideaux/occultants'
@@ -497,6 +509,7 @@ export interface RootRouteChildren {
   SurMesureRoute: typeof SurMesureRoute
   TringlesRoute: typeof TringlesRoute
   VoilagesRoute: typeof VoilagesRoute
+  CommandeConfirmationRoute: typeof CommandeConfirmationRoute
   ProduitSlugRoute: typeof ProduitSlugRoute
   RideauxLinRoute: typeof RideauxLinRoute
   RideauxOccultantsRoute: typeof RideauxOccultantsRoute
@@ -695,6 +708,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CommandeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/commande/confirmation': {
+      id: '/commande/confirmation'
+      path: '/commande/confirmation'
+      fullPath: '/commande/confirmation'
+      preLoaderRoute: typeof CommandeConfirmationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/produit/$slug': {
       id: '/produit/$slug'
       path: '/produit/$slug'
@@ -801,6 +821,7 @@ const rootRouteChildren: RootRouteChildren = {
   SurMesureRoute: SurMesureRoute,
   TringlesRoute: TringlesRoute,
   VoilagesRoute: VoilagesRoute,
+  CommandeConfirmationRoute: CommandeConfirmationRoute,
   ProduitSlugRoute: ProduitSlugRoute,
   RideauxLinRoute: RideauxLinRoute,
   RideauxOccultantsRoute: RideauxOccultantsRoute,
