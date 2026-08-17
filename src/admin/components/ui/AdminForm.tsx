@@ -133,7 +133,7 @@ export function AdminSelectField({
   const selected = options.find((option) => option.value === value);
   return (
     <FieldWrapper {...base} id={id} {...(selected?.description ? { hint: selected.description } : {})}>
-      <Select value={value} onValueChange={onChange} disabled={disabled}>
+      <Select value={value} onValueChange={onChange} disabled={disabled ?? false}>
         <SelectTrigger id={id} aria-label={base.label}>
           <SelectValue placeholder="Sélectionner" />
         </SelectTrigger>
