@@ -174,7 +174,9 @@ function buildProduct(seed: ProductSeed, index: number): Product {
     });
   }
 
-  const linings: CurtainLining[] = seed.isThermal ? ["sans_doublure", "thermique"] : ["sans_doublure"];
+  const linings: CurtainLining[] = seed.isThermal
+    ? ["sans_doublure", "thermique"]
+    : ["sans_doublure"];
 
   const variants: ProductVariant[] = [];
   seed.variants.forEach((variant, variantIndex) => {
@@ -270,7 +272,6 @@ function buildProduct(seed: ProductSeed, index: number): Product {
     isDemo: true,
   };
 }
-
 
 const seeds: ProductSeed[] = [
   {

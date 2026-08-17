@@ -68,11 +68,7 @@ export function ProductDetailView({ product }: { product: Product }) {
               <p className="mt-1 text-xs text-foreground-muted">Référence {variant.sku}</p>
             </header>
 
-            <ProductVariantSelectors
-              product={product}
-              variant={variant}
-              onChange={onAxisChange}
-            />
+            <ProductVariantSelectors product={product} variant={variant} onChange={onAxisChange} />
 
             <ProductPurchasePanel
               product={product}

@@ -114,10 +114,7 @@ export function ProductVariantSelectors({
       </fieldset>
 
       <fieldset>
-        <Legend
-          label="Type de tête"
-          value={HEADER_DESCRIPTIONS[variant.curtainHeader]}
-        />
+        <Legend label="Type de tête" value={HEADER_DESCRIPTIONS[variant.curtainHeader]} />
         <div className="mt-2 flex flex-wrap gap-2">
           {headerOptions.map((option) => (
             <button
