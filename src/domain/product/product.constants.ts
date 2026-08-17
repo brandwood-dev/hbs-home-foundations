@@ -2,8 +2,10 @@ import type {
   CatalogSort,
   ColorFamily,
   CurtainHeader,
+  CurtainLining,
   CurtainMaterial,
   CurtainSellingMode,
+  EyeletColor,
   OpacityLevel,
   ProductAvailability,
 } from "@/domain/product/product.types";
@@ -88,3 +90,32 @@ export const SORT_OPTIONS: { value: CatalogSort; label: string }[] = [
 export const SORT_VALUES = SORT_OPTIONS.map((option) => option.value);
 
 export const DEFAULT_PAGE_SIZE = 12;
+
+export const EYELET_COLOR_LABELS: Record<EyeletColor, string> = {
+  argent: "Œillets argentés",
+  dore: "Œillets dorés",
+  noir: "Œillets noirs",
+};
+
+export const EYELET_COLOR_SWATCHES: Record<EyeletColor, string> = {
+  argent: "#C9CBCC",
+  dore: "#C0A062",
+  noir: "#2B2A28",
+};
+
+export const LINING_LABELS: Record<CurtainLining, string> = {
+  sans_doublure: "Sans doublure",
+  thermique: "Doublure thermique",
+};
+
+export const LINING_DESCRIPTIONS: Record<CurtainLining, string> = {
+  sans_doublure: "Tombé plus léger, lumière filtrée par le tissu seul.",
+  thermique: "Isole du froid et de la chaleur, renforce l'occultation.",
+};
+
+export const HEADER_DESCRIPTIONS: Record<CurtainHeader, string> = {
+  oeillets: "Se glisse directement sur une tringle, plis larges et réguliers.",
+  rail: "Se fixe sur un rail plafond, idéal pour les grandes largeurs.",
+  galon_fronceur: "Ruban à froncer ajustable, plis souples faits main.",
+  passants: "Passants en tissu, style léger et naturel.",
+};

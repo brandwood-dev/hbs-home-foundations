@@ -1,22 +1,49 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { ProductDetailView } from "@/components/product/ProductDetailView";
 import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
-
-const title = "Fiche produit — HBS HOME";
-const description =
-  "Fiche produit HBS HOME : matières, dimensions, finitions et disponibilité de nos rideaux.";
+import { productBySlugQuery } from "@/services/product/product.queries";
 
 export const Route = createFileRoute("/produit/$slug")({
-  head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-    ],
-  }),
+  loader: async ({ context, params }) => {
+    const product = await context.queryClient.ensureQueryData(productBySlugQuery(params.slug));
+    if (!product) throw notFound();
+    return { seo: product.seo };
+  },
+  head: ({ loaderData }) => {
+    if (!loaderData) {
+      return {
+        meta: [{ title: "Produit introuvable — HBS HOME" }, { name: "robots", content: "noindex" }],
+      };
+    }
+    const { title, description } = loaderData.seo;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "product" },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+    };
+  },
+  notFoundComponent: ProductNotFound,
   component: ProductPage,
 });
 
+function ProductNotFound() {
+  return (
+    <PlaceholderPage
+      title="Produit introuvable"
+      intro="Ce rideau n'existe plus ou a été renommé. Parcourez le catalogue pour trouver un modèle équivalent."
+    />
+  );
+}
+
 function ProductPage() {
-  return <PlaceholderPage title="Fiche produit" />;
+  const { slug } = Route.useParams();
+  const { data: product } = useSuspenseQuery(productBySlugQuery(slug));
+  if (!product) return <ProductNotFound />;
+  return <ProductDetailView key={product.id} product={product} />;
 }

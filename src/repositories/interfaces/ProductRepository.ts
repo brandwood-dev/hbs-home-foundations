@@ -53,4 +53,6 @@ export interface ProductRepository {
   getBySlug(slug: string): Promise<Product | null>;
   /** Products of the current route scope, before the user filters — used for facets. */
   listScope(scope?: CatalogScope): Promise<Product[]>;
+  /** Products similar to the given one — used on the product detail page. */
+  listRelated(slug: string, limit?: number): Promise<Product[]>;
 }
