@@ -1,4 +1,12 @@
-import { clone, exportDb, getDb, importDb, logActivity, mutateDb, resetDb } from "@/admin/mock/admin-store";
+import {
+  clone,
+  exportDb,
+  getDb,
+  importDb,
+  logActivity,
+  mutateDb,
+  resetDb,
+} from "@/admin/mock/admin-store";
 import type {
   AdminAttribute,
   AdminAuditLog,
@@ -115,12 +123,22 @@ export class MockAdminProductRepository implements AdminProductRepository {
   }
 
   async create(input: AdminProductInput): Promise<AdminProduct> {
-    const product: AdminProduct = { ...clone(input), id: adminId("prd"), createdAt: nowIso(), updatedAt: nowIso() };
+    const product: AdminProduct = {
+      ...clone(input),
+      id: adminId("prd"),
+      createdAt: nowIso(),
+      updatedAt: nowIso(),
+    };
     mutateDb((db) => {
       assertProductUniqueness(db, product);
       db.products.unshift(product);
     });
-    logActivity({ action: "create", resourceType: "product", resourceId: product.id, details: `Produit créé : ${product.name}` });
+    logActivity({
+      action: "create",
+      resourceType: "product",
+      resourceId: product.id,
+      details: `Produit créé : ${product.name}`,
+    });
     return delay(clone(product));
   }
 
@@ -128,12 +146,22 @@ export class MockAdminProductRepository implements AdminProductRepository {
     const updated = mutateDb((db) => {
       const index = db.products.findIndex((item) => item.id === id);
       if (index === -1) throw new Error("Produit introuvable.");
-      const next: AdminProduct = { ...(db.products[index] as AdminProduct), ...clone(input), id, updatedAt: nowIso() };
+      const next: AdminProduct = {
+        ...(db.products[index] as AdminProduct),
+        ...clone(input),
+        id,
+        updatedAt: nowIso(),
+      };
       assertProductUniqueness(db, next);
       db.products[index] = next;
       return next;
     });
-    logActivity({ action: "update", resourceType: "product", resourceId: id, details: `Produit modifié : ${updated.name}` });
+    logActivity({
+      action: "update",
+      resourceType: "product",
+      resourceId: id,
+      details: `Produit modifié : ${updated.name}`,
+    });
     return delay(clone(updated));
   }
 
@@ -141,7 +169,12 @@ export class MockAdminProductRepository implements AdminProductRepository {
     mutateDb((db) => {
       db.products = db.products.filter((item) => item.id !== id);
     });
-    logActivity({ action: "delete", resourceType: "product", resourceId: id, details: "Produit supprimé" });
+    logActivity({
+      action: "delete",
+      resourceType: "product",
+      resourceId: id,
+      details: "Produit supprimé",
+    });
     await delay(null);
   }
 
@@ -168,7 +201,12 @@ export class MockAdminProductRepository implements AdminProductRepository {
       db.products.unshift(next);
       return next;
     });
-    logActivity({ action: "create", resourceType: "product", resourceId: copy.id, details: `Produit dupliqué : ${copy.name}` });
+    logActivity({
+      action: "create",
+      resourceType: "product",
+      resourceId: copy.id,
+      details: `Produit dupliqué : ${copy.name}`,
+    });
     return delay(clone(copy));
   }
 
@@ -194,7 +232,12 @@ export class MockAdminCategoryRepository implements AdminCategoryRepository {
       }
       db.categories.push(category);
     });
-    logActivity({ action: "create", resourceType: "category", resourceId: category.id, details: `Catégorie créée : ${category.name}` });
+    logActivity({
+      action: "create",
+      resourceType: "category",
+      resourceId: category.id,
+      details: `Catégorie créée : ${category.name}`,
+    });
     return delay(clone(category));
   }
 
@@ -209,7 +252,12 @@ export class MockAdminCategoryRepository implements AdminCategoryRepository {
       db.categories[index] = next;
       return next;
     });
-    logActivity({ action: "update", resourceType: "category", resourceId: id, details: `Catégorie modifiée : ${updated.name}` });
+    logActivity({
+      action: "update",
+      resourceType: "category",
+      resourceId: id,
+      details: `Catégorie modifiée : ${updated.name}`,
+    });
     return delay(clone(updated));
   }
 
@@ -218,7 +266,12 @@ export class MockAdminCategoryRepository implements AdminCategoryRepository {
     mutateDb((db) => {
       db.categories = db.categories.filter((item) => item.id !== id);
     });
-    logActivity({ action: "delete", resourceType: "category", resourceId: id, details: "Catégorie supprimée" });
+    logActivity({
+      action: "delete",
+      resourceType: "category",
+      resourceId: id,
+      details: "Catégorie supprimée",
+    });
     await delay(null);
   }
 
@@ -261,7 +314,12 @@ export class MockAdminAttributeRepository implements AdminAttributeRepository {
       assertAttribute(db.attributes, attribute);
       db.attributes.push(attribute);
     });
-    logActivity({ action: "create", resourceType: "attribute", resourceId: attribute.id, details: `Attribut créé : ${attribute.name}` });
+    logActivity({
+      action: "create",
+      resourceType: "attribute",
+      resourceId: attribute.id,
+      details: `Attribut créé : ${attribute.name}`,
+    });
     return delay(clone(attribute));
   }
 
@@ -274,7 +332,12 @@ export class MockAdminAttributeRepository implements AdminAttributeRepository {
       db.attributes[index] = next;
       return next;
     });
-    logActivity({ action: "update", resourceType: "attribute", resourceId: id, details: `Attribut modifié : ${updated.name}` });
+    logActivity({
+      action: "update",
+      resourceType: "attribute",
+      resourceId: id,
+      details: `Attribut modifié : ${updated.name}`,
+    });
     return delay(clone(updated));
   }
 
@@ -282,7 +345,12 @@ export class MockAdminAttributeRepository implements AdminAttributeRepository {
     mutateDb((db) => {
       db.attributes = db.attributes.filter((item) => item.id !== id);
     });
-    logActivity({ action: "delete", resourceType: "attribute", resourceId: id, details: "Attribut supprimé" });
+    logActivity({
+      action: "delete",
+      resourceType: "attribute",
+      resourceId: id,
+      details: "Attribut supprimé",
+    });
     await delay(null);
   }
 }
@@ -366,7 +434,12 @@ export class MockAdminInventoryRepository implements AdminInventoryRepository {
         updatedAt: product.updatedAt,
       } satisfies InventoryRow;
     });
-    logActivity({ action: "adjustment", resourceType: "inventory", resourceId: input.variantId, details: `Stock ajusté (${input.reason})` });
+    logActivity({
+      action: "adjustment",
+      resourceType: "inventory",
+      resourceId: input.variantId,
+      details: `Stock ajusté (${input.reason})`,
+    });
     return delay(row);
   }
 
@@ -389,7 +462,8 @@ export class MockAdminOrderRepository implements AdminOrderRepository {
     const order = mutateDb((db) => {
       const found = db.orders.find((item) => item.id === id);
       if (!found) throw new Error("Commande introuvable.");
-      if (!canTransition(found.status, status)) throw new Error(transitionError(found.status, status));
+      if (!canTransition(found.status, status))
+        throw new Error(transitionError(found.status, status));
       found.status = status;
       found.updatedAt = nowIso();
       if (status === "delivered") found.paymentStatus = "collected";
@@ -397,7 +471,12 @@ export class MockAdminOrderRepository implements AdminOrderRepository {
       found.timeline.push({ id: adminId("evt"), at: nowIso(), status, label: `Statut mis à jour` });
       return found;
     });
-    logActivity({ action: "status_change", resourceType: "order", resourceId: id, details: `Commande ${order.orderNumber} → ${status}` });
+    logActivity({
+      action: "status_change",
+      resourceType: "order",
+      resourceId: id,
+      details: `Commande ${order.orderNumber} → ${status}`,
+    });
     return delay(clone(order));
   }
 
@@ -426,12 +505,16 @@ export class MockAdminOrderRepository implements AdminOrderRepository {
 function statsFor(orders: AdminOrder[]): CustomerStats {
   const delivered = orders.filter((order) => order.status === "delivered");
   const totalSpentMinor = delivered.reduce((total, order) => total + order.subtotalMinor, 0);
-  const last = orders.map((order) => order.createdAt).sort().at(-1);
+  const last = orders
+    .map((order) => order.createdAt)
+    .sort()
+    .at(-1);
   return {
     orderCount: orders.length,
     deliveredCount: delivered.length,
     totalSpentMinor,
-    averageOrderValueMinor: delivered.length > 0 ? Math.round(totalSpentMinor / delivered.length) : 0,
+    averageOrderValueMinor:
+      delivered.length > 0 ? Math.round(totalSpentMinor / delivered.length) : 0,
     ...(last ? { lastOrderAt: last } : {}),
   };
 }
@@ -482,7 +565,12 @@ export class MockAdminPromotionRepository implements AdminPromotionRepository {
       assertPromotion(db.promotions, promotion);
       db.promotions.push(promotion);
     });
-    logActivity({ action: "create", resourceType: "promotion", resourceId: promotion.id, details: `Promotion créée : ${promotion.name}` });
+    logActivity({
+      action: "create",
+      resourceType: "promotion",
+      resourceId: promotion.id,
+      details: `Promotion créée : ${promotion.name}`,
+    });
     return delay(clone(promotion));
   }
 
@@ -495,7 +583,12 @@ export class MockAdminPromotionRepository implements AdminPromotionRepository {
       db.promotions[index] = next;
       return next;
     });
-    logActivity({ action: "update", resourceType: "promotion", resourceId: id, details: `Promotion modifiée : ${updated.name}` });
+    logActivity({
+      action: "update",
+      resourceType: "promotion",
+      resourceId: id,
+      details: `Promotion modifiée : ${updated.name}`,
+    });
     return delay(clone(updated));
   }
 
@@ -503,7 +596,12 @@ export class MockAdminPromotionRepository implements AdminPromotionRepository {
     mutateDb((db) => {
       db.promotions = db.promotions.filter((item) => item.id !== id);
     });
-    logActivity({ action: "delete", resourceType: "promotion", resourceId: id, details: "Promotion supprimée" });
+    logActivity({
+      action: "delete",
+      resourceType: "promotion",
+      resourceId: id,
+      details: "Promotion supprimée",
+    });
     await delay(null);
   }
 }
@@ -536,7 +634,12 @@ export class MockAdminContentRepository implements AdminContentRepository {
       db.content = { ...db.content, ...clone(input) };
       return db.content;
     });
-    logActivity({ action: "update", resourceType: "content", resourceId: "content", details: "Contenu modifié" });
+    logActivity({
+      action: "update",
+      resourceType: "content",
+      resourceId: "content",
+      details: "Contenu modifié",
+    });
     return delay(clone(content));
   }
 }
@@ -551,7 +654,12 @@ export class MockAdminSettingsRepository implements AdminSettingsRepository {
       db.settings = { ...db.settings, ...clone(input) };
       return db.settings;
     });
-    logActivity({ action: "update", resourceType: "settings", resourceId: "settings", details: "Paramètre modifié" });
+    logActivity({
+      action: "update",
+      resourceType: "settings",
+      resourceId: "settings",
+      details: "Paramètre modifié",
+    });
     return delay(clone(settings));
   }
 
@@ -591,7 +699,12 @@ export class MockAdminUserRepository implements AdminUserRepository {
       }
       db.users.push(user);
     });
-    logActivity({ action: "create", resourceType: "user", resourceId: user.id, details: `Utilisateur créé : ${user.fullName}` });
+    logActivity({
+      action: "create",
+      resourceType: "user",
+      resourceId: user.id,
+      details: `Utilisateur créé : ${user.fullName}`,
+    });
     return delay(clone(user));
   }
 
@@ -648,7 +761,11 @@ export class MockAdminDashboardRepository implements AdminDashboardRepository {
     const sold = new Map<string, { name: string; quantity: number; revenueMinor: number }>();
     for (const order of delivered) {
       for (const item of order.items) {
-        const entry = sold.get(item.productId) ?? { name: item.productName, quantity: 0, revenueMinor: 0 };
+        const entry = sold.get(item.productId) ?? {
+          name: item.productName,
+          quantity: 0,
+          revenueMinor: 0,
+        };
         entry.quantity += item.quantity;
         entry.revenueMinor += item.lineTotalMinor;
         sold.set(item.productId, entry);
@@ -676,7 +793,9 @@ export class MockAdminDashboardRepository implements AdminDashboardRepository {
       cancelledCount: countBy("cancelled"),
       lowStockCount: lowStockRows.length,
       statusBreakdown: statuses.map((status) => ({ status, count: countBy(status) })),
-      recentOrders: clone(orders).sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 8),
+      recentOrders: clone(orders)
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+        .slice(0, 8),
       topProducts: [...sold.entries()]
         .map(([productId, value]) => ({ productId, ...value }))
         .sort((a, b) => b.quantity - a.quantity)

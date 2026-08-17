@@ -111,7 +111,8 @@ function buildProducts(): AdminProduct[] {
       };
     });
 
-    const status = productIndex % 11 === 0 ? "draft" : productIndex % 17 === 0 ? "archived" : "published";
+    const status =
+      productIndex % 11 === 0 ? "draft" : productIndex % 17 === 0 ? "archived" : "published";
 
     return {
       id: product.id,
@@ -294,9 +295,36 @@ function buildAttributes(products: AdminProduct[]): AdminAttribute[] {
   ];
 }
 
-const FIRST_NAMES = ["Amira", "Youssef", "Sonia", "Mehdi", "Nour", "Karim", "Ines", "Hatem", "Rania", "Slim"];
-const LAST_NAMES = ["Ben Ali", "Trabelsi", "Gharbi", "Jaziri", "Chaabane", "Mansouri", "Bouazizi", "Khelifi"];
-const CITIES = ["Ras Jebel", "Menzel Bourguiba", "La Marsa", "Sousse Ville", "Sfax Nord", "Ariana Ville"];
+const FIRST_NAMES = [
+  "Amira",
+  "Youssef",
+  "Sonia",
+  "Mehdi",
+  "Nour",
+  "Karim",
+  "Ines",
+  "Hatem",
+  "Rania",
+  "Slim",
+];
+const LAST_NAMES = [
+  "Ben Ali",
+  "Trabelsi",
+  "Gharbi",
+  "Jaziri",
+  "Chaabane",
+  "Mansouri",
+  "Bouazizi",
+  "Khelifi",
+];
+const CITIES = [
+  "Ras Jebel",
+  "Menzel Bourguiba",
+  "La Marsa",
+  "Sousse Ville",
+  "Sfax Nord",
+  "Ariana Ville",
+];
 
 function buildCustomers(): AdminCustomer[] {
   const random = createRandom(424242);
@@ -383,7 +411,8 @@ function buildOrders(products: AdminProduct[], customers: AdminCustomer[]): Admi
       createdAt,
       updatedAt: createdAt,
       status,
-      paymentStatus: status === "delivered" ? "collected" : status === "returned" ? "refunded" : "pending",
+      paymentStatus:
+        status === "delivered" ? "collected" : status === "returned" ? "refunded" : "pending",
       paymentMethod: "cash_on_delivery",
       customerId: customer.id,
       customerName: `${customer.firstName} ${customer.lastName}`,

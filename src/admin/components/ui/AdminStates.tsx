@@ -48,7 +48,13 @@ const TONE_CLASSES: Record<StatusTone, string> = {
   danger: "border-red-200 bg-red-50 text-red-800",
 };
 
-export function AdminStatusBadge({ label, tone = "neutral" }: { label: string; tone?: StatusTone }) {
+export function AdminStatusBadge({
+  label,
+  tone = "neutral",
+}: {
+  label: string;
+  tone?: StatusTone;
+}) {
   return (
     <span
       className={cn(
