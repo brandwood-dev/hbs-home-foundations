@@ -118,7 +118,11 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         </nav>
 
         <div className="border-t border-border px-4 py-4 text-sm text-foreground-muted">
-          <AppLink href="/suivi-commande" onClick={onClose} className="flex min-h-[44px] items-center">
+          <AppLink
+            href="/suivi-commande"
+            onClick={onClose}
+            className="flex min-h-[44px] items-center"
+          >
             Suivi de commande
           </AppLink>
           <AppLink href="/contact" onClick={onClose} className="flex min-h-[44px] items-center">

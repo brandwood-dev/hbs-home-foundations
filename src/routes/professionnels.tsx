@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
 
 const title = "Professionnels — HBS HOME";
-const description = "Professionnels — HBS HOME, rideaux, voilages et décoration textile en Tunisie.";
+const description =
+  "Professionnels — HBS HOME, rideaux, voilages et décoration textile en Tunisie.";
 
 export const Route = createFileRoute("/professionnels")({
   head: () => ({

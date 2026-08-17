@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
 
 const title = "Mentions légales — HBS HOME";
-const description = "Mentions légales — HBS HOME, rideaux, voilages et décoration textile en Tunisie.";
+const description =
+  "Mentions légales — HBS HOME, rideaux, voilages et décoration textile en Tunisie.";
 
 export const Route = createFileRoute("/mentions-legales")({
   head: () => ({

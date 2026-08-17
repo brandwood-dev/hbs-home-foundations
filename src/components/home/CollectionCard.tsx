@@ -19,7 +19,10 @@ export function CollectionCard({ collection }: { collection: Collection }) {
       <p className="mt-1 text-sm text-foreground-muted">{collection.description}</p>
       <span className="mt-3 inline-flex items-center gap-1.5 text-sm text-accent-dark">
         Découvrir
-        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+        <ArrowRight
+          className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+          aria-hidden="true"
+        />
       </span>
     </AppLink>
   );

@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
 
 const title = "Politique de confidentialité — HBS HOME";
-const description = "Politique de confidentialité — HBS HOME, rideaux, voilages et décoration textile en Tunisie.";
+const description =
+  "Politique de confidentialité — HBS HOME, rideaux, voilages et décoration textile en Tunisie.";
 
 export const Route = createFileRoute("/confidentialite")({
   head: () => ({

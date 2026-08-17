@@ -94,10 +94,7 @@ export function SiteHeader() {
         <nav aria-label="Navigation principale" className="relative border-t border-border">
           <ul className="mx-auto flex max-w-7xl items-center gap-1 px-6">
             {mainNavigation.map((item) => (
-              <li
-                key={item.id}
-                onMouseEnter={() => setOpenMenuId(item.megaMenu ? item.id : null)}
-              >
+              <li key={item.id} onMouseEnter={() => setOpenMenuId(item.megaMenu ? item.id : null)}>
                 <AppLink
                   href={item.href}
                   onFocus={() => setOpenMenuId(item.megaMenu ? item.id : null)}
