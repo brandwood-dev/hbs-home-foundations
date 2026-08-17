@@ -86,17 +86,24 @@ export function SiteHeader() {
               <Package className="h-4 w-4" aria-hidden="true" />
               Suivi de commande
             </AppLink>
-            <AppLink
-              href="/panier"
-              aria-label={`Panier, ${cartCount} article(s)`}
+            <button
+              type="button"
+              onClick={openCartDrawer}
+              aria-label={cartLabel}
+              aria-haspopup="dialog"
               className="flex items-center gap-2 rounded-md bg-surface-muted px-3 py-2 hover:bg-sand"
             >
               <ShoppingBag className="h-4 w-4" aria-hidden="true" />
               Panier
-              <span className="rounded-full bg-accent px-1.5 text-[11px] leading-5 text-accent-foreground">
-                {cartCount}
-              </span>
-            </AppLink>
+              {cartCount > 0 ? (
+                <span
+                  aria-hidden="true"
+                  className="rounded-full bg-accent px-1.5 text-[11px] leading-5 text-accent-foreground"
+                >
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              ) : null}
+            </button>
           </div>
         </div>
 
