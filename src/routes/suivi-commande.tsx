@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
+import { SiteLayout } from "@/components/layout/SiteLayout";
+import { OrderTrackingPage } from "@/components/order-tracking/OrderTrackingPage";
 
-const title = "Suivi de commande — HBS HOME";
+const title = "Suivre ma commande | HBS HOME";
 const description =
-  "Suivi de commande — HBS HOME, rideaux, voilages et décoration textile en Tunisie.";
+  "Consultez l'état de votre commande HBS HOME avec votre numéro de commande et votre téléphone.";
 
 export const Route = createFileRoute("/suivi-commande")({
   head: () => ({
@@ -12,11 +13,18 @@ export const Route = createFileRoute("/suivi-commande")({
       { name: "description", content: description },
       { property: "og:title", content: title },
       { property: "og:description", content: description },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "robots", content: "noindex, follow" },
     ],
   }),
   component: SuiviCommandePage,
 });
 
 function SuiviCommandePage() {
-  return <PlaceholderPage title="Suivi de commande" />;
+  return (
+    <SiteLayout>
+      <OrderTrackingPage />
+    </SiteLayout>
+  );
 }
