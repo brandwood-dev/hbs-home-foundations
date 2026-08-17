@@ -82,10 +82,10 @@ export function serializeCatalogSearch(search: CatalogSearch): Record<string, un
   list("widths", search["widths"]);
   list("heights", search["heights"]);
   list("availability", search["availability"]);
-  if (search["minPrice"] != null) out.minPrice = search["minPrice"];
-  if (search["maxPrice"] != null) out.maxPrice = search["maxPrice"];
-  if (search["sort"] !== "recommended") out.sort = search["sort"];
-  if (search["page"] > 1) out.page = search["page"];
+  if (search["minPrice"] != null) out["minPrice"] = search["minPrice"];
+  if (search["maxPrice"] != null) out["maxPrice"] = search["maxPrice"];
+  if (search["sort"] !== "recommended") out["sort"] = search["sort"];
+  if (search["page"] > 1) out["page"] = search["page"];
   return out;
 }
 
