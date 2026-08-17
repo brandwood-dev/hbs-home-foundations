@@ -23,7 +23,7 @@ import { money } from "@/lib/money/money";
  * Prices are stored in millimes (1 DT = 1000 millimes).
  */
 
-const COLORS: Record<string, ProductColor> = {
+const COLORS = {
   ivoire: { id: "c-ivoire", name: "Ivoire", slug: "ivoire", family: "white", hex: "#F2EDE3" },
   blanc: { id: "c-blanc", name: "Blanc optique", slug: "blanc", family: "white", hex: "#FBFAF7" },
   beige: { id: "c-beige", name: "Beige sable", slug: "beige", family: "beige", hex: "#DCC7A6" },
@@ -85,7 +85,7 @@ const COLORS: Record<string, ProductColor> = {
   },
   prune: { id: "c-prune", name: "Prune", slug: "prune", family: "purple", hex: "#5F3E63" },
   dore: { id: "c-dore", name: "Doré", slug: "dore", family: "metallic", hex: "#B99B63" },
-};
+} satisfies Record<string, ProductColor>;
 
 interface VariantSeed {
   color: ProductColor;
@@ -108,7 +108,7 @@ interface ProductSeed {
   shortDescription: string;
   imageAlt: string;
   image: string;
-  secondaryImage?: string;
+  secondaryImage?: string | undefined;
   isThermal: boolean;
   isNew: boolean;
   isBestSeller: boolean;
@@ -127,11 +127,11 @@ function buildProduct(seed: ProductSeed, index: number): Product {
     heightCm: variant.heightCm,
     curtainHeader: variant.header,
     price: money(variant.priceMinor),
-    compareAtPrice: variant.compareAtMinor ? money(variant.compareAtMinor) : undefined,
+    ...(variant.compareAtMinor ? { compareAtPrice: money(variant.compareAtMinor) } : {}),
     availability: variant.availability,
     availableQuantity: variant.quantity,
     imageUrl: seed.image,
-    secondaryImageUrl: seed.secondaryImage,
+    ...(seed.secondaryImage ? { secondaryImageUrl: seed.secondaryImage } : {}),
   }));
 
   const colors: ProductColor[] = [];
