@@ -68,7 +68,7 @@ export const COLOR_FAMILY_SWATCHES: Record<ColorFamily, string> = {
   brown: "#7A5334",
   red: "#8C2B2B",
   pink: "#D89AA6",
-  yellow: "#D4A game".replace(" game", "23A"),
+  yellow: "#D4A23A",
   orange: "#C2683C",
   green: "#4F6B4A",
   blue: "#3A5A78",
