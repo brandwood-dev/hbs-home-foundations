@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
 
-const title = "Rideaux — HBS HOME";
-const description = "Rideaux — HBS HOME, rideaux, voilages et décoration textile en Tunisie.";
+const title = "Fiche produit — HBS HOME";
+const description =
+  "Fiche produit HBS HOME : matières, dimensions, finitions et disponibilité de nos rideaux.";
 
-export const Route = createFileRoute("/rideaux")({
+export const Route = createFileRoute("/produit/$slug")({
   head: () => ({
     meta: [
       { title },
@@ -13,9 +14,9 @@ export const Route = createFileRoute("/rideaux")({
       { property: "og:description", content: description },
     ],
   }),
-  component: RideauxPage,
+  component: ProductPage,
 });
 
-function RideauxPage() {
-  return <PlaceholderPage title="Rideaux" />;
+function ProductPage() {
+  return <PlaceholderPage title="Fiche produit" />;
 }
