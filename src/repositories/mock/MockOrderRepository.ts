@@ -2,10 +2,7 @@ import { OrderError, type OrderErrorDetail } from "@/domain/order/order.errors";
 import type { Order, OrderItemSnapshot } from "@/domain/order/order.types";
 import type { PersistedCartItem } from "@/domain/cart/cart.types";
 import type { Product } from "@/domain/product/product.types";
-import type {
-  CreateOrderInput,
-  OrderRepository,
-} from "@/repositories/interfaces/OrderRepository";
+import type { CreateOrderInput, OrderRepository } from "@/repositories/interfaces/OrderRepository";
 import type { ProductRepository } from "@/repositories/interfaces/ProductRepository";
 import { readStoredOrders, writeStoredOrders } from "@/repositories/mock/order-storage";
 import { resolveCartItem } from "@/services/cart/cart-reconciliation";

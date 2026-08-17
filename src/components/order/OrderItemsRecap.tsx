@@ -59,9 +59,7 @@ export function OrderItemsRecap({ order }: { order: Order }) {
         <div className="flex items-baseline justify-between">
           <dt className="text-foreground-muted">Livraison</dt>
           <dd>
-            {order.totals.shippingMinor === 0
-              ? "Offerte"
-              : formatMoney(order.totals.shippingMinor)}
+            {order.totals.shippingMinor === 0 ? "Offerte" : formatMoney(order.totals.shippingMinor)}
           </dd>
         </div>
         <div className="flex items-baseline justify-between border-t border-border pt-2 text-base font-medium">

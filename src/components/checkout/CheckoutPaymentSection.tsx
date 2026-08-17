@@ -25,8 +25,7 @@ export function CheckoutPaymentSection({
         <span>
           <span className="block text-sm font-medium">Paiement à la livraison</span>
           <span className="block text-xs text-foreground-muted">
-            Vous réglez en espèces au moment de la réception. Aucun paiement en ligne n'est
-            demandé.
+            Vous réglez en espèces au moment de la réception. Aucun paiement en ligne n'est demandé.
           </span>
         </span>
       </label>

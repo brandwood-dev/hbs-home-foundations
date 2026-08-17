@@ -35,7 +35,11 @@ function CommandePage() {
     <SiteLayout>
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-10">
         <CatalogBreadcrumbs
-          items={[{ label: "Accueil", href: "/" }, { label: "Panier", href: "/panier" }, { label: "Commande" }]}
+          items={[
+            { label: "Accueil", href: "/" },
+            { label: "Panier", href: "/panier" },
+            { label: "Commande" },
+          ]}
         />
 
         <h1 className="mt-4 text-3xl sm:text-4xl">Finaliser ma commande</h1>

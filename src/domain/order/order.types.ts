@@ -6,12 +6,7 @@ import type {
 } from "@/domain/checkout/checkout.types";
 
 export type OrderStatus =
-  | "pending_confirmation"
-  | "confirmed"
-  | "preparing"
-  | "shipped"
-  | "delivered"
-  | "cancelled";
+  "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
 
 /** Snapshot figé : la commande ne dépend jamais du catalogue vivant. */
 export interface OrderItemSnapshot {
