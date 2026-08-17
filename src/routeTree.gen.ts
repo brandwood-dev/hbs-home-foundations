@@ -10,33 +10,362 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AProposRouteImport } from './routes/a-propos'
+import { Route as AccessoiresRouteImport } from './routes/accessoires'
+import { Route as CgvRouteImport } from './routes/cgv'
+import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as CoussinsRouteImport } from './routes/coussins'
+import { Route as EmbrassesRouteImport } from './routes/embrasses'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as FavorisRouteImport } from './routes/favoris'
+import { Route as GuideDesMesuresRouteImport } from './routes/guide-des-mesures'
+import { Route as InspirationsRouteImport } from './routes/inspirations'
+import { Route as LivraisonEtRetoursRouteImport } from './routes/livraison-et-retours'
+import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as NouveautesRouteImport } from './routes/nouveautes'
+import { Route as PanierRouteImport } from './routes/panier'
+import { Route as ProfessionnelsRouteImport } from './routes/professionnels'
+import { Route as PromotionsRouteImport } from './routes/promotions'
+import { Route as RechercheRouteImport } from './routes/recherche'
+import { Route as RideauxRouteImport } from './routes/rideaux'
+import { Route as StoresRouteImport } from './routes/stores'
+import { Route as SuiviCommandeRouteImport } from './routes/suivi-commande'
+import { Route as SurMesureRouteImport } from './routes/sur-mesure'
+import { Route as TringlesRouteImport } from './routes/tringles'
+import { Route as VoilagesRouteImport } from './routes/voilages'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AProposRoute = AProposRouteImport.update({
+  id: '/a-propos',
+  path: '/a-propos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessoiresRoute = AccessoiresRouteImport.update({
+  id: '/accessoires',
+  path: '/accessoires',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CgvRoute = CgvRouteImport.update({
+  id: '/cgv',
+  path: '/cgv',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
+  id: '/confidentialite',
+  path: '/confidentialite',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoussinsRoute = CoussinsRouteImport.update({
+  id: '/coussins',
+  path: '/coussins',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmbrassesRoute = EmbrassesRouteImport.update({
+  id: '/embrasses',
+  path: '/embrasses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavorisRoute = FavorisRouteImport.update({
+  id: '/favoris',
+  path: '/favoris',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuideDesMesuresRoute = GuideDesMesuresRouteImport.update({
+  id: '/guide-des-mesures',
+  path: '/guide-des-mesures',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InspirationsRoute = InspirationsRouteImport.update({
+  id: '/inspirations',
+  path: '/inspirations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LivraisonEtRetoursRoute = LivraisonEtRetoursRouteImport.update({
+  id: '/livraison-et-retours',
+  path: '/livraison-et-retours',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
+  id: '/mentions-legales',
+  path: '/mentions-legales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NouveautesRoute = NouveautesRouteImport.update({
+  id: '/nouveautes',
+  path: '/nouveautes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanierRoute = PanierRouteImport.update({
+  id: '/panier',
+  path: '/panier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfessionnelsRoute = ProfessionnelsRouteImport.update({
+  id: '/professionnels',
+  path: '/professionnels',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PromotionsRoute = PromotionsRouteImport.update({
+  id: '/promotions',
+  path: '/promotions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RechercheRoute = RechercheRouteImport.update({
+  id: '/recherche',
+  path: '/recherche',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RideauxRoute = RideauxRouteImport.update({
+  id: '/rideaux',
+  path: '/rideaux',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoresRoute = StoresRouteImport.update({
+  id: '/stores',
+  path: '/stores',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuiviCommandeRoute = SuiviCommandeRouteImport.update({
+  id: '/suivi-commande',
+  path: '/suivi-commande',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SurMesureRoute = SurMesureRouteImport.update({
+  id: '/sur-mesure',
+  path: '/sur-mesure',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TringlesRoute = TringlesRouteImport.update({
+  id: '/tringles',
+  path: '/tringles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VoilagesRoute = VoilagesRouteImport.update({
+  id: '/voilages',
+  path: '/voilages',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/a-propos': typeof AProposRoute
+  '/accessoires': typeof AccessoiresRoute
+  '/cgv': typeof CgvRoute
+  '/confidentialite': typeof ConfidentialiteRoute
+  '/contact': typeof ContactRoute
+  '/cookies': typeof CookiesRoute
+  '/coussins': typeof CoussinsRoute
+  '/embrasses': typeof EmbrassesRoute
+  '/faq': typeof FaqRoute
+  '/favoris': typeof FavorisRoute
+  '/guide-des-mesures': typeof GuideDesMesuresRoute
+  '/inspirations': typeof InspirationsRoute
+  '/livraison-et-retours': typeof LivraisonEtRetoursRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
+  '/nouveautes': typeof NouveautesRoute
+  '/panier': typeof PanierRoute
+  '/professionnels': typeof ProfessionnelsRoute
+  '/promotions': typeof PromotionsRoute
+  '/recherche': typeof RechercheRoute
+  '/rideaux': typeof RideauxRoute
+  '/stores': typeof StoresRoute
+  '/suivi-commande': typeof SuiviCommandeRoute
+  '/sur-mesure': typeof SurMesureRoute
+  '/tringles': typeof TringlesRoute
+  '/voilages': typeof VoilagesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/a-propos': typeof AProposRoute
+  '/accessoires': typeof AccessoiresRoute
+  '/cgv': typeof CgvRoute
+  '/confidentialite': typeof ConfidentialiteRoute
+  '/contact': typeof ContactRoute
+  '/cookies': typeof CookiesRoute
+  '/coussins': typeof CoussinsRoute
+  '/embrasses': typeof EmbrassesRoute
+  '/faq': typeof FaqRoute
+  '/favoris': typeof FavorisRoute
+  '/guide-des-mesures': typeof GuideDesMesuresRoute
+  '/inspirations': typeof InspirationsRoute
+  '/livraison-et-retours': typeof LivraisonEtRetoursRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
+  '/nouveautes': typeof NouveautesRoute
+  '/panier': typeof PanierRoute
+  '/professionnels': typeof ProfessionnelsRoute
+  '/promotions': typeof PromotionsRoute
+  '/recherche': typeof RechercheRoute
+  '/rideaux': typeof RideauxRoute
+  '/stores': typeof StoresRoute
+  '/suivi-commande': typeof SuiviCommandeRoute
+  '/sur-mesure': typeof SurMesureRoute
+  '/tringles': typeof TringlesRoute
+  '/voilages': typeof VoilagesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/a-propos': typeof AProposRoute
+  '/accessoires': typeof AccessoiresRoute
+  '/cgv': typeof CgvRoute
+  '/confidentialite': typeof ConfidentialiteRoute
+  '/contact': typeof ContactRoute
+  '/cookies': typeof CookiesRoute
+  '/coussins': typeof CoussinsRoute
+  '/embrasses': typeof EmbrassesRoute
+  '/faq': typeof FaqRoute
+  '/favoris': typeof FavorisRoute
+  '/guide-des-mesures': typeof GuideDesMesuresRoute
+  '/inspirations': typeof InspirationsRoute
+  '/livraison-et-retours': typeof LivraisonEtRetoursRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
+  '/nouveautes': typeof NouveautesRoute
+  '/panier': typeof PanierRoute
+  '/professionnels': typeof ProfessionnelsRoute
+  '/promotions': typeof PromotionsRoute
+  '/recherche': typeof RechercheRoute
+  '/rideaux': typeof RideauxRoute
+  '/stores': typeof StoresRoute
+  '/suivi-commande': typeof SuiviCommandeRoute
+  '/sur-mesure': typeof SurMesureRoute
+  '/tringles': typeof TringlesRoute
+  '/voilages': typeof VoilagesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/a-propos'
+    | '/accessoires'
+    | '/cgv'
+    | '/confidentialite'
+    | '/contact'
+    | '/cookies'
+    | '/coussins'
+    | '/embrasses'
+    | '/faq'
+    | '/favoris'
+    | '/guide-des-mesures'
+    | '/inspirations'
+    | '/livraison-et-retours'
+    | '/mentions-legales'
+    | '/nouveautes'
+    | '/panier'
+    | '/professionnels'
+    | '/promotions'
+    | '/recherche'
+    | '/rideaux'
+    | '/stores'
+    | '/suivi-commande'
+    | '/sur-mesure'
+    | '/tringles'
+    | '/voilages'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/a-propos'
+    | '/accessoires'
+    | '/cgv'
+    | '/confidentialite'
+    | '/contact'
+    | '/cookies'
+    | '/coussins'
+    | '/embrasses'
+    | '/faq'
+    | '/favoris'
+    | '/guide-des-mesures'
+    | '/inspirations'
+    | '/livraison-et-retours'
+    | '/mentions-legales'
+    | '/nouveautes'
+    | '/panier'
+    | '/professionnels'
+    | '/promotions'
+    | '/recherche'
+    | '/rideaux'
+    | '/stores'
+    | '/suivi-commande'
+    | '/sur-mesure'
+    | '/tringles'
+    | '/voilages'
+  id:
+    | '__root__'
+    | '/'
+    | '/a-propos'
+    | '/accessoires'
+    | '/cgv'
+    | '/confidentialite'
+    | '/contact'
+    | '/cookies'
+    | '/coussins'
+    | '/embrasses'
+    | '/faq'
+    | '/favoris'
+    | '/guide-des-mesures'
+    | '/inspirations'
+    | '/livraison-et-retours'
+    | '/mentions-legales'
+    | '/nouveautes'
+    | '/panier'
+    | '/professionnels'
+    | '/promotions'
+    | '/recherche'
+    | '/rideaux'
+    | '/stores'
+    | '/suivi-commande'
+    | '/sur-mesure'
+    | '/tringles'
+    | '/voilages'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AProposRoute: typeof AProposRoute
+  AccessoiresRoute: typeof AccessoiresRoute
+  CgvRoute: typeof CgvRoute
+  ConfidentialiteRoute: typeof ConfidentialiteRoute
+  ContactRoute: typeof ContactRoute
+  CookiesRoute: typeof CookiesRoute
+  CoussinsRoute: typeof CoussinsRoute
+  EmbrassesRoute: typeof EmbrassesRoute
+  FaqRoute: typeof FaqRoute
+  FavorisRoute: typeof FavorisRoute
+  GuideDesMesuresRoute: typeof GuideDesMesuresRoute
+  InspirationsRoute: typeof InspirationsRoute
+  LivraisonEtRetoursRoute: typeof LivraisonEtRetoursRoute
+  MentionsLegalesRoute: typeof MentionsLegalesRoute
+  NouveautesRoute: typeof NouveautesRoute
+  PanierRoute: typeof PanierRoute
+  ProfessionnelsRoute: typeof ProfessionnelsRoute
+  PromotionsRoute: typeof PromotionsRoute
+  RechercheRoute: typeof RechercheRoute
+  RideauxRoute: typeof RideauxRoute
+  StoresRoute: typeof StoresRoute
+  SuiviCommandeRoute: typeof SuiviCommandeRoute
+  SurMesureRoute: typeof SurMesureRoute
+  TringlesRoute: typeof TringlesRoute
+  VoilagesRoute: typeof VoilagesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +377,211 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/a-propos': {
+      id: '/a-propos'
+      path: '/a-propos'
+      fullPath: '/a-propos'
+      preLoaderRoute: typeof AProposRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accessoires': {
+      id: '/accessoires'
+      path: '/accessoires'
+      fullPath: '/accessoires'
+      preLoaderRoute: typeof AccessoiresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cgv': {
+      id: '/cgv'
+      path: '/cgv'
+      fullPath: '/cgv'
+      preLoaderRoute: typeof CgvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confidentialite': {
+      id: '/confidentialite'
+      path: '/confidentialite'
+      fullPath: '/confidentialite'
+      preLoaderRoute: typeof ConfidentialiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coussins': {
+      id: '/coussins'
+      path: '/coussins'
+      fullPath: '/coussins'
+      preLoaderRoute: typeof CoussinsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/embrasses': {
+      id: '/embrasses'
+      path: '/embrasses'
+      fullPath: '/embrasses'
+      preLoaderRoute: typeof EmbrassesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favoris': {
+      id: '/favoris'
+      path: '/favoris'
+      fullPath: '/favoris'
+      preLoaderRoute: typeof FavorisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guide-des-mesures': {
+      id: '/guide-des-mesures'
+      path: '/guide-des-mesures'
+      fullPath: '/guide-des-mesures'
+      preLoaderRoute: typeof GuideDesMesuresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inspirations': {
+      id: '/inspirations'
+      path: '/inspirations'
+      fullPath: '/inspirations'
+      preLoaderRoute: typeof InspirationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/livraison-et-retours': {
+      id: '/livraison-et-retours'
+      path: '/livraison-et-retours'
+      fullPath: '/livraison-et-retours'
+      preLoaderRoute: typeof LivraisonEtRetoursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mentions-legales': {
+      id: '/mentions-legales'
+      path: '/mentions-legales'
+      fullPath: '/mentions-legales'
+      preLoaderRoute: typeof MentionsLegalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nouveautes': {
+      id: '/nouveautes'
+      path: '/nouveautes'
+      fullPath: '/nouveautes'
+      preLoaderRoute: typeof NouveautesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panier': {
+      id: '/panier'
+      path: '/panier'
+      fullPath: '/panier'
+      preLoaderRoute: typeof PanierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/professionnels': {
+      id: '/professionnels'
+      path: '/professionnels'
+      fullPath: '/professionnels'
+      preLoaderRoute: typeof ProfessionnelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/promotions': {
+      id: '/promotions'
+      path: '/promotions'
+      fullPath: '/promotions'
+      preLoaderRoute: typeof PromotionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recherche': {
+      id: '/recherche'
+      path: '/recherche'
+      fullPath: '/recherche'
+      preLoaderRoute: typeof RechercheRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rideaux': {
+      id: '/rideaux'
+      path: '/rideaux'
+      fullPath: '/rideaux'
+      preLoaderRoute: typeof RideauxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stores': {
+      id: '/stores'
+      path: '/stores'
+      fullPath: '/stores'
+      preLoaderRoute: typeof StoresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/suivi-commande': {
+      id: '/suivi-commande'
+      path: '/suivi-commande'
+      fullPath: '/suivi-commande'
+      preLoaderRoute: typeof SuiviCommandeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sur-mesure': {
+      id: '/sur-mesure'
+      path: '/sur-mesure'
+      fullPath: '/sur-mesure'
+      preLoaderRoute: typeof SurMesureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tringles': {
+      id: '/tringles'
+      path: '/tringles'
+      fullPath: '/tringles'
+      preLoaderRoute: typeof TringlesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/voilages': {
+      id: '/voilages'
+      path: '/voilages'
+      fullPath: '/voilages'
+      preLoaderRoute: typeof VoilagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AProposRoute: AProposRoute,
+  AccessoiresRoute: AccessoiresRoute,
+  CgvRoute: CgvRoute,
+  ConfidentialiteRoute: ConfidentialiteRoute,
+  ContactRoute: ContactRoute,
+  CookiesRoute: CookiesRoute,
+  CoussinsRoute: CoussinsRoute,
+  EmbrassesRoute: EmbrassesRoute,
+  FaqRoute: FaqRoute,
+  FavorisRoute: FavorisRoute,
+  GuideDesMesuresRoute: GuideDesMesuresRoute,
+  InspirationsRoute: InspirationsRoute,
+  LivraisonEtRetoursRoute: LivraisonEtRetoursRoute,
+  MentionsLegalesRoute: MentionsLegalesRoute,
+  NouveautesRoute: NouveautesRoute,
+  PanierRoute: PanierRoute,
+  ProfessionnelsRoute: ProfessionnelsRoute,
+  PromotionsRoute: PromotionsRoute,
+  RechercheRoute: RechercheRoute,
+  RideauxRoute: RideauxRoute,
+  StoresRoute: StoresRoute,
+  SuiviCommandeRoute: SuiviCommandeRoute,
+  SurMesureRoute: SurMesureRoute,
+  TringlesRoute: TringlesRoute,
+  VoilagesRoute: VoilagesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
