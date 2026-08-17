@@ -76,10 +76,19 @@ export function CartDrawer() {
               </span>
             </div>
             <CartShippingProgress totals={cart.totals} />
+            {features.checkout ? (
+              <AppLink
+                href="/commande"
+                onClick={close}
+                className="flex min-h-[48px] items-center justify-center rounded-sm bg-accent px-6 text-sm font-medium text-accent-foreground hover:bg-accent-dark"
+              >
+                Commander
+              </AppLink>
+            ) : null}
             <AppLink
               href="/panier"
               onClick={close}
-              className="flex min-h-[48px] items-center justify-center rounded-sm bg-accent px-6 text-sm font-medium text-accent-foreground hover:bg-accent-dark"
+              className="flex min-h-[48px] items-center justify-center rounded-sm border border-border px-6 text-sm font-medium hover:bg-surface-muted"
             >
               Voir le panier
             </AppLink>
