@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AProposRouteImport } from './routes/a-propos'
 import { Route as AccessoiresRouteImport } from './routes/accessoires'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as CgvRouteImport } from './routes/cgv'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -34,6 +35,7 @@ import { Route as SuiviCommandeRouteImport } from './routes/suivi-commande'
 import { Route as SurMesureRouteImport } from './routes/sur-mesure'
 import { Route as TringlesRouteImport } from './routes/tringles'
 import { Route as VoilagesRouteImport } from './routes/voilages'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as CommandeIndexRouteImport } from './routes/commande.index'
 import { Route as CommandeConfirmationRouteImport } from './routes/commande.confirmation'
 import { Route as ProduitSlugRouteImport } from './routes/produit.$slug'
@@ -61,6 +63,11 @@ const AProposRoute = AProposRouteImport.update({
 const AccessoiresRoute = AccessoiresRouteImport.update({
   id: '/accessoires',
   path: '/accessoires',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CgvRoute = CgvRouteImport.update({
@@ -173,6 +180,11 @@ const VoilagesRoute = VoilagesRouteImport.update({
   path: '/voilages',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const CommandeIndexRoute = CommandeIndexRouteImport.update({
   id: '/commande/',
   path: '/commande/',
@@ -241,6 +253,7 @@ const RideauxVeloursRoute = RideauxVeloursRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/a-propos': typeof AProposRoute
   '/accessoires': typeof AccessoiresRoute
   '/cgv': typeof CgvRoute
@@ -276,6 +289,7 @@ export interface FileRoutesByFullPath {
   '/rideaux/tamisants': typeof RideauxTamisantsRoute
   '/rideaux/thermiques': typeof RideauxThermiquesRoute
   '/rideaux/velours': typeof RideauxVeloursRoute
+  '/admin/': typeof AdminIndexRoute
   '/commande/': typeof CommandeIndexRoute
   '/rideaux/': typeof RideauxIndexRoute
 }
@@ -316,12 +330,14 @@ export interface FileRoutesByTo {
   '/rideaux/tamisants': typeof RideauxTamisantsRoute
   '/rideaux/thermiques': typeof RideauxThermiquesRoute
   '/rideaux/velours': typeof RideauxVeloursRoute
+  '/admin': typeof AdminIndexRoute
   '/commande': typeof CommandeIndexRoute
   '/rideaux': typeof RideauxIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/a-propos': typeof AProposRoute
   '/accessoires': typeof AccessoiresRoute
   '/cgv': typeof CgvRoute
@@ -357,6 +373,7 @@ export interface FileRoutesById {
   '/rideaux/tamisants': typeof RideauxTamisantsRoute
   '/rideaux/thermiques': typeof RideauxThermiquesRoute
   '/rideaux/velours': typeof RideauxVeloursRoute
+  '/admin/': typeof AdminIndexRoute
   '/commande/': typeof CommandeIndexRoute
   '/rideaux/': typeof RideauxIndexRoute
 }
@@ -364,6 +381,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/a-propos'
     | '/accessoires'
     | '/cgv'
@@ -399,6 +417,7 @@ export interface FileRouteTypes {
     | '/rideaux/tamisants'
     | '/rideaux/thermiques'
     | '/rideaux/velours'
+    | '/admin/'
     | '/commande/'
     | '/rideaux/'
   fileRoutesByTo: FileRoutesByTo
@@ -439,11 +458,13 @@ export interface FileRouteTypes {
     | '/rideaux/tamisants'
     | '/rideaux/thermiques'
     | '/rideaux/velours'
+    | '/admin'
     | '/commande'
     | '/rideaux'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/a-propos'
     | '/accessoires'
     | '/cgv'
@@ -479,12 +500,14 @@ export interface FileRouteTypes {
     | '/rideaux/tamisants'
     | '/rideaux/thermiques'
     | '/rideaux/velours'
+    | '/admin/'
     | '/commande/'
     | '/rideaux/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   AProposRoute: typeof AProposRoute
   AccessoiresRoute: typeof AccessoiresRoute
   CgvRoute: typeof CgvRoute
@@ -545,6 +568,13 @@ declare module '@tanstack/react-router' {
       path: '/accessoires'
       fullPath: '/accessoires'
       preLoaderRoute: typeof AccessoiresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cgv': {
@@ -701,6 +731,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VoilagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/commande/': {
       id: '/commande/'
       path: '/commande'
@@ -795,8 +832,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   AProposRoute: AProposRoute,
   AccessoiresRoute: AccessoiresRoute,
   CgvRoute: CgvRoute,
