@@ -1,9 +1,9 @@
 import { ArrowRight } from "lucide-react";
 import { AppLink } from "@/components/ui/app-link";
-import { homeHero } from "@/fixtures/home.fixture";
+import type { HomeHeroContent } from "@/domain/content/home-content.types";
 
-export function HomeHero() {
-  const { tagline, title, text, primaryCta, secondaryCta, image } = homeHero;
+export function HomeHero({ content }: { content: HomeHeroContent }) {
+  const { tagline, title, text, primaryCta, secondaryCta, image } = content;
 
   return (
     <section className="bg-background">
@@ -35,6 +35,9 @@ export function HomeHero() {
             alt={image.alt}
             width={1200}
             height={1400}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             className="h-[280px] w-full rounded-sm object-cover sm:h-[380px] lg:h-[560px]"
           />
         </div>
