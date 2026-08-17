@@ -12,27 +12,33 @@ export interface ProductListParams {
   page: number;
   pageSize: number;
 
-  materials?: CurtainMaterial[];
-  colors?: string[];
-  opacityLevels?: OpacityLevel[];
-  curtainHeaders?: CurtainHeader[];
+  materials?: CurtainMaterial[] | undefined;
+  colors?: string[] | undefined;
+  opacityLevels?: OpacityLevel[] | undefined;
+  curtainHeaders?: CurtainHeader[] | undefined;
 
-  widths?: number[];
-  heights?: number[];
+  widths?: number[] | undefined;
+  heights?: number[] | undefined;
 
-  availability?: ProductAvailability[];
+  availability?: ProductAvailability[] | undefined;
 
-  minPriceMinor?: number;
-  maxPriceMinor?: number;
+  minPriceMinor?: number | undefined;
+  maxPriceMinor?: number | undefined;
 
-  sellingMode?: CurtainSellingMode[];
-  onlyNew?: boolean;
-  onlyBestSellers?: boolean;
-  onlyDiscounted?: boolean;
-  onlyThermal?: boolean;
+  sellingMode?: CurtainSellingMode[] | undefined;
+  onlyNew?: boolean | undefined;
+  onlyBestSellers?: boolean | undefined;
+  onlyDiscounted?: boolean | undefined;
+  onlyThermal?: boolean | undefined;
 
   sort: CatalogSort;
 }
+
+/** Subset of params imposed by a sub-route (locked context). */
+export type CatalogScope = Pick<
+  ProductListParams,
+  "materials" | "opacityLevels" | "curtainHeaders" | "sellingMode" | "onlyThermal"
+>;
 
 export interface PaginatedProducts {
   items: Product[];
@@ -45,6 +51,6 @@ export interface PaginatedProducts {
 export interface ProductRepository {
   list(params: ProductListParams): Promise<PaginatedProducts>;
   getBySlug(slug: string): Promise<Product | null>;
-  /** Full catalogue scope used to compute facets (before user filters). */
-  listAll(scope?: Pick<ProductListParams, "materials" | "opacityLevels" | "curtainHeaders" | "sellingMode" | "onlyThermal">): Promise<Product[]>;
+  /** Products of the current route scope, before the user filters — used for facets. */
+  listScope(scope?: CatalogScope): Promise<Product[]>;
 }
