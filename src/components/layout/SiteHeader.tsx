@@ -37,16 +37,23 @@ export function SiteHeader() {
           >
             <Search className="h-5 w-5" aria-hidden="true" />
           </AppLink>
-          <AppLink
-            href="/panier"
-            aria-label={`Panier, ${cartCount} article(s)`}
+          <button
+            type="button"
+            onClick={openCartDrawer}
+            aria-label={cartLabel}
+            aria-haspopup="dialog"
             className="relative flex h-11 w-11 items-center justify-center rounded-md hover:bg-surface-muted"
           >
             <ShoppingBag className="h-5 w-5" aria-hidden="true" />
-            <span className="absolute right-1 top-1 min-w-4 rounded-full bg-accent px-1 text-[10px] leading-4 text-accent-foreground">
-              {cartCount}
-            </span>
-          </AppLink>
+            {cartCount > 0 ? (
+              <span
+                aria-hidden="true"
+                className="absolute right-1 top-1 min-w-4 rounded-full bg-accent px-1 text-center text-[10px] leading-4 text-accent-foreground"
+              >
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            ) : null}
+          </button>
         </div>
       </div>
 
