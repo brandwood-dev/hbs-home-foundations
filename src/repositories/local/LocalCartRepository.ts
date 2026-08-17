@@ -3,10 +3,7 @@ import { CartError } from "@/domain/cart/cart.errors";
 import type { Product } from "@/domain/product/product.types";
 import type { AddCartItemInput, CartRepository } from "@/repositories/interfaces/CartRepository";
 import type { ProductRepository } from "@/repositories/interfaces/ProductRepository";
-import {
-  readPersistedCart,
-  writePersistedCart,
-} from "@/repositories/local/cart-storage";
+import { readPersistedCart, writePersistedCart } from "@/repositories/local/cart-storage";
 import { buildCart, reconcilePersistedItems } from "@/services/cart/cart-reconciliation";
 import {
   addItemToItems,

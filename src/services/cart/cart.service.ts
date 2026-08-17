@@ -80,7 +80,10 @@ export function updateItemQuantity(
   if (!Number.isFinite(requested)) throw new CartError("invalid_quantity", "Quantité invalide");
   if (requested < 1) return items.filter((_, position) => position !== index);
 
-  const upper = Math.max(1, Math.min(maxQuantity || MAX_CART_LINE_QUANTITY, MAX_CART_LINE_QUANTITY));
+  const upper = Math.max(
+    1,
+    Math.min(maxQuantity || MAX_CART_LINE_QUANTITY, MAX_CART_LINE_QUANTITY),
+  );
   const next = [...items];
   const existing = next[index] as PersistedCartItem;
   next[index] = { ...existing, quantity: Math.min(requested, upper) };

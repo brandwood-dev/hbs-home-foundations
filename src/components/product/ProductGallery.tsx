@@ -32,7 +32,6 @@ export function ProductGallery({ images, activeImageId }: ProductGalleryProps) {
   return (
     <div className="flex flex-col-reverse gap-3 lg:flex-row lg:items-start lg:gap-4">
       <div className="flex gap-2 overflow-x-auto lg:w-20 lg:flex-col lg:overflow-visible">
-
         {images.map((image, imageIndex) => (
           <button
             key={image.id}

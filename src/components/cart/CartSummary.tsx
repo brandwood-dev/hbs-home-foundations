@@ -7,7 +7,10 @@ export function CartSummary({ cart, title = "Résumé estimatif" }: { cart: Cart
   const { totals } = cart;
 
   return (
-    <section aria-label={title} className="space-y-4 rounded-sm border border-border bg-surface p-4">
+    <section
+      aria-label={title}
+      className="space-y-4 rounded-sm border border-border bg-surface p-4"
+    >
       <h2 className="text-lg">{title}</h2>
 
       <dl className="space-y-2 text-sm">

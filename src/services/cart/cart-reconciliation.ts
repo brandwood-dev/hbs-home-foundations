@@ -58,7 +58,10 @@ function variantImage(product: Product, variant: ProductVariant) {
 }
 
 /** Résout une ligne persistée à partir de l'état actuel du catalogue. */
-export function resolveCartItem(item: PersistedCartItem, product: Product | null): ResolvedCartItem {
+export function resolveCartItem(
+  item: PersistedCartItem,
+  product: Product | null,
+): ResolvedCartItem {
   if (!product) return unavailableLine(item, "product_missing");
 
   const variant = product.variants.find((candidate) => candidate.id === item.variantId);
@@ -113,11 +116,10 @@ export function resolveCartItem(item: PersistedCartItem, product: Product | null
   };
 }
 
-export function buildCart(
-  items: PersistedCartItem[],
-  productsById: Map<string, Product>,
-): Cart {
-  const resolved = items.map((item) => resolveCartItem(item, productsById.get(item.productId) ?? null));
+export function buildCart(items: PersistedCartItem[], productsById: Map<string, Product>): Cart {
+  const resolved = items.map((item) =>
+    resolveCartItem(item, productsById.get(item.productId) ?? null),
+  );
   const purchasable = resolved.filter((item) => item.canPurchase);
 
   return {

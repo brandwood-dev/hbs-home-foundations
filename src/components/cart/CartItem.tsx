@@ -23,7 +23,9 @@ export function CartItem({
 }: CartItemProps) {
   return (
     <article className="flex gap-3 py-4">
-      <div className={`${compact ? "h-24 w-20" : "h-32 w-24"} shrink-0 overflow-hidden rounded-sm bg-surface-muted`}>
+      <div
+        className={`${compact ? "h-24 w-20" : "h-32 w-24"} shrink-0 overflow-hidden rounded-sm bg-surface-muted`}
+      >
         {item.imageUrl ? (
           <img
             src={item.imageUrl}
