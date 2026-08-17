@@ -119,25 +119,100 @@ interface ProductSeed {
 }
 
 function buildProduct(seed: ProductSeed, index: number): Product {
-  const variants: ProductVariant[] = seed.variants.map((variant, variantIndex) => ({
-    id: `${seed.slug}-v${variantIndex + 1}`,
-    sku: `${seed.reference}-${variant.color.slug.toUpperCase()}-${variant.widthCm}x${variant.heightCm}`,
-    colorId: variant.color.id,
-    widthCm: variant.widthCm,
-    heightCm: variant.heightCm,
-    curtainHeader: variant.header,
-    price: money(variant.priceMinor),
-    ...(variant.compareAtMinor ? { compareAtPrice: money(variant.compareAtMinor) } : {}),
-    availability: variant.availability,
-    availableQuantity: variant.quantity,
-    imageUrl: seed.image,
-    ...(seed.secondaryImage ? { secondaryImageUrl: seed.secondaryImage } : {}),
-  }));
-
   const colors: ProductColor[] = [];
   for (const variant of seed.variants) {
     if (!colors.some((color) => color.id === variant.color.id)) colors.push(variant.color);
   }
+
+  const imagePool = [seed.image, seed.secondaryImage ?? seed.image];
+  const images: ProductImage[] = colors.map((color, colorIndex) => ({
+    id: `${seed.slug}-color-${color.slug}`,
+    url: imagePool[colorIndex % imagePool.length] as string,
+    alt: `${seed.name} — coloris ${color.name.toLowerCase()}`,
+    type: "front",
+    colorId: color.id,
+  }));
+
+  const lifestyleId = `${seed.slug}-lifestyle`;
+  const fabricId = `${seed.slug}-fabric`;
+  images.push(
+    {
+      id: lifestyleId,
+      url: seed.secondaryImage ?? seed.image,
+      alt: `${seed.name} en situation dans un intérieur lumineux`,
+      type: "lifestyle",
+    },
+    {
+      id: fabricId,
+      url: MATERIAL_TEXTURES[seed.material],
+      alt: `Gros plan sur la matière ${MATERIAL_LABELS[seed.material].toLowerCase()} du ${seed.name}`,
+      type: "fabric_detail",
+    },
+  );
+
+  const headerImageId = (header: CurtainHeader) => `${seed.slug}-header-${header}`;
+  const usedHeaders = [...new Set(seed.variants.map((variant) => variant.header))];
+  for (const header of usedHeaders) {
+    images.push({
+      id: headerImageId(header),
+      url: HEADER_DETAIL_IMAGES[header],
+      alt: `Finition ${HEADER_LABELS[header].toLowerCase()} du ${seed.name}`,
+      type: "header_detail",
+    });
+  }
+
+  const linings: CurtainLining[] = seed.isThermal ? ["sans_doublure", "thermique"] : ["sans_doublure"];
+
+  const variants: ProductVariant[] = [];
+  seed.variants.forEach((variant, variantIndex) => {
+    const eyelets: (EyeletColor | undefined)[] =
+      variant.header === "oeillets" ? EYELET_OPTIONS_BY_MATERIAL[seed.material] : [undefined];
+
+    eyelets.forEach((eyeletColor, eyeletIndex) => {
+      linings.forEach((lining, liningIndex) => {
+        const surcharge = lining === "thermique" ? THERMAL_LINING_SURCHARGE_MINOR : 0;
+        const suffix = [
+          variant.color.slug.toUpperCase(),
+          `${variant.widthCm}x${variant.heightCm}`,
+          eyeletColor ? eyeletColor.toUpperCase() : variant.header.toUpperCase(),
+          lining === "thermique" ? "TH" : "ST",
+        ].join("-");
+        const quantity =
+          variant.availability === "out_of_stock"
+            ? 0
+            : Math.max(0, variant.quantity - eyeletIndex * 2 - liningIndex);
+        const availability =
+          quantity === 0 && variant.availability === "in_stock"
+            ? "made_to_order"
+            : variant.availability;
+
+        variants.push({
+          id: `${seed.slug}-v${variantIndex + 1}-${eyeletIndex + 1}-${liningIndex + 1}`,
+          sku: `${seed.reference}-${suffix}`,
+          colorId: variant.color.id,
+          widthCm: variant.widthCm,
+          heightCm: variant.heightCm,
+          curtainHeader: variant.header,
+          ...(eyeletColor ? { eyeletColor } : {}),
+          lining,
+          price: money(variant.priceMinor + surcharge),
+          ...(variant.compareAtMinor
+            ? { compareAtPrice: money(variant.compareAtMinor + surcharge) }
+            : {}),
+          availability,
+          availableQuantity: quantity,
+          imageUrl: seed.image,
+          ...(seed.secondaryImage ? { secondaryImageUrl: seed.secondaryImage } : {}),
+          imageIds: [
+            `${seed.slug}-color-${variant.color.slug}`,
+            lifestyleId,
+            fabricId,
+            headerImageId(variant.header),
+          ],
+        });
+      });
+    });
+  });
 
   return {
     id: `p-${String(index + 1).padStart(3, "0")}`,
@@ -149,9 +224,30 @@ function buildProduct(seed: ProductSeed, index: number): Product {
     opacityLevel: seed.opacityLevel,
     sellingMode: seed.sellingMode,
     shortDescription: seed.shortDescription,
+    longDescription: buildLongDescription({
+      name: seed.name,
+      material: seed.material,
+      opacityLevel: seed.opacityLevel,
+      sellingMode: seed.sellingMode,
+      shortDescription: seed.shortDescription,
+      isThermal: seed.isThermal,
+    }),
     imageAlt: seed.imageAlt,
+    images,
     variants,
     colors,
+    details: buildDetails({
+      material: seed.material,
+      opacityLevel: seed.opacityLevel,
+      headers: usedHeaders,
+      isThermal: seed.isThermal,
+    }),
+    seo: buildSeo({
+      name: seed.name,
+      material: seed.material,
+      opacityLevel: seed.opacityLevel,
+      shortDescription: seed.shortDescription,
+    }),
     isThermal: seed.isThermal,
     isNew: seed.isNew,
     isBestSeller: seed.isBestSeller,
@@ -161,6 +257,7 @@ function buildProduct(seed: ProductSeed, index: number): Product {
     isDemo: true,
   };
 }
+
 
 const seeds: ProductSeed[] = [
   {
