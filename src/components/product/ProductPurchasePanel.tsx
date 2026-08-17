@@ -58,7 +58,7 @@ export function ProductPurchasePanel({
         <div className="min-w-[200px] flex-1">
           <ProductPurchaseActions
             product={product}
-            variant={unavailable ? variant : variant}
+            variant={variant}
             quantity={quantity}
             missingOptionLabel="Sélectionnez une dimension"
           />
