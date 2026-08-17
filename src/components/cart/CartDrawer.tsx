@@ -18,6 +18,7 @@ import {
   useUpdateCartItemMutation,
 } from "@/hooks/cart/useCartMutations";
 import { formatMoney } from "@/lib/money/money";
+import { features } from "@/config/features.config";
 
 export function CartDrawer() {
   const { isOpen, setOpen, close } = useCartDrawer();
