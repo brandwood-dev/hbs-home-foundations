@@ -30,8 +30,9 @@ export function ProductGallery({ images, activeImageId }: ProductGalleryProps) {
   const go = (delta: number) => setIndex((prev) => (prev + delta + total) % total);
 
   return (
-    <div className="lg:flex lg:gap-4">
-      <div className="order-2 mt-3 flex gap-2 overflow-x-auto lg:order-1 lg:mt-0 lg:w-20 lg:flex-col lg:overflow-visible">
+    <div className="flex flex-col-reverse gap-3 lg:flex-row lg:items-start lg:gap-4">
+      <div className="flex gap-2 overflow-x-auto lg:w-20 lg:flex-col lg:overflow-visible">
+
         {images.map((image, imageIndex) => (
           <button
             key={image.id}
@@ -56,7 +57,7 @@ export function ProductGallery({ images, activeImageId }: ProductGalleryProps) {
 
       <div
         ref={trackRef}
-        className="order-1 relative flex-1 overflow-hidden rounded-md bg-surface-muted lg:order-2"
+        className="relative w-full flex-1 overflow-hidden rounded-md bg-surface-muted lg:sticky lg:top-24"
         tabIndex={0}
         role="group"
         aria-roledescription="galerie"
