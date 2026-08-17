@@ -26,11 +26,12 @@ export function resolveHotspots(hotspots: Hotspot[], products: Product[]): Resol
         : undefined;
 
       if (product) {
+        const imageSrc = product.variants[0]?.imageUrl;
         return {
           hotspot,
           label: product.name,
           href: `/produit/${product.slug}`,
-          imageSrc: product.variants[0]?.imageUrl,
+          ...(imageSrc ? { imageSrc } : {}),
           priceLabel: formatMoney(getProductStartingPrice(product)),
         } satisfies ResolvedHotspot;
       }
