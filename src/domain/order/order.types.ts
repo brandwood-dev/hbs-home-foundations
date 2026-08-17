@@ -59,6 +59,8 @@ export interface Order {
   totals: OrderTotals;
 
   createdAt: string;
+  /** Renseigné lorsque le statut a évolué (commandes de démonstration). */
+  updatedAt?: string;
   idempotencyKey: string;
 
   /** Commande créée par le MockOrderRepository (phase de démonstration). */

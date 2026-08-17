@@ -34,7 +34,10 @@ export function AdminSearchInput({
 }) {
   return (
     <div className="relative w-full sm:w-64">
-      <Search className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+      <Search
+        className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
+        aria-hidden
+      />
       <Input
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -123,13 +126,7 @@ export function AdminTableToolbar({ children }: { children: ReactNode }) {
   );
 }
 
-export function AdminBulkActions({
-  count,
-  children,
-}: {
-  count: number;
-  children: ReactNode;
-}) {
+export function AdminBulkActions({ count, children }: { count: number; children: ReactNode }) {
   if (count === 0) return null;
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-border bg-muted/60 px-3 py-2 text-sm">
@@ -219,7 +216,8 @@ export function AdminDataTable<T>({
     [rows, safePage, pageSize],
   );
 
-  const allSelected = pageRows.length > 0 && pageRows.every((row) => selected.includes(rowKey(row)));
+  const allSelected =
+    pageRows.length > 0 && pageRows.every((row) => selected.includes(rowKey(row)));
 
   if (error) {
     return (
@@ -280,7 +278,10 @@ export function AdminDataTable<T>({
                   </th>
                 ))}
                 {rowActions ? (
-                  <th scope="col" className="px-3 py-2 text-right text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                  <th
+                    scope="col"
+                    className="px-3 py-2 text-right text-xs font-semibold tracking-wide text-muted-foreground uppercase"
+                  >
                     Actions
                   </th>
                 ) : null}
@@ -305,7 +306,10 @@ export function AdminDataTable<T>({
                       </td>
                     ) : null}
                     {columns.map((column) => (
-                      <td key={column.id} className={cn("px-3 py-2 align-middle", column.className)}>
+                      <td
+                        key={column.id}
+                        className={cn("px-3 py-2 align-middle", column.className)}
+                      >
                         {column.cell(row)}
                       </td>
                     ))}

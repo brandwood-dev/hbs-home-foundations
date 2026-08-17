@@ -56,7 +56,9 @@ export function useAdminInventory() {
 }
 
 export function useAdminStockMovements() {
-  return useQuery(clientQuery(adminKeys.movements(), () => adminRepositories.inventory.movements()));
+  return useQuery(
+    clientQuery(adminKeys.movements(), () => adminRepositories.inventory.movements()),
+  );
 }
 
 export function useAdminOrders() {

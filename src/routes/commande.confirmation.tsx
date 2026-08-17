@@ -6,6 +6,7 @@ import { OrderItemsRecap } from "@/components/order/OrderItemsRecap";
 import { OrderSummaryCard } from "@/components/order/OrderSummaryCard";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { AppLink } from "@/components/ui/app-link";
+import { features } from "@/config/features.config";
 import { ORDER_CONFIRMATION_NEXT_STEPS, ORDER_DEMO_NOTICE } from "@/domain/order/order.constants";
 import { useLastOrder } from "@/hooks/order/useLastOrder";
 import { formatTunisianPhone } from "@/services/checkout/phone-normalization";
@@ -92,9 +93,17 @@ function ConfirmationPage() {
             <OrderItemsRecap order={order} />
 
             <div className="flex flex-wrap gap-3">
+              {features.orderTracking ? (
+                <AppLink
+                  href="/suivi-commande"
+                  className="flex min-h-[48px] items-center rounded-sm bg-accent px-6 text-sm text-accent-foreground hover:bg-accent-dark"
+                >
+                  Suivre ma commande
+                </AppLink>
+              ) : null}
               <AppLink
                 href="/rideaux"
-                className="flex min-h-[48px] items-center rounded-sm bg-accent px-6 text-sm text-accent-foreground hover:bg-accent-dark"
+                className="flex min-h-[48px] items-center rounded-sm border border-border px-6 text-sm hover:bg-surface-muted"
               >
                 Continuer mes achats
               </AppLink>

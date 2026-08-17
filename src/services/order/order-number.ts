@@ -21,3 +21,18 @@ export function generateOrderNumber(now: Date = new Date(), random: () => number
 export function generateOrderId(random: () => number = Math.random): string {
   return `ord_${Date.now().toString(36)}_${randomSuffix(6, random).toLowerCase()}`;
 }
+
+/** "  hbs-20260818-100001 " -> "HBS-20260818-100001" (aucune recherche approximative). */
+export function normalizeOrderNumber(input: string): string {
+  if (typeof input !== "string") return "";
+  return input.trim().replace(/\s+/g, "").toUpperCase();
+}
+
+/**
+ * Accepte les numéros de démonstration (HBS-YYYYMMDD-NNNNNN)
+ * et les numéros générés par le checkout (HBS-YYMMDD-XXXX).
+ */
+export function isValidOrderNumber(input: string): boolean {
+  const value = normalizeOrderNumber(input);
+  return /^HBS-\d{8}-\d{6}$/.test(value) || /^HBS-\d{6}-[A-Z0-9]{4}$/.test(value);
+}

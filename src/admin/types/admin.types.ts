@@ -7,13 +7,7 @@
 export type ProductPublicationStatus = "draft" | "published" | "archived";
 
 export type AdminSellingMode =
-  | "single_panel"
-  | "pair"
-  | "pack"
-  | "per_meter"
-  | "ready_made"
-  | "custom_quote"
-  | "accessory";
+  "single_panel" | "pair" | "pack" | "per_meter" | "ready_made" | "custom_quote" | "accessory";
 
 export type AdminAvailability = "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
 
@@ -315,11 +309,7 @@ export interface AdminSettings {
 }
 
 export type AdminRoleId =
-  | "super_admin"
-  | "catalog_manager"
-  | "orders_manager"
-  | "content_editor"
-  | "read_only";
+  "super_admin" | "catalog_manager" | "orders_manager" | "content_editor" | "read_only";
 
 export type AdminPermission =
   | "dashboard.read"

@@ -5,6 +5,7 @@ import type {
   PaymentMethod,
 } from "@/domain/checkout/checkout.types";
 import type { Order } from "@/domain/order/order.types";
+import type { OrderTrackingResult } from "@/domain/order/order-tracking.types";
 
 export interface CreateOrderItemInput {
   productId: string;
@@ -31,4 +32,11 @@ export interface OrderRepository {
   createOrder(input: CreateOrderInput): Promise<Order>;
   getOrderByNumber(orderNumber: string): Promise<Order | null>;
   getLastOrder(): Promise<Order | null>;
+  /** Suivi sans compte : retourne null lorsque le couple numéro + téléphone ne correspond pas. */
+  trackOrder(input: TrackOrderInput): Promise<OrderTrackingResult | null>;
+}
+
+export interface TrackOrderInput {
+  orderNumber: string;
+  phone: string;
 }

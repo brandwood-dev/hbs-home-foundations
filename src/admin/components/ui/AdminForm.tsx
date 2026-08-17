@@ -132,7 +132,11 @@ export function AdminSelectField({
   const id = useId();
   const selected = options.find((option) => option.value === value);
   return (
-    <FieldWrapper {...base} id={id} {...(selected?.description ? { hint: selected.description } : {})}>
+    <FieldWrapper
+      {...base}
+      id={id}
+      {...(selected?.description ? { hint: selected.description } : {})}
+    >
       <Select value={value} onValueChange={onChange} disabled={disabled ?? false}>
         <SelectTrigger id={id} aria-label={base.label}>
           <SelectValue placeholder="Sélectionner" />
@@ -193,7 +197,12 @@ export function AdminMoneyField({
     <FieldWrapper
       {...base}
       id={id}
-      hint={base.hint ?? (valueMinor != null ? `${formatMoney(valueMinor)} · ${valueMinor} millimes` : "Montant en DT")}
+      hint={
+        base.hint ??
+        (valueMinor != null
+          ? `${formatMoney(valueMinor)} · ${valueMinor} millimes`
+          : "Montant en DT")
+      }
     >
       <Input
         id={id}
