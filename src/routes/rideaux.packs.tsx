@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("packs");
 const title = "Packs rideau et voilage | HBS HOME";
-const description = "Ensembles rideau et voilage coordonnés, prêts à poser. Le duo idéal pour moduler la lumière. Livraison en Tunisie.";
+const description =
+  "Ensembles rideau et voilage coordonnés, prêts à poser. Le duo idéal pour moduler la lumière. Livraison en Tunisie.";
 
 export const Route = createFileRoute("/rideaux/packs")({
   validateSearch: validateCatalogSearch,

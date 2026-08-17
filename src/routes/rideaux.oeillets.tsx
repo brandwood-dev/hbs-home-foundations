@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("oeillets");
 const title = "Rideaux à œillets | HBS HOME";
-const description = "Rideaux à œillets métalliques, faciles à poser sur une tringle. Plusieurs matières, couleurs et dimensions.";
+const description =
+  "Rideaux à œillets métalliques, faciles à poser sur une tringle. Plusieurs matières, couleurs et dimensions.";
 
 export const Route = createFileRoute("/rideaux/oeillets")({
   validateSearch: validateCatalogSearch,

@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("lin");
 const title = "Rideaux en lin | HBS HOME";
-const description = "Rideaux en lin lavé, naturels et respirants, en teintes sable, grège et ivoire. Livraison partout en Tunisie.";
+const description =
+  "Rideaux en lin lavé, naturels et respirants, en teintes sable, grège et ivoire. Livraison partout en Tunisie.";
 
 export const Route = createFileRoute("/rideaux/lin")({
   validateSearch: validateCatalogSearch,

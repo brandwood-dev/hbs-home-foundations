@@ -84,9 +84,4 @@ export interface Product {
 }
 
 export type CatalogSort =
-  | "recommended"
-  | "newest"
-  | "best_sellers"
-  | "price_asc"
-  | "price_desc"
-  | "discount";
+  "recommended" | "newest" | "best_sellers" | "price_asc" | "price_desc" | "discount";

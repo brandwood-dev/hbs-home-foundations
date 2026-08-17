@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("occultants");
 const title = "Rideaux occultants en Tunisie | HBS HOME";
-const description = "Rideaux occultants pour chambre et salon : obscurité maîtrisée, isolation thermique et grandes largeurs disponibles.";
+const description =
+  "Rideaux occultants pour chambre et salon : obscurité maîtrisée, isolation thermique et grandes largeurs disponibles.";
 
 export const Route = createFileRoute("/rideaux/occultants")({
   validateSearch: validateCatalogSearch,

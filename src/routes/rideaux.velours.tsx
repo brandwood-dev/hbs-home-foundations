@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("velours");
 const title = "Rideaux en velours | HBS HOME";
-const description = "Rideaux en velours épais, chaleureux et isolants. Plusieurs couleurs, largeurs et finitions, livraison partout en Tunisie.";
+const description =
+  "Rideaux en velours épais, chaleureux et isolants. Plusieurs couleurs, largeurs et finitions, livraison partout en Tunisie.";
 
 export const Route = createFileRoute("/rideaux/velours")({
   validateSearch: validateCatalogSearch,

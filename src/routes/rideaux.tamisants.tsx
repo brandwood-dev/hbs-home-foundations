@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("tamisants");
 const title = "Rideaux tamisants | HBS HOME";
-const description = "Rideaux tamisants et tamisants légers pour diffuser la lumière naturelle et préserver l'intimité. Livraison en Tunisie.";
+const description =
+  "Rideaux tamisants et tamisants légers pour diffuser la lumière naturelle et préserver l'intimité. Livraison en Tunisie.";
 
 export const Route = createFileRoute("/rideaux/tamisants")({
   validateSearch: validateCatalogSearch,

@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("thermiques");
 const title = "Rideaux thermiques et isolants | HBS HOME";
-const description = "Rideaux thermiques doublés pour isoler du froid et de la chaleur. Velours et tissus techniques, livraison partout en Tunisie.";
+const description =
+  "Rideaux thermiques doublés pour isoler du froid et de la chaleur. Velours et tissus techniques, livraison partout en Tunisie.";
 
 export const Route = createFileRoute("/rideaux/thermiques")({
   validateSearch: validateCatalogSearch,

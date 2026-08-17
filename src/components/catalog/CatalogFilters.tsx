@@ -86,10 +86,7 @@ export function CatalogFilters({
                     option={option}
                     checked={selected.some((entry) => String(entry) === option.value)}
                     onChange={() =>
-                      onToggle(
-                        group.key,
-                        group.numeric ? Number(option.value) : option.value,
-                      )
+                      onToggle(group.key, group.numeric ? Number(option.value) : option.value)
                     }
                   />
                 ))}

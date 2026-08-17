@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("rail");
 const title = "Rideaux pour rail | HBS HOME";
-const description = "Rideaux compatibles rails plafond et muraux, y compris en grandes largeurs pour baies vitrées. Livraison en Tunisie.";
+const description =
+  "Rideaux compatibles rails plafond et muraux, y compris en grandes largeurs pour baies vitrées. Livraison en Tunisie.";
 
 export const Route = createFileRoute("/rideaux/rail")({
   validateSearch: validateCatalogSearch,

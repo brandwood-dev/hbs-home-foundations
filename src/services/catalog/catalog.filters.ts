@@ -47,8 +47,10 @@ export function variantMatches(
   if (!includesAny(params.widths, variant.widthCm)) return false;
   if (!includesAny(params.heights, variant.heightCm)) return false;
   if (!includesAny(params.availability, variant.availability)) return false;
-  if (params.minPriceMinor != null && variant.price.amountMinor < params.minPriceMinor) return false;
-  if (params.maxPriceMinor != null && variant.price.amountMinor > params.maxPriceMinor) return false;
+  if (params.minPriceMinor != null && variant.price.amountMinor < params.minPriceMinor)
+    return false;
+  if (params.maxPriceMinor != null && variant.price.amountMinor > params.maxPriceMinor)
+    return false;
   return true;
 }
 

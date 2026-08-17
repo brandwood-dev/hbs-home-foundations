@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("satin");
 const title = "Rideaux en satin | HBS HOME";
-const description = "Rideaux en satin fluide aux reflets lumineux, disponibles en plusieurs coloris et dimensions. Livraison partout en Tunisie.";
+const description =
+  "Rideaux en satin fluide aux reflets lumineux, disponibles en plusieurs coloris et dimensions. Livraison partout en Tunisie.";
 
 export const Route = createFileRoute("/rideaux/satin")({
   validateSearch: validateCatalogSearch,

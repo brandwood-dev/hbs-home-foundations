@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("rideaux");
 const title = "Rideaux en Tunisie | HBS HOME";
-const description = "Rideaux en velours, satin, lin, jacquard et polyester. Occultants, tamisants et thermiques, livrés partout en Tunisie avec paiement à la livraison.";
+const description =
+  "Rideaux en velours, satin, lin, jacquard et polyester. Occultants, tamisants et thermiques, livrés partout en Tunisie avec paiement à la livraison.";
 
 export const Route = createFileRoute("/rideaux/")({
   validateSearch: validateCatalogSearch,

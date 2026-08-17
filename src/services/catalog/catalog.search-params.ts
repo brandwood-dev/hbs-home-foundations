@@ -129,7 +129,8 @@ export function toListParams(
     colors: search["colors"].length > 0 ? search["colors"] : undefined,
     widths: search["widths"].length > 0 ? search["widths"] : undefined,
     heights: search["heights"].length > 0 ? search["heights"] : undefined,
-    availability: search["availability"].length > 0 ? (search["availability"] as never[]) : undefined,
+    availability:
+      search["availability"].length > 0 ? (search["availability"] as never[]) : undefined,
     minPriceMinor: search["minPrice"] != null ? search["minPrice"] * 1000 : undefined,
     maxPriceMinor: search["maxPrice"] != null ? search["maxPrice"] * 1000 : undefined,
     sort: search["sort"],

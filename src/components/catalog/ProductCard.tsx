@@ -100,7 +100,9 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           </AppLink>
         </h3>
 
-        <p className="mt-1 line-clamp-2 text-sm text-foreground-muted">{product.shortDescription}</p>
+        <p className="mt-1 line-clamp-2 text-sm text-foreground-muted">
+          {product.shortDescription}
+        </p>
 
         <div className="mt-2 flex items-center gap-1.5" aria-label="Coloris disponibles">
           {uniqueColors.map((color) => (
