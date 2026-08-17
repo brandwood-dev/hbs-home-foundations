@@ -8,6 +8,7 @@ import { SiteLayout } from "@/components/layout/SiteLayout";
 import { AppLink } from "@/components/ui/app-link";
 import { ORDER_CONFIRMATION_NEXT_STEPS, ORDER_DEMO_NOTICE } from "@/domain/order/order.constants";
 import { useLastOrder } from "@/hooks/order/useLastOrder";
+import { formatTunisianPhone } from "@/services/checkout/phone-normalization";
 
 const title = "Commande confirmée — HBS HOME";
 const description = "Merci pour votre commande HBS HOME. Voici le récapitulatif de votre achat.";
@@ -66,7 +67,7 @@ function ConfirmationPage() {
               <p className="text-sm text-foreground-muted" aria-live="polite">
                 Votre numéro de commande est{" "}
                 <span className="font-medium text-foreground">{order.orderNumber}</span>. Nous vous
-                appelons rapidement au {order.customer.phone} pour confirmer.
+                appelons rapidement au {formatTunisianPhone(order.customer.phone)} pour confirmer.
               </p>
             </header>
 
