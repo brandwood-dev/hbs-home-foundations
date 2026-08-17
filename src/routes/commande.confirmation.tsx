@@ -92,9 +92,17 @@ function ConfirmationPage() {
             <OrderItemsRecap order={order} />
 
             <div className="flex flex-wrap gap-3">
+              {features.orderTracking ? (
+                <AppLink
+                  href="/suivi-commande"
+                  className="flex min-h-[48px] items-center rounded-sm bg-accent px-6 text-sm text-accent-foreground hover:bg-accent-dark"
+                >
+                  Suivre ma commande
+                </AppLink>
+              ) : null}
               <AppLink
                 href="/rideaux"
-                className="flex min-h-[48px] items-center rounded-sm bg-accent px-6 text-sm text-accent-foreground hover:bg-accent-dark"
+                className="flex min-h-[48px] items-center rounded-sm border border-border px-6 text-sm hover:bg-surface-muted"
               >
                 Continuer mes achats
               </AppLink>
