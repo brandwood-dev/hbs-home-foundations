@@ -95,7 +95,8 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
       items: toOrderItemInputs(cart),
     });
 
-    await navigate({ to: "/commande/confirmation", search: { commande: order.orderNumber } });
+    void order;
+    await navigate({ to: "/commande/confirmation" });
   });
 
   return (
