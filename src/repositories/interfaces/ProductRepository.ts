@@ -51,6 +51,10 @@ export interface PaginatedProducts {
 export interface ProductRepository {
   list(params: ProductListParams): Promise<PaginatedProducts>;
   getBySlug(slug: string): Promise<Product | null>;
+  /** Résolution par identifiant — utilisé par le panier. */
+  getById(id: string): Promise<Product | null>;
+  /** Résolution groupée — utilisé par le panier pour reconstruire les lignes. */
+  getByIds(ids: string[]): Promise<Product[]>;
   /** Products of the current route scope, before the user filters — used for facets. */
   listScope(scope?: CatalogScope): Promise<Product[]>;
   /** Products similar to the given one — used on the product detail page. */
