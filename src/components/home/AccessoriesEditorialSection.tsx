@@ -3,11 +3,7 @@ import { HomeSectionHeading } from "@/components/home/HomeSectionStates";
 import { AppLink } from "@/components/ui/app-link";
 import type { AccessoriesEditorialContent } from "@/domain/content/home-content.types";
 
-export function AccessoriesEditorialSection({
-  content,
-}: {
-  content: AccessoriesEditorialContent;
-}) {
+export function AccessoriesEditorialSection({ content }: { content: AccessoriesEditorialContent }) {
   if (content.cards.length === 0) return null;
 
   return (

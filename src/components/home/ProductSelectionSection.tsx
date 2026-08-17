@@ -87,7 +87,12 @@ export function ProductSelectionSection({ content }: { content: ProductSelection
         </div>
       </div>
 
-      <div id="home-tabpanel" role="tabpanel" aria-labelledby={`home-tab-${activeId}`} className="mt-10">
+      <div
+        id="home-tabpanel"
+        role="tabpanel"
+        aria-labelledby={`home-tab-${activeId}`}
+        className="mt-10"
+      >
         {query.isPending && <HomeSectionSkeleton count={4} />}
 
         {query.isError && <HomeSectionErrorState onRetry={() => void query.refetch()} />}

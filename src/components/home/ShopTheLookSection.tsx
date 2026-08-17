@@ -4,7 +4,10 @@ import { ArrowRight } from "lucide-react";
 import { HomeSectionHeading } from "@/components/home/HomeSectionStates";
 import { ShopTheLookHotspot } from "@/components/home/ShopTheLookHotspot";
 import { AppLink } from "@/components/ui/app-link";
-import type { ShopTheLookContent, ShopTheLookHotspot as Hotspot } from "@/domain/content/home-content.types";
+import type {
+  ShopTheLookContent,
+  ShopTheLookHotspot as Hotspot,
+} from "@/domain/content/home-content.types";
 import type { Product } from "@/domain/product/product.types";
 import { formatMoney, getProductStartingPrice } from "@/lib/money/money";
 import { homeProductsByIdsQuery } from "@/services/home/home-products.queries";

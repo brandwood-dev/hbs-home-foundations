@@ -16,7 +16,10 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
       <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {testimonials.map((testimonial) => (
           <li key={testimonial.id} className="rounded-sm border border-border bg-surface p-6">
-            <p className="flex items-center gap-1" aria-label={`Note : ${testimonial.rating} sur 5`}>
+            <p
+              className="flex items-center gap-1"
+              aria-label={`Note : ${testimonial.rating} sur 5`}
+            >
               {Array.from({ length: 5 }).map((_, index) => (
                 <Star
                   key={index}

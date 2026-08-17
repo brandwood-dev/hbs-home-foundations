@@ -29,7 +29,10 @@ export function ShopTheLookHotspot({
         isActive ? "bg-accent text-accent-foreground" : "bg-surface/90 text-foreground"
       }`}
     >
-      <Plus className={`h-4 w-4 transition-transform ${isActive ? "rotate-45" : ""}`} aria-hidden="true" />
+      <Plus
+        className={`h-4 w-4 transition-transform ${isActive ? "rotate-45" : ""}`}
+        aria-hidden="true"
+      />
     </button>
   );
 }
