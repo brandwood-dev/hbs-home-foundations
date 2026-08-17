@@ -29,7 +29,7 @@ export function getStatusStepIndex(status: OrderStatus): number {
     confirmed: 2,
     preparing: 2,
     shipped: 3,
-    delivered: 4,
+    delivered: 5,
     cancelled: 0,
   };
   return byStatus[status];
