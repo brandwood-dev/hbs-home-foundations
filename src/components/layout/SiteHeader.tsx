@@ -6,11 +6,13 @@ import { DesktopMegaMenu } from "@/components/layout/DesktopMegaMenu";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { mainNavigation } from "@/fixtures/navigation.fixture";
 import { storeConfig } from "@/config/store.config";
+import { useCartCount } from "@/components/cart/CartCountBadge";
+import { openCartDrawer } from "@/hooks/cart/useCartDrawer";
 
 export function SiteHeader() {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const cartCount = 0;
+  const { count: cartCount, label: cartLabel } = useCartCount();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur">
@@ -35,16 +37,23 @@ export function SiteHeader() {
           >
             <Search className="h-5 w-5" aria-hidden="true" />
           </AppLink>
-          <AppLink
-            href="/panier"
-            aria-label={`Panier, ${cartCount} article(s)`}
+          <button
+            type="button"
+            onClick={openCartDrawer}
+            aria-label={cartLabel}
+            aria-haspopup="dialog"
             className="relative flex h-11 w-11 items-center justify-center rounded-md hover:bg-surface-muted"
           >
             <ShoppingBag className="h-5 w-5" aria-hidden="true" />
-            <span className="absolute right-1 top-1 min-w-4 rounded-full bg-accent px-1 text-[10px] leading-4 text-accent-foreground">
-              {cartCount}
-            </span>
-          </AppLink>
+            {cartCount > 0 ? (
+              <span
+                aria-hidden="true"
+                className="absolute right-1 top-1 min-w-4 rounded-full bg-accent px-1 text-center text-[10px] leading-4 text-accent-foreground"
+              >
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            ) : null}
+          </button>
         </div>
       </div>
 
@@ -77,17 +86,24 @@ export function SiteHeader() {
               <Package className="h-4 w-4" aria-hidden="true" />
               Suivi de commande
             </AppLink>
-            <AppLink
-              href="/panier"
-              aria-label={`Panier, ${cartCount} article(s)`}
+            <button
+              type="button"
+              onClick={openCartDrawer}
+              aria-label={cartLabel}
+              aria-haspopup="dialog"
               className="flex items-center gap-2 rounded-md bg-surface-muted px-3 py-2 hover:bg-sand"
             >
               <ShoppingBag className="h-4 w-4" aria-hidden="true" />
               Panier
-              <span className="rounded-full bg-accent px-1.5 text-[11px] leading-5 text-accent-foreground">
-                {cartCount}
-              </span>
-            </AppLink>
+              {cartCount > 0 ? (
+                <span
+                  aria-hidden="true"
+                  className="rounded-full bg-accent px-1.5 text-[11px] leading-5 text-accent-foreground"
+                >
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              ) : null}
+            </button>
           </div>
         </div>
 

@@ -32,6 +32,15 @@ export class MockProductRepository implements ProductRepository {
     return this.products.find((product) => product.slug === slug) ?? null;
   }
 
+  async getById(id: string): Promise<Product | null> {
+    return this.products.find((product) => product.id === id) ?? null;
+  }
+
+  async getByIds(ids: string[]): Promise<Product[]> {
+    const wanted = new Set(ids);
+    return this.products.filter((product) => wanted.has(product.id));
+  }
+
   async listScope(scope?: CatalogScope): Promise<Product[]> {
     return this.products.filter((product) => matchesScope(product, scope));
   }
