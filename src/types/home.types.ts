@@ -1,25 +1,10 @@
-export interface HeroContent {
-  tagline: string;
-  title: string;
-  text: string;
-  primaryCta: { label: string; href: string };
-  secondaryCta: { label: string; href: string };
-  image: { src: string; alt: string };
-}
-
-export type TrustIconName = "truck" | "banknote" | "package-check" | "message-circle";
-
-export interface TrustItem {
-  id: string;
-  label: string;
-  description: string;
-  icon: TrustIconName;
-}
-
-export interface Collection {
-  id: string;
-  title: string;
-  description: string;
-  href: string;
-  image: { src: string; alt: string };
-}
+/**
+ * Alias de compatibilité — le modèle de contenu vit désormais dans
+ * `src/domain/content/home-content.types.ts`.
+ */
+export type {
+  HomeHeroContent as HeroContent,
+  HomeTrustIcon as TrustIconName,
+  HomeTrustItem as TrustItem,
+  HomeCollection as Collection,
+} from "@/domain/content/home-content.types";
