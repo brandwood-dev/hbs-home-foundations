@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
 import { ExternalLink, Menu as MenuIcon, ShieldAlert, X } from "lucide-react";
 import { ADMIN_NAV } from "@/admin/config/admin-nav";
 import { adminConfig } from "@/admin/config/admin.config";
