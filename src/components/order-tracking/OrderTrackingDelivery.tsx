@@ -20,7 +20,7 @@ export function OrderTrackingDelivery({ result }: { result: OrderTrackingResult 
             .filter(Boolean)
             .join(" — ") || "Zone de livraison non précisée"}
         </p>
-      ) : storeConfig.storeAddress ? (
+      ) : (storeConfig.storeAddress as string) ? (
         <p className="text-foreground-muted">{storeConfig.storeAddress}</p>
       ) : null}
       <p className="text-foreground-muted">Téléphone : {result.maskedPhone}</p>

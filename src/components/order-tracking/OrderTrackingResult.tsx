@@ -12,8 +12,10 @@ import { OrderTrackingSummary } from "@/components/order-tracking/OrderTrackingS
 import { OrderTrackingTimeline } from "@/components/order-tracking/OrderTrackingTimeline";
 
 export function OrderTrackingResultView({ result }: { result: TrackingResult }) {
-  const whatsappHref = storeConfig.whatsappNumber
-    ? `https://wa.me/${storeConfig.whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(
+  const whatsapp: string = storeConfig.whatsappNumber;
+  const servicePhone: string = storeConfig.customerServicePhone;
+  const whatsappHref = whatsapp
+    ? `https://wa.me/${whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
         `Bonjour HBS HOME, je souhaite obtenir des informations concernant ma commande ${result.orderNumber}.`,
       )}`
     : null;
@@ -56,9 +58,9 @@ export function OrderTrackingResultView({ result }: { result: TrackingResult }) 
             <MessageCircle className="size-4" aria-hidden /> WhatsApp
           </a>
         ) : null}
-        {storeConfig.customerServicePhone ? (
+        {servicePhone ? (
           <a
-            href={`tel:${storeConfig.customerServicePhone.replace(/\s/g, "")}`}
+            href={`tel:${servicePhone.replace(/\s/g, "")}`}
             className="flex min-h-[48px] items-center gap-2 rounded-sm border border-border px-6 text-sm hover:bg-surface-muted"
           >
             <Phone className="size-4" aria-hidden /> Appeler
