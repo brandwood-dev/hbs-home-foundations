@@ -34,6 +34,8 @@ import { Route as SuiviCommandeRouteImport } from './routes/suivi-commande'
 import { Route as SurMesureRouteImport } from './routes/sur-mesure'
 import { Route as TringlesRouteImport } from './routes/tringles'
 import { Route as VoilagesRouteImport } from './routes/voilages'
+import { Route as CommandeIndexRouteImport } from './routes/commande.index'
+import { Route as CommandeConfirmationRouteImport } from './routes/commande.confirmation'
 import { Route as ProduitSlugRouteImport } from './routes/produit.$slug'
 import { Route as RideauxIndexRouteImport } from './routes/rideaux.index'
 import { Route as RideauxLinRouteImport } from './routes/rideaux.lin'
@@ -171,6 +173,16 @@ const VoilagesRoute = VoilagesRouteImport.update({
   path: '/voilages',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommandeIndexRoute = CommandeIndexRouteImport.update({
+  id: '/commande/',
+  path: '/commande/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommandeConfirmationRoute = CommandeConfirmationRouteImport.update({
+  id: '/commande/confirmation',
+  path: '/commande/confirmation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProduitSlugRoute = ProduitSlugRouteImport.update({
   id: '/produit/$slug',
   path: '/produit/$slug',
@@ -253,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
   '/voilages': typeof VoilagesRoute
+  '/commande/confirmation': typeof CommandeConfirmationRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
   '/rideaux/occultants': typeof RideauxOccultantsRoute
@@ -263,6 +276,7 @@ export interface FileRoutesByFullPath {
   '/rideaux/tamisants': typeof RideauxTamisantsRoute
   '/rideaux/thermiques': typeof RideauxThermiquesRoute
   '/rideaux/velours': typeof RideauxVeloursRoute
+  '/commande/': typeof CommandeIndexRoute
   '/rideaux/': typeof RideauxIndexRoute
 }
 export interface FileRoutesByTo {
@@ -291,6 +305,7 @@ export interface FileRoutesByTo {
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
   '/voilages': typeof VoilagesRoute
+  '/commande/confirmation': typeof CommandeConfirmationRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
   '/rideaux/occultants': typeof RideauxOccultantsRoute
@@ -301,6 +316,7 @@ export interface FileRoutesByTo {
   '/rideaux/tamisants': typeof RideauxTamisantsRoute
   '/rideaux/thermiques': typeof RideauxThermiquesRoute
   '/rideaux/velours': typeof RideauxVeloursRoute
+  '/commande': typeof CommandeIndexRoute
   '/rideaux': typeof RideauxIndexRoute
 }
 export interface FileRoutesById {
@@ -330,6 +346,7 @@ export interface FileRoutesById {
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
   '/voilages': typeof VoilagesRoute
+  '/commande/confirmation': typeof CommandeConfirmationRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
   '/rideaux/occultants': typeof RideauxOccultantsRoute
@@ -340,6 +357,7 @@ export interface FileRoutesById {
   '/rideaux/tamisants': typeof RideauxTamisantsRoute
   '/rideaux/thermiques': typeof RideauxThermiquesRoute
   '/rideaux/velours': typeof RideauxVeloursRoute
+  '/commande/': typeof CommandeIndexRoute
   '/rideaux/': typeof RideauxIndexRoute
 }
 export interface FileRouteTypes {
@@ -370,6 +388,7 @@ export interface FileRouteTypes {
     | '/sur-mesure'
     | '/tringles'
     | '/voilages'
+    | '/commande/confirmation'
     | '/produit/$slug'
     | '/rideaux/lin'
     | '/rideaux/occultants'
@@ -380,6 +399,7 @@ export interface FileRouteTypes {
     | '/rideaux/tamisants'
     | '/rideaux/thermiques'
     | '/rideaux/velours'
+    | '/commande/'
     | '/rideaux/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -408,6 +428,7 @@ export interface FileRouteTypes {
     | '/sur-mesure'
     | '/tringles'
     | '/voilages'
+    | '/commande/confirmation'
     | '/produit/$slug'
     | '/rideaux/lin'
     | '/rideaux/occultants'
@@ -418,6 +439,7 @@ export interface FileRouteTypes {
     | '/rideaux/tamisants'
     | '/rideaux/thermiques'
     | '/rideaux/velours'
+    | '/commande'
     | '/rideaux'
   id:
     | '__root__'
@@ -446,6 +468,7 @@ export interface FileRouteTypes {
     | '/sur-mesure'
     | '/tringles'
     | '/voilages'
+    | '/commande/confirmation'
     | '/produit/$slug'
     | '/rideaux/lin'
     | '/rideaux/occultants'
@@ -456,6 +479,7 @@ export interface FileRouteTypes {
     | '/rideaux/tamisants'
     | '/rideaux/thermiques'
     | '/rideaux/velours'
+    | '/commande/'
     | '/rideaux/'
   fileRoutesById: FileRoutesById
 }
@@ -485,6 +509,7 @@ export interface RootRouteChildren {
   SurMesureRoute: typeof SurMesureRoute
   TringlesRoute: typeof TringlesRoute
   VoilagesRoute: typeof VoilagesRoute
+  CommandeConfirmationRoute: typeof CommandeConfirmationRoute
   ProduitSlugRoute: typeof ProduitSlugRoute
   RideauxLinRoute: typeof RideauxLinRoute
   RideauxOccultantsRoute: typeof RideauxOccultantsRoute
@@ -495,6 +520,7 @@ export interface RootRouteChildren {
   RideauxTamisantsRoute: typeof RideauxTamisantsRoute
   RideauxThermiquesRoute: typeof RideauxThermiquesRoute
   RideauxVeloursRoute: typeof RideauxVeloursRoute
+  CommandeIndexRoute: typeof CommandeIndexRoute
   RideauxIndexRoute: typeof RideauxIndexRoute
 }
 
@@ -675,6 +701,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VoilagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/commande/': {
+      id: '/commande/'
+      path: '/commande'
+      fullPath: '/commande/'
+      preLoaderRoute: typeof CommandeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/commande/confirmation': {
+      id: '/commande/confirmation'
+      path: '/commande/confirmation'
+      fullPath: '/commande/confirmation'
+      preLoaderRoute: typeof CommandeConfirmationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/produit/$slug': {
       id: '/produit/$slug'
       path: '/produit/$slug'
@@ -781,6 +821,7 @@ const rootRouteChildren: RootRouteChildren = {
   SurMesureRoute: SurMesureRoute,
   TringlesRoute: TringlesRoute,
   VoilagesRoute: VoilagesRoute,
+  CommandeConfirmationRoute: CommandeConfirmationRoute,
   ProduitSlugRoute: ProduitSlugRoute,
   RideauxLinRoute: RideauxLinRoute,
   RideauxOccultantsRoute: RideauxOccultantsRoute,
@@ -791,6 +832,7 @@ const rootRouteChildren: RootRouteChildren = {
   RideauxTamisantsRoute: RideauxTamisantsRoute,
   RideauxThermiquesRoute: RideauxThermiquesRoute,
   RideauxVeloursRoute: RideauxVeloursRoute,
+  CommandeIndexRoute: CommandeIndexRoute,
   RideauxIndexRoute: RideauxIndexRoute,
 }
 export const routeTree = rootRouteImport

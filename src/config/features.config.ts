@@ -1,5 +1,5 @@
-/** Feature flags du site. Le checkout sera activé en phase 5. */
+/** Feature flags du site. Le checkout invité est actif depuis la phase 5. */
 export const features = {
-  checkout: false,
+  checkout: true,
   cartRecommendations: true,
 } as const;
