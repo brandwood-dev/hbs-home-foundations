@@ -170,7 +170,7 @@ export function AdminCustomerDetailPage({ customerId }: { customerId: string }) 
               />
               <Button
                 size="sm"
-                disabled={sanitizeCustomerNote(noteText).length === 0 || addNote.isPending}
+                disabled={noteText.trim().length === 0 || addNote.isPending}
                 onClick={() => {
                   addNote.mutate(
                     { customerId, text: sanitizeCustomerNote(noteText) },
