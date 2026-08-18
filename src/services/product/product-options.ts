@@ -14,7 +14,7 @@ import {
   EYELET_COLOR_LABELS,
   FURNITURE_ASSEMBLY_LABELS,
   FURNITURE_TYPE_LABELS,
-  PLANT_CARE_LEVEL_LABELS,
+  PLANT_CARE_LABELS,
   PLANT_NATURE_LABELS,
   PLANT_TYPE_LABELS,
   HEADER_LABELS,
@@ -118,7 +118,7 @@ export function getVariantDisplayOptions(
       options.push({ label: "Diamètre du pot", value: `Ø ${variant.potDiameterCm} cm` });
     }
     if (product.plantCareLevel) {
-      options.push({ label: "Entretien", value: PLANT_CARE_LEVEL_LABELS[product.plantCareLevel] });
+      options.push({ label: "Entretien", value: PLANT_CARE_LABELS[product.plantCareLevel] });
     }
     return options;
   }
