@@ -11,7 +11,9 @@ export type AnalyticsEventName =
   | "search_suggestion_click"
   | "search_no_result"
   | "add_to_wishlist"
-  | "remove_from_wishlist";
+  | "remove_from_wishlist"
+  | "view_wishlist"
+  | "select_search_result";
 
 export type AnalyticsPayload = Record<string, string | number | boolean | undefined>;
 
