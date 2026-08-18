@@ -1,4 +1,7 @@
-import { normalizeSearchQuery, tokenizeSearchQuery } from "@/services/search/normalize-search-query";
+import {
+  normalizeSearchQuery,
+  tokenizeSearchQuery,
+} from "@/services/search/normalize-search-query";
 
 export interface HighlightSegment {
   text: string;

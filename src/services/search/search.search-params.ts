@@ -1,10 +1,7 @@
 import { z } from "zod";
 import { CATEGORY_LABELS } from "@/domain/product/product.constants";
 import type { ProductCategory } from "@/domain/product/product.types";
-import {
-  SEARCH_PAGE_SIZE,
-  SEARCH_SORT_VALUES,
-} from "@/domain/search/search.constants";
+import { SEARCH_PAGE_SIZE, SEARCH_SORT_VALUES } from "@/domain/search/search.constants";
 import type { GlobalSearchParams, SearchSort } from "@/domain/search/search.types";
 
 /** Schéma d'URL de /recherche — valeurs libres puis normalisées côté composant. */

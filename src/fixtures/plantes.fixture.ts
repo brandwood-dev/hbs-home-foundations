@@ -937,7 +937,10 @@ const seeds: DecorSeed[] = [
         "Sans trou de drainage : idéal en cache-pot",
         "Coloris méditerranéens intemporels",
       ],
-      ["Insérer le pot de culture original dans le cache-pot", "Vérifier l'aplomb sur sol irrégulier"],
+      [
+        "Insérer le pot de culture original dans le cache-pot",
+        "Vérifier l'aplomb sur sol irrégulier",
+      ],
       "Émaillage artisanal en Tunisie.",
     ),
     isNew: true,

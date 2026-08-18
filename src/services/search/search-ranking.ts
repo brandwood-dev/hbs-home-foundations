@@ -3,7 +3,10 @@ import type { Product } from "@/domain/product/product.types";
 import type { ProductSearchHit, SearchSort } from "@/domain/search/search.types";
 import { getProductStartingPrice } from "@/lib/money/money";
 import type { ProductSearchDoc } from "@/services/search/search-index";
-import { normalizeSearchQuery, tokenizeSearchQuery } from "@/services/search/normalize-search-query";
+import {
+  normalizeSearchQuery,
+  tokenizeSearchQuery,
+} from "@/services/search/normalize-search-query";
 
 export interface SearchScoreResult {
   score: number;
@@ -36,7 +39,9 @@ export function calculateSearchScore(doc: ProductSearchDoc, rawQuery: string): S
     matchedFields.push("reference");
   }
 
-  if (doc.skus.some((sku) => sku === query || sku.replace(/\s/g, "") === query.replace(/\s/g, ""))) {
+  if (
+    doc.skus.some((sku) => sku === query || sku.replace(/\s/g, "") === query.replace(/\s/g, ""))
+  ) {
     score += SEARCH_SCORE_WEIGHTS.sku;
     matchedFields.push("sku");
   }

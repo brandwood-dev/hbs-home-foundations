@@ -1,6 +1,9 @@
 import { mainNavigation } from "@/fixtures/navigation.fixture";
 import type { CategorySearchHit } from "@/domain/search/search.types";
-import { normalizeSearchQuery, tokenizeSearchQuery } from "@/services/search/normalize-search-query";
+import {
+  normalizeSearchQuery,
+  tokenizeSearchQuery,
+} from "@/services/search/normalize-search-query";
 
 export interface CategoryIndexEntry {
   id: string;

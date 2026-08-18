@@ -95,11 +95,17 @@ export function getVariantDisplayOptions(
       options.push({ label: "Type", value: FURNITURE_TYPE_LABELS[product.furnitureType] });
     }
     if (variant.seatCount) {
-      options.push({ label: "Assises", value: `${variant.seatCount} place${variant.seatCount > 1 ? "s" : ""}` });
+      options.push({
+        label: "Assises",
+        value: `${variant.seatCount} place${variant.seatCount > 1 ? "s" : ""}`,
+      });
     }
     if (variant.depthCm) options.push({ label: "Profondeur", value: `${variant.depthCm} cm` });
     if (product.furnitureAssembly) {
-      options.push({ label: "Montage", value: FURNITURE_ASSEMBLY_LABELS[product.furnitureAssembly] });
+      options.push({
+        label: "Montage",
+        value: FURNITURE_ASSEMBLY_LABELS[product.furnitureAssembly],
+      });
     }
     return options;
   }

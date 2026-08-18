@@ -104,9 +104,7 @@ export function buildProductSearchDoc(product: Product): ProductSearchDoc {
     );
     pushLabel(
       attributeTerms,
-      variant.chairPadFastening
-        ? CHAIR_PAD_FASTENING_LABELS[variant.chairPadFastening]
-        : undefined,
+      variant.chairPadFastening ? CHAIR_PAD_FASTENING_LABELS[variant.chairPadFastening] : undefined,
     );
     pushLabel(attributeTerms, variant.sizeLabel);
     if (variant.widthCm && variant.heightCm) {

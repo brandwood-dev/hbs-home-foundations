@@ -44,9 +44,7 @@ export function SiteHeader() {
           </button>
           <AppLink
             href="/favoris"
-            aria-label={
-              favoritesCount > 0 ? `Favoris, ${favoritesCount} article(s)` : "Favoris"
-            }
+            aria-label={favoritesCount > 0 ? `Favoris, ${favoritesCount} article(s)` : "Favoris"}
             className="relative flex h-11 w-11 items-center justify-center rounded-md hover:bg-surface-muted"
           >
             <Heart className="h-5 w-5" aria-hidden="true" />

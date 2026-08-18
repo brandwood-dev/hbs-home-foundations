@@ -26,7 +26,11 @@ import {
   countHitsByCategory,
   sortProductHits,
 } from "@/services/search/search-ranking";
-import { isSearchableQuery, normalizeSearchQuery, tokenizeSearchQuery } from "@/services/search/normalize-search-query";
+import {
+  isSearchableQuery,
+  normalizeSearchQuery,
+  tokenizeSearchQuery,
+} from "@/services/search/normalize-search-query";
 
 function emptyResults(query: string, params?: GlobalSearchParams): GlobalSearchResults {
   return {
@@ -97,7 +101,10 @@ export class MockSearchRepository implements SearchRepository {
     return hits;
   }
 
-  async suggest(query: string, limit = SEARCH_SUGGESTION_LIMITS.products): Promise<SearchSuggestionResults> {
+  async suggest(
+    query: string,
+    limit = SEARCH_SUGGESTION_LIMITS.products,
+  ): Promise<SearchSuggestionResults> {
     if (!isSearchableQuery(query, SEARCH_MIN_QUERY_LENGTH)) {
       return { products: [], categories: [], articles: [] };
     }
@@ -130,11 +137,7 @@ export class MockSearchRepository implements SearchRepository {
     return {
       query: params.query,
       products: sorted.slice(start, start + pageSize),
-      categories: searchCategories(
-        this.categoryIndex,
-        params.query,
-        SEARCH_RELATED_CATEGORIES_MAX,
-      ),
+      categories: searchCategories(this.categoryIndex, params.query, SEARCH_RELATED_CATEGORIES_MAX),
       articles: searchArticles(params.query, SEARCH_RELATED_ARTICLES_MAX),
       page,
       pageSize,

@@ -59,7 +59,8 @@ export function getNewsletterRepository(): NewsletterRepository {
 
 /** Favoris : LocalFavoritesRepository aujourd'hui, ApiFavoritesRepository (compte client) demain. */
 export function getFavoritesRepository(): FavoritesRepository {
-  if (!favoritesRepository) favoritesRepository = new LocalFavoritesRepository(getProductRepository());
+  if (!favoritesRepository)
+    favoritesRepository = new LocalFavoritesRepository(getProductRepository());
   return favoritesRepository;
 }
 

@@ -59,9 +59,7 @@ export function calculateFreeShippingProgress(
 }
 
 /** Les meubles volumineux et hors norme ne rentrent pas dans le forfait standard. */
-export function requiresShippingQuote(
-  items: Pick<ResolvedCartItem, "shippingProfile">[],
-): boolean {
+export function requiresShippingQuote(items: Pick<ResolvedCartItem, "shippingProfile">[]): boolean {
   return items.some(
     (item) => item.shippingProfile === "volumineux" || item.shippingProfile === "hors_norme",
   );

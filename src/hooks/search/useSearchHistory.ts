@@ -30,8 +30,7 @@ export function useSearchHistory() {
   });
 
   const removeMutation = useMutation({
-    mutationFn: (normalizedQuery: string) =>
-      getSearchHistoryRepository().remove(normalizedQuery),
+    mutationFn: (normalizedQuery: string) => getSearchHistoryRepository().remove(normalizedQuery),
     onSuccess: invalidate,
   });
 
