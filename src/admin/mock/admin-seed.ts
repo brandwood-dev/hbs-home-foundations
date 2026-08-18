@@ -132,8 +132,8 @@ function buildProducts(): AdminProduct[] {
       longDescription: product.longDescription,
       brand: "HBS HOME",
       tags: [product.material, product.opacityLevel].filter(
-        (tag): tag is string => typeof tag === "string",
-      ),
+        (tag) => typeof tag === "string",
+      ) as string[],
       rooms: random() > 0.5 ? ["salon", "chambre"] : ["salon"],
       style: "contemporain",
       material: product.material,
