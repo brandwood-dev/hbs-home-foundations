@@ -23,6 +23,16 @@ import type {
   ProductCategory,
   ProductMaterial,
   ProductPattern,
+  FurnitureAssembly,
+  FurnitureRoom,
+  FurnitureStyle,
+  FurnitureType,
+  PlantCareLevel,
+  PlantLightNeed,
+  PlantNature,
+  PlantSize,
+  PlantType,
+  ShippingProfile,
 } from "@/domain/product/product.types";
 
 export const CATEGORY_LABELS: Record<ProductCategory, string> = {
@@ -317,4 +327,89 @@ export const ACCESSORY_COMPATIBILITY_LABELS: Record<AccessoryCompatibility, stri
   tringle_25_28_mm: "Tringles Ø 25-28 mm",
   montage_mural: "Montage mural",
   montage_plafond: "Montage plafond",
+};
+
+export const SHIPPING_PROFILE_LABELS: Record<ShippingProfile, string> = {
+  standard: "Livraison standard",
+  fragile: "Colis fragile",
+  volumineux: "Livraison volumineuse",
+  hors_norme: "Livraison hors norme",
+};
+
+export const SHIPPING_PROFILE_NOTES: Record<ShippingProfile, string> = {
+  standard: "Expédié sous 24 à 48 heures partout en Tunisie.",
+  fragile: "Emballage renforcé, remise en main propre par le livreur.",
+  volumineux: "Livraison sur rendez-vous, frais confirmés par téléphone avant expédition.",
+  hors_norme: "Transport spécial, frais et créneau confirmés par notre service client.",
+};
+
+export const FURNITURE_TYPE_LABELS: Record<FurnitureType, string> = {
+  canape: "Canapé",
+  fauteuil: "Fauteuil",
+  chaise: "Chaise",
+  table_basse: "Table basse",
+  table_appoint: "Table d'appoint",
+  meuble_tv: "Meuble TV",
+  buffet: "Buffet",
+  etagere: "Étagère",
+  console: "Console",
+  pouf: "Pouf",
+  tete_de_lit: "Tête de lit",
+};
+
+export const FURNITURE_ROOM_LABELS: Record<FurnitureRoom, string> = {
+  salon: "Salon",
+  chambre: "Chambre",
+  salle_a_manger: "Salle à manger",
+  bureau: "Bureau",
+  entree: "Entrée",
+};
+
+export const FURNITURE_STYLE_LABELS: Record<FurnitureStyle, string> = {
+  mediterraneen: "Méditerranéen",
+  contemporain: "Contemporain",
+  artisanal: "Artisanal",
+  minimaliste: "Minimaliste",
+  boheme: "Bohème",
+};
+
+export const FURNITURE_ASSEMBLY_LABELS: Record<FurnitureAssembly, string> = {
+  livre_monte: "Livré monté",
+  montage_simple: "Montage simple",
+  montage_requis: "Montage requis",
+};
+
+export const PLANT_NATURE_LABELS: Record<PlantNature, string> = {
+  artificielle: "Artificielle",
+  naturelle: "Naturelle",
+  stabilisee: "Stabilisée",
+};
+
+export const PLANT_TYPE_LABELS: Record<PlantType, string> = {
+  plante_posee: "Plante à poser",
+  grande_plante: "Grande plante",
+  plante_suspendue: "Plante suspendue",
+  arbre_artificiel: "Arbre artificiel",
+  composition: "Composition",
+  cache_pot: "Cache-pot",
+};
+
+export const PLANT_SIZE_LABELS: Record<PlantSize, string> = {
+  petite: "Petite (moins de 60 cm)",
+  moyenne: "Moyenne (60 à 120 cm)",
+  grande: "Grande (plus de 120 cm)",
+};
+
+export const PLANT_LIGHT_LABELS: Record<PlantLightNeed, string> = {
+  faible: "Lumière faible",
+  moderee: "Lumière modérée",
+  vive_indirecte: "Lumière vive indirecte",
+  plein_soleil: "Plein soleil",
+};
+
+export const PLANT_CARE_LABELS: Record<PlantCareLevel, string> = {
+  sans_entretien: "Sans entretien",
+  facile: "Entretien facile",
+  modere: "Entretien modéré",
+  exigeant: "Entretien exigeant",
 };
