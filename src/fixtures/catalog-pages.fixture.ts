@@ -517,7 +517,7 @@ export function getCatalogPage(routeId: string): CatalogPageConfig {
 /** Sous-catégories d'un groupe, hors page racine — utilisé par la barre de navigation locale. */
 export function getCatalogSubcategories(group: CatalogGroupId) {
   return catalogPages
-    .filter((page) => page.group === group && page.routeId !== group)
+    .filter((page) => page.group === group && page.scope != null)
     .map((page) => ({ routeId: page.routeId, path: page.path, label: page.title }));
 }
 
