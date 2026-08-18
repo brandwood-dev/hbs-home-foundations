@@ -148,7 +148,10 @@ export function AdminCustomerDetailPage({ customerId }: { customerId: string }) 
                       tone={ORDER_STATUS_TONE[order.status]}
                     />
                     <span className="ml-auto tabular-nums">
-                      {formatMoney(calculateOrderTotalMinor(order))}
+                      {(() => {
+                        const total = calculateOrderTotalMinor(order);
+                        return total === null ? "À confirmer" : formatMoney(total);
+                      })()}
                     </span>
                   </li>
                 ))}
@@ -182,7 +185,7 @@ export function AdminCustomerDetailPage({ customerId }: { customerId: string }) 
               {(customer.notes ?? []).map((note) => (
                 <li key={note.id} className="rounded-md border border-border p-2 text-sm">
                   <p>{note.text}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{formatDateTime(note.at)}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{formatDateTime(note.createdAt)}</p>
                 </li>
               ))}
             </ul>
@@ -222,7 +225,7 @@ export function AdminCustomerDetailPage({ customerId }: { customerId: string }) 
               <ul className="space-y-2 text-sm">
                 {customer.addresses.map((address) => (
                   <li key={address.id} className="rounded-md border border-border p-2">
-                    <p>{address.line1}</p>
+                    <p>{address.addressLine}</p>
                     <p className="text-muted-foreground">
                       {address.city}, {address.governorate}
                     </p>
