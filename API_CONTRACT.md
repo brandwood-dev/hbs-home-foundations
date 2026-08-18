@@ -156,3 +156,23 @@ DELETE /api/v1/favorites
 4. conserver la date d'ajout la plus ancienne en cas de conflit ;
 5. envoyer la liste fusionnée au backend ;
 6. vider le stockage local **uniquement après succès**.
+
+## Guide des mesures, sur-mesure et professionnels
+
+### GET /api/v1/measurement-rules
+Retourne l'objet `MeasurementRules` (limites, ampleurs autorisées, ajustements sol, jeux de pose
+store, tolérances de recommandation). Aujourd'hui servi par `MockMeasurementRulesRepository`.
+Réponse : `{ "data": MeasurementRules }`. Doit être reconfigurable sans redéploiement.
+
+### POST /api/v1/custom-quotes
+Corps : `CustomQuoteRequest` (type de produit, liste d'ouvertures avec dimensions, préférences,
+coordonnées, métadonnées de pièces jointes, consentement).
+Réponse : `{ "data": { "reference": "DEV-YYMMDD-XXXX", "submittedAt": ISO8601 } }`.
+Les fichiers seront envoyés séparément (upload signé) ; le front n'envoie que les métadonnées.
+
+### POST /api/v1/professional-leads
+Corps : `ProfessionalLeadRequest` (raison sociale, activité, volume, contact, message, consentement).
+Réponse : `{ "data": { "reference": "PRO-YYMMDD-XXXX", "submittedAt": ISO8601 } }`.
+
+Les recommandations produits du guide restent calculées côté client à partir du catalogue
+(`GET /api/v1/products`) ; aucune donnée de mesure n'est transmise tant qu'un devis n'est pas envoyé.

@@ -6,6 +6,9 @@ import { LocalCartRepository } from "@/repositories/local/LocalCartRepository";
 import { LocalFavoritesRepository } from "@/repositories/local/LocalFavoritesRepository";
 import { LocalSearchHistoryRepository } from "@/repositories/local/LocalSearchHistoryRepository";
 import { MockSearchRepository } from "@/repositories/mock/MockSearchRepository";
+import { MockMeasurementRulesRepository } from "@/repositories/mock/MockMeasurementRulesRepository";
+import { MockCustomQuoteRepository } from "@/repositories/mock/MockCustomQuoteRepository";
+import { MockProfessionalLeadRepository } from "@/repositories/mock/MockProfessionalLeadRepository";
 import type { ProductRepository } from "@/repositories/interfaces/ProductRepository";
 import type { CartRepository } from "@/repositories/interfaces/CartRepository";
 import type { OrderRepository } from "@/repositories/interfaces/OrderRepository";
@@ -14,6 +17,9 @@ import type { NewsletterRepository } from "@/repositories/interfaces/NewsletterR
 import type { FavoritesRepository } from "@/repositories/interfaces/FavoritesRepository";
 import type { SearchRepository } from "@/repositories/interfaces/SearchRepository";
 import type { SearchHistoryRepository } from "@/repositories/interfaces/SearchHistoryRepository";
+import type { MeasurementRulesRepository } from "@/repositories/interfaces/MeasurementRulesRepository";
+import type { CustomQuoteRepository } from "@/repositories/interfaces/CustomQuoteRepository";
+import type { ProfessionalLeadRepository } from "@/repositories/interfaces/ProfessionalLeadRepository";
 
 let productRepository: ProductRepository | null = null;
 let cartRepository: CartRepository | null = null;
@@ -23,6 +29,9 @@ let newsletterRepository: NewsletterRepository | null = null;
 let favoritesRepository: FavoritesRepository | null = null;
 let searchRepository: SearchRepository | null = null;
 let searchHistoryRepository: SearchHistoryRepository | null = null;
+let measurementRulesRepository: MeasurementRulesRepository | null = null;
+let customQuoteRepository: CustomQuoteRepository | null = null;
+let professionalLeadRepository: ProfessionalLeadRepository | null = null;
 
 /**
  * Single entry point for data access.
@@ -74,4 +83,24 @@ export function getSearchRepository(): SearchRepository {
 export function getSearchHistoryRepository(): SearchHistoryRepository {
   if (!searchHistoryRepository) searchHistoryRepository = new LocalSearchHistoryRepository();
   return searchHistoryRepository;
+}
+
+/** Règles de mesure : configuration mock aujourd'hui, CMS ou API demain. */
+export function getMeasurementRulesRepository(): MeasurementRulesRepository {
+  if (!measurementRulesRepository)
+    measurementRulesRepository = new MockMeasurementRulesRepository();
+  return measurementRulesRepository;
+}
+
+/** Demandes sur mesure : mock sans persistance, POST /api/v1/custom-quotes demain. */
+export function getCustomQuoteRepository(): CustomQuoteRepository {
+  if (!customQuoteRepository) customQuoteRepository = new MockCustomQuoteRepository();
+  return customQuoteRepository;
+}
+
+/** Prospects professionnels : mock sans persistance, POST /api/v1/professional-leads demain. */
+export function getProfessionalLeadRepository(): ProfessionalLeadRepository {
+  if (!professionalLeadRepository)
+    professionalLeadRepository = new MockProfessionalLeadRepository();
+  return professionalLeadRepository;
 }
