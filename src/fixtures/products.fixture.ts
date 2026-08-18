@@ -18,10 +18,6 @@ import {
   buildSeo,
 } from "@/fixtures/product-enrichment";
 
-/** Supplément appliqué à une pose sans perçage (en millimes). */
-export const NO_DRILL_SURCHARGE_MINOR = 15000;
-
-const BLIND_MECHANISM_IMAGE = storeMechanismImg;
 import type {
   BlindControlSide,
   BlindMechanismColor,
@@ -42,6 +38,12 @@ import type {
   ProductVariant,
 } from "@/domain/product/product.types";
 import { money } from "@/lib/money/money";
+
+/** Supplément appliqué à une pose sans perçage (en millimes). */
+export const NO_DRILL_SURCHARGE_MINOR = 15000;
+
+const BLIND_MECHANISM_IMAGE = storeMechanismImg;
+
 
 /**
  * Demo catalogue. Fictional products used until the real API is connected.

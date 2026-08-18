@@ -95,9 +95,9 @@ function buildProducts(): AdminProduct[] {
         colorLabel: color?.name ?? "Coloris",
         widthCm: variant.widthCm,
         heightCm: variant.heightCm,
-        curtainHeader: variant.curtainHeader,
+        curtainHeader: variant.curtainHeader ?? "oeillets",
         ...(variant.eyeletColor ? { eyeletColor: variant.eyeletColor } : {}),
-        lining: variant.lining,
+        lining: variant.lining ?? "sans_doublure",
         priceMinor: variant.price.amountMinor,
         ...(variant.compareAtPrice
           ? { compareAtPriceMinor: variant.compareAtPrice.amountMinor }
