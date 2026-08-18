@@ -11,6 +11,11 @@ export interface CatalogSearch {
   blindTypes: string[];
   mountings: string[];
   controlSides: string[];
+  shapes: string[];
+  contents: string[];
+  fastenings: string[];
+  accessoryTypes: string[];
+  finishes: string[];
   widths: number[];
   heights: number[];
   availability: string[];
@@ -29,6 +34,11 @@ export const EMPTY_SEARCH: CatalogSearch = {
   blindTypes: [],
   mountings: [],
   controlSides: [],
+  shapes: [],
+  contents: [],
+  fastenings: [],
+  accessoryTypes: [],
+  finishes: [],
   widths: [],
   heights: [],
   availability: [],
@@ -46,6 +56,11 @@ export const LIST_FILTER_KEYS = [
   "blindTypes",
   "mountings",
   "controlSides",
+  "shapes",
+  "contents",
+  "fastenings",
+  "accessoryTypes",
+  "finishes",
   "widths",
   "heights",
   "availability",
@@ -86,6 +101,11 @@ export function validateCatalogSearch(search: Record<string, unknown>): CatalogS
     blindTypes: parseList(search["blindTypes"]),
     mountings: parseList(search["mountings"]),
     controlSides: parseList(search["controlSides"]),
+    shapes: parseList(search["shapes"]),
+    contents: parseList(search["contents"]),
+    fastenings: parseList(search["fastenings"]),
+    accessoryTypes: parseList(search["accessoryTypes"]),
+    finishes: parseList(search["finishes"]),
     widths: parseNumberList(search["widths"]),
     heights: parseNumberList(search["heights"]),
     availability: parseList(search["availability"]),
@@ -147,6 +167,12 @@ export function toListParams(
     mountings: mergeUnique(scope?.mountings, search["mountings"] as never[]),
     controlSides:
       search["controlSides"].length > 0 ? (search["controlSides"] as never[]) : undefined,
+    shapes: mergeUnique(scope?.shapes, search["shapes"]),
+    accessoryTypes: mergeUnique(scope?.accessoryTypes, search["accessoryTypes"] as never[]),
+    cushionContents: search["contents"].length > 0 ? (search["contents"] as never[]) : undefined,
+    chairPadFastenings:
+      search["fastenings"].length > 0 ? (search["fastenings"] as never[]) : undefined,
+    accessoryFinishes: search["finishes"].length > 0 ? (search["finishes"] as never[]) : undefined,
     sellingMode: scope?.sellingMode,
     onlyThermal: scope?.onlyThermal,
     onlyLargeWidth: scope?.onlyLargeWidth,
