@@ -4,17 +4,25 @@ import type {
   AdminCategory,
   AdminContent,
   AdminCustomer,
+  AdminCustomerAddress,
   AdminMockDatabase,
   AdminOrder,
+  AdminOrderAddress,
+  AdminOrderContact,
   AdminOrderStatus,
+  AdminPaymentStatus,
   AdminProduct,
   AdminPromotion,
   AdminSettings,
+  AdminShippingProfile,
+  AdminShippingStatus,
   AdminUser,
   AdminVariant,
   StockMovement,
   StockMovementReason,
 } from "@/admin/types/admin.types";
+import type { AdminCustomerMetrics } from "@/admin/services/customers/admin-customer-metrics";
+
 
 /** Contrat CRUD générique — implémenté par les mocks aujourd'hui, l'API demain. */
 export interface CrudRepository<T, CreateInput, UpdateInput> {
@@ -88,29 +96,187 @@ export interface AdminInventoryRepository {
   movements(variantId?: string): Promise<StockMovement[]>;
 }
 
-export interface AdminOrderRepository {
-  list(): Promise<AdminOrder[]>;
-  getById(id: string): Promise<AdminOrder | null>;
-  updateStatus(id: string, status: AdminOrderStatus): Promise<AdminOrder>;
-  updatePaymentStatus(id: string, status: AdminOrder["paymentStatus"]): Promise<AdminOrder>;
-  addNote(id: string, body: string): Promise<AdminOrder>;
+export type AdminOrderSort = "newest" | "oldest" | "total_desc" | "total_asc" | "status";
+
+export interface AdminOrderListParams {
+  page: number;
+  pageSize: number;
+  status?: AdminOrderStatus[];
+  paymentStatus?: AdminPaymentStatus[];
+  shippingStatus?: AdminShippingStatus[];
+  shippingProfiles?: AdminShippingProfile[];
+  deliveryMethod?: Array<"home_delivery" | "store_pickup">;
+  governorates?: string[];
+  dateFrom?: string;
+  dateTo?: string;
+  sort: AdminOrderSort;
 }
 
-export interface CustomerStats {
-  orderCount: number;
-  deliveredCount: number;
-  totalSpentMinor: number;
-  averageOrderValueMinor: number;
-  lastOrderAt?: string;
+export interface AdminOrderCounters {
+  total: number;
+  pendingConfirmation: number;
+  confirmed: number;
+  preparing: number;
+  shipped: number;
+  delivered: number;
+  cancelled: number;
+  shippingToConfirm: number;
+  paymentPending: number;
+}
+
+export interface PaginatedAdminOrders {
+  rows: AdminOrder[];
+  total: number;
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  counters: AdminOrderCounters;
+  governorates: string[];
+}
+
+export interface UpdateAdminOrderStatusInput {
+  orderId: string;
+  status: AdminOrderStatus;
+  reason?: string;
+  note?: string;
+  /** Expédition / livraison : renseignés par les dialogs dédiés. */
+  carrierName?: string;
+  trackingNumber?: string;
+  shippedAt?: string;
+  deliveredAt?: string;
+  paymentCollected?: boolean;
+}
+
+export interface UpdateAdminPaymentStatusInput {
+  orderId: string;
+  paymentStatus: AdminPaymentStatus;
+  reason?: string;
+  note?: string;
+}
+
+export interface UpdateAdminOrderShippingInput {
+  orderId: string;
+  shippingFeeMinor: number;
+  shippingProfile?: AdminShippingProfile;
+  carrierName?: string;
+  note?: string;
+}
+
+export interface CancelAdminOrderInput {
+  orderId: string;
+  reason: string;
+  note?: string;
+  restoreStock: boolean;
+  refundPayment?: boolean;
+}
+
+export interface ReturnAdminOrderInput {
+  orderId: string;
+  reason: string;
+  note?: string;
+  /** "request" ouvre le retour, les autres le clôturent. */
+  action: "request" | "accept" | "refuse";
+  restock?: boolean;
+  conditionReason?: string;
+  refundPayment?: boolean;
+}
+
+export interface AdminOrderRepository {
+  list(params: AdminOrderListParams, privateSearchQuery?: string): Promise<PaginatedAdminOrders>;
+  getById(orderId: string): Promise<AdminOrder | null>;
+  updateStatus(input: UpdateAdminOrderStatusInput): Promise<AdminOrder>;
+  updatePaymentStatus(input: UpdateAdminPaymentStatusInput): Promise<AdminOrder>;
+  updateShipping(input: UpdateAdminOrderShippingInput): Promise<AdminOrder>;
+  updateContact(orderId: string, contact: AdminOrderContact): Promise<AdminOrder>;
+  updateAddress(orderId: string, address: AdminOrderAddress): Promise<AdminOrder>;
+  addNote(orderId: string, text: string): Promise<AdminOrder>;
+  cancelOrder(input: CancelAdminOrderInput): Promise<AdminOrder>;
+  returnOrder(input: ReturnAdminOrderInput): Promise<AdminOrder>;
+}
+
+export type AdminCustomerSort =
+  | "last_order"
+  | "name_asc"
+  | "spent_desc"
+  | "orders_desc"
+  | "aov_desc";
+
+export interface AdminCustomerListParams {
+  page: number;
+  pageSize: number;
+  governorates?: string[];
+  hasOrders?: boolean;
+  hasDeliveredOrders?: boolean;
+  minSpentMinor?: number;
+  tags?: string[];
+  lastOrderFrom?: string;
+  lastOrderTo?: string;
+  onlyPotentialDuplicates?: boolean;
+  sort: AdminCustomerSort;
+}
+
+export type AdminCustomerRow = AdminCustomer & {
+  metrics: AdminCustomerMetrics;
+  hasPotentialDuplicate: boolean;
+};
+
+export interface PaginatedAdminCustomers {
+  rows: AdminCustomerRow[];
+  total: number;
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  governorates: string[];
+  tags: string[];
+}
+
+export interface UpdateAdminCustomerInput {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  email?: string;
+  governorate?: string;
+  preferredChannel?: AdminCustomer["preferredChannel"];
+}
+
+export type AdminCustomerAddressInput = Omit<
+  AdminCustomerAddress,
+  "id" | "createdAt" | "updatedAt"
+>;
+
+export interface MergeAdminCustomersInput {
+  primaryCustomerId: string;
+  secondaryCustomerId: string;
+  keepPhoneFrom?: "primary" | "secondary";
+  keepEmailFrom?: "primary" | "secondary";
+}
+
+export interface AdminCustomerDetail extends AdminCustomerRow {
+  orders: AdminOrder[];
+  duplicates: AdminCustomer[];
 }
 
 export interface AdminCustomerRepository {
-  list(): Promise<Array<AdminCustomer & { stats: CustomerStats }>>;
-  getById(
-    id: string,
-  ): Promise<(AdminCustomer & { stats: CustomerStats; orders: AdminOrder[] }) | null>;
-  update(id: string, input: Partial<AdminCustomer>): Promise<AdminCustomer>;
+  list(
+    params: AdminCustomerListParams,
+    privateSearchQuery?: string,
+  ): Promise<PaginatedAdminCustomers>;
+  getById(customerId: string): Promise<AdminCustomerDetail | null>;
+  update(customerId: string, input: UpdateAdminCustomerInput): Promise<AdminCustomer>;
+  addAddress(customerId: string, address: AdminCustomerAddressInput): Promise<AdminCustomer>;
+  updateAddress(
+    customerId: string,
+    addressId: string,
+    input: AdminCustomerAddressInput,
+  ): Promise<AdminCustomer>;
+  deleteAddress(customerId: string, addressId: string): Promise<AdminCustomer>;
+  setDefaultAddress(customerId: string, addressId: string): Promise<AdminCustomer>;
+  updateTags(customerId: string, tags: string[]): Promise<AdminCustomer>;
+  addNote(customerId: string, text: string): Promise<AdminCustomer>;
+  findPotentialDuplicates(customerId: string): Promise<AdminCustomer[]>;
+  mergeCustomers(input: MergeAdminCustomersInput): Promise<AdminCustomer>;
 }
+
 
 export type AdminPromotionInput = Omit<AdminPromotion, "id" | "usageCount">;
 export type AdminPromotionRepository = CrudRepository<

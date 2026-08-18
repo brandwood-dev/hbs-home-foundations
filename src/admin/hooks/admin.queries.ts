@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient, type QueryKey } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { adminRepositories } from "@/admin/repositories/adminRepositoryFactory";
+import type {
+  AdminCustomerListParams,
+  AdminOrderListParams,
+} from "@/admin/repositories/interfaces";
+
 
 /** Clés de cache du back-office. */
 export const adminKeys = {
@@ -61,8 +66,12 @@ export function useAdminStockMovements() {
   );
 }
 
-export function useAdminOrders() {
-  return useQuery(clientQuery(adminKeys.orders(), () => adminRepositories.orders.list()));
+export function useAdminOrders(params: AdminOrderListParams, search?: string) {
+  return useQuery(
+    clientQuery([...adminKeys.orders(), "list", params, search ?? ""], () =>
+      adminRepositories.orders.list(params, search),
+    ),
+  );
 }
 
 export function useAdminOrder(id: string) {
@@ -72,8 +81,12 @@ export function useAdminOrder(id: string) {
   });
 }
 
-export function useAdminCustomers() {
-  return useQuery(clientQuery(adminKeys.customers(), () => adminRepositories.customers.list()));
+export function useAdminCustomers(params: AdminCustomerListParams, search?: string) {
+  return useQuery(
+    clientQuery([...adminKeys.customers(), "list", params, search ?? ""], () =>
+      adminRepositories.customers.list(params, search),
+    ),
+  );
 }
 
 export function useAdminCustomer(id: string) {
@@ -82,6 +95,7 @@ export function useAdminCustomer(id: string) {
     enabled: Boolean(id),
   });
 }
+
 
 export function useAdminPromotions() {
   return useQuery(clientQuery(adminKeys.promotions(), () => adminRepositories.promotions.list()));

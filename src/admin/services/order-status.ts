@@ -2,7 +2,7 @@ import type { AdminOrderStatus } from "@/admin/types/admin.types";
 
 export const ORDER_STATUS_LABELS: Record<AdminOrderStatus, string> = {
   received: "Reçue",
-  pending_confirmation: "À confirmer",
+  pending_confirmation: "En attente de confirmation",
   confirmed: "Confirmée",
   preparing: "En préparation",
   shipped: "Expédiée",
@@ -24,7 +24,7 @@ const TRANSITIONS: Record<AdminOrderStatus, AdminOrderStatus[]> = {
   pending_confirmation: ["confirmed", "cancelled"],
   confirmed: ["preparing", "cancelled"],
   preparing: ["shipped", "cancelled"],
-  shipped: ["delivered", "cancelled"],
+  shipped: ["delivered", "return_requested"],
   delivered: ["return_requested"],
   cancelled: [],
   return_requested: ["returned", "delivered"],

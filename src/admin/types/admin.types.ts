@@ -171,6 +171,8 @@ export interface AdminAttribute {
 export type StockAdjustmentMode = "increase" | "decrease" | "set";
 
 export type StockMovementReason =
+  | "order_confirmation"
+  | "order_cancellation"
   | "purchase"
   | "sale_correction"
   | "customer_return"
@@ -178,6 +180,7 @@ export type StockMovementReason =
   | "inventory_correction"
   | "manual_adjustment"
   | "other";
+
 
 export interface StockMovement {
   id: string;
@@ -206,6 +209,18 @@ export type AdminOrderStatus =
 
 export type AdminPaymentStatus = "pending" | "collected" | "refunded";
 
+/** Statut des frais de livraison : connus, ou à confirmer (mobilier, plantes…). */
+export type AdminShippingStatus = "calculated" | "to_confirm";
+
+/** Profil logistique Admin (mappé depuis les profils publics). */
+export type AdminShippingProfile = "standard" | "fragile" | "bulky" | "oversized";
+
+/** Option affichable figée au moment de la commande. */
+export interface AdminOrderItemOption {
+  label: string;
+  value: string;
+}
+
 export interface AdminOrderItem {
   productId: string;
   variantId: string;
@@ -215,7 +230,28 @@ export interface AdminOrderItem {
   quantity: number;
   unitPriceMinor: number;
   lineTotalMinor: number;
+  /** Snapshots additifs — immuables après création de la commande. */
+  productReference?: string;
+  productSlug?: string;
+  imageUrl?: string;
+  selectedOptions?: AdminOrderItemOption[];
+  sellingUnitLabel?: string;
+  shippingProfile?: AdminShippingProfile;
+  eligibleForFreeShipping?: boolean;
+  /** Faux pour les articles sans suivi de stock (sur devis, made to order). */
+  trackInventory?: boolean;
 }
+
+export type AdminOrderEventKind =
+  | "created"
+  | "status"
+  | "payment"
+  | "shipping_fee"
+  | "shipment"
+  | "address"
+  | "contact"
+  | "note"
+  | "inventory";
 
 export interface AdminOrderEvent {
   id: string;
@@ -223,6 +259,14 @@ export interface AdminOrderEvent {
   status: AdminOrderStatus;
   label: string;
   userId?: string;
+  /** Historique enrichi (append-only). */
+  kind?: AdminOrderEventKind;
+  fromStatus?: AdminOrderStatus;
+  toStatus?: AdminOrderStatus;
+  reason?: string;
+  note?: string;
+  summary?: string;
+  userName?: string;
 }
 
 export interface AdminOrderNote {
@@ -230,6 +274,34 @@ export interface AdminOrderNote {
   at: string;
   author: string;
   body: string;
+  userId?: string;
+}
+
+export interface AdminShipmentInfo {
+  carrierName?: string;
+  trackingNumber?: string;
+  shippedAt?: string;
+  deliveredAt?: string;
+  shippingFeeMinor?: number;
+  shippingStatus: AdminShippingStatus;
+  internalInstructions?: string;
+}
+
+/** Idempotence des mouvements de stock liés à une commande. */
+export interface AdminOrderInventoryState {
+  deductedAt?: string;
+  restoredAt?: string;
+  deductionMovementIds?: string[];
+  restorationMovementIds?: string[];
+}
+
+export interface AdminOrderReturnInfo {
+  requestedAt?: string;
+  reason?: string;
+  resolvedAt?: string;
+  resolution?: "accepted" | "refused";
+  restocked?: boolean;
+  conditionReason?: string;
 }
 
 export interface AdminOrder {
@@ -247,6 +319,7 @@ export interface AdminOrder {
   deliveryMethod: "home_delivery" | "store_pickup";
   governorate: string;
   city: string;
+  postalCode?: string;
   addressLine: string;
   landmark?: string;
   deliveryNote?: string;
@@ -257,14 +330,47 @@ export interface AdminOrder {
   totalMinor: number;
   timeline: AdminOrderEvent[];
   notes: AdminOrderNote[];
+  /** Champs additifs de la phase Admin 3. */
+  shipment?: AdminShipmentInfo;
+  inventoryState?: AdminOrderInventoryState;
+  cancellationReason?: string;
+  returnInfo?: AdminOrderReturnInfo;
+}
+
+export interface AdminOrderContact {
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string;
+}
+
+export interface AdminOrderAddress {
+  governorate: string;
+  city: string;
+  postalCode?: string;
+  addressLine: string;
+  landmark?: string;
+  deliveryNote?: string;
 }
 
 export interface AdminCustomerAddress {
   id: string;
+  label?: string;
   governorate: string;
   city: string;
+  postalCode?: string;
   addressLine: string;
   landmark?: string;
+  isDefault?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AdminCustomerNote {
+  id: string;
+  text: string;
+  createdAt: string;
+  userId?: string;
+  userName?: string;
 }
 
 export interface AdminCustomer {
@@ -278,7 +384,14 @@ export interface AdminCustomer {
   internalNotes: string;
   addresses: AdminCustomerAddress[];
   createdAt: string;
+  /** Champs additifs de la phase Admin 3. */
+  notes?: AdminCustomerNote[];
+  preferredChannel?: "phone" | "email" | "whatsapp";
+  mergedIntoCustomerId?: string;
+  mergedAt?: string;
+  updatedAt?: string;
 }
+
 
 export type PromotionType = "automatic" | "coupon";
 export type DiscountType = "percentage" | "fixed_amount" | "free_shipping";
