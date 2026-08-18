@@ -4,6 +4,10 @@ export const features = {
   cartRecommendations: true,
   /** Suivi de commande sans compte (phase 6). */
   orderTracking: true,
+  /** Recherche globale (phase 10). */
+  search: true,
+  /** Favoris locaux (phase 10). */
+  wishlist: true,
 
   customerAccount: false,
   onlinePayment: false,
