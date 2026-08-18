@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient, type QueryKey } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { adminRepositories } from "@/admin/repositories/adminRepositoryFactory";
+import type {
+  AdminCustomerListParams,
+  AdminOrderListParams,
+} from "@/admin/repositories/interfaces";
+
 
 /** Clés de cache du back-office. */
 export const adminKeys = {
