@@ -13,8 +13,12 @@ import type {
   AdminCategory,
   AdminContent,
   AdminCustomer,
+  AdminCustomerAddress,
   AdminMockDatabase,
   AdminOrder,
+  AdminOrderAddress,
+  AdminOrderContact,
+  AdminOrderEvent,
   AdminOrderStatus,
   AdminProduct,
   AdminPromotion,
@@ -30,9 +34,15 @@ import type {
   AdminCategoryInput,
   AdminCategoryRepository,
   AdminContentRepository,
+  AdminCustomerAddressInput,
+  AdminCustomerDetail,
+  AdminCustomerListParams,
   AdminCustomerRepository,
+  AdminCustomerRow,
   AdminDashboardRepository,
   AdminInventoryRepository,
+  AdminOrderCounters,
+  AdminOrderListParams,
   AdminOrderRepository,
   AdminProductInput,
   AdminProductRepository,
@@ -41,14 +51,50 @@ import type {
   AdminSettingsRepository,
   AdminUserInput,
   AdminUserRepository,
-  CustomerStats,
+  CancelAdminOrderInput,
   DashboardMetrics,
   InventoryRow,
+  MergeAdminCustomersInput,
+  PaginatedAdminCustomers,
+  PaginatedAdminOrders,
+  ReturnAdminOrderInput,
   StockAdjustmentInput,
   StockSettingsInput,
+  UpdateAdminCustomerInput,
+  UpdateAdminOrderShippingInput,
+  UpdateAdminOrderStatusInput,
+  UpdateAdminPaymentStatusInput,
 } from "@/admin/repositories/interfaces";
 import { adminId, normalizeKey } from "@/admin/utils/admin.utils";
-import { canTransition, transitionError } from "@/admin/services/order-status";
+import { ORDER_STATUS_LABELS, canTransition, transitionError } from "@/admin/services/order-status";
+import {
+  findStockShortages,
+  isTrackedLine,
+  stockShortageMessage,
+} from "@/admin/services/orders/admin-order-inventory";
+import {
+  getOrderShippingProfile,
+  getShippingStatus,
+  isShippingToConfirm,
+} from "@/admin/services/orders/admin-order-shipping";
+import { applyShippingFee } from "@/admin/services/orders/admin-order-calculations";
+import {
+  PAYMENT_STATUS_LABELS,
+  getAllowedPaymentTransitions,
+  paymentRequiresReason,
+  paymentTransitionError,
+} from "@/admin/services/orders/admin-order-payment";
+import {
+  assertEmail,
+  assertStatusTransition,
+  canEditOrderDetails,
+  normalizeTunisianPhone,
+  sanitizeNoteText,
+} from "@/admin/services/orders/admin-order-validation";
+import { calculateCustomerMetrics } from "@/admin/services/customers/admin-customer-metrics";
+import { findPotentialCustomerDuplicates } from "@/admin/services/customers/admin-customer-duplicates";
+import { sanitizeCustomerNote } from "@/admin/services/customers/admin-customer-normalization";
+
 
 /** Latence simulée : les écrans exercent leurs états de chargement. */
 function delay<T>(value: T, ms = 120): Promise<T> {
