@@ -63,7 +63,15 @@ export function ProductPurchasePanel({
             missingOptionLabel="Sélectionnez une dimension"
           />
         </div>
+
+        <FavoriteButton
+          productId={product.id}
+          productName={product.name}
+          variant="inline"
+          className="w-full sm:w-auto"
+        />
       </div>
+
     </div>
   );
 }
