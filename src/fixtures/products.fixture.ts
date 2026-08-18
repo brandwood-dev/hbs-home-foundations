@@ -48,7 +48,7 @@ import { money } from "@/lib/money/money";
  * Prices are stored in millimes (1 DT = 1000 millimes).
  */
 
-const COLORS = {
+export const COLORS = {
   ivoire: { id: "c-ivoire", name: "Ivoire", slug: "ivoire", family: "white", hex: "#F2EDE3" },
   blanc: { id: "c-blanc", name: "Blanc optique", slug: "blanc", family: "white", hex: "#FBFAF7" },
   beige: { id: "c-beige", name: "Beige sable", slug: "beige", family: "beige", hex: "#DCC7A6" },
