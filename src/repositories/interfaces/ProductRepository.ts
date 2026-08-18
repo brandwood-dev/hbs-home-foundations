@@ -1,13 +1,17 @@
 import type {
+  AccessoryFinish,
+  AccessoryType,
   BlindControlSide,
   BlindMountingType,
   BlindType,
   CatalogSort,
   CurtainHeader,
-  CurtainMaterial,
+  ChairPadFastening,
   CurtainSellingMode,
+  CushionContent,
   OpacityLevel,
   Product,
+  ProductMaterial,
   ProductAvailability,
   ProductCategory,
   ProductPattern,
@@ -19,13 +23,19 @@ export interface ProductListParams {
 
   categories?: ProductCategory[] | undefined;
 
-  materials?: CurtainMaterial[] | undefined;
+  materials?: ProductMaterial[] | undefined;
   colors?: string[] | undefined;
   opacityLevels?: OpacityLevel[] | undefined;
   curtainHeaders?: CurtainHeader[] | undefined;
   patterns?: ProductPattern[] | undefined;
 
   blindTypes?: BlindType[] | undefined;
+  /** Coussins, galettes et accessoires. */
+  shapes?: string[] | undefined;
+  cushionContents?: CushionContent[] | undefined;
+  chairPadFastenings?: ChairPadFastening[] | undefined;
+  accessoryTypes?: AccessoryType[] | undefined;
+  accessoryFinishes?: AccessoryFinish[] | undefined;
   mountings?: BlindMountingType[] | undefined;
   controlSides?: BlindControlSide[] | undefined;
 
@@ -56,6 +66,8 @@ export type CatalogScope = Pick<
   | "curtainHeaders"
   | "patterns"
   | "blindTypes"
+  | "shapes"
+  | "accessoryTypes"
   | "mountings"
   | "sellingMode"
   | "onlyThermal"

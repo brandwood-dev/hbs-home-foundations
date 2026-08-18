@@ -111,6 +111,14 @@ export const COLORS = {
   },
   prune: { id: "c-prune", name: "Prune", slug: "prune", family: "purple", hex: "#5F3E63" },
   dore: { id: "c-dore", name: "Doré", slug: "dore", family: "metallic", hex: "#B99B63" },
+  argent: { id: "c-argent", name: "Argent", slug: "argent", family: "metallic", hex: "#C9CBCC" },
+  bois: {
+    id: "c-bois",
+    name: "Bois naturel",
+    slug: "bois-naturel",
+    family: "brown",
+    hex: "#B08B57",
+  },
 } satisfies Record<string, ProductColor>;
 
 export interface VariantSeed {

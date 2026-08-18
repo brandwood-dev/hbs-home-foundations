@@ -1,6 +1,10 @@
 import { Check } from "lucide-react";
 import {
+  ACCESSORY_MOUNTING_LABELS,
   BLIND_CONTROL_SIDE_LABELS,
+  CHAIR_PAD_FASTENING_LABELS,
+  CUSHION_CONTENT_DESCRIPTIONS,
+  CUSHION_CONTENT_LABELS,
   BLIND_MECHANISM_COLOR_LABELS,
   BLIND_MECHANISM_COLOR_SWATCHES,
   BLIND_MOUNTING_DESCRIPTIONS,
@@ -13,7 +17,10 @@ import {
   LINING_LABELS,
 } from "@/domain/product/product.constants";
 import type {
+  AccessoryMountingType,
   BlindControlSide,
+  ChairPadFastening,
+  CushionContent,
   BlindMechanismColor,
   BlindMountingType,
   CurtainHeader,
@@ -67,10 +74,29 @@ export function ProductVariantSelectors({
   const mountingOptions = getAxisOptions(product.variants, "blindMountingType", selection);
   const controlSideOptions = getAxisOptions(product.variants, "blindControlSide", selection);
   const mechanismOptions = getAxisOptions(product.variants, "blindMechanismColor", selection);
+  const contentOptions = getAxisOptions(product.variants, "cushionContent", selection);
+  const fasteningOptions = getAxisOptions(product.variants, "chairPadFastening", selection);
+  const accessoryMountingOptions = getAxisOptions(
+    product.variants,
+    "accessoryMountingType",
+    selection,
+  );
+
+  const sizeLabels = new Map<string, string>();
+  for (const item of product.variants) {
+    if (item.sizeLabel) sizeLabels.set(sizeKeyOf(item), item.sizeLabel);
+  }
+  const labelForSize = (key: string) => sizeLabels.get(key) ?? `${key.replace("x", " × ")} cm`;
 
   const activeColor = product.colors.find((color) => color.id === variant.colorId);
-  const sizeLabel =
-    product.category === "stores" ? "Dimensions du store (l × h)" : "Dimensions (l × h)";
+  const sizeFieldLabel =
+    product.category === "stores"
+      ? "Dimensions du store (l × h)"
+      : product.category === "accessoires"
+        ? "Longueur"
+        : product.category === "coussins" || product.category === "galettes_de_chaise"
+          ? "Format"
+          : "Dimensions (l × h)";
 
   return (
     <div className="space-y-6">
@@ -110,7 +136,10 @@ export function ProductVariantSelectors({
       </fieldset>
 
       <fieldset>
-        <Legend label={sizeLabel} value={`${variant.widthCm} × ${variant.heightCm} cm`} />
+        <Legend
+          label={sizeFieldLabel}
+          value={variant.sizeLabel ?? `${variant.widthCm} × ${variant.heightCm} cm`}
+        />
         <div className="mt-2 flex flex-wrap gap-2">
           {sizeOptions.map((option) => (
             <button
@@ -120,11 +149,88 @@ export function ProductVariantSelectors({
               aria-pressed={option.value === sizeKeyOf(variant)}
               className={optionClass(option.value === sizeKeyOf(variant), option.available)}
             >
-              {option.value.replace("x", " × ")} cm
+              {labelForSize(option.value)}
             </button>
           ))}
         </div>
       </fieldset>
+
+      {contentOptions.length > 1 && variant.cushionContent && (
+        <fieldset>
+          <Legend label="Contenu" value={CUSHION_CONTENT_DESCRIPTIONS[variant.cushionContent]} />
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            {contentOptions.map((option) => {
+              const value = option.value as CushionContent;
+              const selected = value === variant.cushionContent;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onChange("cushionContent", value)}
+                  aria-pressed={selected}
+                  className={`text-left ${optionClass(selected, option.available)}`}
+                >
+                  <span className="block font-medium">{CUSHION_CONTENT_LABELS[value]}</span>
+                  <span
+                    className={`block text-xs ${selected ? "text-accent-foreground/80" : "text-foreground-muted"}`}
+                  >
+                    {CUSHION_CONTENT_DESCRIPTIONS[value]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+      )}
+
+      {fasteningOptions.length > 1 && variant.chairPadFastening && (
+        <fieldset>
+          <Legend label="Fixation" value={CHAIR_PAD_FASTENING_LABELS[variant.chairPadFastening]} />
+          <div className="mt-2 flex flex-wrap gap-2">
+            {fasteningOptions.map((option) => {
+              const value = option.value as ChairPadFastening;
+              const selected = value === variant.chairPadFastening;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onChange("chairPadFastening", value)}
+                  aria-pressed={selected}
+                  className={optionClass(selected, option.available)}
+                >
+                  {CHAIR_PAD_FASTENING_LABELS[value]}
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+      )}
+
+      {accessoryMountingOptions.length > 1 && variant.accessoryMountingType && (
+        <fieldset>
+          <Legend
+            label="Type de pose"
+            value={ACCESSORY_MOUNTING_LABELS[variant.accessoryMountingType]}
+          />
+          <div className="mt-2 flex flex-wrap gap-2">
+            {accessoryMountingOptions.map((option) => {
+              const value = option.value as AccessoryMountingType;
+              const selected = value === variant.accessoryMountingType;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onChange("accessoryMountingType", value)}
+                  aria-pressed={selected}
+                  className={optionClass(selected, option.available)}
+                >
+                  {ACCESSORY_MOUNTING_LABELS[value]}
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+      )}
 
       {headerOptions.length > 0 && variant.curtainHeader && (
         <fieldset>

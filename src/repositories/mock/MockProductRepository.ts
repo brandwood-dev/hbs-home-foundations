@@ -1,10 +1,20 @@
 import type { Product } from "@/domain/product/product.types";
+import { demoAccessories } from "@/fixtures/accessoires.fixture";
+import { demoChairPads } from "@/fixtures/galettes.fixture";
+import { demoCushions } from "@/fixtures/coussins.fixture";
 import { demoProducts } from "@/fixtures/products.fixture";
 import { demoStores } from "@/fixtures/stores.fixture";
 import { demoVoilages } from "@/fixtures/voilages.fixture";
 
 /** Catalogue complet toutes catégories confondues. */
-export const demoCatalog = [...demoProducts, ...demoVoilages, ...demoStores];
+export const demoCatalog = [
+  ...demoProducts,
+  ...demoVoilages,
+  ...demoStores,
+  ...demoCushions,
+  ...demoChairPads,
+  ...demoAccessories,
+];
 import type {
   CatalogScope,
   PaginatedProducts,

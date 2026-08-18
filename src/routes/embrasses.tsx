@@ -1,21 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { EMPTY_SEARCH } from "@/services/catalog/catalog.search-params";
 
-const title = "Embrasses — HBS HOME";
-const description = "Embrasses — HBS HOME, rideaux, voilages et décoration textile en Tunisie.";
-
+/** Ancienne URL conservée : redirection permanente vers la sous-catégorie Accessoires. */
 export const Route = createFileRoute("/embrasses")({
-  head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-    ],
-  }),
-  component: EmbrassesPage,
+  beforeLoad: () => {
+    throw redirect({ to: "/accessoires/embrasses", search: EMPTY_SEARCH, statusCode: 301 });
+  },
+  component: () => null,
 });
-
-function EmbrassesPage() {
-  return <PlaceholderPage title="Embrasses" />;
-}

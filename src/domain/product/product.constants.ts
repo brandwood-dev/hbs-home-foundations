@@ -7,12 +7,21 @@ import type {
   ColorFamily,
   CurtainHeader,
   CurtainLining,
-  CurtainMaterial,
+  AccessoryCompatibility,
+  AccessoryFinish,
+  AccessoryMountingType,
+  AccessoryType,
+  ChairPadFastening,
+  ChairPadShape,
   CurtainSellingMode,
+  CushionClosure,
+  CushionContent,
+  CushionShape,
   EyeletColor,
   OpacityLevel,
   ProductAvailability,
   ProductCategory,
+  ProductMaterial,
   ProductPattern,
 } from "@/domain/product/product.types";
 
@@ -20,15 +29,32 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   rideaux: "Rideaux",
   voilages: "Voilages",
   stores: "Stores",
+  coussins: "Coussins",
+  galettes_de_chaise: "Galettes de chaise",
+  accessoires: "Accessoires",
 };
 
 export const CATEGORY_PATHS: Record<ProductCategory, string> = {
   rideaux: "/rideaux",
   voilages: "/voilages",
   stores: "/stores",
+  coussins: "/coussins",
+  galettes_de_chaise: "/galettes-de-chaise",
+  accessoires: "/accessoires",
 };
 
-export const MATERIAL_LABELS: Record<CurtainMaterial, string> = {
+export const MATERIAL_LABELS: Record<ProductMaterial, string> = {
+  coton: "Coton",
+  boucle: "Bouclette",
+  fourrure_synthetique: "Fausse fourrure",
+  mousse: "Mousse",
+  metal: "Métal",
+  acier: "Acier",
+  aluminium: "Aluminium",
+  bois: "Bois",
+  textile: "Textile",
+  corde: "Corde",
+  magnetique: "Aimant",
   velours: "Velours",
   satin: "Satin",
   lin: "Lin",
@@ -187,4 +213,92 @@ export const HEADER_DESCRIPTIONS: Record<CurtainHeader, string> = {
   rail: "Se fixe sur un rail plafond, idéal pour les grandes largeurs.",
   galon_fronceur: "Ruban à froncer ajustable, plis souples faits main.",
   passants: "Passants en tissu, style léger et naturel.",
+};
+
+export const CUSHION_SHAPE_LABELS: Record<CushionShape, string> = {
+  carre: "Carré",
+  rectangulaire: "Rectangulaire",
+  rond: "Rond",
+};
+
+export const CUSHION_CONTENT_LABELS: Record<CushionContent, string> = {
+  housse_seule: "Housse seule",
+  avec_garnissage: "Avec garnissage",
+  pack: "Lot de 2",
+};
+
+export const CUSHION_CONTENT_DESCRIPTIONS: Record<CushionContent, string> = {
+  housse_seule: "Housse déhoussable seule, garnissage non inclus.",
+  avec_garnissage: "Housse livrée avec son coussin de garnissage.",
+  pack: "Deux housses identiques pour habiller un canapé.",
+};
+
+export const CUSHION_CLOSURE_LABELS: Record<CushionClosure, string> = {
+  zip: "Fermeture zip",
+  enveloppe: "Fermeture enveloppe",
+  sans_fermeture: "Sans fermeture",
+};
+
+export const CHAIR_PAD_SHAPE_LABELS: Record<ChairPadShape, string> = {
+  carree: "Galette carrée",
+  ronde: "Galette ronde",
+};
+
+export const CHAIR_PAD_FASTENING_LABELS: Record<ChairPadFastening, string> = {
+  liens: "Attaches à nouer",
+  elastique: "Élastique",
+  sans_attache: "Sans attache",
+};
+
+export const ACCESSORY_TYPE_LABELS: Record<AccessoryType, string> = {
+  tringle_extensible: "Tringle extensible",
+  tringle_fixe: "Tringle fixe",
+  rail: "Rail",
+  support: "Support",
+  embout: "Embout",
+  anneau: "Anneaux",
+  crochet: "Crochets",
+  raccord: "Raccord",
+  embrasse: "Embrasse",
+  attache_magnetique: "Attache magnétique",
+  accessoire_pose: "Accessoire de pose",
+};
+
+export const ACCESSORY_FINISH_LABELS: Record<AccessoryFinish, string> = {
+  noir_mat: "Noir mat",
+  argent: "Argent",
+  dore: "Doré",
+  bronze: "Bronze",
+  blanc: "Blanc",
+  bois_naturel: "Bois naturel",
+  beige: "Beige",
+  taupe: "Taupe",
+};
+
+export const ACCESSORY_FINISH_SWATCHES: Record<AccessoryFinish, string> = {
+  noir_mat: "#2B2A28",
+  argent: "#C9CBCC",
+  dore: "#C0A062",
+  bronze: "#8A6A45",
+  blanc: "#F5F4F1",
+  bois_naturel: "#B08B57",
+  beige: "#D9C8AE",
+  taupe: "#8C8073",
+};
+
+export const ACCESSORY_MOUNTING_LABELS: Record<AccessoryMountingType, string> = {
+  mur: "Pose murale",
+  plafond: "Pose plafond",
+  mur_et_plafond: "Mur ou plafond",
+};
+
+export const ACCESSORY_COMPATIBILITY_LABELS: Record<AccessoryCompatibility, string> = {
+  rideaux_oeillets: "Rideaux à œillets",
+  voilages_oeillets: "Voilages à œillets",
+  rail: "Rails",
+  tringle_16_19_mm: "Tringles Ø 16-19 mm",
+  tringle_20_25_mm: "Tringles Ø 20-25 mm",
+  tringle_25_28_mm: "Tringles Ø 25-28 mm",
+  montage_mural: "Montage mural",
+  montage_plafond: "Montage plafond",
 };

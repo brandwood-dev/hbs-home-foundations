@@ -1,5 +1,13 @@
 import {
+  ACCESSORY_FINISH_LABELS,
+  ACCESSORY_MOUNTING_LABELS,
+  ACCESSORY_TYPE_LABELS,
   BLIND_CONTROL_SIDE_LABELS,
+  CHAIR_PAD_FASTENING_LABELS,
+  CHAIR_PAD_SHAPE_LABELS,
+  CUSHION_CLOSURE_LABELS,
+  CUSHION_CONTENT_LABELS,
+  CUSHION_SHAPE_LABELS,
   BLIND_MECHANISM_COLOR_LABELS,
   BLIND_MOUNTING_LABELS,
   BLIND_TYPE_LABELS,
@@ -23,7 +31,59 @@ export function getVariantDisplayOptions(
   const color = product.colors.find((entry) => entry.id === variant.colorId);
   if (color) options.push({ label: "Coloris", value: color.name });
 
-  options.push({ label: "Dimensions", value: `${variant.widthCm} × ${variant.heightCm} cm` });
+  options.push({
+    label: "Dimensions",
+    value: variant.sizeLabel ?? `${variant.widthCm} × ${variant.heightCm} cm`,
+  });
+
+  if (product.category === "coussins") {
+    if (product.cushionShape) {
+      options.push({ label: "Forme", value: CUSHION_SHAPE_LABELS[product.cushionShape] });
+    }
+    if (variant.cushionContent) {
+      options.push({ label: "Contenu", value: CUSHION_CONTENT_LABELS[variant.cushionContent] });
+    }
+    if (variant.cushionClosure) {
+      options.push({ label: "Fermeture", value: CUSHION_CLOSURE_LABELS[variant.cushionClosure] });
+    }
+    return options;
+  }
+
+  if (product.category === "galettes_de_chaise") {
+    if (product.chairPadShape) {
+      options.push({ label: "Forme", value: CHAIR_PAD_SHAPE_LABELS[product.chairPadShape] });
+    }
+    if (variant.thicknessCm) {
+      options.push({ label: "Épaisseur", value: `${variant.thicknessCm} cm` });
+    }
+    if (variant.chairPadFastening) {
+      options.push({
+        label: "Fixation",
+        value: CHAIR_PAD_FASTENING_LABELS[variant.chairPadFastening],
+      });
+    }
+    return options;
+  }
+
+  if (product.category === "accessoires") {
+    if (product.accessoryType) {
+      options.push({ label: "Type", value: ACCESSORY_TYPE_LABELS[product.accessoryType] });
+    }
+    if (variant.accessoryFinish) {
+      options.push({ label: "Finition", value: ACCESSORY_FINISH_LABELS[variant.accessoryFinish] });
+    }
+    if (variant.accessoryMountingType) {
+      options.push({
+        label: "Pose",
+        value: ACCESSORY_MOUNTING_LABELS[variant.accessoryMountingType],
+      });
+    }
+    if (variant.diameterMm) options.push({ label: "Diamètre", value: `${variant.diameterMm} mm` });
+    if (variant.packQuantity) {
+      options.push({ label: "Conditionnement", value: `Lot de ${variant.packQuantity}` });
+    }
+    return options;
+  }
 
   if (product.category === "stores") {
     if (product.blindType)

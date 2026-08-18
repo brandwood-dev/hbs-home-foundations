@@ -52,10 +52,12 @@ export function ProductDetailsAccordion({
               <dt className="text-foreground-muted">Matière</dt>
               <dd>{MATERIAL_LABELS[product.material]}</dd>
             </div>
-            <div>
-              <dt className="text-foreground-muted">Occultation</dt>
-              <dd>{OPACITY_LABELS[product.opacityLevel]}</dd>
-            </div>
+            {product.opacityLevel ? (
+              <div>
+                <dt className="text-foreground-muted">Occultation</dt>
+                <dd>{OPACITY_LABELS[product.opacityLevel]}</dd>
+              </div>
+            ) : null}
             <div>
               <dt className="text-foreground-muted">Référence</dt>
               <dd>{variant.sku}</dd>

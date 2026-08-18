@@ -95,8 +95,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           {product.blindType
             ? BLIND_TYPE_LABELS[product.blindType]
             : MATERIAL_LABELS[product.material]}
-          {" · "}
-          {OPACITY_LABELS[product.opacityLevel]}
+          {product.opacityLevel ? ` · ${OPACITY_LABELS[product.opacityLevel]}` : null}
         </p>
 
         <h3 className="mt-1 text-base leading-snug sm:text-lg">

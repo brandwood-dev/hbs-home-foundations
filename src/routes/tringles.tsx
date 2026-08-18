@@ -1,21 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { EMPTY_SEARCH } from "@/services/catalog/catalog.search-params";
 
-const title = "Tringles — HBS HOME";
-const description = "Tringles — HBS HOME, rideaux, voilages et décoration textile en Tunisie.";
-
+/** Ancienne URL conservée : redirection permanente vers la sous-catégorie Accessoires. */
 export const Route = createFileRoute("/tringles")({
-  head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-    ],
-  }),
-  component: TringlesPage,
+  beforeLoad: () => {
+    throw redirect({ to: "/accessoires/tringles", search: EMPTY_SEARCH, statusCode: 301 });
+  },
+  component: () => null,
 });
-
-function TringlesPage() {
-  return <PlaceholderPage title="Tringles" />;
-}
