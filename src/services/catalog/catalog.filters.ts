@@ -143,7 +143,7 @@ export function computeFacets(products: Product[]): CatalogFacets {
 
   for (const product of products) {
     bump(materials, product.material);
-    bump(opacity, product.opacityLevel);
+    if (product.opacityLevel) bump(opacity, product.opacityLevel);
     if (product.pattern) bump(patterns, product.pattern);
     if (product.blindType) bump(blindTypes, product.blindType);
 

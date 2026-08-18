@@ -63,7 +63,8 @@ export function ProductDetailView({ product }: { product: Product }) {
           <div className="space-y-6">
             <header>
               <p className="eyebrow">
-                {MATERIAL_LABELS[product.material]} · {OPACITY_LABELS[product.opacityLevel]} ·{" "}
+                {MATERIAL_LABELS[product.material]}
+                {product.opacityLevel ? ` · ${OPACITY_LABELS[product.opacityLevel]}` : ""} ·{" "}
                 {SELLING_MODE_LABELS[product.sellingMode]}
               </p>
               <h1 className="mt-2 text-3xl sm:text-4xl">{product.name}</h1>

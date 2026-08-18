@@ -1,6 +1,7 @@
+import type { ProductCategory } from "@/domain/product/product.types";
 import type { CatalogScope } from "@/repositories/interfaces/ProductRepository";
 
-export type CatalogGroupId = "rideaux" | "voilages" | "stores";
+export type CatalogGroupId = ProductCategory;
 
 export interface CatalogGroup {
   id: CatalogGroupId;
@@ -12,6 +13,9 @@ export const catalogGroups: CatalogGroup[] = [
   { id: "rideaux", label: "Rideaux", path: "/rideaux" },
   { id: "voilages", label: "Voilages", path: "/voilages" },
   { id: "stores", label: "Stores", path: "/stores" },
+  { id: "coussins", label: "Coussins", path: "/coussins" },
+  { id: "galettes_de_chaise", label: "Galettes de chaise", path: "/galettes-de-chaise" },
+  { id: "accessoires", label: "Accessoires", path: "/accessoires" },
 ];
 
 export interface CatalogPageConfig {

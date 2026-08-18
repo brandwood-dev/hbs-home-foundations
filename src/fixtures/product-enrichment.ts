@@ -181,6 +181,9 @@ export const CATEGORY_NOUNS: Record<ProductCategory, string> = {
   rideaux: "rideau",
   voilages: "voilage",
   stores: "store",
+  coussins: "coussin",
+  galettes_de_chaise: "galette de chaise",
+  accessoires: "accessoire",
 };
 
 const BLIND_TYPE_STORY: Record<BlindType, string> = {
