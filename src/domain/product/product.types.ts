@@ -5,7 +5,14 @@ export interface Money {
 
 /** Univers catalogue. Chaque catégorie possède ses propres axes de variantes. */
 export type ProductCategory =
-  "rideaux" | "voilages" | "stores" | "coussins" | "galettes_de_chaise" | "accessoires";
+  | "rideaux"
+  | "voilages"
+  | "stores"
+  | "coussins"
+  | "galettes_de_chaise"
+  | "accessoires"
+  | "mobilier_interieur"
+  | "plantes_decoration";
 
 export type ProductAvailability = "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
 
@@ -31,7 +38,19 @@ export type ProductMaterial =
   | "bois"
   | "textile"
   | "corde"
-  | "magnetique";
+  | "magnetique"
+  | "bois_massif"
+  | "rotin"
+  | "cannage"
+  | "metal_laque"
+  | "verre"
+  | "marbre"
+  | "ceramique"
+  | "terre_cuite"
+  | "cuir_synthetique"
+  | "fibre_naturelle"
+  | "plante_naturelle"
+  | "plante_synthetique";
 
 /** Sous-ensemble textile historique — conservé pour les rideaux, voilages et stores. */
 export type CurtainMaterial = Extract<
@@ -90,6 +109,50 @@ export type AccessoryCompatibility =
   | "tringle_25_28_mm"
   | "montage_mural"
   | "montage_plafond";
+
+/**
+ * Profil logistique. Les meubles volumineux et les plantes fragiles ne suivent pas
+ * le forfait de livraison standard : le montant est confirmé après la commande.
+ */
+export type ShippingProfile = "standard" | "fragile" | "volumineux" | "hors_norme";
+
+/** Mobilier d'intérieur. */
+export type FurnitureType =
+  | "canape"
+  | "fauteuil"
+  | "chaise"
+  | "table_basse"
+  | "table_appoint"
+  | "meuble_tv"
+  | "buffet"
+  | "etagere"
+  | "console"
+  | "pouf"
+  | "tete_de_lit";
+
+export type FurnitureRoom = "salon" | "chambre" | "salle_a_manger" | "bureau" | "entree";
+
+export type FurnitureStyle =
+  "mediterraneen" | "contemporain" | "artisanal" | "minimaliste" | "boheme";
+
+export type FurnitureAssembly = "livre_monte" | "montage_simple" | "montage_requis";
+
+/** Plantes et décoration végétale. */
+export type PlantNature = "artificielle" | "naturelle" | "stabilisee";
+
+export type PlantType =
+  | "plante_posee"
+  | "grande_plante"
+  | "plante_suspendue"
+  | "arbre_artificiel"
+  | "composition"
+  | "cache_pot";
+
+export type PlantSize = "petite" | "moyenne" | "grande";
+
+export type PlantLightNeed = "faible" | "moderee" | "vive_indirecte" | "plein_soleil";
+
+export type PlantCareLevel = "sans_entretien" | "facile" | "modere" | "exigeant";
 
 export type OpacityLevel =
   "transparent" | "tamisant_leger" | "tamisant" | "obscurcissant" | "occultant";
@@ -200,6 +263,14 @@ export interface ProductVariant {
   maxLengthCm?: number;
   diameterMm?: number;
 
+  /** Axes mobilier. */
+  depthCm?: number;
+  seatCount?: number;
+  /** Axes plantes : hauteur du sujet et diamètre du pot livré. */
+  plantHeightCm?: number;
+  potDiameterCm?: number;
+  plantSize?: PlantSize;
+
   /** Nombre d'unités vendues ensemble (pack, paire, lot). */
   packQuantity?: number;
 
@@ -246,6 +317,23 @@ export interface Product {
   accessoryType?: AccessoryType;
   accessoryMaterial?: AccessoryMaterial;
   accessoryCompatibilities?: AccessoryCompatibility[];
+
+  /** Mobilier d'intérieur. */
+  furnitureType?: FurnitureType;
+  furnitureRooms?: FurnitureRoom[];
+  furnitureStyle?: FurnitureStyle;
+  furnitureAssembly?: FurnitureAssembly;
+
+  /** Plantes et décoration végétale. */
+  plantNature?: PlantNature;
+  plantType?: PlantType;
+  plantLightNeed?: PlantLightNeed;
+  plantCareLevel?: PlantCareLevel;
+  petFriendly?: boolean;
+  potIncluded?: boolean;
+
+  /** Profil logistique : par défaut « standard » quand non renseigné. */
+  shippingProfile?: ShippingProfile;
 
   shortDescription: string;
   longDescription: string;

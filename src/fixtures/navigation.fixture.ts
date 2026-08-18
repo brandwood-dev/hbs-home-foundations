@@ -155,6 +155,67 @@ export const mainNavigation: NavItem[] = [
       },
     ],
   },
+  {
+    id: "mobilier",
+    label: "Mobilier",
+    href: "/mobilier",
+    megaMenu: [
+      {
+        title: "Assises",
+        links: [
+          { label: "Canapés", href: "/mobilier/canapes" },
+          { label: "Fauteuils", href: "/mobilier/fauteuils" },
+          { label: "Chaises", href: "/mobilier/chaises" },
+          { label: "Poufs", href: "/mobilier/poufs" },
+        ],
+      },
+      {
+        title: "Tables et rangements",
+        links: [
+          { label: "Tables basses et consoles", href: "/mobilier/tables" },
+          { label: "Meubles TV et rangements", href: "/mobilier/rangements" },
+          { label: "Tout le mobilier", href: "/mobilier" },
+        ],
+      },
+      {
+        title: "Chambre",
+        links: [
+          { label: "Têtes de lit", href: "/mobilier/tetes-de-lit" },
+          { label: "Rideaux occultants", href: "/rideaux/occultants" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "plantes",
+    label: "Plantes & déco",
+    href: "/plantes",
+    megaMenu: [
+      {
+        title: "Par nature",
+        links: [
+          { label: "Plantes artificielles", href: "/plantes/artificielles" },
+          { label: "Plantes naturelles", href: "/plantes/naturelles" },
+          { label: "Toutes les plantes", href: "/plantes" },
+        ],
+      },
+      {
+        title: "Par format",
+        links: [
+          { label: "Grandes plantes et arbres", href: "/plantes/grandes-plantes" },
+          { label: "Plantes suspendues", href: "/plantes/suspendues" },
+          { label: "Compositions séchées", href: "/plantes/compositions" },
+        ],
+      },
+      {
+        title: "Pots",
+        links: [
+          { label: "Pots et cache-pots", href: "/plantes/cache-pots" },
+          { label: "Coussins déco", href: "/coussins" },
+        ],
+      },
+    ],
+  },
   { id: "sur-mesure", label: "Sur mesure", href: "/sur-mesure" },
   { id: "inspirations", label: "Inspirations", href: "/inspirations" },
   { id: "promotions", label: "Promotions", href: "/promotions", highlight: true },
@@ -168,6 +229,8 @@ export const footerColumns: FooterColumn[] = [
       { label: "Voilages", href: "/voilages" },
       { label: "Stores", href: "/stores" },
       { label: "Coussins", href: "/coussins" },
+      { label: "Mobilier", href: "/mobilier" },
+      { label: "Plantes et décoration", href: "/plantes" },
       { label: "Galettes de chaise", href: "/galettes-de-chaise" },
       { label: "Accessoires", href: "/accessoires" },
     ],

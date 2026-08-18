@@ -2,6 +2,8 @@ import type { Product } from "@/domain/product/product.types";
 import { demoAccessories } from "@/fixtures/accessoires.fixture";
 import { demoChairPads } from "@/fixtures/galettes.fixture";
 import { demoCushions } from "@/fixtures/coussins.fixture";
+import { demoFurniture } from "@/fixtures/mobilier.fixture";
+import { demoPlants } from "@/fixtures/plantes.fixture";
 import { demoProducts } from "@/fixtures/products.fixture";
 import { demoStores } from "@/fixtures/stores.fixture";
 import { demoVoilages } from "@/fixtures/voilages.fixture";
@@ -14,6 +16,8 @@ export const demoCatalog = [
   ...demoCushions,
   ...demoChairPads,
   ...demoAccessories,
+  ...demoFurniture,
+  ...demoPlants,
 ];
 import type {
   CatalogScope,

@@ -33,7 +33,9 @@ export function FavoriteButton({
         toggleFavorite({ productId, productName });
       }}
       aria-pressed={active}
-      aria-label={active ? `Retirer ${productName} des favoris` : `Ajouter ${productName} aux favoris`}
+      aria-label={
+        active ? `Retirer ${productName} des favoris` : `Ajouter ${productName} aux favoris`
+      }
       disabled={pending}
       className={`${base} ${className}`}
     >

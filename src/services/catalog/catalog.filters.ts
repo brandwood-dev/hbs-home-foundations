@@ -16,6 +16,14 @@ import {
   MATERIAL_LABELS,
   OPACITY_LABELS,
   PATTERN_LABELS,
+  FURNITURE_ROOM_LABELS,
+  FURNITURE_STYLE_LABELS,
+  FURNITURE_TYPE_LABELS,
+  PLANT_CARE_LABELS,
+  PLANT_LIGHT_LABELS,
+  PLANT_NATURE_LABELS,
+  PLANT_SIZE_LABELS,
+  PLANT_TYPE_LABELS,
 } from "@/domain/product/product.constants";
 import type { ColorFamily, Product, ProductVariant } from "@/domain/product/product.types";
 import type { CatalogScope, ProductListParams } from "@/repositories/interfaces/ProductRepository";
@@ -37,6 +45,14 @@ export interface CatalogFacets {
   contents: FacetOption[];
   fastenings: FacetOption[];
   accessoryTypes: FacetOption[];
+  furnitureTypes: FacetOption[];
+  furnitureRooms: FacetOption[];
+  furnitureStyles: FacetOption[];
+  plantNatures: FacetOption[];
+  plantTypes: FacetOption[];
+  plantSizes: FacetOption[];
+  plantCareLevels: FacetOption[];
+  plantLightNeeds: FacetOption[];
   finishes: FacetOption[];
   mountings: FacetOption[];
   controlSides: FacetOption[];
@@ -70,6 +86,7 @@ export function variantMatches(
   if (!includesAny(params.cushionContents, variant.cushionContent)) return false;
   if (!includesAny(params.chairPadFastenings, variant.chairPadFastening)) return false;
   if (!includesAny(params.accessoryFinishes, variant.accessoryFinish)) return false;
+  if (!includesAny(params.plantSizes, variant.plantSize)) return false;
   if (!includesAny(params.widths, variant.widthCm)) return false;
   if (!includesAny(params.heights, variant.heightCm)) return false;
   if (!includesAny(params.availability, variant.availability)) return false;
@@ -88,6 +105,16 @@ export function productMatches(product: Product, params: ProductListParams): boo
   if (!includesAny(params.patterns, product.pattern)) return false;
   if (!includesAny(params.blindTypes, product.blindType)) return false;
   if (!includesAny(params.accessoryTypes, product.accessoryType)) return false;
+  if (!includesAny(params.furnitureTypes, product.furnitureType)) return false;
+  if (!includesAny(params.furnitureStyles, product.furnitureStyle)) return false;
+  if (params.furnitureRooms && params.furnitureRooms.length > 0) {
+    const rooms = product.furnitureRooms ?? [];
+    if (!rooms.some((room) => params.furnitureRooms?.includes(room))) return false;
+  }
+  if (!includesAny(params.plantNatures, product.plantNature)) return false;
+  if (!includesAny(params.plantTypes, product.plantType)) return false;
+  if (!includesAny(params.plantCareLevels, product.plantCareLevel)) return false;
+  if (!includesAny(params.plantLightNeeds, product.plantLightNeed)) return false;
   if (params.shapes && params.shapes.length > 0) {
     const shape = product.cushionShape ?? product.chairPadShape;
     if (!shape || !params.shapes.includes(shape)) return false;
@@ -120,6 +147,20 @@ export function matchesScope(product: Product, scope?: CatalogScope): boolean {
   if (!includesAny(scope.patterns, product.pattern)) return false;
   if (!includesAny(scope.blindTypes, product.blindType)) return false;
   if (!includesAny(scope.accessoryTypes, product.accessoryType)) return false;
+  if (!includesAny(scope.furnitureTypes, product.furnitureType)) return false;
+  if (!includesAny(scope.furnitureStyles, product.furnitureStyle)) return false;
+  if (scope.furnitureRooms && scope.furnitureRooms.length > 0) {
+    const rooms = product.furnitureRooms ?? [];
+    if (!rooms.some((room) => scope.furnitureRooms?.includes(room))) return false;
+  }
+  if (!includesAny(scope.plantNatures, product.plantNature)) return false;
+  if (!includesAny(scope.plantTypes, product.plantType)) return false;
+  if (scope.plantSizes && scope.plantSizes.length > 0) {
+    const hasSize = product.variants.some(
+      (variant) => variant.plantSize != null && scope.plantSizes?.includes(variant.plantSize),
+    );
+    if (!hasSize) return false;
+  }
   if (scope.shapes && scope.shapes.length > 0) {
     const scopeShape = product.cushionShape ?? product.chairPadShape;
     if (!scopeShape || !scope.shapes.includes(scopeShape)) return false;
@@ -165,6 +206,14 @@ export function computeFacets(products: Product[]): CatalogFacets {
   const fastenings = new Map<string, number>();
   const accessoryTypes = new Map<string, number>();
   const finishes = new Map<string, number>();
+  const furnitureTypes = new Map<string, number>();
+  const furnitureRooms = new Map<string, number>();
+  const furnitureStyles = new Map<string, number>();
+  const plantNatures = new Map<string, number>();
+  const plantTypes = new Map<string, number>();
+  const plantSizes = new Map<string, number>();
+  const plantCareLevels = new Map<string, number>();
+  const plantLightNeeds = new Map<string, number>();
 
   let priceMin = Number.POSITIVE_INFINITY;
   let priceMax = 0;
@@ -179,6 +228,13 @@ export function computeFacets(products: Product[]): CatalogFacets {
     if (product.accessoryType) bump(accessoryTypes, product.accessoryType);
     const shape = product.cushionShape ?? product.chairPadShape;
     if (shape) bump(shapes, shape);
+    if (product.furnitureType) bump(furnitureTypes, product.furnitureType);
+    if (product.furnitureStyle) bump(furnitureStyles, product.furnitureStyle);
+    for (const room of product.furnitureRooms ?? []) bump(furnitureRooms, room);
+    if (product.plantNature) bump(plantNatures, product.plantNature);
+    if (product.plantType) bump(plantTypes, product.plantType);
+    if (product.plantCareLevel) bump(plantCareLevels, product.plantCareLevel);
+    if (product.plantLightNeed) bump(plantLightNeeds, product.plantLightNeed);
 
     const productHeaders = new Set<string>();
     const productMountings = new Set<string>();
@@ -190,6 +246,7 @@ export function computeFacets(products: Product[]): CatalogFacets {
     const productContents = new Set<string>();
     const productFastenings = new Set<string>();
     const productFinishes = new Set<string>();
+    const productPlantSizes = new Set<string>();
 
     for (const variant of product.variants) {
       if (variant.curtainHeader) productHeaders.add(variant.curtainHeader);
@@ -198,6 +255,7 @@ export function computeFacets(products: Product[]): CatalogFacets {
       if (variant.cushionContent) productContents.add(variant.cushionContent);
       if (variant.chairPadFastening) productFastenings.add(variant.chairPadFastening);
       if (variant.accessoryFinish) productFinishes.add(variant.accessoryFinish);
+      if (variant.plantSize) productPlantSizes.add(variant.plantSize);
       productWidths.add(String(variant.widthCm));
       productHeights.add(String(variant.heightCm));
       productAvailability.add(variant.availability);
@@ -217,6 +275,7 @@ export function computeFacets(products: Product[]): CatalogFacets {
     productContents.forEach((value) => bump(contents, value));
     productFastenings.forEach((value) => bump(fastenings, value));
     productFinishes.forEach((value) => bump(finishes, value));
+    productPlantSizes.forEach((value) => bump(plantSizes, value));
   }
 
   const numericSort = (a: FacetOption, b: FacetOption) => Number(a.value) - Number(b.value);
@@ -271,6 +330,36 @@ export function computeFacets(products: Product[]): CatalogFacets {
     availability: toOptions(
       availability,
       (value) => AVAILABILITY_LABELS[value as never] ?? value,
+    ).sort(labelSort),
+    furnitureTypes: toOptions(
+      furnitureTypes,
+      (value) => FURNITURE_TYPE_LABELS[value as never] ?? value,
+    ).sort(labelSort),
+    furnitureRooms: toOptions(
+      furnitureRooms,
+      (value) => FURNITURE_ROOM_LABELS[value as never] ?? value,
+    ).sort(labelSort),
+    furnitureStyles: toOptions(
+      furnitureStyles,
+      (value) => FURNITURE_STYLE_LABELS[value as never] ?? value,
+    ).sort(labelSort),
+    plantNatures: toOptions(
+      plantNatures,
+      (value) => PLANT_NATURE_LABELS[value as never] ?? value,
+    ).sort(labelSort),
+    plantTypes: toOptions(plantTypes, (value) => PLANT_TYPE_LABELS[value as never] ?? value).sort(
+      labelSort,
+    ),
+    plantSizes: toOptions(plantSizes, (value) => PLANT_SIZE_LABELS[value as never] ?? value).sort(
+      labelSort,
+    ),
+    plantCareLevels: toOptions(
+      plantCareLevels,
+      (value) => PLANT_CARE_LABELS[value as never] ?? value,
+    ).sort(labelSort),
+    plantLightNeeds: toOptions(
+      plantLightNeeds,
+      (value) => PLANT_LIGHT_LABELS[value as never] ?? value,
     ).sort(labelSort),
     priceMinMinor: Number.isFinite(priceMin) ? priceMin : 0,
     priceMaxMinor: priceMax,

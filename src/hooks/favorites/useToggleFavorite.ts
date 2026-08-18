@@ -2,10 +2,7 @@ import { useCallback } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { FAVORITES_QUERY_KEY } from "@/domain/favorites/favorites.constants";
-import {
-  FAVORITES_ERROR_MESSAGES,
-  FavoritesError,
-} from "@/domain/favorites/favorites.errors";
+import { FAVORITES_ERROR_MESSAGES, FavoritesError } from "@/domain/favorites/favorites.errors";
 import { useFavorites } from "@/hooks/favorites/useFavorites";
 import { trackEvent } from "@/lib/analytics/analytics";
 import { getFavoritesRepository } from "@/repositories/repositoryFactory";

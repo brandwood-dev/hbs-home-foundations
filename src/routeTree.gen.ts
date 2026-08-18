@@ -46,6 +46,21 @@ import { Route as CoussinsVeloursRouteImport } from './routes/coussins.velours'
 import { Route as GalettesDeChaiseIndexRouteImport } from './routes/galettes-de-chaise.index'
 import { Route as GalettesDeChaiseCarreesRouteImport } from './routes/galettes-de-chaise.carrees'
 import { Route as GalettesDeChaiseRondesRouteImport } from './routes/galettes-de-chaise.rondes'
+import { Route as MobilierIndexRouteImport } from './routes/mobilier.index'
+import { Route as MobilierCanapesRouteImport } from './routes/mobilier.canapes'
+import { Route as MobilierChaisesRouteImport } from './routes/mobilier.chaises'
+import { Route as MobilierFauteuilsRouteImport } from './routes/mobilier.fauteuils'
+import { Route as MobilierPoufsRouteImport } from './routes/mobilier.poufs'
+import { Route as MobilierRangementsRouteImport } from './routes/mobilier.rangements'
+import { Route as MobilierTablesRouteImport } from './routes/mobilier.tables'
+import { Route as MobilierTetesDeLitRouteImport } from './routes/mobilier.tetes-de-lit'
+import { Route as PlantesIndexRouteImport } from './routes/plantes.index'
+import { Route as PlantesArtificiellesRouteImport } from './routes/plantes.artificielles'
+import { Route as PlantesCachePotsRouteImport } from './routes/plantes.cache-pots'
+import { Route as PlantesCompositionsRouteImport } from './routes/plantes.compositions'
+import { Route as PlantesGrandesPlantesRouteImport } from './routes/plantes.grandes-plantes'
+import { Route as PlantesNaturellesRouteImport } from './routes/plantes.naturelles'
+import { Route as PlantesSuspenduesRouteImport } from './routes/plantes.suspendues'
 import { Route as ProduitSlugRouteImport } from './routes/produit.$slug'
 import { Route as RideauxIndexRouteImport } from './routes/rideaux.index'
 import { Route as RideauxLinRouteImport } from './routes/rideaux.lin'
@@ -255,6 +270,81 @@ const GalettesDeChaiseRondesRoute = GalettesDeChaiseRondesRouteImport.update({
   path: '/galettes-de-chaise/rondes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MobilierIndexRoute = MobilierIndexRouteImport.update({
+  id: '/mobilier/',
+  path: '/mobilier/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MobilierCanapesRoute = MobilierCanapesRouteImport.update({
+  id: '/mobilier/canapes',
+  path: '/mobilier/canapes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MobilierChaisesRoute = MobilierChaisesRouteImport.update({
+  id: '/mobilier/chaises',
+  path: '/mobilier/chaises',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MobilierFauteuilsRoute = MobilierFauteuilsRouteImport.update({
+  id: '/mobilier/fauteuils',
+  path: '/mobilier/fauteuils',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MobilierPoufsRoute = MobilierPoufsRouteImport.update({
+  id: '/mobilier/poufs',
+  path: '/mobilier/poufs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MobilierRangementsRoute = MobilierRangementsRouteImport.update({
+  id: '/mobilier/rangements',
+  path: '/mobilier/rangements',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MobilierTablesRoute = MobilierTablesRouteImport.update({
+  id: '/mobilier/tables',
+  path: '/mobilier/tables',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MobilierTetesDeLitRoute = MobilierTetesDeLitRouteImport.update({
+  id: '/mobilier/tetes-de-lit',
+  path: '/mobilier/tetes-de-lit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlantesIndexRoute = PlantesIndexRouteImport.update({
+  id: '/plantes/',
+  path: '/plantes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlantesArtificiellesRoute = PlantesArtificiellesRouteImport.update({
+  id: '/plantes/artificielles',
+  path: '/plantes/artificielles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlantesCachePotsRoute = PlantesCachePotsRouteImport.update({
+  id: '/plantes/cache-pots',
+  path: '/plantes/cache-pots',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlantesCompositionsRoute = PlantesCompositionsRouteImport.update({
+  id: '/plantes/compositions',
+  path: '/plantes/compositions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlantesGrandesPlantesRoute = PlantesGrandesPlantesRouteImport.update({
+  id: '/plantes/grandes-plantes',
+  path: '/plantes/grandes-plantes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlantesNaturellesRoute = PlantesNaturellesRouteImport.update({
+  id: '/plantes/naturelles',
+  path: '/plantes/naturelles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlantesSuspenduesRoute = PlantesSuspenduesRouteImport.update({
+  id: '/plantes/suspendues',
+  path: '/plantes/suspendues',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProduitSlugRoute = ProduitSlugRouteImport.update({
   id: '/produit/$slug',
   path: '/produit/$slug',
@@ -399,6 +489,19 @@ export interface FileRoutesByFullPath {
   '/coussins/velours': typeof CoussinsVeloursRoute
   '/galettes-de-chaise/carrees': typeof GalettesDeChaiseCarreesRoute
   '/galettes-de-chaise/rondes': typeof GalettesDeChaiseRondesRoute
+  '/mobilier/canapes': typeof MobilierCanapesRoute
+  '/mobilier/chaises': typeof MobilierChaisesRoute
+  '/mobilier/fauteuils': typeof MobilierFauteuilsRoute
+  '/mobilier/poufs': typeof MobilierPoufsRoute
+  '/mobilier/rangements': typeof MobilierRangementsRoute
+  '/mobilier/tables': typeof MobilierTablesRoute
+  '/mobilier/tetes-de-lit': typeof MobilierTetesDeLitRoute
+  '/plantes/artificielles': typeof PlantesArtificiellesRoute
+  '/plantes/cache-pots': typeof PlantesCachePotsRoute
+  '/plantes/compositions': typeof PlantesCompositionsRoute
+  '/plantes/grandes-plantes': typeof PlantesGrandesPlantesRoute
+  '/plantes/naturelles': typeof PlantesNaturellesRoute
+  '/plantes/suspendues': typeof PlantesSuspenduesRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
   '/rideaux/occultants': typeof RideauxOccultantsRoute
@@ -423,6 +526,8 @@ export interface FileRoutesByFullPath {
   '/commande/': typeof CommandeIndexRoute
   '/coussins/': typeof CoussinsIndexRoute
   '/galettes-de-chaise/': typeof GalettesDeChaiseIndexRoute
+  '/mobilier/': typeof MobilierIndexRoute
+  '/plantes/': typeof PlantesIndexRoute
   '/rideaux/': typeof RideauxIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/voilages/': typeof VoilagesIndexRoute
@@ -459,6 +564,19 @@ export interface FileRoutesByTo {
   '/coussins/velours': typeof CoussinsVeloursRoute
   '/galettes-de-chaise/carrees': typeof GalettesDeChaiseCarreesRoute
   '/galettes-de-chaise/rondes': typeof GalettesDeChaiseRondesRoute
+  '/mobilier/canapes': typeof MobilierCanapesRoute
+  '/mobilier/chaises': typeof MobilierChaisesRoute
+  '/mobilier/fauteuils': typeof MobilierFauteuilsRoute
+  '/mobilier/poufs': typeof MobilierPoufsRoute
+  '/mobilier/rangements': typeof MobilierRangementsRoute
+  '/mobilier/tables': typeof MobilierTablesRoute
+  '/mobilier/tetes-de-lit': typeof MobilierTetesDeLitRoute
+  '/plantes/artificielles': typeof PlantesArtificiellesRoute
+  '/plantes/cache-pots': typeof PlantesCachePotsRoute
+  '/plantes/compositions': typeof PlantesCompositionsRoute
+  '/plantes/grandes-plantes': typeof PlantesGrandesPlantesRoute
+  '/plantes/naturelles': typeof PlantesNaturellesRoute
+  '/plantes/suspendues': typeof PlantesSuspenduesRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
   '/rideaux/occultants': typeof RideauxOccultantsRoute
@@ -483,6 +601,8 @@ export interface FileRoutesByTo {
   '/commande': typeof CommandeIndexRoute
   '/coussins': typeof CoussinsIndexRoute
   '/galettes-de-chaise': typeof GalettesDeChaiseIndexRoute
+  '/mobilier': typeof MobilierIndexRoute
+  '/plantes': typeof PlantesIndexRoute
   '/rideaux': typeof RideauxIndexRoute
   '/stores': typeof StoresIndexRoute
   '/voilages': typeof VoilagesIndexRoute
@@ -521,6 +641,19 @@ export interface FileRoutesById {
   '/coussins/velours': typeof CoussinsVeloursRoute
   '/galettes-de-chaise/carrees': typeof GalettesDeChaiseCarreesRoute
   '/galettes-de-chaise/rondes': typeof GalettesDeChaiseRondesRoute
+  '/mobilier/canapes': typeof MobilierCanapesRoute
+  '/mobilier/chaises': typeof MobilierChaisesRoute
+  '/mobilier/fauteuils': typeof MobilierFauteuilsRoute
+  '/mobilier/poufs': typeof MobilierPoufsRoute
+  '/mobilier/rangements': typeof MobilierRangementsRoute
+  '/mobilier/tables': typeof MobilierTablesRoute
+  '/mobilier/tetes-de-lit': typeof MobilierTetesDeLitRoute
+  '/plantes/artificielles': typeof PlantesArtificiellesRoute
+  '/plantes/cache-pots': typeof PlantesCachePotsRoute
+  '/plantes/compositions': typeof PlantesCompositionsRoute
+  '/plantes/grandes-plantes': typeof PlantesGrandesPlantesRoute
+  '/plantes/naturelles': typeof PlantesNaturellesRoute
+  '/plantes/suspendues': typeof PlantesSuspenduesRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
   '/rideaux/occultants': typeof RideauxOccultantsRoute
@@ -545,6 +678,8 @@ export interface FileRoutesById {
   '/commande/': typeof CommandeIndexRoute
   '/coussins/': typeof CoussinsIndexRoute
   '/galettes-de-chaise/': typeof GalettesDeChaiseIndexRoute
+  '/mobilier/': typeof MobilierIndexRoute
+  '/plantes/': typeof PlantesIndexRoute
   '/rideaux/': typeof RideauxIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/voilages/': typeof VoilagesIndexRoute
@@ -584,6 +719,19 @@ export interface FileRouteTypes {
     | '/coussins/velours'
     | '/galettes-de-chaise/carrees'
     | '/galettes-de-chaise/rondes'
+    | '/mobilier/canapes'
+    | '/mobilier/chaises'
+    | '/mobilier/fauteuils'
+    | '/mobilier/poufs'
+    | '/mobilier/rangements'
+    | '/mobilier/tables'
+    | '/mobilier/tetes-de-lit'
+    | '/plantes/artificielles'
+    | '/plantes/cache-pots'
+    | '/plantes/compositions'
+    | '/plantes/grandes-plantes'
+    | '/plantes/naturelles'
+    | '/plantes/suspendues'
     | '/produit/$slug'
     | '/rideaux/lin'
     | '/rideaux/occultants'
@@ -608,6 +756,8 @@ export interface FileRouteTypes {
     | '/commande/'
     | '/coussins/'
     | '/galettes-de-chaise/'
+    | '/mobilier/'
+    | '/plantes/'
     | '/rideaux/'
     | '/stores/'
     | '/voilages/'
@@ -644,6 +794,19 @@ export interface FileRouteTypes {
     | '/coussins/velours'
     | '/galettes-de-chaise/carrees'
     | '/galettes-de-chaise/rondes'
+    | '/mobilier/canapes'
+    | '/mobilier/chaises'
+    | '/mobilier/fauteuils'
+    | '/mobilier/poufs'
+    | '/mobilier/rangements'
+    | '/mobilier/tables'
+    | '/mobilier/tetes-de-lit'
+    | '/plantes/artificielles'
+    | '/plantes/cache-pots'
+    | '/plantes/compositions'
+    | '/plantes/grandes-plantes'
+    | '/plantes/naturelles'
+    | '/plantes/suspendues'
     | '/produit/$slug'
     | '/rideaux/lin'
     | '/rideaux/occultants'
@@ -668,6 +831,8 @@ export interface FileRouteTypes {
     | '/commande'
     | '/coussins'
     | '/galettes-de-chaise'
+    | '/mobilier'
+    | '/plantes'
     | '/rideaux'
     | '/stores'
     | '/voilages'
@@ -705,6 +870,19 @@ export interface FileRouteTypes {
     | '/coussins/velours'
     | '/galettes-de-chaise/carrees'
     | '/galettes-de-chaise/rondes'
+    | '/mobilier/canapes'
+    | '/mobilier/chaises'
+    | '/mobilier/fauteuils'
+    | '/mobilier/poufs'
+    | '/mobilier/rangements'
+    | '/mobilier/tables'
+    | '/mobilier/tetes-de-lit'
+    | '/plantes/artificielles'
+    | '/plantes/cache-pots'
+    | '/plantes/compositions'
+    | '/plantes/grandes-plantes'
+    | '/plantes/naturelles'
+    | '/plantes/suspendues'
     | '/produit/$slug'
     | '/rideaux/lin'
     | '/rideaux/occultants'
@@ -729,6 +907,8 @@ export interface FileRouteTypes {
     | '/commande/'
     | '/coussins/'
     | '/galettes-de-chaise/'
+    | '/mobilier/'
+    | '/plantes/'
     | '/rideaux/'
     | '/stores/'
     | '/voilages/'
@@ -767,6 +947,19 @@ export interface RootRouteChildren {
   CoussinsVeloursRoute: typeof CoussinsVeloursRoute
   GalettesDeChaiseCarreesRoute: typeof GalettesDeChaiseCarreesRoute
   GalettesDeChaiseRondesRoute: typeof GalettesDeChaiseRondesRoute
+  MobilierCanapesRoute: typeof MobilierCanapesRoute
+  MobilierChaisesRoute: typeof MobilierChaisesRoute
+  MobilierFauteuilsRoute: typeof MobilierFauteuilsRoute
+  MobilierPoufsRoute: typeof MobilierPoufsRoute
+  MobilierRangementsRoute: typeof MobilierRangementsRoute
+  MobilierTablesRoute: typeof MobilierTablesRoute
+  MobilierTetesDeLitRoute: typeof MobilierTetesDeLitRoute
+  PlantesArtificiellesRoute: typeof PlantesArtificiellesRoute
+  PlantesCachePotsRoute: typeof PlantesCachePotsRoute
+  PlantesCompositionsRoute: typeof PlantesCompositionsRoute
+  PlantesGrandesPlantesRoute: typeof PlantesGrandesPlantesRoute
+  PlantesNaturellesRoute: typeof PlantesNaturellesRoute
+  PlantesSuspenduesRoute: typeof PlantesSuspenduesRoute
   ProduitSlugRoute: typeof ProduitSlugRoute
   RideauxLinRoute: typeof RideauxLinRoute
   RideauxOccultantsRoute: typeof RideauxOccultantsRoute
@@ -790,6 +983,8 @@ export interface RootRouteChildren {
   CommandeIndexRoute: typeof CommandeIndexRoute
   CoussinsIndexRoute: typeof CoussinsIndexRoute
   GalettesDeChaiseIndexRoute: typeof GalettesDeChaiseIndexRoute
+  MobilierIndexRoute: typeof MobilierIndexRoute
+  PlantesIndexRoute: typeof PlantesIndexRoute
   RideauxIndexRoute: typeof RideauxIndexRoute
   StoresIndexRoute: typeof StoresIndexRoute
   VoilagesIndexRoute: typeof VoilagesIndexRoute
@@ -1056,6 +1251,111 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalettesDeChaiseRondesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mobilier/': {
+      id: '/mobilier/'
+      path: '/mobilier'
+      fullPath: '/mobilier/'
+      preLoaderRoute: typeof MobilierIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mobilier/canapes': {
+      id: '/mobilier/canapes'
+      path: '/mobilier/canapes'
+      fullPath: '/mobilier/canapes'
+      preLoaderRoute: typeof MobilierCanapesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mobilier/chaises': {
+      id: '/mobilier/chaises'
+      path: '/mobilier/chaises'
+      fullPath: '/mobilier/chaises'
+      preLoaderRoute: typeof MobilierChaisesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mobilier/fauteuils': {
+      id: '/mobilier/fauteuils'
+      path: '/mobilier/fauteuils'
+      fullPath: '/mobilier/fauteuils'
+      preLoaderRoute: typeof MobilierFauteuilsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mobilier/poufs': {
+      id: '/mobilier/poufs'
+      path: '/mobilier/poufs'
+      fullPath: '/mobilier/poufs'
+      preLoaderRoute: typeof MobilierPoufsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mobilier/rangements': {
+      id: '/mobilier/rangements'
+      path: '/mobilier/rangements'
+      fullPath: '/mobilier/rangements'
+      preLoaderRoute: typeof MobilierRangementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mobilier/tables': {
+      id: '/mobilier/tables'
+      path: '/mobilier/tables'
+      fullPath: '/mobilier/tables'
+      preLoaderRoute: typeof MobilierTablesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mobilier/tetes-de-lit': {
+      id: '/mobilier/tetes-de-lit'
+      path: '/mobilier/tetes-de-lit'
+      fullPath: '/mobilier/tetes-de-lit'
+      preLoaderRoute: typeof MobilierTetesDeLitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plantes/': {
+      id: '/plantes/'
+      path: '/plantes'
+      fullPath: '/plantes/'
+      preLoaderRoute: typeof PlantesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plantes/artificielles': {
+      id: '/plantes/artificielles'
+      path: '/plantes/artificielles'
+      fullPath: '/plantes/artificielles'
+      preLoaderRoute: typeof PlantesArtificiellesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plantes/cache-pots': {
+      id: '/plantes/cache-pots'
+      path: '/plantes/cache-pots'
+      fullPath: '/plantes/cache-pots'
+      preLoaderRoute: typeof PlantesCachePotsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plantes/compositions': {
+      id: '/plantes/compositions'
+      path: '/plantes/compositions'
+      fullPath: '/plantes/compositions'
+      preLoaderRoute: typeof PlantesCompositionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plantes/grandes-plantes': {
+      id: '/plantes/grandes-plantes'
+      path: '/plantes/grandes-plantes'
+      fullPath: '/plantes/grandes-plantes'
+      preLoaderRoute: typeof PlantesGrandesPlantesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plantes/naturelles': {
+      id: '/plantes/naturelles'
+      path: '/plantes/naturelles'
+      fullPath: '/plantes/naturelles'
+      preLoaderRoute: typeof PlantesNaturellesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plantes/suspendues': {
+      id: '/plantes/suspendues'
+      path: '/plantes/suspendues'
+      fullPath: '/plantes/suspendues'
+      preLoaderRoute: typeof PlantesSuspenduesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/produit/$slug': {
       id: '/produit/$slug'
       path: '/produit/$slug'
@@ -1258,6 +1558,19 @@ const rootRouteChildren: RootRouteChildren = {
   CoussinsVeloursRoute: CoussinsVeloursRoute,
   GalettesDeChaiseCarreesRoute: GalettesDeChaiseCarreesRoute,
   GalettesDeChaiseRondesRoute: GalettesDeChaiseRondesRoute,
+  MobilierCanapesRoute: MobilierCanapesRoute,
+  MobilierChaisesRoute: MobilierChaisesRoute,
+  MobilierFauteuilsRoute: MobilierFauteuilsRoute,
+  MobilierPoufsRoute: MobilierPoufsRoute,
+  MobilierRangementsRoute: MobilierRangementsRoute,
+  MobilierTablesRoute: MobilierTablesRoute,
+  MobilierTetesDeLitRoute: MobilierTetesDeLitRoute,
+  PlantesArtificiellesRoute: PlantesArtificiellesRoute,
+  PlantesCachePotsRoute: PlantesCachePotsRoute,
+  PlantesCompositionsRoute: PlantesCompositionsRoute,
+  PlantesGrandesPlantesRoute: PlantesGrandesPlantesRoute,
+  PlantesNaturellesRoute: PlantesNaturellesRoute,
+  PlantesSuspenduesRoute: PlantesSuspenduesRoute,
   ProduitSlugRoute: ProduitSlugRoute,
   RideauxLinRoute: RideauxLinRoute,
   RideauxOccultantsRoute: RideauxOccultantsRoute,
@@ -1281,6 +1594,8 @@ const rootRouteChildren: RootRouteChildren = {
   CommandeIndexRoute: CommandeIndexRoute,
   CoussinsIndexRoute: CoussinsIndexRoute,
   GalettesDeChaiseIndexRoute: GalettesDeChaiseIndexRoute,
+  MobilierIndexRoute: MobilierIndexRoute,
+  PlantesIndexRoute: PlantesIndexRoute,
   RideauxIndexRoute: RideauxIndexRoute,
   StoresIndexRoute: StoresIndexRoute,
   VoilagesIndexRoute: VoilagesIndexRoute,

@@ -2,6 +2,7 @@ import { Minus, Plus } from "lucide-react";
 import { ProductAvailabilityBadge } from "@/components/product/ProductAvailabilityBadge";
 import { ProductPrice } from "@/components/product/ProductPrice";
 import { ProductPurchaseActions } from "@/components/product/ProductPurchaseActions";
+import { ProductShippingNotice } from "@/components/product/ProductShippingNotice";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import type { Product, ProductVariant } from "@/domain/product/product.types";
 
@@ -73,6 +74,7 @@ export function ProductPurchasePanel({
         />
       </div>
 
+      <ProductShippingNotice profile={product.shippingProfile} />
     </div>
   );
 }

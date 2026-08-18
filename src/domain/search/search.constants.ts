@@ -18,12 +18,7 @@ export const SEARCH_PAGE_SIZE = 12;
 export const SEARCH_RELATED_CATEGORIES_MAX = 4;
 export const SEARCH_RELATED_ARTICLES_MAX = 3;
 
-export const SEARCH_SORT_VALUES: SearchSort[] = [
-  "relevance",
-  "newest",
-  "price_asc",
-  "price_desc",
-];
+export const SEARCH_SORT_VALUES: SearchSort[] = ["relevance", "newest", "price_asc", "price_desc"];
 
 export const SEARCH_SORT_LABELS: Record<SearchSort, string> = {
   relevance: "Pertinence",

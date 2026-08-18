@@ -5,6 +5,8 @@ import colStores from "@/assets/col-stores.jpg";
 import colCoussins from "@/assets/col-coussins.jpg";
 import colTringles from "@/assets/col-tringles.jpg";
 import colEmbrasses from "@/assets/col-embrasses.jpg";
+import colMobilier from "@/assets/catalog/mobilier/canape.jpg";
+import colPlantes from "@/assets/catalog/plantes/grande-plante.jpg";
 import catVelours from "@/assets/catalog/rideau-velours.jpg";
 import catLin from "@/assets/catalog/rideau-lin.jpg";
 import catOccultant from "@/assets/catalog/rideau-occultant.jpg";
@@ -114,6 +116,20 @@ export const featuredCollections: HomeCollection[] = [
     description: "Matières douces et teintes chaleureuses.",
     href: "/coussins",
     image: { src: colCoussins, alt: "Coussins en lin et velours empilés" },
+  },
+  {
+    id: "mobilier",
+    title: "Mobilier",
+    description: "Canapés, fauteuils et rangements en matières naturelles.",
+    href: "/mobilier",
+    image: { src: colMobilier, alt: "Canapé en lin clair dans un salon lumineux" },
+  },
+  {
+    id: "plantes",
+    title: "Plantes et déco",
+    description: "Verdure artificielle ou naturelle, pots et compositions.",
+    href: "/plantes",
+    image: { src: colPlantes, alt: "Grande plante verte en pot dans un intérieur clair" },
   },
   {
     id: "tringles",

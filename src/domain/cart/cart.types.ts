@@ -2,6 +2,7 @@ import type {
   ProductAvailability,
   ProductCategory,
   ProductOptionDisplay,
+  ShippingProfile,
 } from "@/domain/product/product.types";
 
 /** Forme persistée : uniquement des références stables, jamais des données dérivées. */
@@ -61,6 +62,8 @@ export interface ResolvedCartItem {
   /** Options affichables, toutes catégories confondues. */
   selectedOptions?: ProductOptionDisplay[];
   sellingUnitLabel: string;
+  /** Profil logistique : conditionne le calcul des frais de livraison. */
+  shippingProfile?: ShippingProfile;
 
   availability: ProductAvailability;
   availableQuantity: number;
@@ -77,6 +80,8 @@ export interface CartTotals {
   freeShippingThresholdMinor: number;
   amountUntilFreeShippingMinor: number;
   hasFreeShipping: boolean;
+  /** Un article volumineux est présent : la livraison est chiffrée après la commande. */
+  requiresShippingQuote: boolean;
 }
 
 export interface Cart {

@@ -1,7 +1,4 @@
-export type SearchErrorCode =
-  | "storage_unavailable"
-  | "storage_write_failed"
-  | "query_too_short";
+export type SearchErrorCode = "storage_unavailable" | "storage_write_failed" | "query_too_short";
 
 export class SearchError extends Error {
   constructor(

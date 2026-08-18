@@ -3,7 +3,7 @@
  * Le futur provider (GA4, Meta…) sera branché ici uniquement.
  */
 export type AnalyticsEventName =
-    | "view_item_list"
+  | "view_item_list"
   | "select_item"
   | "generate_lead"
   | "newsletter_subscribe"

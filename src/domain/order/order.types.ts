@@ -4,7 +4,11 @@ import type {
   DeliveryMethod,
   PaymentMethod,
 } from "@/domain/checkout/checkout.types";
-import type { ProductCategory, ProductOptionDisplay } from "@/domain/product/product.types";
+import type {
+  ProductCategory,
+  ProductOptionDisplay,
+  ShippingProfile,
+} from "@/domain/product/product.types";
 
 export type OrderStatus =
   "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
@@ -38,6 +42,8 @@ export interface OrderItemSnapshot {
   /** Options affichables figées au moment de la commande. */
   selectedOptions?: ProductOptionDisplay[];
   sellingUnitLabel: string;
+  /** Profil logistique : les articles volumineux sont livrés sur devis. */
+  shippingProfile?: ShippingProfile;
 }
 
 export interface OrderTotals {

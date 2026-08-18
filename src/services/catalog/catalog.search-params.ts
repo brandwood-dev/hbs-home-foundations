@@ -16,6 +16,14 @@ export interface CatalogSearch {
   fastenings: string[];
   accessoryTypes: string[];
   finishes: string[];
+  furnitureTypes: string[];
+  furnitureRooms: string[];
+  furnitureStyles: string[];
+  plantNatures: string[];
+  plantTypes: string[];
+  plantSizes: string[];
+  plantCareLevels: string[];
+  plantLightNeeds: string[];
   widths: number[];
   heights: number[];
   availability: string[];
@@ -39,6 +47,14 @@ export const EMPTY_SEARCH: CatalogSearch = {
   fastenings: [],
   accessoryTypes: [],
   finishes: [],
+  furnitureTypes: [],
+  furnitureRooms: [],
+  furnitureStyles: [],
+  plantNatures: [],
+  plantTypes: [],
+  plantSizes: [],
+  plantCareLevels: [],
+  plantLightNeeds: [],
   widths: [],
   heights: [],
   availability: [],
@@ -61,6 +77,14 @@ export const LIST_FILTER_KEYS = [
   "fastenings",
   "accessoryTypes",
   "finishes",
+  "furnitureTypes",
+  "furnitureRooms",
+  "furnitureStyles",
+  "plantNatures",
+  "plantTypes",
+  "plantSizes",
+  "plantCareLevels",
+  "plantLightNeeds",
   "widths",
   "heights",
   "availability",
@@ -106,6 +130,14 @@ export function validateCatalogSearch(search: Record<string, unknown>): CatalogS
     fastenings: parseList(search["fastenings"]),
     accessoryTypes: parseList(search["accessoryTypes"]),
     finishes: parseList(search["finishes"]),
+    furnitureTypes: parseList(search["furnitureTypes"]),
+    furnitureRooms: parseList(search["furnitureRooms"]),
+    furnitureStyles: parseList(search["furnitureStyles"]),
+    plantNatures: parseList(search["plantNatures"]),
+    plantTypes: parseList(search["plantTypes"]),
+    plantSizes: parseList(search["plantSizes"]),
+    plantCareLevels: parseList(search["plantCareLevels"]),
+    plantLightNeeds: parseList(search["plantLightNeeds"]),
     widths: parseNumberList(search["widths"]),
     heights: parseNumberList(search["heights"]),
     availability: parseList(search["availability"]),
@@ -173,6 +205,16 @@ export function toListParams(
     chairPadFastenings:
       search["fastenings"].length > 0 ? (search["fastenings"] as never[]) : undefined,
     accessoryFinishes: search["finishes"].length > 0 ? (search["finishes"] as never[]) : undefined,
+    furnitureTypes: mergeUnique(scope?.furnitureTypes, search["furnitureTypes"] as never[]),
+    furnitureRooms: mergeUnique(scope?.furnitureRooms, search["furnitureRooms"] as never[]),
+    furnitureStyles: mergeUnique(scope?.furnitureStyles, search["furnitureStyles"] as never[]),
+    plantNatures: mergeUnique(scope?.plantNatures, search["plantNatures"] as never[]),
+    plantTypes: mergeUnique(scope?.plantTypes, search["plantTypes"] as never[]),
+    plantSizes: mergeUnique(scope?.plantSizes, search["plantSizes"] as never[]),
+    plantCareLevels:
+      search["plantCareLevels"].length > 0 ? (search["plantCareLevels"] as never[]) : undefined,
+    plantLightNeeds:
+      search["plantLightNeeds"].length > 0 ? (search["plantLightNeeds"] as never[]) : undefined,
     sellingMode: scope?.sellingMode,
     onlyThermal: scope?.onlyThermal,
     onlyLargeWidth: scope?.onlyLargeWidth,

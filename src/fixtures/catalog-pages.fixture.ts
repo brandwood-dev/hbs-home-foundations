@@ -16,6 +16,8 @@ export const catalogGroups: CatalogGroup[] = [
   { id: "coussins", label: "Coussins", path: "/coussins" },
   { id: "galettes_de_chaise", label: "Galettes de chaise", path: "/galettes-de-chaise" },
   { id: "accessoires", label: "Accessoires", path: "/accessoires" },
+  { id: "mobilier_interieur", label: "Mobilier d'intérieur", path: "/mobilier" },
+  { id: "plantes_decoration", label: "Plantes et décoration", path: "/plantes" },
 ];
 
 export interface CatalogPageConfig {
@@ -504,6 +506,214 @@ export const catalogPages: CatalogPageConfig[] = [
       "Anneaux à clip, crochets, supports muraux renforcés et kits de pose avec chevilles et vis. Livraison en Tunisie.",
     seoBlock:
       "Comptez un anneau tous les 15 cm de largeur de tissu pour obtenir des plis réguliers, et un support supplémentaire au centre dès que la tringle dépasse 200 cm.",
+  },
+  {
+    routeId: "mobilier_interieur",
+    group: "mobilier_interieur",
+    path: "/mobilier",
+    title: "Mobilier d'intérieur",
+    description:
+      "Canapés, fauteuils, tables, rangements et assises d'appoint choisis pour s'accorder aux textiles HBS HOME.",
+    seoTitle: "Mobilier d'intérieur en Tunisie | HBS HOME",
+    seoDescription:
+      "Canapés, fauteuils, tables basses, meubles TV, poufs et têtes de lit. Livraison sur rendez-vous partout en Tunisie.",
+    seoBlock:
+      "Le mobilier HBS HOME prolonge l'esprit de nos textiles : bois massif, rotin, cannage et tissus naturels, dans des teintes sable, terracotta et vert olive. Chaque pièce est choisie pour tenir dans un appartement tunisien comme dans une grande maison, et se combine avec nos rideaux et coussins. Les meubles volumineux sont livrés sur rendez-vous : les frais de livraison sont confirmés avec vous avant l'expédition.",
+  },
+  {
+    routeId: "mobilier-canapes",
+    group: "mobilier_interieur",
+    path: "/mobilier/canapes",
+    title: "Canapés",
+    description: "Canapés 2 et 3 places en lin, velours et bouclette, structures en bois massif.",
+    scope: { furnitureTypes: ["canape"] },
+    lockedFilterLabel: "Canapés",
+    seoTitle: "Canapés en tissu et velours | HBS HOME",
+    seoDescription:
+      "Canapés 2 et 3 places en lin, velours et bouclette. Livraison sur rendez-vous partout en Tunisie.",
+    seoBlock:
+      "Mesurez la longueur de mur disponible et laissez 40 cm de circulation devant le canapé. Un 3 places demande environ 210 cm de dégagement ; en dessous, le 2 places reste plus confortable au quotidien.",
+  },
+  {
+    routeId: "mobilier-fauteuils",
+    group: "mobilier_interieur",
+    path: "/mobilier/fauteuils",
+    title: "Fauteuils",
+    description: "Fauteuils enveloppants et assises d'appoint pour le salon ou la chambre.",
+    scope: { furnitureTypes: ["fauteuil"] },
+    lockedFilterLabel: "Fauteuils",
+    seoTitle: "Fauteuils de salon et de chambre | HBS HOME",
+    seoDescription:
+      "Fauteuils en bouclette, velours et rotin pour le salon, la chambre ou le bureau. Livraison en Tunisie.",
+    seoBlock:
+      "Le fauteuil se place idéalement en diagonale d'un canapé, près d'une source de lumière. Comptez 80 à 90 cm de largeur au sol pour un modèle enveloppant.",
+  },
+  {
+    routeId: "mobilier-chaises",
+    group: "mobilier_interieur",
+    path: "/mobilier/chaises",
+    title: "Chaises",
+    description: "Chaises de salle à manger en bois massif, cannage et paille tressée.",
+    scope: { furnitureTypes: ["chaise"] },
+    lockedFilterLabel: "Chaises",
+    seoTitle: "Chaises de salle à manger | HBS HOME",
+    seoDescription:
+      "Chaises en bois massif, assise cannée ou paillée, à associer à nos galettes de chaise. Livraison en Tunisie.",
+    seoBlock:
+      "Prévoyez 60 cm de largeur par convive autour de la table. Nos galettes de chaise carrées et rondes sont dimensionnées pour ces assises.",
+  },
+  {
+    routeId: "mobilier-tables",
+    group: "mobilier_interieur",
+    path: "/mobilier/tables",
+    title: "Tables basses et consoles",
+    description: "Tables basses, tables d'appoint et consoles en bois, verre et marbre.",
+    scope: { furnitureTypes: ["table_basse", "table_appoint", "console"] },
+    lockedFilterLabel: "Tables et consoles",
+    seoTitle: "Tables basses, tables d'appoint et consoles | HBS HOME",
+    seoDescription:
+      "Tables basses rondes, tables d'appoint et consoles d'entrée en bois massif, verre ou marbre. Livraison en Tunisie.",
+    seoBlock:
+      "Une table basse se choisit à la même hauteur que l'assise du canapé, à 40 cm de distance. Les plateaux en verre et en marbre voyagent en emballage renforcé.",
+  },
+  {
+    routeId: "mobilier-rangements",
+    group: "mobilier_interieur",
+    path: "/mobilier/rangements",
+    title: "Meubles TV et rangements",
+    description: "Meubles TV, buffets et étagères en bois massif et cannage.",
+    scope: { furnitureTypes: ["meuble_tv", "buffet", "etagere"] },
+    lockedFilterLabel: "Rangements",
+    seoTitle: "Meubles TV, buffets et étagères | HBS HOME",
+    seoDescription:
+      "Meubles TV bas, buffets et étagères en bois massif et cannage. Livraison sur rendez-vous en Tunisie.",
+    seoBlock:
+      "Un meuble TV se choisit au moins 20 cm plus large que l'écran. Les buffets et étagères hauts sont livrés avec le nécessaire de fixation murale anti-basculement.",
+  },
+  {
+    routeId: "mobilier-poufs",
+    group: "mobilier_interieur",
+    path: "/mobilier/poufs",
+    title: "Poufs et assises d'appoint",
+    description: "Poufs en velours, cuir synthétique et fibres naturelles.",
+    scope: { furnitureTypes: ["pouf"] },
+    lockedFilterLabel: "Poufs",
+    seoTitle: "Poufs et assises d'appoint | HBS HOME",
+    seoDescription:
+      "Poufs ronds en velours, cuir synthétique et fibres naturelles, à poser au salon ou en bout de lit.",
+    seoBlock:
+      "Le pouf sert d'assise d'appoint, de repose-pieds ou de table basse avec un plateau. C'est la pièce la plus simple à ajouter dans un petit salon.",
+  },
+  {
+    routeId: "mobilier-tetes-de-lit",
+    group: "mobilier_interieur",
+    path: "/mobilier/tetes-de-lit",
+    title: "Têtes de lit",
+    description: "Têtes de lit capitonnées en lin et velours, pour lits 140 à 180 cm.",
+    scope: { furnitureTypes: ["tete_de_lit"] },
+    lockedFilterLabel: "Têtes de lit",
+    seoTitle: "Têtes de lit en lin et velours | HBS HOME",
+    seoDescription:
+      "Têtes de lit rembourrées en lin lavé et velours pour lits 140, 160 et 180 cm. Livraison en Tunisie.",
+    seoBlock:
+      "La tête de lit se fixe au mur à environ 60 cm au-dessus du sommier. Choisissez-la à la largeur exacte du lit, ou 10 cm plus large pour un effet enveloppant.",
+  },
+  {
+    routeId: "plantes_decoration",
+    group: "plantes_decoration",
+    path: "/plantes",
+    title: "Plantes et décoration végétale",
+    description:
+      "Plantes artificielles et naturelles, arbres, suspensions, compositions séchées et cache-pots.",
+    seoTitle: "Plantes d'intérieur et cache-pots en Tunisie | HBS HOME",
+    seoDescription:
+      "Plantes artificielles réalistes, plantes naturelles faciles d'entretien, compositions séchées et cache-pots. Livraison en Tunisie.",
+    seoBlock:
+      "Le végétal adoucit un intérieur minéral et complète nos textiles. Nos plantes artificielles ne demandent aucun entretien et supportent les pièces sombres ; nos plantes naturelles sont sélectionnées parmi les variétés qui tolèrent la chaleur et un arrosage espacé. Filtrez par nature, taille, luminosité ou niveau d'entretien pour trouver la plante adaptée à votre pièce.",
+  },
+  {
+    routeId: "plantes-artificielles",
+    group: "plantes_decoration",
+    path: "/plantes/artificielles",
+    title: "Plantes artificielles",
+    description: "Feuillages réalistes sans entretien, pour les pièces peu lumineuses.",
+    scope: { plantNatures: ["artificielle"] },
+    lockedFilterLabel: "Plantes artificielles",
+    seoTitle: "Plantes artificielles réalistes | HBS HOME",
+    seoDescription:
+      "Oliviers, monsteras et feuillages artificiels réalistes, sans arrosage ni lumière. Livraison partout en Tunisie.",
+    seoBlock:
+      "Une plante artificielle se dépoussière au chiffon sec une fois par mois. Placée hors du soleil direct, elle garde ses couleurs pendant des années.",
+  },
+  {
+    routeId: "plantes-naturelles",
+    group: "plantes_decoration",
+    path: "/plantes/naturelles",
+    title: "Plantes naturelles",
+    description: "Variétés résistantes adaptées au climat tunisien, livrées en pot.",
+    scope: { plantNatures: ["naturelle"] },
+    lockedFilterLabel: "Plantes naturelles",
+    seoTitle: "Plantes vertes d'intérieur | HBS HOME",
+    seoDescription:
+      "Plantes vertes faciles d'entretien, livrées en pot avec conseils d'arrosage. Livraison soignée en Tunisie.",
+    seoBlock:
+      "En Tunisie, l'ennemi des plantes d'intérieur est l'excès d'arrosage plus que la chaleur. Attendez que les premiers centimètres de terre soient secs avant d'arroser de nouveau.",
+  },
+  {
+    routeId: "plantes-grandes",
+    group: "plantes_decoration",
+    path: "/plantes/grandes-plantes",
+    title: "Grandes plantes et arbres",
+    description: "Sujets de plus d'un mètre pour habiller un angle de salon.",
+    scope: { plantTypes: ["grande_plante", "arbre_artificiel"] },
+    lockedFilterLabel: "Grandes plantes",
+    seoTitle: "Grandes plantes et arbres d'intérieur | HBS HOME",
+    seoDescription:
+      "Oliviers, ficus et grandes plantes de plus d'un mètre pour salon et entrée. Livraison sur rendez-vous en Tunisie.",
+    seoBlock:
+      "Un grand sujet se place dans un angle, à côté d'un canapé ou près d'une fenêtre voilée. Prévoyez un cache-pot d'un diamètre supérieur de 2 à 4 cm à celui du pot de culture.",
+  },
+  {
+    routeId: "plantes-suspendues",
+    group: "plantes_decoration",
+    path: "/plantes/suspendues",
+    title: "Plantes suspendues",
+    description: "Retombantes en suspension macramé, pour étagères et fenêtres.",
+    scope: { plantTypes: ["plante_suspendue"] },
+    lockedFilterLabel: "Plantes suspendues",
+    seoTitle: "Plantes suspendues et macramé | HBS HOME",
+    seoDescription:
+      "Plantes retombantes en suspension macramé pour fenêtres, étagères et coins de salon. Livraison en Tunisie.",
+    seoBlock:
+      "Une suspension se fixe dans le plafond avec une cheville adaptée au poids en charge, arrosage compris. Comptez 20 cm de dégagement autour du feuillage.",
+  },
+  {
+    routeId: "plantes-compositions",
+    group: "plantes_decoration",
+    path: "/plantes/compositions",
+    title: "Compositions et fleurs séchées",
+    description: "Bouquets séchés, pampa et eucalyptus stabilisé.",
+    scope: { plantTypes: ["composition"] },
+    lockedFilterLabel: "Compositions",
+    seoTitle: "Fleurs séchées et compositions | HBS HOME",
+    seoDescription:
+      "Bouquets de pampa, eucalyptus stabilisé et compositions séchées pour console et table. Livraison en Tunisie.",
+    seoBlock:
+      "Les tiges séchées n'ont besoin d'aucun entretien : évitez simplement l'humidité et le soleil direct, qui décolorent les épis.",
+  },
+  {
+    routeId: "plantes-cache-pots",
+    group: "plantes_decoration",
+    path: "/plantes/cache-pots",
+    title: "Pots et cache-pots",
+    description: "Cache-pots en terre cuite, céramique et fibres tressées.",
+    scope: { plantTypes: ["cache_pot"] },
+    lockedFilterLabel: "Cache-pots",
+    seoTitle: "Pots et cache-pots décoratifs | HBS HOME",
+    seoDescription:
+      "Cache-pots en terre cuite, céramique émaillée et fibres tressées, plusieurs diamètres. Livraison en Tunisie.",
+    seoBlock:
+      "Choisissez un cache-pot 2 à 4 cm plus large que le pot de culture, et videz la soucoupe après chaque arrosage pour éviter que les racines ne stagnent dans l'eau.",
   },
 ];
 
