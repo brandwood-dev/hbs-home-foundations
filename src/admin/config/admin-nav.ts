@@ -22,6 +22,8 @@ export interface AdminNavItem {
   label: string;
   href: string;
   icon: ComponentType<{ className?: string }>;
+  requiredPermission: string;
+  available: boolean;
 }
 
 export interface AdminNavGroup {
@@ -32,40 +34,132 @@ export interface AdminNavGroup {
 export const ADMIN_NAV: AdminNavGroup[] = [
   {
     title: "Vue d'ensemble",
-    items: [{ label: "Tableau de bord", href: "/admin", icon: LayoutDashboard }],
+    items: [
+      {
+        label: "Tableau de bord",
+        href: "/admin",
+        icon: LayoutDashboard,
+        requiredPermission: "admin.session_read",
+        available: true,
+      },
+    ],
   },
   {
     title: "Catalogue",
     items: [
-      { label: "Produits", href: "/admin/produits", icon: Package },
-      { label: "Catégories", href: "/admin/categories", icon: ListTree },
-      { label: "Attributs et filtres", href: "/admin/attributs", icon: SlidersHorizontal },
-      { label: "Stock", href: "/admin/stock", icon: Boxes },
+      {
+        label: "Produits",
+        href: "/admin/produits",
+        icon: Package,
+        requiredPermission: "products.read",
+        available: true,
+      },
+      {
+        label: "Catégories",
+        href: "/admin/categories",
+        icon: ListTree,
+        requiredPermission: "categories.read",
+        available: true,
+      },
+      {
+        label: "Attributs et filtres",
+        href: "/admin/attributs",
+        icon: SlidersHorizontal,
+        requiredPermission: "categories.read",
+        available: true,
+      },
+      {
+        label: "Stock",
+        href: "/admin/stock",
+        icon: Boxes,
+        requiredPermission: "inventory.read",
+        available: true,
+      },
     ],
   },
   {
     title: "Ventes",
     items: [
-      { label: "Commandes", href: "/admin/commandes", icon: ShoppingCart },
-      { label: "Clients", href: "/admin/clients", icon: Users },
-      { label: "Promotions", href: "/admin/promotions", icon: Percent },
+      {
+        label: "Commandes",
+        href: "/admin/commandes",
+        icon: ShoppingCart,
+        requiredPermission: "orders.read",
+        available: true,
+      },
+      {
+        label: "Clients",
+        href: "/admin/clients",
+        icon: Users,
+        requiredPermission: "customers.read",
+        available: true,
+      },
+      {
+        label: "Promotions",
+        href: "/admin/promotions",
+        icon: Percent,
+        requiredPermission: "promotions.read",
+        available: false,
+      },
     ],
   },
   {
     title: "Contenu",
     items: [
-      { label: "Page d'accueil", href: "/admin/contenu/accueil", icon: Home },
-      { label: "Navigation", href: "/admin/contenu/navigation", icon: Menu },
-      { label: "Pages éditoriales", href: "/admin/contenu/pages", icon: FileText },
-      { label: "Médias", href: "/admin/medias", icon: Image },
+      {
+        label: "Page d'accueil",
+        href: "/admin/contenu/accueil",
+        icon: Home,
+        requiredPermission: "content.read",
+        available: false,
+      },
+      {
+        label: "Navigation",
+        href: "/admin/contenu/navigation",
+        icon: Menu,
+        requiredPermission: "content.read",
+        available: false,
+      },
+      {
+        label: "Pages éditoriales",
+        href: "/admin/contenu/pages",
+        icon: FileText,
+        requiredPermission: "content.read",
+        available: false,
+      },
+      {
+        label: "Médias",
+        href: "/admin/medias",
+        icon: Image,
+        requiredPermission: "media.read",
+        available: false,
+      },
     ],
   },
   {
     title: "Administration",
     items: [
-      { label: "Paramètres", href: "/admin/parametres", icon: Settings },
-      { label: "Utilisateurs et rôles", href: "/admin/utilisateurs", icon: UserCog },
-      { label: "Journal d'activité", href: "/admin/journal-activite", icon: ScrollText },
+      {
+        label: "Paramètres",
+        href: "/admin/parametres",
+        icon: Settings,
+        requiredPermission: "settings.manage",
+        available: false,
+      },
+      {
+        label: "Utilisateurs et rôles",
+        href: "/admin/utilisateurs",
+        icon: UserCog,
+        requiredPermission: "users.read",
+        available: false,
+      },
+      {
+        label: "Journal d'activité",
+        href: "/admin/journal-activite",
+        icon: ScrollText,
+        requiredPermission: "audit.read",
+        available: false,
+      },
     ],
   },
 ];

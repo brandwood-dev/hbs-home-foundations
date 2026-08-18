@@ -1,5 +1,6 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { AdminShell } from "@/admin/components/layout/AdminShell";
+import { AdminAccessGate } from "@/admin/components/auth/AdminAccessGate";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -13,9 +14,16 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminLayout() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  if (pathname === "/admin/connexion" || pathname === "/admin/auth/callback") {
+    return <Outlet />;
+  }
+
   return (
-    <AdminShell>
-      <Outlet />
-    </AdminShell>
+    <AdminAccessGate>
+      <AdminShell>
+        <Outlet />
+      </AdminShell>
+    </AdminAccessGate>
   );
 }

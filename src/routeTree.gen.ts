@@ -39,6 +39,7 @@ import { Route as AccessoiresTringlesRouteImport } from './routes/accessoires.tr
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminAttributsRouteImport } from './routes/admin/attributs'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
+import { Route as AdminConnexionRouteImport } from './routes/admin/connexion'
 import { Route as AdminStockRouteImport } from './routes/admin/stock'
 import { Route as CommandeIndexRouteImport } from './routes/commande.index'
 import { Route as CommandeConfirmationRouteImport } from './routes/commande.confirmation'
@@ -86,6 +87,7 @@ import { Route as VoilagesGrandeLargeurRouteImport } from './routes/voilages.gra
 import { Route as VoilagesMotifsRouteImport } from './routes/voilages.motifs'
 import { Route as VoilagesRailRouteImport } from './routes/voilages.rail'
 import { Route as VoilagesUnisRouteImport } from './routes/voilages.unis'
+import { Route as AdminAuthCallbackRouteImport } from './routes/admin/auth.callback'
 import { Route as AdminClientsIndexRouteImport } from './routes/admin/clients.index'
 import { Route as AdminClientsCustomerIdRouteImport } from './routes/admin/clients.$customerId'
 import { Route as AdminCommandesIndexRouteImport } from './routes/admin/commandes.index'
@@ -243,6 +245,11 @@ const AdminAttributsRoute = AdminAttributsRouteImport.update({
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminConnexionRoute = AdminConnexionRouteImport.update({
+  id: '/connexion',
+  path: '/connexion',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminStockRoute = AdminStockRouteImport.update({
@@ -480,6 +487,11 @@ const VoilagesUnisRoute = VoilagesUnisRouteImport.update({
   path: '/voilages/unis',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAuthCallbackRoute = AdminAuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminClientsIndexRoute = AdminClientsIndexRouteImport.update({
   id: '/clients/',
   path: '/clients/',
@@ -545,6 +557,7 @@ export interface FileRoutesByFullPath {
   '/accessoires/tringles': typeof AccessoiresTringlesRoute
   '/admin/attributs': typeof AdminAttributsRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/connexion': typeof AdminConnexionRoute
   '/admin/stock': typeof AdminStockRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
   '/coussins/lin': typeof CoussinsLinRoute
@@ -594,6 +607,7 @@ export interface FileRoutesByFullPath {
   '/rideaux/': typeof RideauxIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/voilages/': typeof VoilagesIndexRoute
+  '/admin/auth/callback': typeof AdminAuthCallbackRoute
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
@@ -630,6 +644,7 @@ export interface FileRoutesByTo {
   '/accessoires/tringles': typeof AccessoiresTringlesRoute
   '/admin/attributs': typeof AdminAttributsRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/connexion': typeof AdminConnexionRoute
   '/admin/stock': typeof AdminStockRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
   '/coussins/lin': typeof CoussinsLinRoute
@@ -679,6 +694,7 @@ export interface FileRoutesByTo {
   '/rideaux': typeof RideauxIndexRoute
   '/stores': typeof StoresIndexRoute
   '/voilages': typeof VoilagesIndexRoute
+  '/admin/auth/callback': typeof AdminAuthCallbackRoute
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
@@ -717,6 +733,7 @@ export interface FileRoutesById {
   '/accessoires/tringles': typeof AccessoiresTringlesRoute
   '/admin/attributs': typeof AdminAttributsRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/connexion': typeof AdminConnexionRoute
   '/admin/stock': typeof AdminStockRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
   '/coussins/lin': typeof CoussinsLinRoute
@@ -766,6 +783,7 @@ export interface FileRoutesById {
   '/rideaux/': typeof RideauxIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/voilages/': typeof VoilagesIndexRoute
+  '/admin/auth/callback': typeof AdminAuthCallbackRoute
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
@@ -805,6 +823,7 @@ export interface FileRouteTypes {
     | '/accessoires/tringles'
     | '/admin/attributs'
     | '/admin/categories'
+    | '/admin/connexion'
     | '/admin/stock'
     | '/commande/confirmation'
     | '/coussins/lin'
@@ -854,6 +873,7 @@ export interface FileRouteTypes {
     | '/rideaux/'
     | '/stores/'
     | '/voilages/'
+    | '/admin/auth/callback'
     | '/admin/clients/$customerId'
     | '/admin/commandes/$orderId'
     | '/admin/produits/$productId'
@@ -890,6 +910,7 @@ export interface FileRouteTypes {
     | '/accessoires/tringles'
     | '/admin/attributs'
     | '/admin/categories'
+    | '/admin/connexion'
     | '/admin/stock'
     | '/commande/confirmation'
     | '/coussins/lin'
@@ -939,6 +960,7 @@ export interface FileRouteTypes {
     | '/rideaux'
     | '/stores'
     | '/voilages'
+    | '/admin/auth/callback'
     | '/admin/clients/$customerId'
     | '/admin/commandes/$orderId'
     | '/admin/produits/$productId'
@@ -976,6 +998,7 @@ export interface FileRouteTypes {
     | '/accessoires/tringles'
     | '/admin/attributs'
     | '/admin/categories'
+    | '/admin/connexion'
     | '/admin/stock'
     | '/commande/confirmation'
     | '/coussins/lin'
@@ -1025,6 +1048,7 @@ export interface FileRouteTypes {
     | '/rideaux/'
     | '/stores/'
     | '/voilages/'
+    | '/admin/auth/callback'
     | '/admin/clients/$customerId'
     | '/admin/commandes/$orderId'
     | '/admin/produits/$productId'
@@ -1320,6 +1344,13 @@ declare module '@tanstack/react-router' {
       path: '/categories'
       fullPath: '/admin/categories'
       preLoaderRoute: typeof AdminCategoriesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/connexion': {
+      id: '/admin/connexion'
+      path: '/connexion'
+      fullPath: '/admin/connexion'
+      preLoaderRoute: typeof AdminConnexionRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/stock': {
@@ -1651,6 +1682,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VoilagesUnisRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/auth/callback': {
+      id: '/admin/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/admin/auth/callback'
+      preLoaderRoute: typeof AdminAuthCallbackRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/clients/': {
       id: '/admin/clients/'
       path: '/clients'
@@ -1706,8 +1744,10 @@ declare module '@tanstack/react-router' {
 interface AdminRouteRouteChildren {
   AdminAttributsRoute: typeof AdminAttributsRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminConnexionRoute: typeof AdminConnexionRoute
   AdminStockRoute: typeof AdminStockRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminAuthCallbackRoute: typeof AdminAuthCallbackRoute
   AdminClientsCustomerIdRoute: typeof AdminClientsCustomerIdRoute
   AdminCommandesOrderIdRoute: typeof AdminCommandesOrderIdRoute
   AdminProduitsProductIdRoute: typeof AdminProduitsProductIdRoute
@@ -1720,8 +1760,10 @@ interface AdminRouteRouteChildren {
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAttributsRoute: AdminAttributsRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminConnexionRoute: AdminConnexionRoute,
   AdminStockRoute: AdminStockRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminAuthCallbackRoute: AdminAuthCallbackRoute,
   AdminClientsCustomerIdRoute: AdminClientsCustomerIdRoute,
   AdminCommandesOrderIdRoute: AdminCommandesOrderIdRoute,
   AdminProduitsProductIdRoute: AdminProduitsProductIdRoute,

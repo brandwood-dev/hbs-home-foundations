@@ -4,6 +4,31 @@ Les prix sont exprimés en millimes (1 DT = 1000). Le frontend consomme les repo
 (`ProductRepository`, `CartRepository`, `OrderRepository`) ; le passage à l'API ne doit modifier
 aucun composant.
 
+Le contrat machine faisant foi est `openapi/hbs-home-api.v1.json`. Ce document complète le contrat
+avec les règles métier et de sécurité attendues.
+
+## Identité et autorisations Admin (phase 2)
+
+Toutes les routes Admin reçoivent un access token Supabase dans `Authorization: Bearer <token>`.
+L'API vérifie la signature avec le JWKS du projet, puis recharge le profil, les rôles et les
+permissions depuis PostgreSQL. Les métadonnées modifiables de l'utilisateur ne sont jamais une
+source d'autorisation.
+
+### `GET /api/v1/admin/session`
+
+Accessible à un profil Admin actif dès `aal1` afin de permettre l'enrôlement MFA. Retourne l'identité
+minimale, les rôles, les permissions, le niveau d'assurance et `mfaRequired`. Un utilisateur Supabase
+sans profil Admin actif reçoit `403 ADMIN_ACCESS_DENIED`.
+
+### `GET /api/v1/admin/audit-events?limit=50`
+
+Exige `aal2` et la permission `audit.read`. Retourne les événements immuables les plus récents. Les
+autres routes Admin sensibles suivront la même séquence : JWT valide, profil actif, MFA, permission
+explicite, audit.
+
+Erreurs normalisées : `401 AUTH_REQUIRED`, `401 INVALID_ACCESS_TOKEN`, `403 ADMIN_ACCESS_DENIED`,
+`403 MFA_REQUIRED`, `403 PERMISSION_DENIED`.
+
 ## Suivi de commande sans compte
 
 ### `POST /api/v1/orders/track`
@@ -160,17 +185,20 @@ DELETE /api/v1/favorites
 ## Guide des mesures, sur-mesure et professionnels
 
 ### GET /api/v1/measurement-rules
+
 Retourne l'objet `MeasurementRules` (limites, ampleurs autorisées, ajustements sol, jeux de pose
 store, tolérances de recommandation). Aujourd'hui servi par `MockMeasurementRulesRepository`.
 Réponse : `{ "data": MeasurementRules }`. Doit être reconfigurable sans redéploiement.
 
 ### POST /api/v1/custom-quotes
+
 Corps : `CustomQuoteRequest` (type de produit, liste d'ouvertures avec dimensions, préférences,
 coordonnées, métadonnées de pièces jointes, consentement).
 Réponse : `{ "data": { "reference": "DEV-YYMMDD-XXXX", "submittedAt": ISO8601 } }`.
 Les fichiers seront envoyés séparément (upload signé) ; le front n'envoie que les métadonnées.
 
 ### POST /api/v1/professional-leads
+
 Corps : `ProfessionalLeadRequest` (raison sociale, activité, volume, contact, message, consentement).
 Réponse : `{ "data": { "reference": "PRO-YYMMDD-XXXX", "submittedAt": ISO8601 } }`.
 

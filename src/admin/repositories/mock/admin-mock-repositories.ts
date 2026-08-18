@@ -95,7 +95,6 @@ import { calculateCustomerMetrics } from "@/admin/services/customers/admin-custo
 import { findPotentialCustomerDuplicates } from "@/admin/services/customers/admin-customer-duplicates";
 import { sanitizeCustomerNote } from "@/admin/services/customers/admin-customer-normalization";
 
-
 /** Latence simulée : les écrans exercent leurs états de chargement. */
 function delay<T>(value: T, ms = 120): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms));
@@ -671,7 +670,10 @@ export class MockAdminOrderRepository implements AdminOrderRepository {
       if (params.status?.length && !params.status.includes(order.status)) return false;
       if (params.paymentStatus?.length && !params.paymentStatus.includes(order.paymentStatus))
         return false;
-      if (params.shippingStatus?.length && !params.shippingStatus.includes(getShippingStatus(order)))
+      if (
+        params.shippingStatus?.length &&
+        !params.shippingStatus.includes(getShippingStatus(order))
+      )
         return false;
       if (
         params.shippingProfiles?.length &&
@@ -824,7 +826,8 @@ export class MockAdminOrderRepository implements AdminOrderRepository {
   }
 
   async updateShipping(input: UpdateAdminOrderShippingInput): Promise<AdminOrder> {
-    if (input.shippingFeeMinor < 0) throw new Error("Les frais de livraison doivent être positifs.");
+    if (input.shippingFeeMinor < 0)
+      throw new Error("Les frais de livraison doivent être positifs.");
     const order = mutateDb((db) => {
       const found = findOrder(db, input.orderId);
       found.shipment = {
@@ -1098,8 +1101,8 @@ export class MockAdminCustomerRepository implements AdminCustomerRepository {
     const db = getDb();
     const customer = db.customers.find((item) => item.id === customerId);
     if (!customer) return delay(null);
-    const orders = clone(db.orders.filter((order) => order.customerId === customerId)).sort((a, b) =>
-      b.createdAt.localeCompare(a.createdAt),
+    const orders = clone(db.orders.filter((order) => order.customerId === customerId)).sort(
+      (a, b) => b.createdAt.localeCompare(a.createdAt),
     );
     const duplicates = findPotentialCustomerDuplicates(customer, clone(db.customers)).map(
       (match) => match.customer,
@@ -1144,10 +1147,7 @@ export class MockAdminCustomerRepository implements AdminCustomerRepository {
     return delay(clone(updated));
   }
 
-  async addAddress(
-    customerId: string,
-    address: AdminCustomerAddressInput,
-  ): Promise<AdminCustomer> {
+  async addAddress(customerId: string, address: AdminCustomerAddressInput): Promise<AdminCustomer> {
     const updated = mutateDb((db) => {
       const customer = findCustomer(db, customerId);
       const isFirst = customer.addresses.length === 0;
@@ -1293,7 +1293,6 @@ export class MockAdminCustomerRepository implements AdminCustomerRepository {
     return delay(clone(merged));
   }
 }
-
 
 export class MockAdminPromotionRepository implements AdminPromotionRepository {
   async list(): Promise<AdminPromotion[]> {

@@ -6,7 +6,6 @@ import type {
   AdminOrderListParams,
 } from "@/admin/repositories/interfaces";
 
-
 /** Clés de cache du back-office. */
 export const adminKeys = {
   all: ["admin"] as const,
@@ -95,7 +94,6 @@ export function useAdminCustomer(id: string) {
     enabled: Boolean(id),
   });
 }
-
 
 export function useAdminPromotions() {
   return useQuery(clientQuery(adminKeys.promotions(), () => adminRepositories.promotions.list()));

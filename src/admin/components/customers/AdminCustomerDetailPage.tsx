@@ -185,7 +185,9 @@ export function AdminCustomerDetailPage({ customerId }: { customerId: string }) 
               {(customer.notes ?? []).map((note) => (
                 <li key={note.id} className="rounded-md border border-border p-2 text-sm">
                   <p>{note.text}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{formatDateTime(note.createdAt)}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {formatDateTime(note.createdAt)}
+                  </p>
                 </li>
               ))}
             </ul>

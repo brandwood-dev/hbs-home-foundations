@@ -148,7 +148,10 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
                 </thead>
                 <tbody>
                   {order.items.map((item) => (
-                    <tr key={`${item.productId}-${item.variantId}`} className="border-b border-border last:border-0">
+                    <tr
+                      key={`${item.productId}-${item.variantId}`}
+                      className="border-b border-border last:border-0"
+                    >
                       <td className="py-2">
                         <p className="font-medium">{item.productName}</p>
                         <p className="text-xs text-muted-foreground">
@@ -183,7 +186,9 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
               </div>
               <div className="flex justify-between font-semibold">
                 <dt>Total</dt>
-                <dd className="tabular-nums">{total === null ? "À confirmer" : formatMoney(total)}</dd>
+                <dd className="tabular-nums">
+                  {total === null ? "À confirmer" : formatMoney(total)}
+                </dd>
               </div>
             </dl>
           </AdminCard>

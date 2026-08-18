@@ -1,6 +1,8 @@
 import { useState, type ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
-import { ExternalLink, Menu as MenuIcon, ShieldAlert, X } from "lucide-react";
+import { ExternalLink, LogOut, Menu as MenuIcon, ShieldAlert, X } from "lucide-react";
+import { useAdminAuth } from "@/admin/auth/AdminAuthProvider";
+import { useAdminAuthorization } from "@/admin/auth/AdminAuthorizationContext";
 import { ADMIN_NAV } from "@/admin/config/admin-nav";
 import { adminConfig } from "@/admin/config/admin.config";
 import { AppLink } from "@/components/ui/app-link";
@@ -15,6 +17,11 @@ function isActive(pathname: string, href: string): boolean {
 
 export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const { hasPermission } = useAdminAuthorization();
+  const visibleGroups = ADMIN_NAV.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => item.available && hasPermission(item.requiredPermission)),
+  })).filter((group) => group.items.length > 0);
 
   return (
     <nav aria-label="Navigation du back-office" className="flex h-full flex-col gap-6 p-4">
@@ -30,7 +37,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
       </AppLink>
 
       <div className="flex-1 space-y-6 overflow-y-auto">
-        {ADMIN_NAV.map((group) => (
+        {visibleGroups.map((group) => (
           <div key={group.title}>
             <p className="px-2 pb-1 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
               {group.title}
@@ -91,6 +98,16 @@ export function AdminMobileSidebar({
 }
 
 export function AdminTopbar({ onOpenMenu }: { onOpenMenu: () => void }) {
+  const auth = useAdminAuth();
+  const { session } = useAdminAuthorization();
+  const label = session.user.displayName ?? session.user.email;
+  const initials = label
+    .split(/[\s@._-]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-card px-4">
       <Button
@@ -118,9 +135,18 @@ export function AdminTopbar({ onOpenMenu }: { onOpenMenu: () => void }) {
             aria-hidden
             className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary"
           >
-            HB
+            {initials || "HB"}
           </span>
-          <span className="hidden text-muted-foreground sm:inline">Hana Ben Salah</span>
+          <span className="hidden max-w-48 truncate text-muted-foreground sm:inline">{label}</span>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Se déconnecter"
+            onClick={() => void auth.signOut()}
+          >
+            <LogOut className="size-4" />
+          </Button>
         </div>
       </div>
     </header>
@@ -143,8 +169,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <AdminTopbar onOpenMenu={() => setMenuOpen(true)} />
           <main className="min-w-0 flex-1 p-4 lg:p-6">{children}</main>
           <footer className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
-            Données de démonstration locales. Authentification, permissions et API restent à
-            connecter au backend.
+            Authentification et permissions connectées. Les données métier restent simulées jusqu’à
+            leur phase d’intégration API.
           </footer>
         </div>
       </div>

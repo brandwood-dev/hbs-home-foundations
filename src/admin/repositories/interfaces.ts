@@ -23,7 +23,6 @@ import type {
 } from "@/admin/types/admin.types";
 import type { AdminCustomerMetrics } from "@/admin/services/customers/admin-customer-metrics";
 
-
 /** Contrat CRUD générique — implémenté par les mocks aujourd'hui, l'API demain. */
 export interface CrudRepository<T, CreateInput, UpdateInput> {
   list(params?: Record<string, unknown>): Promise<T[]>;
@@ -195,11 +194,7 @@ export interface AdminOrderRepository {
 }
 
 export type AdminCustomerSort =
-  | "last_order"
-  | "name_asc"
-  | "spent_desc"
-  | "orders_desc"
-  | "aov_desc";
+  "last_order" | "name_asc" | "spent_desc" | "orders_desc" | "aov_desc";
 
 export interface AdminCustomerListParams {
   page: number;
@@ -276,7 +271,6 @@ export interface AdminCustomerRepository {
   findPotentialDuplicates(customerId: string): Promise<AdminCustomer[]>;
   mergeCustomers(input: MergeAdminCustomersInput): Promise<AdminCustomer>;
 }
-
 
 export type AdminPromotionInput = Omit<AdminPromotion, "id" | "usageCount">;
 export type AdminPromotionRepository = CrudRepository<
