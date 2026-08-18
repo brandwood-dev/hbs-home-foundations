@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("galettes-carrees");
 const title = "Galettes de chaise carrées | HBS HOME";
-const description = "Galettes carrées 40 × 40 et 45 × 45 cm, mousse haute densité et housse déhoussable. Livraison en Tunisie.";
+const description =
+  "Galettes carrées 40 × 40 et 45 × 45 cm, mousse haute densité et housse déhoussable. Livraison en Tunisie.";
 
 export const Route = createFileRoute("/galettes-de-chaise/carrees")({
   validateSearch: validateCatalogSearch,

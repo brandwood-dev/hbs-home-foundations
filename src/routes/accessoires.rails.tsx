@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("accessoires-rails");
 const title = "Rails à rideaux pour plafond | HBS HOME";
-const description = "Rails aluminium recoupables avec galets silencieux, pose plafond ou murale. Livraison partout en Tunisie.";
+const description =
+  "Rails aluminium recoupables avec galets silencieux, pose plafond ou murale. Livraison partout en Tunisie.";
 
 export const Route = createFileRoute("/accessoires/rails")({
   validateSearch: validateCatalogSearch,

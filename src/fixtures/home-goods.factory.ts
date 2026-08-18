@@ -173,7 +173,9 @@ export function buildHomeGood(seed: HomeGoodSeed, index: number, prefix: string)
     const quantity =
       variant.availability === "out_of_stock" ? 0 : Math.max(0, variant.quantity - axisIndex);
     const availability =
-      quantity === 0 && variant.availability === "in_stock" ? "made_to_order" : variant.availability;
+      quantity === 0 && variant.availability === "in_stock"
+        ? "made_to_order"
+        : variant.availability;
 
     variants.push({
       id: `${seed.slug}-v${variantIndex + 1}-${axisIndex + 1}`,
@@ -267,10 +269,11 @@ export function buildHomeGood(seed: HomeGoodSeed, index: number, prefix: string)
     details: seed.details,
     seo: {
       title: `${seed.name} | HBS HOME`,
-      description: `${seed.shortDescription} Livraison partout en Tunisie, paiement à la livraison.`.slice(
-        0,
-        158,
-      ),
+      description:
+        `${seed.shortDescription} Livraison partout en Tunisie, paiement à la livraison.`.slice(
+          0,
+          158,
+        ),
     },
     isThermal: false,
     isNew: seed.isNew,

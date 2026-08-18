@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("accessoires-petites-pieces");
 const title = "Anneaux, supports et kits de pose rideaux | HBS HOME";
-const description = "Anneaux à clip, crochets, supports muraux renforcés et kits de pose avec chevilles et vis. Livraison en Tunisie.";
+const description =
+  "Anneaux à clip, crochets, supports muraux renforcés et kits de pose avec chevilles et vis. Livraison en Tunisie.";
 
 export const Route = createFileRoute("/accessoires/petites-pieces")({
   validateSearch: validateCatalogSearch,

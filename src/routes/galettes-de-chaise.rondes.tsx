@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("galettes-rondes");
 const title = "Galettes de chaise rondes | HBS HOME";
-const description = "Galettes rondes Ø 38 et 42 cm pour chaises bistrot et tabourets, sous-face antidérapante. Livraison en Tunisie.";
+const description =
+  "Galettes rondes Ø 38 et 42 cm pour chaises bistrot et tabourets, sous-face antidérapante. Livraison en Tunisie.";
 
 export const Route = createFileRoute("/galettes-de-chaise/rondes")({
   validateSearch: validateCatalogSearch,

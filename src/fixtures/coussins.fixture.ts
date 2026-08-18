@@ -225,10 +225,7 @@ const seeds: HomeGoodSeed[] = [
     imageAlt: "Coussin rond en coton écru posé au sol",
     image: coussinRond,
     secondaryImage: coussinLin,
-    details: cushionDetails("100 % coton tissé", 260, [
-      "Livré garni",
-      "Zip circulaire dissimulé",
-    ]),
+    details: cushionDetails("100 % coton tissé", 260, ["Livré garni", "Zip circulaire dissimulé"]),
     isNew: false,
     isBestSeller: false,
     isFeatured: true,

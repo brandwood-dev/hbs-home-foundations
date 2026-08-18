@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("accessoires");
 const title = "Accessoires pour rideaux en Tunisie | HBS HOME";
-const description = "Tringles extensibles, rails plafond, embrasses, anneaux, supports et kits de pose. Livraison partout en Tunisie, paiement à la livraison.";
+const description =
+  "Tringles extensibles, rails plafond, embrasses, anneaux, supports et kits de pose. Livraison partout en Tunisie, paiement à la livraison.";
 
 export const Route = createFileRoute("/accessoires/")({
   validateSearch: validateCatalogSearch,

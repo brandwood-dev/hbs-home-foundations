@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("coussins-velours");
 const title = "Coussins en velours | HBS HOME";
-const description = "Housses de coussin en velours dense, coloris émeraude, bordeaux, bleu nuit et moutarde. Livraison partout en Tunisie.";
+const description =
+  "Housses de coussin en velours dense, coloris émeraude, bordeaux, bleu nuit et moutarde. Livraison partout en Tunisie.";
 
 export const Route = createFileRoute("/coussins/velours")({
   validateSearch: validateCatalogSearch,

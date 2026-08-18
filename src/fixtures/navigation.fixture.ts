@@ -144,9 +144,7 @@ export const mainNavigation: NavItem[] = [
       },
       {
         title: "Retenir",
-        links: [
-          { label: "Embrasses et attaches", href: "/accessoires/embrasses" },
-        ],
+        links: [{ label: "Embrasses et attaches", href: "/accessoires/embrasses" }],
       },
       {
         title: "Poser",

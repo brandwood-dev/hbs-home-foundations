@@ -5,12 +5,7 @@ export interface Money {
 
 /** Univers catalogue. Chaque catégorie possède ses propres axes de variantes. */
 export type ProductCategory =
-  | "rideaux"
-  | "voilages"
-  | "stores"
-  | "coussins"
-  | "galettes_de_chaise"
-  | "accessoires";
+  "rideaux" | "voilages" | "stores" | "coussins" | "galettes_de_chaise" | "accessoires";
 
 export type ProductAvailability = "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
 
@@ -82,14 +77,7 @@ export type AccessoryMaterial = Extract<
 >;
 
 export type AccessoryFinish =
-  | "noir_mat"
-  | "argent"
-  | "dore"
-  | "bronze"
-  | "blanc"
-  | "bois_naturel"
-  | "beige"
-  | "taupe";
+  "noir_mat" | "argent" | "dore" | "bronze" | "blanc" | "bois_naturel" | "beige" | "taupe";
 
 export type AccessoryMountingType = "mur" | "plafond" | "mur_et_plafond";
 

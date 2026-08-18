@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("galettes-de-chaise");
 const title = "Galettes de chaise en Tunisie | HBS HOME";
-const description = "Galettes de chaise carrées et rondes, épaisseur 4 à 6 cm, housses lavables en machine. Livraison partout en Tunisie.";
+const description =
+  "Galettes de chaise carrées et rondes, épaisseur 4 à 6 cm, housses lavables en machine. Livraison partout en Tunisie.";
 
 export const Route = createFileRoute("/galettes-de-chaise/")({
   validateSearch: validateCatalogSearch,

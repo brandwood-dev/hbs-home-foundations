@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("accessoires-tringles");
 const title = "Tringles à rideaux extensibles et bois | HBS HOME";
-const description = "Tringles à rideaux Ø 25 et 28 mm, extensibles ou fixes, supports muraux et embouts inclus. Livraison en Tunisie.";
+const description =
+  "Tringles à rideaux Ø 25 et 28 mm, extensibles ou fixes, supports muraux et embouts inclus. Livraison en Tunisie.";
 
 export const Route = createFileRoute("/accessoires/tringles")({
   validateSearch: validateCatalogSearch,

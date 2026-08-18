@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("coussins");
 const title = "Coussins déco en Tunisie | HBS HOME";
-const description = "Housses de coussin en lin, velours, coton et bouclette. Formats carrés, rectangulaires et ronds, garnissage en option, livraison partout en Tunisie.";
+const description =
+  "Housses de coussin en lin, velours, coton et bouclette. Formats carrés, rectangulaires et ronds, garnissage en option, livraison partout en Tunisie.";
 
 export const Route = createFileRoute("/coussins/")({
   validateSearch: validateCatalogSearch,

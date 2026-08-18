@@ -157,10 +157,7 @@ export function ProductVariantSelectors({
 
       {contentOptions.length > 1 && variant.cushionContent && (
         <fieldset>
-          <Legend
-            label="Contenu"
-            value={CUSHION_CONTENT_DESCRIPTIONS[variant.cushionContent]}
-          />
+          <Legend label="Contenu" value={CUSHION_CONTENT_DESCRIPTIONS[variant.cushionContent]} />
           <div className="mt-2 grid gap-2 sm:grid-cols-2">
             {contentOptions.map((option) => {
               const value = option.value as CushionContent;
@@ -188,10 +185,7 @@ export function ProductVariantSelectors({
 
       {fasteningOptions.length > 1 && variant.chairPadFastening && (
         <fieldset>
-          <Legend
-            label="Fixation"
-            value={CHAIR_PAD_FASTENING_LABELS[variant.chairPadFastening]}
-          />
+          <Legend label="Fixation" value={CHAIR_PAD_FASTENING_LABELS[variant.chairPadFastening]} />
           <div className="mt-2 flex flex-wrap gap-2">
             {fasteningOptions.map((option) => {
               const value = option.value as ChairPadFastening;

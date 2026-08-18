@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("coussins-lin");
 const title = "Coussins en lin lavé | HBS HOME";
-const description = "Housses de coussin en lin lavé, douces dès la première utilisation. Formats 45 et 50 cm, livraison en Tunisie.";
+const description =
+  "Housses de coussin en lin lavé, douces dès la première utilisation. Formats 45 et 50 cm, livraison en Tunisie.";
 
 export const Route = createFileRoute("/coussins/lin")({
   validateSearch: validateCatalogSearch,

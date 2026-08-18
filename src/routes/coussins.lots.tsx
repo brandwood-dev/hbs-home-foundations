@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("coussins-lots");
 const title = "Lots de coussins assortis | HBS HOME";
-const description = "Lots de 2 housses de coussin assorties, unies et rayées. Tarif dégressif et livraison en Tunisie.";
+const description =
+  "Lots de 2 housses de coussin assorties, unies et rayées. Tarif dégressif et livraison en Tunisie.";
 
 export const Route = createFileRoute("/coussins/lots")({
   validateSearch: validateCatalogSearch,

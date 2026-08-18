@@ -9,7 +9,8 @@ import {
 
 const config = getCatalogPage("accessoires-embrasses");
 const title = "Embrasses et attaches à rideaux | HBS HOME";
-const description = "Embrasses en corde tressée et attaches magnétiques sans perçage pour retenir vos rideaux. Livraison en Tunisie.";
+const description =
+  "Embrasses en corde tressée et attaches magnétiques sans perçage pour retenir vos rideaux. Livraison en Tunisie.";
 
 export const Route = createFileRoute("/accessoires/embrasses")({
   validateSearch: validateCatalogSearch,
