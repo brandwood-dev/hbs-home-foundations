@@ -6,7 +6,7 @@ import {
 import type { ShippingProfile } from "@/domain/product/product.types";
 
 /** Encart logistique affiché sur la fiche produit pour les envois non standards. */
-export function ProductShippingNotice({ profile }: { profile?: ShippingProfile }) {
+export function ProductShippingNotice({ profile }: { profile?: ShippingProfile | undefined }) {
   if (!profile || profile === "standard") return null;
 
   return (
