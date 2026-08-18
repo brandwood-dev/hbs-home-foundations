@@ -166,14 +166,10 @@ export function MeasurementGuideView() {
     }
     const supportWidth = parseCmInput(curtain.supportWidth);
     const openingWidth = parseCmInput(curtain.openingWidth);
-    const input: CurtainMeasurementInput = {
+    const built: CurtainMeasurementInput = {
       projectType: projectType === "voilages" ? "voilages" : "rideaux",
       openingType: curtain.openingType,
       supportType: curtain.supportType,
-      measuredHeight: 0,
-    } as unknown as CurtainMeasurementInput;
-    const built: CurtainMeasurementInput = {
-      ...input,
       measuredHeightCm: parseCmInput(curtain.measuredHeight) ?? 0,
       lengthTarget: curtain.lengthTarget,
       fullnessRatio: curtain.fullnessRatio,
