@@ -9,7 +9,8 @@ import {
   OPACITY_LABELS,
   PATTERN_LABELS,
   SELLING_MODE_LABELS,
-  SHAPE_LABELS,
+  CUSHION_SHAPE_LABELS,
+  CHAIR_PAD_SHAPE_LABELS,
 } from "@/domain/product/product.constants";
 import type { Product } from "@/domain/product/product.types";
 import { normalizeSearchQuery } from "@/services/search/normalize-search-query";
@@ -83,11 +84,11 @@ export function buildProductSearchDoc(product: Product): ProductSearchDoc {
   pushLabel(attributeTerms, product.pattern ? PATTERN_LABELS[product.pattern] : undefined);
   pushLabel(
     attributeTerms,
-    product.cushionShape ? SHAPE_LABELS[product.cushionShape] : undefined,
+    product.cushionShape ? CUSHION_SHAPE_LABELS[product.cushionShape] : undefined,
   );
   pushLabel(
     attributeTerms,
-    product.chairPadShape ? SHAPE_LABELS[product.chairPadShape] : undefined,
+    product.chairPadShape ? CHAIR_PAD_SHAPE_LABELS[product.chairPadShape] : undefined,
   );
   if (product.isThermal) attributeTerms.push("thermique");
   if (product.isLargeWidth) attributeTerms.push("grande largeur");
