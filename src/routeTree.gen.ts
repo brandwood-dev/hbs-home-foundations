@@ -30,11 +30,9 @@ import { Route as PanierRouteImport } from './routes/panier'
 import { Route as ProfessionnelsRouteImport } from './routes/professionnels'
 import { Route as PromotionsRouteImport } from './routes/promotions'
 import { Route as RechercheRouteImport } from './routes/recherche'
-import { Route as StoresRouteImport } from './routes/stores'
 import { Route as SuiviCommandeRouteImport } from './routes/suivi-commande'
 import { Route as SurMesureRouteImport } from './routes/sur-mesure'
 import { Route as TringlesRouteImport } from './routes/tringles'
-import { Route as VoilagesRouteImport } from './routes/voilages'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as CommandeIndexRouteImport } from './routes/commande.index'
 import { Route as CommandeConfirmationRouteImport } from './routes/commande.confirmation'
@@ -49,6 +47,17 @@ import { Route as RideauxSatinRouteImport } from './routes/rideaux.satin'
 import { Route as RideauxTamisantsRouteImport } from './routes/rideaux.tamisants'
 import { Route as RideauxThermiquesRouteImport } from './routes/rideaux.thermiques'
 import { Route as RideauxVeloursRouteImport } from './routes/rideaux.velours'
+import { Route as StoresIndexRouteImport } from './routes/stores.index'
+import { Route as StoresBambouRouteImport } from './routes/stores.bambou'
+import { Route as StoresEnrouleursRouteImport } from './routes/stores.enrouleurs'
+import { Route as StoresJourNuitRouteImport } from './routes/stores.jour-nuit'
+import { Route as StoresOccultantsRouteImport } from './routes/stores.occultants'
+import { Route as StoresSansPercageRouteImport } from './routes/stores.sans-percage'
+import { Route as VoilagesIndexRouteImport } from './routes/voilages.index'
+import { Route as VoilagesGrandeLargeurRouteImport } from './routes/voilages.grande-largeur'
+import { Route as VoilagesMotifsRouteImport } from './routes/voilages.motifs'
+import { Route as VoilagesRailRouteImport } from './routes/voilages.rail'
+import { Route as VoilagesUnisRouteImport } from './routes/voilages.unis'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -155,11 +164,6 @@ const RechercheRoute = RechercheRouteImport.update({
   path: '/recherche',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StoresRoute = StoresRouteImport.update({
-  id: '/stores',
-  path: '/stores',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SuiviCommandeRoute = SuiviCommandeRouteImport.update({
   id: '/suivi-commande',
   path: '/suivi-commande',
@@ -173,11 +177,6 @@ const SurMesureRoute = SurMesureRouteImport.update({
 const TringlesRoute = TringlesRouteImport.update({
   id: '/tringles',
   path: '/tringles',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VoilagesRoute = VoilagesRouteImport.update({
-  id: '/voilages',
-  path: '/voilages',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -250,6 +249,61 @@ const RideauxVeloursRoute = RideauxVeloursRouteImport.update({
   path: '/rideaux/velours',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StoresIndexRoute = StoresIndexRouteImport.update({
+  id: '/stores/',
+  path: '/stores/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoresBambouRoute = StoresBambouRouteImport.update({
+  id: '/stores/bambou',
+  path: '/stores/bambou',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoresEnrouleursRoute = StoresEnrouleursRouteImport.update({
+  id: '/stores/enrouleurs',
+  path: '/stores/enrouleurs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoresJourNuitRoute = StoresJourNuitRouteImport.update({
+  id: '/stores/jour-nuit',
+  path: '/stores/jour-nuit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoresOccultantsRoute = StoresOccultantsRouteImport.update({
+  id: '/stores/occultants',
+  path: '/stores/occultants',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoresSansPercageRoute = StoresSansPercageRouteImport.update({
+  id: '/stores/sans-percage',
+  path: '/stores/sans-percage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VoilagesIndexRoute = VoilagesIndexRouteImport.update({
+  id: '/voilages/',
+  path: '/voilages/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VoilagesGrandeLargeurRoute = VoilagesGrandeLargeurRouteImport.update({
+  id: '/voilages/grande-largeur',
+  path: '/voilages/grande-largeur',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VoilagesMotifsRoute = VoilagesMotifsRouteImport.update({
+  id: '/voilages/motifs',
+  path: '/voilages/motifs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VoilagesRailRoute = VoilagesRailRouteImport.update({
+  id: '/voilages/rail',
+  path: '/voilages/rail',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VoilagesUnisRoute = VoilagesUnisRouteImport.update({
+  id: '/voilages/unis',
+  path: '/voilages/unis',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -273,11 +327,9 @@ export interface FileRoutesByFullPath {
   '/professionnels': typeof ProfessionnelsRoute
   '/promotions': typeof PromotionsRoute
   '/recherche': typeof RechercheRoute
-  '/stores': typeof StoresRoute
   '/suivi-commande': typeof SuiviCommandeRoute
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
-  '/voilages': typeof VoilagesRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
@@ -289,9 +341,20 @@ export interface FileRoutesByFullPath {
   '/rideaux/tamisants': typeof RideauxTamisantsRoute
   '/rideaux/thermiques': typeof RideauxThermiquesRoute
   '/rideaux/velours': typeof RideauxVeloursRoute
+  '/stores/bambou': typeof StoresBambouRoute
+  '/stores/enrouleurs': typeof StoresEnrouleursRoute
+  '/stores/jour-nuit': typeof StoresJourNuitRoute
+  '/stores/occultants': typeof StoresOccultantsRoute
+  '/stores/sans-percage': typeof StoresSansPercageRoute
+  '/voilages/grande-largeur': typeof VoilagesGrandeLargeurRoute
+  '/voilages/motifs': typeof VoilagesMotifsRoute
+  '/voilages/rail': typeof VoilagesRailRoute
+  '/voilages/unis': typeof VoilagesUnisRoute
   '/admin/': typeof AdminIndexRoute
   '/commande/': typeof CommandeIndexRoute
   '/rideaux/': typeof RideauxIndexRoute
+  '/stores/': typeof StoresIndexRoute
+  '/voilages/': typeof VoilagesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -314,11 +377,9 @@ export interface FileRoutesByTo {
   '/professionnels': typeof ProfessionnelsRoute
   '/promotions': typeof PromotionsRoute
   '/recherche': typeof RechercheRoute
-  '/stores': typeof StoresRoute
   '/suivi-commande': typeof SuiviCommandeRoute
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
-  '/voilages': typeof VoilagesRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
@@ -330,9 +391,20 @@ export interface FileRoutesByTo {
   '/rideaux/tamisants': typeof RideauxTamisantsRoute
   '/rideaux/thermiques': typeof RideauxThermiquesRoute
   '/rideaux/velours': typeof RideauxVeloursRoute
+  '/stores/bambou': typeof StoresBambouRoute
+  '/stores/enrouleurs': typeof StoresEnrouleursRoute
+  '/stores/jour-nuit': typeof StoresJourNuitRoute
+  '/stores/occultants': typeof StoresOccultantsRoute
+  '/stores/sans-percage': typeof StoresSansPercageRoute
+  '/voilages/grande-largeur': typeof VoilagesGrandeLargeurRoute
+  '/voilages/motifs': typeof VoilagesMotifsRoute
+  '/voilages/rail': typeof VoilagesRailRoute
+  '/voilages/unis': typeof VoilagesUnisRoute
   '/admin': typeof AdminIndexRoute
   '/commande': typeof CommandeIndexRoute
   '/rideaux': typeof RideauxIndexRoute
+  '/stores': typeof StoresIndexRoute
+  '/voilages': typeof VoilagesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -357,11 +429,9 @@ export interface FileRoutesById {
   '/professionnels': typeof ProfessionnelsRoute
   '/promotions': typeof PromotionsRoute
   '/recherche': typeof RechercheRoute
-  '/stores': typeof StoresRoute
   '/suivi-commande': typeof SuiviCommandeRoute
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
-  '/voilages': typeof VoilagesRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
@@ -373,9 +443,20 @@ export interface FileRoutesById {
   '/rideaux/tamisants': typeof RideauxTamisantsRoute
   '/rideaux/thermiques': typeof RideauxThermiquesRoute
   '/rideaux/velours': typeof RideauxVeloursRoute
+  '/stores/bambou': typeof StoresBambouRoute
+  '/stores/enrouleurs': typeof StoresEnrouleursRoute
+  '/stores/jour-nuit': typeof StoresJourNuitRoute
+  '/stores/occultants': typeof StoresOccultantsRoute
+  '/stores/sans-percage': typeof StoresSansPercageRoute
+  '/voilages/grande-largeur': typeof VoilagesGrandeLargeurRoute
+  '/voilages/motifs': typeof VoilagesMotifsRoute
+  '/voilages/rail': typeof VoilagesRailRoute
+  '/voilages/unis': typeof VoilagesUnisRoute
   '/admin/': typeof AdminIndexRoute
   '/commande/': typeof CommandeIndexRoute
   '/rideaux/': typeof RideauxIndexRoute
+  '/stores/': typeof StoresIndexRoute
+  '/voilages/': typeof VoilagesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -401,11 +482,9 @@ export interface FileRouteTypes {
     | '/professionnels'
     | '/promotions'
     | '/recherche'
-    | '/stores'
     | '/suivi-commande'
     | '/sur-mesure'
     | '/tringles'
-    | '/voilages'
     | '/commande/confirmation'
     | '/produit/$slug'
     | '/rideaux/lin'
@@ -417,9 +496,20 @@ export interface FileRouteTypes {
     | '/rideaux/tamisants'
     | '/rideaux/thermiques'
     | '/rideaux/velours'
+    | '/stores/bambou'
+    | '/stores/enrouleurs'
+    | '/stores/jour-nuit'
+    | '/stores/occultants'
+    | '/stores/sans-percage'
+    | '/voilages/grande-largeur'
+    | '/voilages/motifs'
+    | '/voilages/rail'
+    | '/voilages/unis'
     | '/admin/'
     | '/commande/'
     | '/rideaux/'
+    | '/stores/'
+    | '/voilages/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -442,11 +532,9 @@ export interface FileRouteTypes {
     | '/professionnels'
     | '/promotions'
     | '/recherche'
-    | '/stores'
     | '/suivi-commande'
     | '/sur-mesure'
     | '/tringles'
-    | '/voilages'
     | '/commande/confirmation'
     | '/produit/$slug'
     | '/rideaux/lin'
@@ -458,9 +546,20 @@ export interface FileRouteTypes {
     | '/rideaux/tamisants'
     | '/rideaux/thermiques'
     | '/rideaux/velours'
+    | '/stores/bambou'
+    | '/stores/enrouleurs'
+    | '/stores/jour-nuit'
+    | '/stores/occultants'
+    | '/stores/sans-percage'
+    | '/voilages/grande-largeur'
+    | '/voilages/motifs'
+    | '/voilages/rail'
+    | '/voilages/unis'
     | '/admin'
     | '/commande'
     | '/rideaux'
+    | '/stores'
+    | '/voilages'
   id:
     | '__root__'
     | '/'
@@ -484,11 +583,9 @@ export interface FileRouteTypes {
     | '/professionnels'
     | '/promotions'
     | '/recherche'
-    | '/stores'
     | '/suivi-commande'
     | '/sur-mesure'
     | '/tringles'
-    | '/voilages'
     | '/commande/confirmation'
     | '/produit/$slug'
     | '/rideaux/lin'
@@ -500,9 +597,20 @@ export interface FileRouteTypes {
     | '/rideaux/tamisants'
     | '/rideaux/thermiques'
     | '/rideaux/velours'
+    | '/stores/bambou'
+    | '/stores/enrouleurs'
+    | '/stores/jour-nuit'
+    | '/stores/occultants'
+    | '/stores/sans-percage'
+    | '/voilages/grande-largeur'
+    | '/voilages/motifs'
+    | '/voilages/rail'
+    | '/voilages/unis'
     | '/admin/'
     | '/commande/'
     | '/rideaux/'
+    | '/stores/'
+    | '/voilages/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -527,11 +635,9 @@ export interface RootRouteChildren {
   ProfessionnelsRoute: typeof ProfessionnelsRoute
   PromotionsRoute: typeof PromotionsRoute
   RechercheRoute: typeof RechercheRoute
-  StoresRoute: typeof StoresRoute
   SuiviCommandeRoute: typeof SuiviCommandeRoute
   SurMesureRoute: typeof SurMesureRoute
   TringlesRoute: typeof TringlesRoute
-  VoilagesRoute: typeof VoilagesRoute
   CommandeConfirmationRoute: typeof CommandeConfirmationRoute
   ProduitSlugRoute: typeof ProduitSlugRoute
   RideauxLinRoute: typeof RideauxLinRoute
@@ -543,8 +649,19 @@ export interface RootRouteChildren {
   RideauxTamisantsRoute: typeof RideauxTamisantsRoute
   RideauxThermiquesRoute: typeof RideauxThermiquesRoute
   RideauxVeloursRoute: typeof RideauxVeloursRoute
+  StoresBambouRoute: typeof StoresBambouRoute
+  StoresEnrouleursRoute: typeof StoresEnrouleursRoute
+  StoresJourNuitRoute: typeof StoresJourNuitRoute
+  StoresOccultantsRoute: typeof StoresOccultantsRoute
+  StoresSansPercageRoute: typeof StoresSansPercageRoute
+  VoilagesGrandeLargeurRoute: typeof VoilagesGrandeLargeurRoute
+  VoilagesMotifsRoute: typeof VoilagesMotifsRoute
+  VoilagesRailRoute: typeof VoilagesRailRoute
+  VoilagesUnisRoute: typeof VoilagesUnisRoute
   CommandeIndexRoute: typeof CommandeIndexRoute
   RideauxIndexRoute: typeof RideauxIndexRoute
+  StoresIndexRoute: typeof StoresIndexRoute
+  VoilagesIndexRoute: typeof VoilagesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -696,13 +813,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RechercheRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/stores': {
-      id: '/stores'
-      path: '/stores'
-      fullPath: '/stores'
-      preLoaderRoute: typeof StoresRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/suivi-commande': {
       id: '/suivi-commande'
       path: '/suivi-commande'
@@ -722,13 +832,6 @@ declare module '@tanstack/react-router' {
       path: '/tringles'
       fullPath: '/tringles'
       preLoaderRoute: typeof TringlesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/voilages': {
-      id: '/voilages'
-      path: '/voilages'
-      fullPath: '/voilages'
-      preLoaderRoute: typeof VoilagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -829,6 +932,83 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RideauxVeloursRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stores/': {
+      id: '/stores/'
+      path: '/stores'
+      fullPath: '/stores/'
+      preLoaderRoute: typeof StoresIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stores/bambou': {
+      id: '/stores/bambou'
+      path: '/stores/bambou'
+      fullPath: '/stores/bambou'
+      preLoaderRoute: typeof StoresBambouRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stores/enrouleurs': {
+      id: '/stores/enrouleurs'
+      path: '/stores/enrouleurs'
+      fullPath: '/stores/enrouleurs'
+      preLoaderRoute: typeof StoresEnrouleursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stores/jour-nuit': {
+      id: '/stores/jour-nuit'
+      path: '/stores/jour-nuit'
+      fullPath: '/stores/jour-nuit'
+      preLoaderRoute: typeof StoresJourNuitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stores/occultants': {
+      id: '/stores/occultants'
+      path: '/stores/occultants'
+      fullPath: '/stores/occultants'
+      preLoaderRoute: typeof StoresOccultantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stores/sans-percage': {
+      id: '/stores/sans-percage'
+      path: '/stores/sans-percage'
+      fullPath: '/stores/sans-percage'
+      preLoaderRoute: typeof StoresSansPercageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/voilages/': {
+      id: '/voilages/'
+      path: '/voilages'
+      fullPath: '/voilages/'
+      preLoaderRoute: typeof VoilagesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/voilages/grande-largeur': {
+      id: '/voilages/grande-largeur'
+      path: '/voilages/grande-largeur'
+      fullPath: '/voilages/grande-largeur'
+      preLoaderRoute: typeof VoilagesGrandeLargeurRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/voilages/motifs': {
+      id: '/voilages/motifs'
+      path: '/voilages/motifs'
+      fullPath: '/voilages/motifs'
+      preLoaderRoute: typeof VoilagesMotifsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/voilages/rail': {
+      id: '/voilages/rail'
+      path: '/voilages/rail'
+      fullPath: '/voilages/rail'
+      preLoaderRoute: typeof VoilagesRailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/voilages/unis': {
+      id: '/voilages/unis'
+      path: '/voilages/unis'
+      fullPath: '/voilages/unis'
+      preLoaderRoute: typeof VoilagesUnisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -866,11 +1046,9 @@ const rootRouteChildren: RootRouteChildren = {
   ProfessionnelsRoute: ProfessionnelsRoute,
   PromotionsRoute: PromotionsRoute,
   RechercheRoute: RechercheRoute,
-  StoresRoute: StoresRoute,
   SuiviCommandeRoute: SuiviCommandeRoute,
   SurMesureRoute: SurMesureRoute,
   TringlesRoute: TringlesRoute,
-  VoilagesRoute: VoilagesRoute,
   CommandeConfirmationRoute: CommandeConfirmationRoute,
   ProduitSlugRoute: ProduitSlugRoute,
   RideauxLinRoute: RideauxLinRoute,
@@ -882,8 +1060,19 @@ const rootRouteChildren: RootRouteChildren = {
   RideauxTamisantsRoute: RideauxTamisantsRoute,
   RideauxThermiquesRoute: RideauxThermiquesRoute,
   RideauxVeloursRoute: RideauxVeloursRoute,
+  StoresBambouRoute: StoresBambouRoute,
+  StoresEnrouleursRoute: StoresEnrouleursRoute,
+  StoresJourNuitRoute: StoresJourNuitRoute,
+  StoresOccultantsRoute: StoresOccultantsRoute,
+  StoresSansPercageRoute: StoresSansPercageRoute,
+  VoilagesGrandeLargeurRoute: VoilagesGrandeLargeurRoute,
+  VoilagesMotifsRoute: VoilagesMotifsRoute,
+  VoilagesRailRoute: VoilagesRailRoute,
+  VoilagesUnisRoute: VoilagesUnisRoute,
   CommandeIndexRoute: CommandeIndexRoute,
   RideauxIndexRoute: RideauxIndexRoute,
+  StoresIndexRoute: StoresIndexRoute,
+  VoilagesIndexRoute: VoilagesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
