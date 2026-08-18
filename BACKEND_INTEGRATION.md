@@ -54,3 +54,19 @@ Voir `API_CONTRACT.md` → `POST /api/v1/orders/track`.
 - cache désactivé (`Cache-Control: no-store`) pour cette réponse.
 
 Le mock frontend est une démonstration fonctionnelle : il n'apporte aucune sécurité réelle.
+
+## Recherche et favoris (phase 10)
+
+- `SearchRepository` (`suggest`, `search`) — implémentation actuelle `MockSearchRepository`,
+  index mémoire construit une seule fois par cycle de données à partir du `ProductRepository`.
+- `SearchHistoryRepository` — `LocalSearchHistoryRepository`, historique local, 8 entrées max,
+  jamais envoyé au serveur, même après branchement de l'API.
+- `FavoritesRepository` — `LocalFavoritesRepository` : seuls `productId` et `addedAt` sont
+  persistés ; les produits sont résolus à chaque lecture via `ProductRepository.getByIds()`,
+  les produits disparus du catalogue sont nettoyés silencieusement.
+- Synchronisation entre onglets via l'événement `storage` et invalidation TanStack Query.
+- SSR : aucun accès à `localStorage` pendant le rendu serveur ; compteurs et cœurs n'apparaissent
+  qu'après hydratation.
+- Bascule backend : remplacer les implémentations dans `src/repositories/repositoryFactory.ts`
+  par `ApiSearchRepository` et `ApiFavoritesRepository` — aucun composant ne change.
+- Endpoints cibles : voir `API_CONTRACT.md` → sections Recherche globale et Favoris.
