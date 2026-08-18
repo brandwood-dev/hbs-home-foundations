@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AppLink } from "@/components/ui/app-link";
 import {
   AVAILABILITY_LABELS,
+  BLIND_TYPE_LABELS,
   MATERIAL_LABELS,
   OPACITY_LABELS,
   SELLING_MODE_LABELS,
