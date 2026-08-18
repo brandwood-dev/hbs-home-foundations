@@ -86,6 +86,7 @@ import { Route as VoilagesGrandeLargeurRouteImport } from './routes/voilages.gra
 import { Route as VoilagesMotifsRouteImport } from './routes/voilages.motifs'
 import { Route as VoilagesRailRouteImport } from './routes/voilages.rail'
 import { Route as VoilagesUnisRouteImport } from './routes/voilages.unis'
+import { Route as AdminCommandesIndexRouteImport } from './routes/admin/commandes.index'
 import { Route as AdminProduitsIndexRouteImport } from './routes/admin/produits.index'
 import { Route as AdminProduitsProductIdRouteImport } from './routes/admin/produits.$productId'
 import { Route as AdminProduitsNouveauRouteImport } from './routes/admin/produits.nouveau'
@@ -476,6 +477,11 @@ const VoilagesUnisRoute = VoilagesUnisRouteImport.update({
   path: '/voilages/unis',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCommandesIndexRoute = AdminCommandesIndexRouteImport.update({
+  id: '/commandes/',
+  path: '/commandes/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminProduitsIndexRoute = AdminProduitsIndexRouteImport.update({
   id: '/produits/',
   path: '/produits/',
@@ -572,6 +578,7 @@ export interface FileRoutesByFullPath {
   '/voilages/': typeof VoilagesIndexRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/admin/commandes/': typeof AdminCommandesIndexRoute
   '/admin/produits/': typeof AdminProduitsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -653,6 +660,7 @@ export interface FileRoutesByTo {
   '/voilages': typeof VoilagesIndexRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/admin/commandes': typeof AdminCommandesIndexRoute
   '/admin/produits': typeof AdminProduitsIndexRoute
 }
 export interface FileRoutesById {
@@ -736,6 +744,7 @@ export interface FileRoutesById {
   '/voilages/': typeof VoilagesIndexRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/admin/commandes/': typeof AdminCommandesIndexRoute
   '/admin/produits/': typeof AdminProduitsIndexRoute
 }
 export interface FileRouteTypes {
@@ -820,6 +829,7 @@ export interface FileRouteTypes {
     | '/voilages/'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
+    | '/admin/commandes/'
     | '/admin/produits/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -901,6 +911,7 @@ export interface FileRouteTypes {
     | '/voilages'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
+    | '/admin/commandes'
     | '/admin/produits'
   id:
     | '__root__'
@@ -983,6 +994,7 @@ export interface FileRouteTypes {
     | '/voilages/'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
+    | '/admin/commandes/'
     | '/admin/produits/'
   fileRoutesById: FileRoutesById
 }
@@ -1603,6 +1615,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VoilagesUnisRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/commandes/': {
+      id: '/admin/commandes/'
+      path: '/commandes'
+      fullPath: '/admin/commandes/'
+      preLoaderRoute: typeof AdminCommandesIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/produits/': {
       id: '/admin/produits/'
       path: '/produits'
@@ -1634,6 +1653,7 @@ interface AdminRouteRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminProduitsProductIdRoute: typeof AdminProduitsProductIdRoute
   AdminProduitsNouveauRoute: typeof AdminProduitsNouveauRoute
+  AdminCommandesIndexRoute: typeof AdminCommandesIndexRoute
   AdminProduitsIndexRoute: typeof AdminProduitsIndexRoute
 }
 
@@ -1644,6 +1664,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminProduitsProductIdRoute: AdminProduitsProductIdRoute,
   AdminProduitsNouveauRoute: AdminProduitsNouveauRoute,
+  AdminCommandesIndexRoute: AdminCommandesIndexRoute,
   AdminProduitsIndexRoute: AdminProduitsIndexRoute,
 }
 
