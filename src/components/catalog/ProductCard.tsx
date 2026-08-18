@@ -57,7 +57,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 
   return (
     <article
-      className="group flex flex-col"
+      className="group relative flex flex-col"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -84,16 +84,17 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           {product.isThermal && <Badge tone="neutral">Thermique</Badge>}
         </div>
 
-        <div className="absolute right-2 top-2">
-          <FavoriteButton productId={product.id} productName={product.name} />
-        </div>
-
         {availability === "out_of_stock" && (
           <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-foreground/70 py-1.5 text-center text-[11px] uppercase tracking-[0.14em] text-surface">
             {AVAILABILITY_LABELS.out_of_stock}
           </div>
         )}
       </AppLink>
+
+      {/* Hors du lien : un bouton ne peut pas être imbriqué dans une ancre. */}
+      <div className="absolute right-2 top-2 z-10">
+        <FavoriteButton productId={product.id} productName={product.name} />
+      </div>
 
       <div className="mt-3 flex flex-1 flex-col">
         <p className="eyebrow">
