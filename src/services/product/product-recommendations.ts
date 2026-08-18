@@ -7,7 +7,10 @@ import { getProductStartingPrice } from "@/lib/money/money";
  */
 function similarityScore(base: Product, candidate: Product): number {
   let score = 0;
+  if (candidate.category === base.category) score += 60;
   if (candidate.material === base.material) score += 40;
+  if (candidate.blindType != null && candidate.blindType === base.blindType) score += 20;
+  if (candidate.pattern != null && candidate.pattern === base.pattern) score += 10;
   if (candidate.opacityLevel === base.opacityLevel) score += 25;
   if (candidate.sellingMode === base.sellingMode) score += 15;
   if (candidate.isThermal === base.isThermal) score += 5;
@@ -21,7 +24,11 @@ function similarityScore(base: Product, candidate: Product): number {
 }
 
 export function getRelatedProducts(base: Product, all: Product[], limit = 4): Product[] {
-  return all
+  const sameCategory = all.filter(
+    (product) => product.id !== base.id && product.category === base.category,
+  );
+  const pool = sameCategory.length >= limit ? sameCategory : all;
+  return pool
     .filter((product) => product.id !== base.id)
     .map((product) => ({ product, score: similarityScore(base, product) }))
     .sort((a, b) => b.score - a.score || a.product.id.localeCompare(b.product.id))
