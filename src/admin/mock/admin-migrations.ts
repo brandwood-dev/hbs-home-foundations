@@ -135,5 +135,100 @@ export function migrateAdminDatabase(db: AdminMockDatabase): AdminMockDatabase {
     if (movement.resultingStock == null) movement.resultingStock = movement.quantity;
   }
 
+  migrateOrdersAndCustomers(db);
+
   return db;
 }
+
+/** Phase Admin 3 : snapshots de commande, expédition, stock et fiches clients. */
+function migrateOrdersAndCustomers(db: AdminMockDatabase): void {
+  const deductedStatuses = new Set<AdminOrder["status"]>([
+    "confirmed",
+    "preparing",
+    "shipped",
+    "delivered",
+    "return_requested",
+    "returned",
+  ]);
+
+  for (const order of db.orders) {
+    for (const item of order.items) {
+      const product = db.products.find((entry) => entry.id === item.productId);
+      const variant = product?.variants.find((entry) => entry.id === item.variantId);
+      if (!item.productReference && product) item.productReference = product.reference;
+      if (!item.productSlug && product) item.productSlug = product.slug;
+      if (!item.imageUrl) item.imageUrl = variant?.imageUrl ?? product?.imageUrl ?? "";
+      if (!item.selectedOptions) {
+        item.selectedOptions = variant
+          ? [
+              { label: "Couleur", value: variant.colorLabel },
+              { label: "Dimensions", value: `${variant.widthCm} × ${variant.heightCm} cm` },
+            ]
+          : [];
+      }
+      if (item.shippingProfile == null) {
+        item.shippingProfile = SHIPPING_PROFILE_BY_CATEGORY[product?.category ?? "rideaux"];
+      }
+      if (item.trackInventory == null) {
+        item.trackInventory = variant?.trackInventory !== false;
+      }
+    }
+
+    if (!order.shipment) {
+      const toConfirm = order.items.some(
+        (item) => item.shippingProfile === "bulky" || item.shippingProfile === "oversized",
+      );
+      order.shipment = {
+        shippingStatus: toConfirm && order.shippingMinor === 0 ? "to_confirm" : "calculated",
+        shippingFeeMinor: order.shippingMinor,
+        ...(order.status === "shipped" || order.status === "delivered"
+          ? { shippedAt: order.updatedAt }
+          : {}),
+        ...(order.status === "delivered" ? { deliveredAt: order.updatedAt } : {}),
+      };
+    }
+
+    if (!order.inventoryState) {
+      order.inventoryState = deductedStatuses.has(order.status)
+        ? { deductedAt: order.createdAt }
+        : {};
+      if (order.status === "cancelled") order.inventoryState.restoredAt = order.updatedAt;
+    }
+
+    for (const event of order.timeline) {
+      if (!event.kind) event.kind = "status";
+    }
+  }
+
+  for (const customer of db.customers) {
+    if (!customer.notes) {
+      customer.notes = customer.internalNotes.trim()
+        ? [
+            {
+              id: `cnote_${customer.id}`,
+              text: customer.internalNotes.trim(),
+              createdAt: customer.createdAt,
+              userName: "Import",
+            },
+          ]
+        : [];
+    }
+    if (!customer.preferredChannel) customer.preferredChannel = "phone";
+    for (const [index, address] of customer.addresses.entries()) {
+      if (address.isDefault == null) address.isDefault = index === 0;
+      if (!address.createdAt) address.createdAt = customer.createdAt;
+    }
+  }
+}
+
+const SHIPPING_PROFILE_BY_CATEGORY: Record<AdminProductCategoryKey, AdminShippingProfile> = {
+  rideaux: "standard",
+  voilages: "standard",
+  stores: "standard",
+  coussins: "standard",
+  galettes_de_chaise: "standard",
+  accessoires: "standard",
+  mobilier_interieur: "bulky",
+  plantes_decoration: "fragile",
+};
+
