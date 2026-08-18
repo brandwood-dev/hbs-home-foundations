@@ -335,6 +335,176 @@ export const catalogPages: CatalogPageConfig[] = [
     seoBlock:
       "La pose sans perçage repose sur des clips qui prennent appui sur le battant ouvrant. Elle convient aux fenêtres PVC et aluminium jusqu'à 2 cm d'épaisseur de dormant et se retire sans laisser de trace.",
   },
+  {
+    routeId: "coussins",
+    group: "coussins",
+    path: "/coussins",
+    title: "Coussins",
+    description:
+      "Coussins déco en lin lavé, velours, bouclette et coton : housses déhoussables, garnissage en option et coloris assortis à nos rideaux.",
+    seoTitle: "Coussins déco en Tunisie | HBS HOME",
+    seoDescription:
+      "Housses de coussin en lin, velours, coton et bouclette. Formats carrés, rectangulaires et ronds, garnissage en option, livraison partout en Tunisie.",
+    seoBlock:
+      "Un coussin se choisit d'abord par sa taille : 45 × 45 cm pour un canapé standard, 50 × 50 cm pour une assise profonde, 30 × 50 cm pour soutenir le bas du dos. Les housses HBS HOME sont déhoussables et lavables en machine ; le garnissage se commande à part ou en supplément selon les modèles.",
+  },
+  {
+    routeId: "coussins-lin",
+    group: "coussins",
+    path: "/coussins/lin",
+    title: "Coussins en lin",
+    description:
+      "Coussins en lin lavé au grain irrégulier, parfaits pour un intérieur naturel et lumineux.",
+    scope: { materials: ["lin"] },
+    lockedFilterLabel: "Lin",
+    seoTitle: "Coussins en lin lavé | HBS HOME",
+    seoDescription:
+      "Housses de coussin en lin lavé, douces dès la première utilisation. Formats 45 et 50 cm, livraison en Tunisie.",
+    seoBlock:
+      "Le lin lavé s'assouplit à chaque passage en machine et garde un aspect légèrement froissé qui vieillit bien. C'est la matière la plus tolérante pour un salon vécu au quotidien.",
+  },
+  {
+    routeId: "coussins-velours",
+    group: "coussins",
+    path: "/coussins/velours",
+    title: "Coussins en velours",
+    description:
+      "Coussins en velours dense aux reflets profonds, assortis à nos rideaux en velours.",
+    scope: { materials: ["velours"] },
+    lockedFilterLabel: "Velours",
+    seoTitle: "Coussins en velours | HBS HOME",
+    seoDescription:
+      "Housses de coussin en velours dense, coloris émeraude, bordeaux, bleu nuit et moutarde. Livraison partout en Tunisie.",
+    seoBlock:
+      "Le velours change de teinte selon l'angle de la lumière : c'est ce qui donne de la profondeur à un canapé uni. Nos coloris reprennent ceux des rideaux Alba pour composer une pièce cohérente.",
+  },
+  {
+    routeId: "coussins-lots",
+    group: "coussins",
+    path: "/coussins/lots",
+    title: "Lots de coussins",
+    description: "Duos et lots de housses assorties pour habiller un canapé d'un seul achat.",
+    scope: { sellingMode: ["pack"] },
+    lockedFilterLabel: "Lots",
+    seoTitle: "Lots de coussins assortis | HBS HOME",
+    seoDescription:
+      "Lots de 2 housses de coussin assorties, unies et rayées. Tarif dégressif et livraison en Tunisie.",
+    seoBlock:
+      "Acheter par lot évite l'exercice délicat de l'accord des coloris : les housses sont pensées ensemble, une unie et une à motif dans la même gamme.",
+  },
+  {
+    routeId: "galettes-de-chaise",
+    group: "galettes_de_chaise",
+    path: "/galettes-de-chaise",
+    title: "Galettes de chaise",
+    description:
+      "Galettes de chaise carrées et rondes, mousse haute densité, housses déhoussables et sous-face antidérapante.",
+    seoTitle: "Galettes de chaise en Tunisie | HBS HOME",
+    seoDescription:
+      "Galettes de chaise carrées et rondes, épaisseur 4 à 6 cm, housses lavables en machine. Livraison partout en Tunisie.",
+    seoBlock:
+      "Mesurez l'assise d'un bord à l'autre avant de choisir : une galette doit couvrir l'assise sans déborder. Les modèles à liens se nouent aux montants du dossier, les modèles à sous-face antidérapante se posent simplement.",
+  },
+  {
+    routeId: "galettes-carrees",
+    group: "galettes_de_chaise",
+    path: "/galettes-de-chaise/carrees",
+    title: "Galettes carrées",
+    description: "Galettes carrées 40 et 45 cm pour chaises de salle à manger.",
+    scope: { shapes: ["carree"] },
+    lockedFilterLabel: "Carrées",
+    seoTitle: "Galettes de chaise carrées | HBS HOME",
+    seoDescription:
+      "Galettes carrées 40 × 40 et 45 × 45 cm, mousse haute densité et housse déhoussable. Livraison en Tunisie.",
+    seoBlock:
+      "Le format carré convient aux chaises de salle à manger classiques. Prévoyez 40 cm pour une assise standard et 45 cm pour les chaises larges ou les fauteuils de table.",
+  },
+  {
+    routeId: "galettes-rondes",
+    group: "galettes_de_chaise",
+    path: "/galettes-de-chaise/rondes",
+    title: "Galettes rondes",
+    description: "Galettes rondes pour chaises bistrot et tabourets de cuisine.",
+    scope: { shapes: ["ronde"] },
+    lockedFilterLabel: "Rondes",
+    seoTitle: "Galettes de chaise rondes | HBS HOME",
+    seoDescription:
+      "Galettes rondes Ø 38 et 42 cm pour chaises bistrot et tabourets, sous-face antidérapante. Livraison en Tunisie.",
+    seoBlock:
+      "Sur une assise ronde, la galette doit rester légèrement en retrait du bord pour ne pas se déformer. Le Ø 38 cm couvre la majorité des chaises bistrot.",
+  },
+  {
+    routeId: "accessoires",
+    group: "accessoires",
+    path: "/accessoires",
+    title: "Accessoires",
+    description:
+      "Tringles, rails, embrasses et petites pièces pour installer et retenir vos rideaux, avec la quincaillerie nécessaire à la pose.",
+    seoTitle: "Accessoires pour rideaux en Tunisie | HBS HOME",
+    seoDescription:
+      "Tringles extensibles, rails plafond, embrasses, anneaux, supports et kits de pose. Livraison partout en Tunisie, paiement à la livraison.",
+    seoBlock:
+      "Avant de commander une tringle, mesurez la largeur de la fenêtre et ajoutez 15 à 20 cm de chaque côté pour dégager complètement le vitrage. Un support central est recommandé au-delà de 200 cm de largeur.",
+  },
+  {
+    routeId: "accessoires-tringles",
+    group: "accessoires",
+    path: "/accessoires/tringles",
+    title: "Tringles à rideaux",
+    description:
+      "Tringles extensibles en acier et tringles fixes en bois, supports et embouts inclus.",
+    scope: { accessoryTypes: ["tringle_extensible", "tringle_fixe"] },
+    lockedFilterLabel: "Tringles",
+    seoTitle: "Tringles à rideaux extensibles et bois | HBS HOME",
+    seoDescription:
+      "Tringles à rideaux Ø 25 et 28 mm, extensibles ou fixes, supports muraux et embouts inclus. Livraison en Tunisie.",
+    seoBlock:
+      "Une tringle extensible s'ajuste sans découpe entre deux longueurs. Vérifiez la charge maximale annoncée : un rideau en velours doublé pèse nettement plus qu'un voilage.",
+  },
+  {
+    routeId: "accessoires-rails",
+    group: "accessoires",
+    path: "/accessoires/rails",
+    title: "Rails de plafond",
+    description: "Rails aluminium à galets silencieux, pose plafond ou murale.",
+    scope: { accessoryTypes: ["rail"] },
+    lockedFilterLabel: "Rails",
+    seoTitle: "Rails à rideaux pour plafond | HBS HOME",
+    seoDescription:
+      "Rails aluminium recoupables avec galets silencieux, pose plafond ou murale. Livraison partout en Tunisie.",
+    seoBlock:
+      "Le rail se fixe au plafond et fait descendre le rideau depuis le haut de la pièce : c'est la solution la plus discrète pour les grandes hauteurs et les baies vitrées.",
+  },
+  {
+    routeId: "accessoires-embrasses",
+    group: "accessoires",
+    path: "/accessoires/embrasses",
+    title: "Embrasses et attaches",
+    description: "Embrasses en corde tressée et attaches magnétiques pour retenir les rideaux.",
+    scope: { accessoryTypes: ["embrasse", "attache_magnetique"] },
+    lockedFilterLabel: "Embrasses",
+    seoTitle: "Embrasses et attaches à rideaux | HBS HOME",
+    seoDescription:
+      "Embrasses en corde tressée et attaches magnétiques sans perçage pour retenir vos rideaux. Livraison en Tunisie.",
+    seoBlock:
+      "L'embrasse se place à mi-hauteur du rideau pour un drapé équilibré. L'attache magnétique évite tout perçage : elle se referme simplement autour du panneau.",
+  },
+  {
+    routeId: "accessoires-petites-pieces",
+    group: "accessoires",
+    path: "/accessoires/petites-pieces",
+    title: "Anneaux, supports et kits de pose",
+    description: "Anneaux à clip, crochets, supports muraux et kits de pose complets.",
+    scope: {
+      accessoryTypes: ["anneau", "crochet", "support", "raccord", "embout", "accessoire_pose"],
+    },
+    lockedFilterLabel: "Petites pièces",
+    seoTitle: "Anneaux, supports et kits de pose rideaux | HBS HOME",
+    seoDescription:
+      "Anneaux à clip, crochets, supports muraux renforcés et kits de pose avec chevilles et vis. Livraison en Tunisie.",
+    seoBlock:
+      "Comptez un anneau tous les 15 cm de largeur de tissu pour obtenir des plis réguliers, et un support supplémentaire au centre dès que la tringle dépasse 200 cm.",
+  },
 ];
 
 /** La catégorie du groupe est toujours verrouillée, en plus du scope propre à la page. */
