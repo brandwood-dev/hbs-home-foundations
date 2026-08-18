@@ -22,7 +22,13 @@ export function CartSummary({ cart, title = "Résumé estimatif" }: { cart: Cart
         </div>
         <div className="flex items-baseline justify-between">
           <dt className="text-foreground-muted">Livraison estimée</dt>
-          <dd>{totals.hasFreeShipping ? "Offerte" : formatMoney(totals.shippingMinor)}</dd>
+          <dd>
+            {totals.requiresShippingQuote
+              ? "Sur devis"
+              : totals.hasFreeShipping
+                ? "Offerte"
+                : formatMoney(totals.shippingMinor)}
+          </dd>
         </div>
         <div className="flex items-baseline justify-between border-t border-border pt-2 text-base font-medium">
           <dt>Total estimé</dt>
@@ -30,7 +36,14 @@ export function CartSummary({ cart, title = "Résumé estimatif" }: { cart: Cart
         </div>
       </dl>
 
-      <CartShippingProgress totals={totals} />
+      {totals.requiresShippingQuote ? (
+        <p className="rounded-sm bg-surface-muted p-3 text-xs text-foreground">
+          Votre panier contient un article volumineux. Les frais de livraison sont confirmés par
+          téléphone après la commande, selon votre gouvernorat et l&apos;accès au logement.
+        </p>
+      ) : (
+        <CartShippingProgress totals={totals} />
+      )}
 
       <p className="text-xs text-foreground-muted">{CART_ESTIMATE_NOTICE}</p>
     </section>

@@ -58,16 +58,27 @@ export function calculateFreeShippingProgress(
   return Math.max(0, Math.min(100, Math.round(ratio)));
 }
 
+/** Les meubles volumineux et hors norme ne rentrent pas dans le forfait standard. */
+export function requiresShippingQuote(
+  items: Pick<ResolvedCartItem, "shippingProfile">[],
+): boolean {
+  return items.some(
+    (item) => item.shippingProfile === "volumineux" || item.shippingProfile === "hors_norme",
+  );
+}
+
 export function calculateCartTotals(items: ResolvedCartItem[]): CartTotals {
   const subtotalMinor = calculateCartSubtotal(items);
-  const shippingMinor = calculateEstimatedShipping(subtotalMinor);
+  const quoteRequired = requiresShippingQuote(items);
+  const shippingMinor = quoteRequired ? 0 : calculateEstimatedShipping(subtotalMinor);
   return {
+    requiresShippingQuote: quoteRequired,
     subtotalMinor,
     shippingMinor,
     totalEstimatedMinor: calculateEstimatedTotal(subtotalMinor, shippingMinor),
     freeShippingThresholdMinor: storeConfig.freeShippingThresholdMinor,
     amountUntilFreeShippingMinor: calculateAmountUntilFreeShipping(subtotalMinor),
-    hasFreeShipping: subtotalMinor > 0 && shippingMinor === 0,
+    hasFreeShipping: !quoteRequired && subtotalMinor > 0 && shippingMinor === 0,
   };
 }
 
