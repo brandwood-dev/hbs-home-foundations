@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AppLink } from "@/components/ui/app-link";
+import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import {
   AVAILABILITY_LABELS,
   BLIND_TYPE_LABELS,
@@ -81,6 +82,10 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           {discount > 0 && <Badge tone="sale">{`-${discount}%`}</Badge>}
           {product.isBestSeller && !product.isNew && <Badge tone="neutral">Best-seller</Badge>}
           {product.isThermal && <Badge tone="neutral">Thermique</Badge>}
+        </div>
+
+        <div className="absolute right-2 top-2">
+          <FavoriteButton productId={product.id} productName={product.name} />
         </div>
 
         {availability === "out_of_stock" && (
