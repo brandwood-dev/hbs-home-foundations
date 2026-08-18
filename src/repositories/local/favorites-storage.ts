@@ -6,6 +6,7 @@ import {
   FAVORITES_VERSION,
 } from "@/domain/favorites/favorites.constants";
 import { FavoritesError } from "@/domain/favorites/favorites.errors";
+import { migrateFavorites as migrate } from "@/repositories/local/favorites-migrations";
 import type { PersistedFavoriteItem, PersistedFavorites } from "@/domain/favorites/favorites.types";
 
 const favoriteItemSchema = z.object({
@@ -50,8 +51,6 @@ export function parseFavorites(raw: string | null): PersistedFavorites {
   if (!parsed.success) return createEmptyFavorites();
   return { version: FAVORITES_VERSION, items: normalizeFavoriteItems(parsed.data.items) };
 }
-
-import { migrateFavorites as migrate } from "@/repositories/local/favorites-migrations";
 
 function getStorage(): Storage {
   if (typeof window === "undefined" || !window.localStorage) {
