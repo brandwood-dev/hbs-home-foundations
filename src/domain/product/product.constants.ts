@@ -281,7 +281,7 @@ export const ACCESSORY_FINISH_SWATCHES: Record<AccessoryFinish, string> = {
   dore: "#C0A062",
   bronze: "#8A6A45",
   blanc: "#F5F4F1",
-  bois_naturel: "#B08košt".replace("košt", "B57"),
+  bois_naturel: "#B08B57",
   beige: "#D9C8AE",
   taupe: "#8C8073",
 };
