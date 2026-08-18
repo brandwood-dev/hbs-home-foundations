@@ -1,5 +1,10 @@
 import type {
+  AccessoryFinish,
+  AccessoryMountingType,
   BlindControlSide,
+  ChairPadFastening,
+  CushionClosure,
+  CushionContent,
   BlindMechanismColor,
   BlindMountingType,
   CurtainHeader,
@@ -24,6 +29,11 @@ export interface VariantSelection {
   blindMountingType?: BlindMountingType | undefined;
   blindControlSide?: BlindControlSide | undefined;
   blindMechanismColor?: BlindMechanismColor | undefined;
+  cushionContent?: CushionContent | undefined;
+  cushionClosure?: CushionClosure | undefined;
+  chairPadFastening?: ChairPadFastening | undefined;
+  accessoryFinish?: AccessoryFinish | undefined;
+  accessoryMountingType?: AccessoryMountingType | undefined;
 }
 
 export type VariantAxis = keyof VariantSelection;
@@ -37,6 +47,11 @@ export const VARIANT_AXES: VariantAxis[] = [
   "blindMountingType",
   "blindControlSide",
   "blindMechanismColor",
+  "cushionContent",
+  "cushionClosure",
+  "chairPadFastening",
+  "accessoryFinish",
+  "accessoryMountingType",
 ];
 
 export function sizeKeyOf(variant: ProductVariant): string {
@@ -59,6 +74,11 @@ export function selectionOf(variant: ProductVariant): VariantSelection {
     blindMountingType: variant.blindMountingType,
     blindControlSide: variant.blindControlSide,
     blindMechanismColor: variant.blindMechanismColor,
+    cushionContent: variant.cushionContent,
+    cushionClosure: variant.cushionClosure,
+    chairPadFastening: variant.chairPadFastening,
+    accessoryFinish: variant.accessoryFinish,
+    accessoryMountingType: variant.accessoryMountingType,
   };
 }
 
