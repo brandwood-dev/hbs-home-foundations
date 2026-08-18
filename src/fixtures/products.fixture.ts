@@ -44,7 +44,6 @@ export const NO_DRILL_SURCHARGE_MINOR = 15000;
 
 const BLIND_MECHANISM_IMAGE = storeMechanismImg;
 
-
 /**
  * Demo catalogue. Fictional products used until the real API is connected.
  * Prices are stored in millimes (1 DT = 1000 millimes).

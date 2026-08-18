@@ -124,7 +124,8 @@ const seeds: ProductSeed[] = [
     mountings: ["mur", "plafond", "sans_percage"],
     controlSides: ["droite", "gauche"],
     mechanismColors: ["blanc", "gris"],
-    shortDescription: "Bandes alternées translucides et opaques pour doser la lumière au geste près.",
+    shortDescription:
+      "Bandes alternées translucides et opaques pour doser la lumière au geste près.",
     imageAlt: "Store jour/nuit à bandes alternées devant une fenêtre",
     image: storeJourNuit,
     secondaryImage: storeEnrouleur,

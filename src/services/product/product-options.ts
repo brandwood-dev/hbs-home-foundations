@@ -8,11 +8,7 @@ import {
   LINING_LABELS,
   PATTERN_LABELS,
 } from "@/domain/product/product.constants";
-import type {
-  Product,
-  ProductOptionDisplay,
-  ProductVariant,
-} from "@/domain/product/product.types";
+import type { Product, ProductOptionDisplay, ProductVariant } from "@/domain/product/product.types";
 
 /**
  * Options d'une variante prêtes à afficher, dans l'ordre logique de la catégorie.
@@ -30,12 +26,16 @@ export function getVariantDisplayOptions(
   options.push({ label: "Dimensions", value: `${variant.widthCm} × ${variant.heightCm} cm` });
 
   if (product.category === "stores") {
-    if (product.blindType) options.push({ label: "Type", value: BLIND_TYPE_LABELS[product.blindType] });
+    if (product.blindType)
+      options.push({ label: "Type", value: BLIND_TYPE_LABELS[product.blindType] });
     if (variant.blindMountingType) {
       options.push({ label: "Pose", value: BLIND_MOUNTING_LABELS[variant.blindMountingType] });
     }
     if (variant.blindControlSide) {
-      options.push({ label: "Manœuvre", value: BLIND_CONTROL_SIDE_LABELS[variant.blindControlSide] });
+      options.push({
+        label: "Manœuvre",
+        value: BLIND_CONTROL_SIDE_LABELS[variant.blindControlSide],
+      });
     }
     if (variant.blindMechanismColor) {
       options.push({

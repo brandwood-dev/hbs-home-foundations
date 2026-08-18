@@ -107,9 +107,7 @@ export function resolveCartItem(
     ...(color ? { colorLabel: color.name } : {}),
     widthCm: variant.widthCm,
     heightCm: variant.heightCm,
-    ...(variant.curtainHeader
-      ? { curtainHeaderLabel: HEADER_LABELS[variant.curtainHeader] }
-      : {}),
+    ...(variant.curtainHeader ? { curtainHeaderLabel: HEADER_LABELS[variant.curtainHeader] } : {}),
     ...(variant.eyeletColor ? { eyeletColorLabel: EYELET_COLOR_LABELS[variant.eyeletColor] } : {}),
     ...(variant.lining ? { liningLabel: LINING_LABELS[variant.lining] } : {}),
     selectedOptions: getVariantDisplayOptions(product, variant),

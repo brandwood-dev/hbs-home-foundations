@@ -21,11 +21,7 @@ export type CurtainMaterial =
   | "bambou";
 
 export type OpacityLevel =
-  | "transparent"
-  | "tamisant_leger"
-  | "tamisant"
-  | "obscurcissant"
-  | "occultant";
+  "transparent" | "tamisant_leger" | "tamisant" | "obscurcissant" | "occultant";
 
 export type CurtainHeader = "oeillets" | "rail" | "galon_fronceur" | "passants";
 
@@ -53,11 +49,7 @@ export type EyeletColor = "argent" | "dore" | "noir";
 export type CurtainLining = "sans_doublure" | "thermique";
 
 export type ProductImageType =
-  | "front"
-  | "lifestyle"
-  | "fabric_detail"
-  | "header_detail"
-  | "mechanism_detail";
+  "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
 
 export type ColorFamily =
   | "white"

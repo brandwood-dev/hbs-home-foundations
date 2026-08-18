@@ -209,8 +209,7 @@ export const catalogPages: CatalogPageConfig[] = [
     group: "voilages",
     path: "/voilages/motifs",
     title: "Voilages à motifs",
-    description:
-      "Broderies, rayures et jacquards légers pour donner du caractère à la fenêtre.",
+    description: "Broderies, rayures et jacquards légers pour donner du caractère à la fenêtre.",
     scope: { patterns: ["brode", "raye", "imprime", "jacquard"] },
     lockedFilterLabel: "Motif : À motifs",
     seoTitle: "Voilages brodés et à motifs | HBS HOME",
@@ -224,8 +223,7 @@ export const catalogPages: CatalogPageConfig[] = [
     group: "voilages",
     path: "/voilages/grande-largeur",
     title: "Voilages grande largeur",
-    description:
-      "Des panneaux de 300 à 400 cm pour couvrir une baie vitrée sans raccord visible.",
+    description: "Des panneaux de 300 à 400 cm pour couvrir une baie vitrée sans raccord visible.",
     scope: { onlyLargeWidth: true },
     lockedFilterLabel: "Sélection : Grande largeur",
     seoTitle: "Voilages grande largeur pour baie vitrée | HBS HOME",
@@ -239,8 +237,7 @@ export const catalogPages: CatalogPageConfig[] = [
     group: "voilages",
     path: "/voilages/rail",
     title: "Voilages pour rail",
-    description:
-      "Voilages à ruban fronceur ou crochets, compatibles rails plafond et muraux.",
+    description: "Voilages à ruban fronceur ou crochets, compatibles rails plafond et muraux.",
     scope: { curtainHeaders: ["rail"] },
     lockedFilterLabel: "Finition : Rail",
     seoTitle: "Voilages pour rail plafond | HBS HOME",
@@ -267,8 +264,7 @@ export const catalogPages: CatalogPageConfig[] = [
     group: "stores",
     path: "/stores/enrouleurs",
     title: "Stores enrouleurs",
-    description:
-      "Le classique : une toile, un tube, une chaînette. Simple à poser et à vivre.",
+    description: "Le classique : une toile, un tube, une chaînette. Simple à poser et à vivre.",
     scope: { blindTypes: ["enrouleur"] },
     lockedFilterLabel: "Type : Enrouleur",
     seoTitle: "Stores enrouleurs | HBS HOME",
@@ -297,8 +293,7 @@ export const catalogPages: CatalogPageConfig[] = [
     group: "stores",
     path: "/stores/occultants",
     title: "Stores occultants",
-    description:
-      "Toiles occultantes et thermiques pour le noir complet et la fraîcheur en été.",
+    description: "Toiles occultantes et thermiques pour le noir complet et la fraîcheur en été.",
     scope: { opacityLevels: ["occultant"] },
     lockedFilterLabel: "Sélection : Occultants",
     seoTitle: "Stores occultants et thermiques | HBS HOME",
@@ -327,8 +322,7 @@ export const catalogPages: CatalogPageConfig[] = [
     group: "stores",
     path: "/stores/sans-percage",
     title: "Stores sans perçage",
-    description:
-      "Fixation par clips sur le battant : aucun trou, idéal en location ou sur PVC.",
+    description: "Fixation par clips sur le battant : aucun trou, idéal en location ou sur PVC.",
     scope: { mountings: ["sans_percage"] },
     lockedFilterLabel: "Pose : Sans perçage",
     seoTitle: "Stores sans perçage | HBS HOME",

@@ -223,7 +223,8 @@ const seeds: ProductSeed[] = [
     sellingMode: "single_panel",
     pattern: "uni",
     isLargeWidth: true,
-    shortDescription: "Panneau de 300 cm de large conçu pour couvrir une baie vitrée d'un seul tenant.",
+    shortDescription:
+      "Panneau de 300 cm de large conçu pour couvrir une baie vitrée d'un seul tenant.",
     imageAlt: "Grand voilage couvrant une baie vitrée dans un séjour lumineux",
     image: voilageGrandeLargeur,
     secondaryImage: voilageUni,
@@ -324,7 +325,8 @@ const seeds: ProductSeed[] = [
     sellingMode: "single_panel",
     pattern: "uni",
     isLargeWidth: true,
-    shortDescription: "Voilage à ruban fronceur compatible rail plafond, tombé net sur toute la hauteur.",
+    shortDescription:
+      "Voilage à ruban fronceur compatible rail plafond, tombé net sur toute la hauteur.",
     imageAlt: "Voilage suspendu à un rail plafond dans un salon",
     image: voilageGrandeLargeur,
     secondaryImage: colVoilages,

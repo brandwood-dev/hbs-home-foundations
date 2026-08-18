@@ -92,7 +92,9 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 
       <div className="mt-3 flex flex-1 flex-col">
         <p className="eyebrow">
-          {product.blindType ? BLIND_TYPE_LABELS[product.blindType] : MATERIAL_LABELS[product.material]}
+          {product.blindType
+            ? BLIND_TYPE_LABELS[product.blindType]
+            : MATERIAL_LABELS[product.material]}
           {" · "}
           {OPACITY_LABELS[product.opacityLevel]}
         </p>

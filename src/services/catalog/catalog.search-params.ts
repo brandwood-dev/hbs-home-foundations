@@ -145,7 +145,8 @@ export function toListParams(
     patterns: mergeUnique(scope?.patterns, search["patterns"] as never[]),
     blindTypes: mergeUnique(scope?.blindTypes, search["blindTypes"] as never[]),
     mountings: mergeUnique(scope?.mountings, search["mountings"] as never[]),
-    controlSides: search["controlSides"].length > 0 ? (search["controlSides"] as never[]) : undefined,
+    controlSides:
+      search["controlSides"].length > 0 ? (search["controlSides"] as never[]) : undefined,
     sellingMode: scope?.sellingMode,
     onlyThermal: scope?.onlyThermal,
     onlyLargeWidth: scope?.onlyLargeWidth,

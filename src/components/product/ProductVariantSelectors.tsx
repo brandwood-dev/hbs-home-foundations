@@ -69,7 +69,8 @@ export function ProductVariantSelectors({
   const mechanismOptions = getAxisOptions(product.variants, "blindMechanismColor", selection);
 
   const activeColor = product.colors.find((color) => color.id === variant.colorId);
-  const sizeLabel = product.category === "stores" ? "Dimensions du store (l × h)" : "Dimensions (l × h)";
+  const sizeLabel =
+    product.category === "stores" ? "Dimensions du store (l × h)" : "Dimensions (l × h)";
 
   return (
     <div className="space-y-6">

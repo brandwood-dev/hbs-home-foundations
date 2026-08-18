@@ -103,7 +103,8 @@ export function matchesScope(product: Product, scope?: CatalogScope): boolean {
   if (scope.onlyLargeWidth && !product.isLargeWidth) return false;
   if (scope.curtainHeaders && scope.curtainHeaders.length > 0) {
     const hasHeader = product.variants.some(
-      (variant) => variant.curtainHeader != null && scope.curtainHeaders?.includes(variant.curtainHeader),
+      (variant) =>
+        variant.curtainHeader != null && scope.curtainHeaders?.includes(variant.curtainHeader),
     );
     if (!hasHeader) return false;
   }

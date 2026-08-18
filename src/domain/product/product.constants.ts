@@ -94,7 +94,6 @@ export const BLIND_MECHANISM_COLOR_SWATCHES: Record<BlindMechanismColor, string>
   noir: "#2B2A28",
 };
 
-
 export const HEADER_LABELS: Record<CurtainHeader, string> = {
   oeillets: "Œillets",
   rail: "Rail",

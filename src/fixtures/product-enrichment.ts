@@ -80,7 +80,8 @@ const MATERIAL_WEIGHT: Record<CurtainMaterial, number> = {
   satin: 180,
   lin: 240,
   jacquard: 280,
-  polyester: 210,  voile: 45,
+  polyester: 210,
+  voile: 45,
   melange_lin: 120,
   jacquard_leger: 130,
   toile_technique: 210,
@@ -96,11 +97,17 @@ const MATERIAL_STORY: Record<CurtainMaterial, string> = {
   jacquard:
     "Le tissage jacquard dessine son motif dans la matière elle-même. Le relief se révèle différemment selon l'heure de la journée et l'orientation de la fenêtre.",
   polyester:
-    "Le polyester tissé serré est facile à vivre : stable au lavage, résistant au soleil et sans repassage, il convient aux pièces très utilisées.",  voile: "Le voile laisse passer la lumière tout en floutant les vis-à-vis, pour une clarté douce toute la journée.",
-  melange_lin: "Le mélange lin garde le grain naturel du lin avec une meilleure tenue au lavage et moins de plis.",
-  jacquard_leger: "Le jacquard léger dessine son motif dans le tissage : la lumière révèle le relief sans alourdir la fenêtre.",
-  toile_technique: "La toile technique est enduite pour résister au soleil, à l'humidité et aux variations de température.",
-  bambou: "Les lamelles de bambou apportent une chaleur naturelle et filtrent la lumière en fines rayures.",
+    "Le polyester tissé serré est facile à vivre : stable au lavage, résistant au soleil et sans repassage, il convient aux pièces très utilisées.",
+  voile:
+    "Le voile laisse passer la lumière tout en floutant les vis-à-vis, pour une clarté douce toute la journée.",
+  melange_lin:
+    "Le mélange lin garde le grain naturel du lin avec une meilleure tenue au lavage et moins de plis.",
+  jacquard_leger:
+    "Le jacquard léger dessine son motif dans le tissage : la lumière révèle le relief sans alourdir la fenêtre.",
+  toile_technique:
+    "La toile technique est enduite pour résister au soleil, à l'humidité et aux variations de température.",
+  bambou:
+    "Les lamelles de bambou apportent une chaleur naturelle et filtrent la lumière en fines rayures.",
 };
 
 const OPACITY_STORY: Record<OpacityLevel, string> = {
@@ -141,7 +148,8 @@ const CARE_BY_MATERIAL: Record<CurtainMaterial, string[]> = {
     "Lavage en machine à 40 °C",
     "Séchage à l'air libre, suspendu",
     "Repassage inutile dans la plupart des cas",
-  ],  voile: [
+  ],
+  voile: [
     "Lavage en machine à 30 °C, filet recommandé",
     "Essorage très réduit",
     "Repose humide sur la tringle, sans repassage",
@@ -248,7 +256,9 @@ export function buildDetails(input: {
         `Occultation : ${OPACITY_LABELS[input.opacityLevel]}`,
         `Matière : ${MATERIAL_LABELS[input.material]}`,
         input.isThermal ? "Doublure thermique disponible" : "Compatible avec un voilage assorti",
-        input.isLargeWidth ? "Grande largeur adaptée aux baies vitrées" : "Ourlets renforcés haut et bas",
+        input.isLargeWidth
+          ? "Grande largeur adaptée aux baies vitrées"
+          : "Ourlets renforcés haut et bas",
         "Traitement anti-décoloration",
       ];
 

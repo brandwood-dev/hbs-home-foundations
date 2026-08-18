@@ -49,7 +49,10 @@ export function ProductDetailView({ product }: { product: Product }) {
         <CatalogBreadcrumbs
           items={[
             { label: "Accueil", href: "/" },
-            { label: getCatalogGroup(product.category).label, href: getCatalogGroup(product.category).path },
+            {
+              label: getCatalogGroup(product.category).label,
+              href: getCatalogGroup(product.category).path,
+            },
             { label: product.name },
           ]}
         />
