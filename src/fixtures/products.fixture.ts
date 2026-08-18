@@ -7,6 +7,7 @@ import packImg from "@/assets/catalog/pack-rideau-voilage.jpg";
 import colRideaux from "@/assets/col-rideaux.jpg";
 import colVoilages from "@/assets/col-voilages.jpg";
 import { HEADER_LABELS, MATERIAL_LABELS } from "@/domain/product/product.constants";
+import storeMechanismImg from "@/assets/catalog/stores/store-mecanisme.jpg";
 import {
   EYELET_OPTIONS_BY_MATERIAL,
   HEADER_DETAIL_IMAGES,
@@ -16,7 +17,16 @@ import {
   buildLongDescription,
   buildSeo,
 } from "@/fixtures/product-enrichment";
+
+/** Supplément appliqué à une pose sans perçage (en millimes). */
+export const NO_DRILL_SURCHARGE_MINOR = 15000;
+
+const BLIND_MECHANISM_IMAGE = storeMechanismImg;
 import type {
+  BlindControlSide,
+  BlindMechanismColor,
+  BlindMountingType,
+  BlindType,
   CurtainHeader,
   CurtainLining,
   CurtainMaterial,
@@ -25,8 +35,10 @@ import type {
   OpacityLevel,
   Product,
   ProductAvailability,
+  ProductCategory,
   ProductColor,
   ProductImage,
+  ProductPattern,
   ProductVariant,
 } from "@/domain/product/product.types";
 import { money } from "@/lib/money/money";
@@ -100,28 +112,38 @@ const COLORS = {
   dore: { id: "c-dore", name: "Doré", slug: "dore", family: "metallic", hex: "#B99B63" },
 } satisfies Record<string, ProductColor>;
 
-interface VariantSeed {
+export interface VariantSeed {
   color: ProductColor;
   widthCm: number;
   heightCm: number;
-  header: CurtainHeader;
+  /** Requis pour les rideaux et voilages, ignoré pour les stores. */
+  header?: CurtainHeader;
   priceMinor: number;
   compareAtMinor?: number;
   availability: ProductAvailability;
   quantity: number;
 }
 
-interface ProductSeed {
+export interface ProductSeed {
   slug: string;
   name: string;
   reference: string;
+  category?: ProductCategory;
   material: CurtainMaterial;
   opacityLevel: OpacityLevel;
   sellingMode: CurtainSellingMode;
+  pattern?: ProductPattern;
+  blindType?: BlindType;
+  isLargeWidth?: boolean;
+  /** Axes spécifiques aux stores. */
+  mountings?: BlindMountingType[];
+  controlSides?: BlindControlSide[];
+  mechanismColors?: BlindMechanismColor[];
   shortDescription: string;
   imageAlt: string;
   image: string;
   secondaryImage?: string | undefined;
+  detailImage?: string | undefined;
   isThermal: boolean;
   isNew: boolean;
   isBestSeller: boolean;
@@ -131,7 +153,10 @@ interface ProductSeed {
   variants: VariantSeed[];
 }
 
-function buildProduct(seed: ProductSeed, index: number): Product {
+export function buildProduct(seed: ProductSeed, index: number, prefix = "p"): Product {
+  const category: ProductCategory = seed.category ?? "rideaux";
+  const isBlind = category === "stores";
+
   const colors: ProductColor[] = [];
   for (const variant of seed.variants) {
     if (!colors.some((color) => color.id === variant.color.id)) colors.push(variant.color);
@@ -157,14 +182,20 @@ function buildProduct(seed: ProductSeed, index: number): Product {
     },
     {
       id: fabricId,
-      url: MATERIAL_TEXTURES[seed.material],
+      url: seed.detailImage ?? MATERIAL_TEXTURES[seed.material],
       alt: `Gros plan sur la matière ${MATERIAL_LABELS[seed.material].toLowerCase()} du ${seed.name}`,
       type: "fabric_detail",
     },
   );
 
   const headerImageId = (header: CurtainHeader) => `${seed.slug}-header-${header}`;
-  const usedHeaders = [...new Set(seed.variants.map((variant) => variant.header))];
+  const usedHeaders = [
+    ...new Set(
+      seed.variants
+        .map((variant) => variant.header)
+        .filter((header): header is CurtainHeader => header != null),
+    ),
+  ];
   for (const header of usedHeaders) {
     images.push({
       id: headerImageId(header),
@@ -174,94 +205,174 @@ function buildProduct(seed: ProductSeed, index: number): Product {
     });
   }
 
-  const linings: CurtainLining[] = seed.isThermal
-    ? ["sans_doublure", "thermique"]
-    : ["sans_doublure"];
+  const mechanismImageId = `${seed.slug}-mechanism`;
+  if (isBlind) {
+    images.push({
+      id: mechanismImageId,
+      url: BLIND_MECHANISM_IMAGE,
+      alt: `Détail du mécanisme et des supports du ${seed.name}`,
+      type: "mechanism_detail",
+    });
+  }
+
+  const galleryFor = (variant: VariantSeed) =>
+    isBlind
+      ? [`${seed.slug}-color-${variant.color.slug}`, lifestyleId, fabricId, mechanismImageId]
+      : [
+          `${seed.slug}-color-${variant.color.slug}`,
+          lifestyleId,
+          fabricId,
+          ...(variant.header ? [headerImageId(variant.header)] : []),
+        ];
 
   const variants: ProductVariant[] = [];
-  seed.variants.forEach((variant, variantIndex) => {
-    const eyelets: (EyeletColor | undefined)[] =
-      variant.header === "oeillets" ? EYELET_OPTIONS_BY_MATERIAL[seed.material] : [undefined];
 
-    eyelets.forEach((eyeletColor, eyeletIndex) => {
-      linings.forEach((lining, liningIndex) => {
-        const surcharge = lining === "thermique" ? THERMAL_LINING_SURCHARGE_MINOR : 0;
-        const suffix = [
-          variant.color.slug.toUpperCase(),
-          `${variant.widthCm}x${variant.heightCm}`,
-          eyeletColor ? eyeletColor.toUpperCase() : variant.header.toUpperCase(),
-          lining === "thermique" ? "TH" : "ST",
-        ].join("-");
-        const quantity =
-          variant.availability === "out_of_stock"
-            ? 0
-            : Math.max(0, variant.quantity - eyeletIndex * 2 - liningIndex);
-        const availability =
-          quantity === 0 && variant.availability === "in_stock"
-            ? "made_to_order"
-            : variant.availability;
+  if (isBlind) {
+    const mountings = seed.mountings ?? ["mur", "plafond"];
+    const controlSides = seed.controlSides ?? ["droite", "gauche"];
+    const mechanismColors = seed.mechanismColors ?? ["blanc"];
 
-        variants.push({
-          id: `${seed.slug}-v${variantIndex + 1}-${eyeletIndex + 1}-${liningIndex + 1}`,
-          sku: `${seed.reference}-${suffix}`,
-          colorId: variant.color.id,
-          widthCm: variant.widthCm,
-          heightCm: variant.heightCm,
-          curtainHeader: variant.header,
-          ...(eyeletColor ? { eyeletColor } : {}),
-          lining,
-          price: money(variant.priceMinor + surcharge),
-          ...(variant.compareAtMinor
-            ? { compareAtPrice: money(variant.compareAtMinor + surcharge) }
-            : {}),
-          availability,
-          availableQuantity: quantity,
-          imageUrl: seed.image,
-          ...(seed.secondaryImage ? { secondaryImageUrl: seed.secondaryImage } : {}),
-          imageIds: [
-            `${seed.slug}-color-${variant.color.slug}`,
-            lifestyleId,
-            fabricId,
-            headerImageId(variant.header),
-          ],
+    seed.variants.forEach((variant, variantIndex) => {
+      mountings.forEach((mounting, mountingIndex) => {
+        controlSides.forEach((side, sideIndex) => {
+          mechanismColors.forEach((mechanism, mechanismIndex) => {
+            const surcharge = mounting === "sans_percage" ? NO_DRILL_SURCHARGE_MINOR : 0;
+            const suffix = [
+              variant.color.slug.toUpperCase(),
+              `${variant.widthCm}x${variant.heightCm}`,
+              mounting.toUpperCase(),
+              side.slice(0, 1).toUpperCase(),
+              mechanism.slice(0, 2).toUpperCase(),
+            ].join("-");
+            const quantity =
+              variant.availability === "out_of_stock"
+                ? 0
+                : Math.max(0, variant.quantity - mountingIndex - sideIndex - mechanismIndex);
+            const availability =
+              quantity === 0 && variant.availability === "in_stock"
+                ? "made_to_order"
+                : variant.availability;
+
+            variants.push({
+              id: `${seed.slug}-v${variantIndex + 1}-${mountingIndex + 1}${sideIndex + 1}${mechanismIndex + 1}`,
+              sku: `${seed.reference}-${suffix}`,
+              colorId: variant.color.id,
+              widthCm: variant.widthCm,
+              heightCm: variant.heightCm,
+              blindMountingType: mounting,
+              blindControlSide: side,
+              blindMechanismColor: mechanism,
+              price: money(variant.priceMinor + surcharge),
+              ...(variant.compareAtMinor
+                ? { compareAtPrice: money(variant.compareAtMinor + surcharge) }
+                : {}),
+              availability,
+              availableQuantity: quantity,
+              imageUrl: seed.image,
+              ...(seed.secondaryImage ? { secondaryImageUrl: seed.secondaryImage } : {}),
+              imageIds: galleryFor(variant),
+            });
+          });
         });
       });
     });
-  });
+  } else {
+    const linings: CurtainLining[] = seed.isThermal
+      ? ["sans_doublure", "thermique"]
+      : ["sans_doublure"];
+
+    seed.variants.forEach((variant, variantIndex) => {
+      const header = variant.header ?? "oeillets";
+      const eyelets: (EyeletColor | undefined)[] =
+        header === "oeillets" && EYELET_OPTIONS_BY_MATERIAL[seed.material].length > 0
+          ? EYELET_OPTIONS_BY_MATERIAL[seed.material]
+          : [undefined];
+
+      eyelets.forEach((eyeletColor, eyeletIndex) => {
+        linings.forEach((lining, liningIndex) => {
+          const surcharge = lining === "thermique" ? THERMAL_LINING_SURCHARGE_MINOR : 0;
+          const suffix = [
+            variant.color.slug.toUpperCase(),
+            `${variant.widthCm}x${variant.heightCm}`,
+            eyeletColor ? eyeletColor.toUpperCase() : header.toUpperCase(),
+            lining === "thermique" ? "TH" : "ST",
+          ].join("-");
+          const quantity =
+            variant.availability === "out_of_stock"
+              ? 0
+              : Math.max(0, variant.quantity - eyeletIndex * 2 - liningIndex);
+          const availability =
+            quantity === 0 && variant.availability === "in_stock"
+              ? "made_to_order"
+              : variant.availability;
+
+          variants.push({
+            id: `${seed.slug}-v${variantIndex + 1}-${eyeletIndex + 1}-${liningIndex + 1}`,
+            sku: `${seed.reference}-${suffix}`,
+            colorId: variant.color.id,
+            widthCm: variant.widthCm,
+            heightCm: variant.heightCm,
+            curtainHeader: header,
+            ...(eyeletColor ? { eyeletColor } : {}),
+            lining,
+            price: money(variant.priceMinor + surcharge),
+            ...(variant.compareAtMinor
+              ? { compareAtPrice: money(variant.compareAtMinor + surcharge) }
+              : {}),
+            availability,
+            availableQuantity: quantity,
+            imageUrl: seed.image,
+            ...(seed.secondaryImage ? { secondaryImageUrl: seed.secondaryImage } : {}),
+            imageIds: galleryFor(variant),
+          });
+        });
+      });
+    });
+  }
 
   return {
-    id: `p-${String(index + 1).padStart(3, "0")}`,
+    id: `${prefix}-${String(index + 1).padStart(3, "0")}`,
     slug: seed.slug,
     name: seed.name,
     reference: seed.reference,
-    category: "rideaux",
+    category,
     material: seed.material,
     opacityLevel: seed.opacityLevel,
     sellingMode: seed.sellingMode,
+    ...(seed.pattern ? { pattern: seed.pattern } : {}),
+    ...(seed.blindType ? { blindType: seed.blindType } : {}),
+    isLargeWidth: seed.isLargeWidth ?? false,
     shortDescription: seed.shortDescription,
     longDescription: buildLongDescription({
       name: seed.name,
+      category,
       material: seed.material,
       opacityLevel: seed.opacityLevel,
       sellingMode: seed.sellingMode,
       shortDescription: seed.shortDescription,
       isThermal: seed.isThermal,
+      blindType: seed.blindType,
     }),
     imageAlt: seed.imageAlt,
     images,
     variants,
     colors,
     details: buildDetails({
+      category,
       material: seed.material,
       opacityLevel: seed.opacityLevel,
       headers: usedHeaders,
+      ...(seed.mountings ? { mountings: seed.mountings } : { mountings: ["mur", "plafond"] }),
       isThermal: seed.isThermal,
+      isLargeWidth: seed.isLargeWidth ?? false,
     }),
     seo: buildSeo({
       name: seed.name,
+      category,
       material: seed.material,
       opacityLevel: seed.opacityLevel,
       shortDescription: seed.shortDescription,
+      blindType: seed.blindType,
     }),
     isThermal: seed.isThermal,
     isNew: seed.isNew,
@@ -271,6 +382,10 @@ function buildProduct(seed: ProductSeed, index: number): Product {
     recommendationScore: seed.recommendationScore,
     isDemo: true,
   };
+}
+
+export function buildProducts(seeds: ProductSeed[], prefix: string): Product[] {
+  return seeds.map((seed, index) => buildProduct(seed, index, prefix));
 }
 
 const seeds: ProductSeed[] = [
@@ -1292,4 +1407,4 @@ const seeds: ProductSeed[] = [
   },
 ];
 
-export const demoProducts: Product[] = seeds.map(buildProduct);
+export const demoProducts: Product[] = buildProducts(seeds, "p");
