@@ -797,9 +797,9 @@ export class MockAdminOrderRepository implements AdminOrderRepository {
   async updatePaymentStatus(input: UpdateAdminPaymentStatusInput): Promise<AdminOrder> {
     const order = mutateDb((db) => {
       const found = findOrder(db, input.orderId);
-      if (!getAllowedPaymentTransitions(found).includes(input.paymentStatus)) {
-        throw new Error(paymentTransitionError(found.paymentStatus, input.paymentStatus));
-      }
+      const paymentError = paymentTransitionError(found, input.paymentStatus);
+      if (paymentError) throw new Error(paymentError);
+
       if (paymentRequiresReason(input.paymentStatus) && !input.reason?.trim()) {
         throw new Error("Un motif est obligatoire pour un remboursement.");
       }
