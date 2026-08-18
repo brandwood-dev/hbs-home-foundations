@@ -1,4 +1,8 @@
-import type { ProductAvailability } from "@/domain/product/product.types";
+import type {
+  ProductAvailability,
+  ProductCategory,
+  ProductOptionDisplay,
+} from "@/domain/product/product.types";
 
 /** Forme persistée : uniquement des références stables, jamais des données dérivées. */
 export interface PersistedCartItem {
@@ -47,12 +51,15 @@ export interface ResolvedCartItem {
   imageUrl: string;
   imageAlt: string;
 
+  category?: ProductCategory;
   colorLabel?: string;
   widthCm?: number;
   heightCm?: number;
   curtainHeaderLabel?: string;
   eyeletColorLabel?: string;
   liningLabel?: string;
+  /** Options affichables, toutes catégories confondues. */
+  selectedOptions?: ProductOptionDisplay[];
   sellingUnitLabel: string;
 
   availability: ProductAvailability;

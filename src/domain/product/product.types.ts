@@ -3,15 +3,44 @@ export interface Money {
   currency: "TND";
 }
 
+/** Univers catalogue. Chaque catégorie possède ses propres axes de variantes. */
+export type ProductCategory = "rideaux" | "voilages" | "stores";
+
 export type ProductAvailability = "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
 
-export type CurtainMaterial = "velours" | "satin" | "lin" | "jacquard" | "polyester";
+export type CurtainMaterial =
+  | "velours"
+  | "satin"
+  | "lin"
+  | "jacquard"
+  | "polyester"
+  | "voile"
+  | "melange_lin"
+  | "jacquard_leger"
+  | "toile_technique"
+  | "bambou";
 
-export type OpacityLevel = "tamisant_leger" | "tamisant" | "obscurcissant" | "occultant";
+export type OpacityLevel =
+  "transparent" | "tamisant_leger" | "tamisant" | "obscurcissant" | "occultant";
 
 export type CurtainHeader = "oeillets" | "rail" | "galon_fronceur" | "passants";
 
 export type CurtainSellingMode = "single_panel" | "pair" | "pack" | "ready_made";
+
+/** Motif du tissu — structurant surtout pour les voilages. */
+export type ProductPattern = "uni" | "brode" | "raye" | "imprime" | "jacquard";
+
+/** Familles de stores proposées. */
+export type BlindType = "enrouleur" | "jour_nuit" | "occultant" | "tamisant" | "bambou";
+
+/** Mode de pose d'un store. */
+export type BlindMountingType = "mur" | "plafond" | "sans_percage";
+
+/** Côté de la chaînette ou de la manœuvre. */
+export type BlindControlSide = "gauche" | "droite";
+
+/** Finition du coffre et du mécanisme. */
+export type BlindMechanismColor = "blanc" | "gris" | "noir";
 
 /** Finition métallique des œillets (uniquement pour les têtes à œillets). */
 export type EyeletColor = "argent" | "dore" | "noir";
@@ -19,7 +48,8 @@ export type EyeletColor = "argent" | "dore" | "noir";
 /** Doublure optionnelle du panneau. */
 export type CurtainLining = "sans_doublure" | "thermique";
 
-export type ProductImageType = "front" | "lifestyle" | "fabric_detail" | "header_detail";
+export type ProductImageType =
+  "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
 
 export type ColorFamily =
   | "white"
@@ -69,10 +99,17 @@ export interface ProductVariant {
   colorId: string;
   widthCm: number;
   heightCm: number;
-  curtainHeader: CurtainHeader;
+
+  /** Axes rideaux et voilages. */
+  curtainHeader?: CurtainHeader;
   /** Défini uniquement quand curtainHeader === "oeillets". */
   eyeletColor?: EyeletColor;
-  lining: CurtainLining;
+  lining?: CurtainLining;
+
+  /** Axes stores. */
+  blindMountingType?: BlindMountingType;
+  blindControlSide?: BlindControlSide;
+  blindMechanismColor?: BlindMechanismColor;
 
   price: Money;
   compareAtPrice?: Money;
@@ -92,10 +129,17 @@ export interface Product {
   name: string;
   reference: string;
 
-  category: "rideaux";
+  category: ProductCategory;
   material: CurtainMaterial;
   opacityLevel: OpacityLevel;
   sellingMode: CurtainSellingMode;
+
+  /** Motif du tissu, renseigné pour les rideaux et voilages. */
+  pattern?: ProductPattern;
+  /** Famille de store, renseignée uniquement pour la catégorie "stores". */
+  blindType?: BlindType;
+  /** Modèle conçu pour les baies vitrées et grandes largeurs. */
+  isLargeWidth: boolean;
 
   shortDescription: string;
   longDescription: string;
@@ -120,6 +164,12 @@ export interface Product {
   recommendationScore: number;
 
   isDemo: true;
+}
+
+/** Option de variante prête à afficher (panier, commande, suivi). */
+export interface ProductOptionDisplay {
+  label: string;
+  value: string;
 }
 
 export type CatalogSort =

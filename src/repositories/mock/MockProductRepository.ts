@@ -1,5 +1,10 @@
 import type { Product } from "@/domain/product/product.types";
 import { demoProducts } from "@/fixtures/products.fixture";
+import { demoStores } from "@/fixtures/stores.fixture";
+import { demoVoilages } from "@/fixtures/voilages.fixture";
+
+/** Catalogue complet toutes catégories confondues. */
+export const demoCatalog = [...demoProducts, ...demoVoilages, ...demoStores];
 import type {
   CatalogScope,
   PaginatedProducts,
@@ -18,7 +23,7 @@ import { getRelatedProducts } from "@/services/product/product-recommendations";
 export class MockProductRepository implements ProductRepository {
   private readonly products: Product[];
 
-  constructor(products: Product[] = demoProducts) {
+  constructor(products: Product[] = demoCatalog) {
     this.products = products;
   }
 

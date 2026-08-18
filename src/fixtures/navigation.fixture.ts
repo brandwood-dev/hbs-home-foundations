@@ -41,8 +41,65 @@ export const mainNavigation: NavItem[] = [
       },
     ],
   },
-  { id: "voilages", label: "Voilages", href: "/voilages" },
-  { id: "stores", label: "Stores", href: "/stores" },
+  {
+    id: "voilages",
+    label: "Voilages",
+    href: "/voilages",
+    megaMenu: [
+      {
+        title: "Par motif",
+        links: [
+          { label: "Unis", href: "/voilages/unis" },
+          { label: "À motifs", href: "/voilages/motifs" },
+          { label: "Tous les voilages", href: "/voilages" },
+        ],
+      },
+      {
+        title: "Par format",
+        links: [
+          { label: "Grande largeur", href: "/voilages/grande-largeur" },
+          { label: "Pour rail", href: "/voilages/rail" },
+        ],
+      },
+      {
+        title: "Compléter",
+        links: [
+          { label: "Rideaux occultants", href: "/rideaux/occultants" },
+          { label: "Packs rideau et voilage", href: "/rideaux/packs" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "stores",
+    label: "Stores",
+    href: "/stores",
+    megaMenu: [
+      {
+        title: "Par type",
+        links: [
+          { label: "Enrouleurs", href: "/stores/enrouleurs" },
+          { label: "Jour/Nuit", href: "/stores/jour-nuit" },
+          { label: "Bambou", href: "/stores/bambou" },
+          { label: "Tous les stores", href: "/stores" },
+        ],
+      },
+      {
+        title: "Par besoin",
+        links: [
+          { label: "Occultants", href: "/stores/occultants" },
+          { label: "Sans perçage", href: "/stores/sans-percage" },
+        ],
+      },
+      {
+        title: "Compléter",
+        links: [
+          { label: "Voilages unis", href: "/voilages/unis" },
+          { label: "Guide des mesures", href: "/guide-des-mesures" },
+        ],
+      },
+    ],
+  },
   { id: "coussins", label: "Coussins", href: "/coussins" },
   { id: "accessoires", label: "Accessoires", href: "/accessoires" },
   { id: "sur-mesure", label: "Sur mesure", href: "/sur-mesure" },

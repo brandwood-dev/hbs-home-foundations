@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AppLink } from "@/components/ui/app-link";
 import {
   AVAILABILITY_LABELS,
+  BLIND_TYPE_LABELS,
   MATERIAL_LABELS,
   OPACITY_LABELS,
   SELLING_MODE_LABELS,
@@ -91,7 +92,11 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 
       <div className="mt-3 flex flex-1 flex-col">
         <p className="eyebrow">
-          {MATERIAL_LABELS[product.material]} · {OPACITY_LABELS[product.opacityLevel]}
+          {product.blindType
+            ? BLIND_TYPE_LABELS[product.blindType]
+            : MATERIAL_LABELS[product.material]}
+          {" · "}
+          {OPACITY_LABELS[product.opacityLevel]}
         </p>
 
         <h3 className="mt-1 text-base leading-snug sm:text-lg">

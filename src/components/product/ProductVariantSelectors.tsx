@@ -1,5 +1,10 @@
 import { Check } from "lucide-react";
 import {
+  BLIND_CONTROL_SIDE_LABELS,
+  BLIND_MECHANISM_COLOR_LABELS,
+  BLIND_MECHANISM_COLOR_SWATCHES,
+  BLIND_MOUNTING_DESCRIPTIONS,
+  BLIND_MOUNTING_LABELS,
   EYELET_COLOR_LABELS,
   EYELET_COLOR_SWATCHES,
   HEADER_DESCRIPTIONS,
@@ -8,6 +13,9 @@ import {
   LINING_LABELS,
 } from "@/domain/product/product.constants";
 import type {
+  BlindControlSide,
+  BlindMechanismColor,
+  BlindMountingType,
   CurtainHeader,
   CurtainLining,
   EyeletColor,
@@ -56,8 +64,13 @@ export function ProductVariantSelectors({
   const headerOptions = getAxisOptions(product.variants, "curtainHeader", selection);
   const eyeletOptions = getAxisOptions(product.variants, "eyeletColor", selection);
   const liningOptions = getAxisOptions(product.variants, "lining", selection);
+  const mountingOptions = getAxisOptions(product.variants, "blindMountingType", selection);
+  const controlSideOptions = getAxisOptions(product.variants, "blindControlSide", selection);
+  const mechanismOptions = getAxisOptions(product.variants, "blindMechanismColor", selection);
 
   const activeColor = product.colors.find((color) => color.id === variant.colorId);
+  const sizeLabel =
+    product.category === "stores" ? "Dimensions du store (l × h)" : "Dimensions (l × h)";
 
   return (
     <div className="space-y-6">
@@ -97,7 +110,7 @@ export function ProductVariantSelectors({
       </fieldset>
 
       <fieldset>
-        <Legend label="Dimensions (l × h)" value={`${variant.widthCm} × ${variant.heightCm} cm`} />
+        <Legend label={sizeLabel} value={`${variant.widthCm} × ${variant.heightCm} cm`} />
         <div className="mt-2 flex flex-wrap gap-2">
           {sizeOptions.map((option) => (
             <button
@@ -113,22 +126,24 @@ export function ProductVariantSelectors({
         </div>
       </fieldset>
 
-      <fieldset>
-        <Legend label="Type de tête" value={HEADER_DESCRIPTIONS[variant.curtainHeader]} />
-        <div className="mt-2 flex flex-wrap gap-2">
-          {headerOptions.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => onChange("curtainHeader", option.value)}
-              aria-pressed={option.value === variant.curtainHeader}
-              className={optionClass(option.value === variant.curtainHeader, option.available)}
-            >
-              {HEADER_LABELS[option.value as CurtainHeader]}
-            </button>
-          ))}
-        </div>
-      </fieldset>
+      {headerOptions.length > 0 && variant.curtainHeader && (
+        <fieldset>
+          <Legend label="Type de tête" value={HEADER_DESCRIPTIONS[variant.curtainHeader]} />
+          <div className="mt-2 flex flex-wrap gap-2">
+            {headerOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => onChange("curtainHeader", option.value)}
+                aria-pressed={option.value === variant.curtainHeader}
+                className={optionClass(option.value === variant.curtainHeader, option.available)}
+              >
+                {HEADER_LABELS[option.value as CurtainHeader]}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      )}
 
       {eyeletOptions.length > 0 && variant.curtainHeader === "oeillets" && (
         <fieldset>
@@ -161,7 +176,7 @@ export function ProductVariantSelectors({
         </fieldset>
       )}
 
-      {liningOptions.length > 1 && (
+      {liningOptions.length > 1 && variant.lining && (
         <fieldset>
           <Legend label="Doublure" value={LINING_DESCRIPTIONS[variant.lining]} />
           <div className="mt-2 grid gap-2 sm:grid-cols-2">
@@ -182,6 +197,94 @@ export function ProductVariantSelectors({
                   >
                     {LINING_DESCRIPTIONS[value]}
                   </span>
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+      )}
+
+      {mountingOptions.length > 1 && variant.blindMountingType && (
+        <fieldset>
+          <Legend
+            label="Type de pose"
+            value={BLIND_MOUNTING_DESCRIPTIONS[variant.blindMountingType]}
+          />
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            {mountingOptions.map((option) => {
+              const value = option.value as BlindMountingType;
+              const selected = value === variant.blindMountingType;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onChange("blindMountingType", value)}
+                  aria-pressed={selected}
+                  className={`text-left ${optionClass(selected, option.available)}`}
+                >
+                  <span className="block font-medium">{BLIND_MOUNTING_LABELS[value]}</span>
+                  <span
+                    className={`block text-xs ${selected ? "text-accent-foreground/80" : "text-foreground-muted"}`}
+                  >
+                    {BLIND_MOUNTING_DESCRIPTIONS[value]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+      )}
+
+      {controlSideOptions.length > 1 && variant.blindControlSide && (
+        <fieldset>
+          <Legend
+            label="Côté de manœuvre"
+            value={BLIND_CONTROL_SIDE_LABELS[variant.blindControlSide]}
+          />
+          <div className="mt-2 flex flex-wrap gap-2">
+            {controlSideOptions.map((option) => {
+              const value = option.value as BlindControlSide;
+              const selected = value === variant.blindControlSide;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onChange("blindControlSide", value)}
+                  aria-pressed={selected}
+                  className={optionClass(selected, option.available)}
+                >
+                  {BLIND_CONTROL_SIDE_LABELS[value]}
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+      )}
+
+      {mechanismOptions.length > 1 && variant.blindMechanismColor && (
+        <fieldset>
+          <Legend
+            label="Finition du mécanisme"
+            value={BLIND_MECHANISM_COLOR_LABELS[variant.blindMechanismColor]}
+          />
+          <div className="mt-2 flex flex-wrap gap-2">
+            {mechanismOptions.map((option) => {
+              const value = option.value as BlindMechanismColor;
+              const selected = value === variant.blindMechanismColor;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onChange("blindMechanismColor", value)}
+                  aria-pressed={selected}
+                  className={`flex items-center gap-2 ${optionClass(selected, option.available)}`}
+                >
+                  <span
+                    className="h-4 w-4 rounded-full border border-border"
+                    style={{ backgroundColor: BLIND_MECHANISM_COLOR_SWATCHES[value] }}
+                    aria-hidden="true"
+                  />
+                  {BLIND_MECHANISM_COLOR_LABELS[value]}
                 </button>
               );
             })}
