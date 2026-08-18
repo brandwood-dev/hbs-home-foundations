@@ -88,6 +88,8 @@ export interface HomeGoodSeed {
   isFeatured: boolean;
   createdAt: string;
   recommendationScore: number;
+
+  variants: HomeGoodVariantSeed[];
 }
 
 /** Association coloris → finition, utilisée pour les accessoires métalliques et bois. */
