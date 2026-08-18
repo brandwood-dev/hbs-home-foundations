@@ -15,6 +15,14 @@ import type {
   ProductAvailability,
   ProductCategory,
   ProductPattern,
+  FurnitureRoom,
+  FurnitureStyle,
+  FurnitureType,
+  PlantCareLevel,
+  PlantLightNeed,
+  PlantNature,
+  PlantSize,
+  PlantType,
 } from "@/domain/product/product.types";
 
 export interface ProductListParams {
@@ -38,6 +46,18 @@ export interface ProductListParams {
   accessoryFinishes?: AccessoryFinish[] | undefined;
   mountings?: BlindMountingType[] | undefined;
   controlSides?: BlindControlSide[] | undefined;
+
+  /** Mobilier d'intérieur. */
+  furnitureTypes?: FurnitureType[] | undefined;
+  furnitureRooms?: FurnitureRoom[] | undefined;
+  furnitureStyles?: FurnitureStyle[] | undefined;
+
+  /** Plantes et décoration végétale. */
+  plantNatures?: PlantNature[] | undefined;
+  plantTypes?: PlantType[] | undefined;
+  plantSizes?: PlantSize[] | undefined;
+  plantCareLevels?: PlantCareLevel[] | undefined;
+  plantLightNeeds?: PlantLightNeed[] | undefined;
 
   widths?: number[] | undefined;
   heights?: number[] | undefined;
@@ -69,6 +89,12 @@ export type CatalogScope = Pick<
   | "shapes"
   | "accessoryTypes"
   | "mountings"
+  | "furnitureTypes"
+  | "furnitureRooms"
+  | "furnitureStyles"
+  | "plantNatures"
+  | "plantTypes"
+  | "plantSizes"
   | "sellingMode"
   | "onlyThermal"
   | "onlyLargeWidth"
