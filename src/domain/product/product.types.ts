@@ -4,11 +4,18 @@ export interface Money {
 }
 
 /** Univers catalogue. Chaque catégorie possède ses propres axes de variantes. */
-export type ProductCategory = "rideaux" | "voilages" | "stores";
+export type ProductCategory =
+  | "rideaux"
+  | "voilages"
+  | "stores"
+  | "coussins"
+  | "galettes_de_chaise"
+  | "accessoires";
 
 export type ProductAvailability = "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
 
-export type CurtainMaterial =
+/** Matière générale : textile d'ameublement et matériaux d'accessoires. */
+export type ProductMaterial =
   | "velours"
   | "satin"
   | "lin"
@@ -18,7 +25,83 @@ export type CurtainMaterial =
   | "melange_lin"
   | "jacquard_leger"
   | "toile_technique"
-  | "bambou";
+  | "bambou"
+  | "coton"
+  | "boucle"
+  | "fourrure_synthetique"
+  | "mousse"
+  | "metal"
+  | "acier"
+  | "aluminium"
+  | "bois"
+  | "textile"
+  | "corde"
+  | "magnetique";
+
+/** Sous-ensemble textile historique — conservé pour les rideaux, voilages et stores. */
+export type CurtainMaterial = Extract<
+  ProductMaterial,
+  | "velours"
+  | "satin"
+  | "lin"
+  | "jacquard"
+  | "polyester"
+  | "voile"
+  | "melange_lin"
+  | "jacquard_leger"
+  | "toile_technique"
+  | "bambou"
+>;
+
+/** Coussins. */
+export type CushionShape = "carre" | "rectangulaire" | "rond";
+export type CushionContent = "housse_seule" | "avec_garnissage" | "pack";
+export type CushionClosure = "zip" | "enveloppe" | "sans_fermeture";
+
+/** Galettes de chaise. */
+export type ChairPadShape = "carree" | "ronde";
+export type ChairPadFastening = "liens" | "elastique" | "sans_attache";
+
+/** Accessoires. */
+export type AccessoryType =
+  | "tringle_extensible"
+  | "tringle_fixe"
+  | "rail"
+  | "support"
+  | "embout"
+  | "anneau"
+  | "crochet"
+  | "raccord"
+  | "embrasse"
+  | "attache_magnetique"
+  | "accessoire_pose";
+
+export type AccessoryMaterial = Extract<
+  ProductMaterial,
+  "metal" | "acier" | "aluminium" | "bois" | "textile" | "corde" | "magnetique"
+>;
+
+export type AccessoryFinish =
+  | "noir_mat"
+  | "argent"
+  | "dore"
+  | "bronze"
+  | "blanc"
+  | "bois_naturel"
+  | "beige"
+  | "taupe";
+
+export type AccessoryMountingType = "mur" | "plafond" | "mur_et_plafond";
+
+export type AccessoryCompatibility =
+  | "rideaux_oeillets"
+  | "voilages_oeillets"
+  | "rail"
+  | "tringle_16_19_mm"
+  | "tringle_20_25_mm"
+  | "tringle_25_28_mm"
+  | "montage_mural"
+  | "montage_plafond";
 
 export type OpacityLevel =
   "transparent" | "tamisant_leger" | "tamisant" | "obscurcissant" | "occultant";
@@ -111,6 +194,24 @@ export interface ProductVariant {
   blindControlSide?: BlindControlSide;
   blindMechanismColor?: BlindMechanismColor;
 
+  /** Axes coussins. */
+  cushionContent?: CushionContent;
+  cushionClosure?: CushionClosure;
+
+  /** Axes galettes de chaise. */
+  chairPadFastening?: ChairPadFastening;
+  thicknessCm?: number;
+
+  /** Axes accessoires. */
+  accessoryFinish?: AccessoryFinish;
+  accessoryMountingType?: AccessoryMountingType;
+  minLengthCm?: number;
+  maxLengthCm?: number;
+  diameterMm?: number;
+
+  /** Nombre d'unités vendues ensemble (pack, paire, lot). */
+  packQuantity?: number;
+
   price: Money;
   compareAtPrice?: Money;
 
@@ -130,8 +231,9 @@ export interface Product {
   reference: string;
 
   category: ProductCategory;
-  material: CurtainMaterial;
-  opacityLevel: OpacityLevel;
+  material: ProductMaterial;
+  /** Renseigné pour les catégories textiles de fenêtre uniquement. */
+  opacityLevel?: OpacityLevel;
   sellingMode: CurtainSellingMode;
 
   /** Motif du tissu, renseigné pour les rideaux et voilages. */
@@ -140,6 +242,19 @@ export interface Product {
   blindType?: BlindType;
   /** Modèle conçu pour les baies vitrées et grandes largeurs. */
   isLargeWidth: boolean;
+
+  /** Coussins. */
+  cushionShape?: CushionShape;
+  removableCover?: boolean;
+  machineWashable?: boolean;
+
+  /** Galettes de chaise. */
+  chairPadShape?: ChairPadShape;
+
+  /** Accessoires. */
+  accessoryType?: AccessoryType;
+  accessoryMaterial?: AccessoryMaterial;
+  accessoryCompatibilities?: AccessoryCompatibility[];
 
   shortDescription: string;
   longDescription: string;
