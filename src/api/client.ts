@@ -4,6 +4,8 @@ export type ApiProblem = components["schemas"]["ProblemDetail"];
 export type ApiHealth = components["schemas"]["HealthResponse"];
 export type ApiReadiness = components["schemas"]["ReadinessResponse"];
 export type ApiVersion = components["schemas"]["VersionResponse"];
+export type ApiAdminSession = components["schemas"]["AdminSession"];
+export type ApiAuditList = components["schemas"]["AuditListResponse"];
 
 export class HbsApiError extends Error {
   readonly status: number;
@@ -65,11 +67,16 @@ export class HbsApiClient {
     this.fetchImplementation = options.fetch ?? globalThis.fetch;
   }
 
-  private async get<T>(path: string, signal?: AbortSignal): Promise<T> {
+  private async get<T>(path: string, signal?: AbortSignal, accessToken?: string): Promise<T> {
+    const headers: Record<string, string> = {
+      accept: "application/json, application/problem+json",
+    };
+    if (accessToken) headers["authorization"] = `Bearer ${accessToken}`;
+
     const response = await this.fetchImplementation(`${this.baseUrl}${path}`, {
       method: "GET",
       credentials: "include",
-      headers: { accept: "application/json, application/problem+json" },
+      headers,
       ...(signal ? { signal } : {}),
     });
 
@@ -95,5 +102,17 @@ export class HbsApiClient {
 
   getVersion(signal?: AbortSignal): Promise<ApiVersion> {
     return this.get<ApiVersion>("/api/v1/version", signal);
+  }
+
+  getAdminSession(accessToken: string, signal?: AbortSignal): Promise<ApiAdminSession> {
+    return this.get<ApiAdminSession>("/api/v1/admin/session", signal, accessToken);
+  }
+
+  listAuditEvents(accessToken: string, limit = 50, signal?: AbortSignal): Promise<ApiAuditList> {
+    return this.get<ApiAuditList>(
+      `/api/v1/admin/audit-events?limit=${String(limit)}`,
+      signal,
+      accessToken,
+    );
   }
 }

@@ -35,6 +35,8 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           VITE_APP_ENVIRONMENT: staging
           VITE_HBS_API_BASE_URL: https://api-preview.hbs-home.com
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
         run: bun run deploy:staging
       - name: Verify the published release

@@ -28,8 +28,18 @@ jusqu'à la validation explicite du basculement final.
 - `CLOUDFLARE_ACCOUNT_ID`
 - `CLOUDFLARE_API_TOKEN`, limité à l'édition du Worker et de sa route HBS HOME
 - `CF_ACCESS_CLIENT_ID` et `CF_ACCESS_CLIENT_SECRET` lorsque Cloudflare Access protège la preview
+- `VITE_SUPABASE_PUBLISHABLE_KEY`, clé publique du projet Supabase staging
 
-Aucun secret ne doit être préfixé par `VITE_`, car ces variables sont intégrées au bundle public.
+Variable GitHub non sensible de l'environnement `staging` :
+
+- `VITE_SUPABASE_URL`, URL publique du projet Supabase staging.
+
+Toute variable `VITE_*` est intégrée au bundle public. La clé publishable Supabase est prévue pour
+cet usage ; une clé secrète Supabase ou `service_role` ne doit jamais être préfixée par `VITE_`.
+
+Supabase Auth doit autoriser exactement la redirection
+`https://preview.hbs-home.com/admin/auth/callback`. Le frontend refuse l'accès aux modules Admin
+tant que l'API n'a pas confirmé un profil actif, la permission demandée et le niveau MFA `aal2`.
 
 ## Retour arrière
 

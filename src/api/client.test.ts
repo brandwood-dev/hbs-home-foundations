@@ -6,7 +6,7 @@ describe("HbsApiClient", () => {
     const fetchImplementation = vi.fn<typeof fetch>().mockResolvedValue(
       Response.json({
         apiVersion: "v1",
-        contractVersion: "1.0.0",
+        contractVersion: "1.1.0",
         release: "0.1.0-staging",
         gitSha: "abc123",
       }),
@@ -16,10 +16,34 @@ describe("HbsApiClient", () => {
       fetch: fetchImplementation,
     });
 
-    await expect(client.getVersion()).resolves.toMatchObject({ contractVersion: "1.0.0" });
+    await expect(client.getVersion()).resolves.toMatchObject({ contractVersion: "1.1.0" });
     expect(fetchImplementation).toHaveBeenCalledWith(
       "https://api-preview.hbs-home.com/api/v1/version",
       expect.objectContaining({ method: "GET", credentials: "include" }),
+    );
+  });
+
+  it("sends the Supabase access token only to protected Admin endpoints", async () => {
+    const fetchImplementation = vi.fn<typeof fetch>().mockResolvedValue(
+      Response.json({
+        user: { id: "11111111-1111-4111-8111-111111111111", email: "admin@example.com" },
+        roles: ["super_admin"],
+        permissions: ["admin.session_read"],
+        assuranceLevel: "aal2",
+        mfaRequired: false,
+      }),
+    );
+    const client = new HbsApiClient({
+      baseUrl: "https://api.example.test",
+      fetch: fetchImplementation,
+    });
+
+    await client.getAdminSession("secret-access-token");
+    expect(fetchImplementation).toHaveBeenCalledWith(
+      "https://api.example.test/api/v1/admin/session",
+      expect.objectContaining({
+        headers: expect.objectContaining({ authorization: "Bearer secret-access-token" }),
+      }),
     );
   });
 

@@ -2,7 +2,7 @@
 
 ## État actuel
 
-Le frontend fonctionne intégralement en mode mock :
+Les données métier du frontend fonctionnent encore en mode mock :
 
 - `MockProductRepository` — catalogue statique (24 produits) ;
 - `LocalCartRepository` — panier persistant (localStorage, versionné) ;
@@ -10,6 +10,21 @@ Le frontend fonctionne intégralement en mode mock :
 
 `dataProvider` dans `src/config/features.config.ts` vaut `"mock"`. Le futur `ApiOrderRepository`
 devra implémenter la même interface ; aucun composant ne devra changer.
+
+L'authentification du back-office n'est plus simulée. La phase 2 fournit une connexion Supabase
+Auth en PKCE, une activation par invitation, un MFA TOTP obligatoire et une résolution des rôles et
+permissions par l'API. Les écrans métier Admin restent alimentés par leurs repositories actuels.
+
+Variables publiques requises au build staging :
+
+```text
+VITE_SUPABASE_URL
+VITE_SUPABASE_PUBLISHABLE_KEY
+VITE_HBS_API_BASE_URL=https://api-preview.hbs-home.com
+```
+
+La clé publishable est destinée au navigateur et ne confère aucun droit serveur. Une clé Supabase
+secrète ou `service_role` est interdite dans toute variable `VITE_*`.
 
 ## Suivi de commande sans compte (phase 6)
 

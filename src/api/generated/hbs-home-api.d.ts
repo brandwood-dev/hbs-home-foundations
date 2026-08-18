@@ -55,6 +55,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Resolve the current Admin profile, roles and MFA state */
+        get: operations["getAdminSession"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/audit-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List recent immutable audit events */
+        get: operations["listAuditEvents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -90,6 +124,21 @@ export interface components {
             checks: {
                 /** @enum {string} */
                 application: "up";
+                /** @enum {string} */
+                database: "up";
+            };
+        };
+        ReadinessUnavailableResponse: {
+            /** @enum {string} */
+            status: "not_ready";
+            /** @enum {string} */
+            service: "hbs-home-api";
+            timestamp: string;
+            checks: {
+                /** @enum {string} */
+                application: "up";
+                /** @enum {string} */
+                database: "down";
             };
         };
         VersionResponse: {
@@ -98,11 +147,60 @@ export interface components {
             /** @enum {string} */
             apiVersion: "v1";
             /** @enum {string} */
-            contractVersion: "1.0.0";
+            contractVersion: "1.1.0";
             releaseVersion: string;
             gitSha: string;
             builtAt: string;
             environment: "development" | "test" | "staging" | "production";
+        };
+        AdminSession: {
+            user: {
+                /** Format: uuid */
+                id: string;
+                /** Format: email */
+                email: string;
+                displayName: string | null;
+            };
+            roles: string[];
+            permissions: string[];
+            assuranceLevel: "aal1" | "aal2";
+            mfaRequired: boolean;
+        };
+        AuditEvent: {
+            id: string;
+            /** Format: date-time */
+            occurredAt: string;
+            requestId: string;
+            actorUserId: string | null;
+            actorEmail: string | null;
+            action: string;
+            resourceType: string;
+            resourceId: string | null;
+            outcome: "success" | "denied" | "failure";
+            sourceIp: string | null;
+            userAgent: string | null;
+            metadata: {
+                [key: string]: unknown;
+            };
+        };
+        AuditListResponse: {
+            items: {
+                id: string;
+                /** Format: date-time */
+                occurredAt: string;
+                requestId: string;
+                actorUserId: string | null;
+                actorEmail: string | null;
+                action: string;
+                resourceType: string;
+                resourceId: string | null;
+                outcome: "success" | "denied" | "failure";
+                sourceIp: string | null;
+                userAgent: string | null;
+                metadata: {
+                    [key: string]: unknown;
+                };
+            }[];
         };
     };
     responses: never;
@@ -164,6 +262,29 @@ export interface operations {
                         checks: {
                             /** @enum {string} */
                             application: "up";
+                            /** @enum {string} */
+                            database: "up";
+                        };
+                    };
+                };
+            };
+            /** @description Default Response */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        status: "not_ready";
+                        /** @enum {string} */
+                        service: "hbs-home-api";
+                        timestamp: string;
+                        checks: {
+                            /** @enum {string} */
+                            application: "up";
+                            /** @enum {string} */
+                            database: "down";
                         };
                     };
                 };
@@ -191,11 +312,171 @@ export interface operations {
                         /** @enum {string} */
                         apiVersion: "v1";
                         /** @enum {string} */
-                        contractVersion: "1.0.0";
+                        contractVersion: "1.1.0";
                         releaseVersion: string;
                         gitSha: string;
                         builtAt: string;
                         environment: "development" | "test" | "staging" | "production";
+                    };
+                };
+            };
+        };
+    };
+    getAdminSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user: {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: email */
+                            email: string;
+                            displayName: string | null;
+                        };
+                        roles: string[];
+                        permissions: string[];
+                        assuranceLevel: "aal1" | "aal2";
+                        mfaRequired: boolean;
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    listAuditEvents: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            id: string;
+                            /** Format: date-time */
+                            occurredAt: string;
+                            requestId: string;
+                            actorUserId: string | null;
+                            actorEmail: string | null;
+                            action: string;
+                            resourceType: string;
+                            resourceId: string | null;
+                            outcome: "success" | "denied" | "failure";
+                            sourceIp: string | null;
+                            userAgent: string | null;
+                            metadata: {
+                                [key: string]: unknown;
+                            };
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
                     };
                 };
             };
