@@ -15,7 +15,11 @@ import { OPENING_TYPE_LABELS } from "@/domain/measurement/measurement.constants"
 import { TUNISIA_GOVERNORATES } from "@/fixtures/tunisia-governorates.fixture";
 import { trackEvent } from "@/lib/analytics/analytics";
 import { getCustomQuoteRepository } from "@/repositories/repositoryFactory";
-import { normalizePhone } from "@/services/checkout/phone-normalization";
+import {
+  isValidTunisianPhone,
+  normalizeTunisianPhone,
+  TUNISIAN_PHONE_ERROR,
+} from "@/services/checkout/phone-normalization";
 import { parseCmInput } from "@/services/measurement/measurement-validation";
 
 const PRODUCT_TYPES: { value: CustomQuoteProductType; label: string }[] = [
@@ -74,7 +78,7 @@ export function CustomQuoteForm() {
       : null,
     firstName: firstName.trim().length < 2 ? "Indiquez votre prénom." : null,
     lastName: lastName.trim().length < 2 ? "Indiquez votre nom." : null,
-    phone: normalizePhone(phone) === null ? "Indiquez un numéro de téléphone tunisien valide." : null,
+    phone: isValidTunisianPhone(phone) ? null : TUNISIAN_PHONE_ERROR,
     email:
       email.trim().length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
         ? "Cette adresse e-mail semble incorrecte."
@@ -125,7 +129,7 @@ export function CustomQuoteForm() {
       contact: {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        phone: normalizePhone(phone) ?? phone.trim(),
+        phone: normalizeTunisianPhone(phone),
         governorate,
         city: city.trim(),
         preferredContact,
