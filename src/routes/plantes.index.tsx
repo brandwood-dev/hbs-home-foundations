@@ -7,7 +7,7 @@ import {
   type CatalogSearch,
 } from "@/services/catalog/catalog.search-params";
 
-const config = getCatalogPage("plantes");
+const config = getCatalogPage("plantes_decoration");
 const title = "Plantes d'intérieur et cache-pots en Tunisie | HBS HOME";
 const description =
   "Plantes artificielles réalistes, plantes naturelles faciles d'entretien, compositions séchées et cache-pots. Livraison en Tunisie.";

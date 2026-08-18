@@ -508,7 +508,7 @@ export const catalogPages: CatalogPageConfig[] = [
       "Comptez un anneau tous les 15 cm de largeur de tissu pour obtenir des plis réguliers, et un support supplémentaire au centre dès que la tringle dépasse 200 cm.",
   },
   {
-    routeId: "mobilier",
+    routeId: "mobilier_interieur",
     group: "mobilier_interieur",
     path: "/mobilier",
     title: "Mobilier d'intérieur",
@@ -619,7 +619,7 @@ export const catalogPages: CatalogPageConfig[] = [
       "La tête de lit se fixe au mur à environ 60 cm au-dessus du sommier. Choisissez-la à la largeur exacte du lit, ou 10 cm plus large pour un effet enveloppant.",
   },
   {
-    routeId: "plantes",
+    routeId: "plantes_decoration",
     group: "plantes_decoration",
     path: "/plantes",
     title: "Plantes et décoration végétale",

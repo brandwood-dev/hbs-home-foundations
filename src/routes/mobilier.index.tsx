@@ -7,7 +7,7 @@ import {
   type CatalogSearch,
 } from "@/services/catalog/catalog.search-params";
 
-const config = getCatalogPage("mobilier");
+const config = getCatalogPage("mobilier_interieur");
 const title = "Mobilier d'intérieur en Tunisie | HBS HOME";
 const description =
   "Canapés, fauteuils, tables basses, meubles TV, poufs et têtes de lit. Livraison sur rendez-vous partout en Tunisie.";
