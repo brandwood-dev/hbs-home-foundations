@@ -86,6 +86,7 @@ import { Route as VoilagesGrandeLargeurRouteImport } from './routes/voilages.gra
 import { Route as VoilagesMotifsRouteImport } from './routes/voilages.motifs'
 import { Route as VoilagesRailRouteImport } from './routes/voilages.rail'
 import { Route as VoilagesUnisRouteImport } from './routes/voilages.unis'
+import { Route as AdminClientsIndexRouteImport } from './routes/admin/clients.index'
 import { Route as AdminCommandesIndexRouteImport } from './routes/admin/commandes.index'
 import { Route as AdminCommandesOrderIdRouteImport } from './routes/admin/commandes.$orderId'
 import { Route as AdminProduitsIndexRouteImport } from './routes/admin/produits.index'
@@ -478,6 +479,11 @@ const VoilagesUnisRoute = VoilagesUnisRouteImport.update({
   path: '/voilages/unis',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminClientsIndexRoute = AdminClientsIndexRouteImport.update({
+  id: '/clients/',
+  path: '/clients/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminCommandesIndexRoute = AdminCommandesIndexRouteImport.update({
   id: '/commandes/',
   path: '/commandes/',
@@ -585,6 +591,7 @@ export interface FileRoutesByFullPath {
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/admin/clients/': typeof AdminClientsIndexRoute
   '/admin/commandes/': typeof AdminCommandesIndexRoute
   '/admin/produits/': typeof AdminProduitsIndexRoute
 }
@@ -668,6 +675,7 @@ export interface FileRoutesByTo {
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/admin/clients': typeof AdminClientsIndexRoute
   '/admin/commandes': typeof AdminCommandesIndexRoute
   '/admin/produits': typeof AdminProduitsIndexRoute
 }
@@ -753,6 +761,7 @@ export interface FileRoutesById {
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/admin/clients/': typeof AdminClientsIndexRoute
   '/admin/commandes/': typeof AdminCommandesIndexRoute
   '/admin/produits/': typeof AdminProduitsIndexRoute
 }
@@ -839,6 +848,7 @@ export interface FileRouteTypes {
     | '/admin/commandes/$orderId'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
+    | '/admin/clients/'
     | '/admin/commandes/'
     | '/admin/produits/'
   fileRoutesByTo: FileRoutesByTo
@@ -922,6 +932,7 @@ export interface FileRouteTypes {
     | '/admin/commandes/$orderId'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
+    | '/admin/clients'
     | '/admin/commandes'
     | '/admin/produits'
   id:
@@ -1006,6 +1017,7 @@ export interface FileRouteTypes {
     | '/admin/commandes/$orderId'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
+    | '/admin/clients/'
     | '/admin/commandes/'
     | '/admin/produits/'
   fileRoutesById: FileRoutesById
@@ -1627,6 +1639,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VoilagesUnisRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/clients/': {
+      id: '/admin/clients/'
+      path: '/clients'
+      fullPath: '/admin/clients/'
+      preLoaderRoute: typeof AdminClientsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/commandes/': {
       id: '/admin/commandes/'
       path: '/commandes'
@@ -1673,6 +1692,7 @@ interface AdminRouteRouteChildren {
   AdminCommandesOrderIdRoute: typeof AdminCommandesOrderIdRoute
   AdminProduitsProductIdRoute: typeof AdminProduitsProductIdRoute
   AdminProduitsNouveauRoute: typeof AdminProduitsNouveauRoute
+  AdminClientsIndexRoute: typeof AdminClientsIndexRoute
   AdminCommandesIndexRoute: typeof AdminCommandesIndexRoute
   AdminProduitsIndexRoute: typeof AdminProduitsIndexRoute
 }
@@ -1685,6 +1705,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminCommandesOrderIdRoute: AdminCommandesOrderIdRoute,
   AdminProduitsProductIdRoute: AdminProduitsProductIdRoute,
   AdminProduitsNouveauRoute: AdminProduitsNouveauRoute,
+  AdminClientsIndexRoute: AdminClientsIndexRoute,
   AdminCommandesIndexRoute: AdminCommandesIndexRoute,
   AdminProduitsIndexRoute: AdminProduitsIndexRoute,
 }
