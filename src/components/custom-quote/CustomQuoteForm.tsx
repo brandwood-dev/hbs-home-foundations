@@ -38,9 +38,10 @@ interface OpeningDraft {
   quantity: string;
 }
 
+/** Identifiants déterministes : indispensables pour une hydratation SSR stable. */
 function newOpening(index: number): OpeningDraft {
   return {
-    id: `ouverture-${index}-${Math.random().toString(36).slice(2, 7)}`,
+    id: `ouverture-${index}`,
     label: `Ouverture ${index}`,
     openingType: "fenetre",
     width: "",
@@ -188,7 +189,15 @@ export function CustomQuoteForm() {
           <h2 className="text-2xl">Vos ouvertures</h2>
           <button
             type="button"
-            onClick={() => setOpenings((list) => [...list, newOpening(list.length + 1)])}
+            onClick={() =>
+              setOpenings((list) => [
+                ...list,
+                newOpening(
+                  list.reduce((max, item) => Math.max(max, Number(item.id.split("-")[1] ?? 0)), 0) +
+                    1,
+                ),
+              ])
+            }
             className="min-h-[44px] rounded-sm border border-border px-4 text-sm hover:border-taupe"
           >
             Ajouter une ouverture
