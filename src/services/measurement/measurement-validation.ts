@@ -37,7 +37,8 @@ export function validateWidthField(raw: string, rules: MeasurementRules): string
 
 export function validateHeightField(raw: string, rules: MeasurementRules): string | null {
   const parsed = parseCmInput(raw);
-  if (parsed === null) return heightRangeMessage(rules.limits.minHeightCm, rules.limits.maxHeightCm);
+  if (parsed === null)
+    return heightRangeMessage(rules.limits.minHeightCm, rules.limits.maxHeightCm);
   const result = heightSchema(rules).safeParse(parsed);
   return result.success ? null : (result.error.issues[0]?.message ?? "Valeur invalide.");
 }

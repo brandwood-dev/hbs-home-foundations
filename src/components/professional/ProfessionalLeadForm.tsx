@@ -61,7 +61,9 @@ export function ProfessionalLeadForm() {
       : "Indiquez une adresse e-mail professionnelle valide.",
     governorate: governorate.length === 0 ? "Sélectionnez votre gouvernorat." : null,
     message: message.trim().length < 20 ? "Décrivez votre projet en quelques lignes." : null,
-    acceptedPrivacy: acceptedPrivacy ? null : "Vous devez accepter la politique de confidentialité.",
+    acceptedPrivacy: acceptedPrivacy
+      ? null
+      : "Vous devez accepter la politique de confidentialité.",
   };
 
   const isValid = Object.values(errors).every((error) => !error);
@@ -240,9 +242,7 @@ export function ProfessionalLeadForm() {
             id="pro-volume"
             className={checkoutInputClass}
             value={projectVolume}
-            onChange={(event) =>
-              setProjectVolume(event.target.value as ProfessionalProjectVolume)
-            }
+            onChange={(event) => setProjectVolume(event.target.value as ProfessionalProjectVolume)}
           >
             {VOLUMES.map((item) => (
               <option key={item.value} value={item.value}>

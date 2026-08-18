@@ -23,10 +23,7 @@ export type CurtainPanelCount = 1 | 2;
 export type BlindMountingPosition = "dans_encadrement" | "hors_encadrement";
 
 export type MeasurementRecommendationLevel =
-  | "exact"
-  | "compatible"
-  | "approximate"
-  | "custom_required";
+  "exact" | "compatible" | "approximate" | "custom_required";
 
 /** Règles de calcul configurables — servies par MeasurementRulesRepository. */
 export interface MeasurementRules {

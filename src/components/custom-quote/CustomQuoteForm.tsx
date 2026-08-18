@@ -60,13 +60,11 @@ export function CustomQuoteForm() {
   const [email, setEmail] = useState("");
   const [governorate, setGovernorate] = useState("");
   const [city, setCity] = useState("");
-  const [preferredContact, setPreferredContact] = useState<"phone" | "whatsapp" | "email">(
-    "phone",
-  );
+  const [preferredContact, setPreferredContact] = useState<"phone" | "whatsapp" | "email">("phone");
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
-  const [attachments, setAttachments] = useState<{ id: string; name: string; size: number; type: string }[]>(
-    [],
-  );
+  const [attachments, setAttachments] = useState<
+    { id: string; name: string; size: number; type: string }[]
+  >([]);
   const [showErrors, setShowErrors] = useState(false);
   const [confirmation, setConfirmation] = useState<CustomQuoteSubmissionResult | null>(null);
 
@@ -87,7 +85,9 @@ export function CustomQuoteForm() {
           : null,
     governorate: governorate.length === 0 ? "Sélectionnez votre gouvernorat." : null,
     city: city.trim().length < 2 ? "Indiquez votre ville." : null,
-    acceptedPrivacy: acceptedPrivacy ? null : "Vous devez accepter la politique de confidentialité.",
+    acceptedPrivacy: acceptedPrivacy
+      ? null
+      : "Vous devez accepter la politique de confidentialité.",
   };
 
   const isValid = Object.values(errors).every((error) => !error);
@@ -145,8 +145,8 @@ export function CustomQuoteForm() {
       <section className="rounded-md border border-border p-6" aria-live="polite">
         <h2 className="text-2xl">Demande enregistrée</h2>
         <p className="mt-2 text-sm text-foreground-muted">
-          Référence de suivi : <span className="font-semibold">{confirmation.reference}</span>. Notre
-          atelier revient vers vous sous 48 heures ouvrées.
+          Référence de suivi : <span className="font-semibold">{confirmation.reference}</span>.
+          Notre atelier revient vers vous sous 48 heures ouvrées.
         </p>
         <p className="mt-2 text-xs text-foreground-muted">
           Démonstration : aucune donnée n'a été transmise ni conservée.

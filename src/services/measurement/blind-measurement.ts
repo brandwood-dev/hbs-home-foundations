@@ -37,10 +37,7 @@ export function calculateBlindMeasurements(
   let recommendedProductHeightCm: number;
 
   if (inside) {
-    recommendedProductWidthCm = Math.max(
-      0,
-      openingWidthCm - rules.blind.insideRecessClearanceCm,
-    );
+    recommendedProductWidthCm = Math.max(0, openingWidthCm - rules.blind.insideRecessClearanceCm);
     recommendedProductHeightCm = Math.max(0, openingHeightCm);
     notes.push(
       `Pose dans l'encadrement : on retient la plus petite largeur mesurée (${formatCm(openingWidthCm)}).`,
@@ -52,10 +49,7 @@ export function calculateBlindMeasurements(
       `Hauteur retenue : la plus petite des trois mesures, soit ${formatCm(recommendedProductHeightCm)}.`,
     );
   } else {
-    recommendedProductWidthCm = Math.max(
-      0,
-      openingWidthCm + rules.blind.outsideOverlapSideCm * 2,
-    );
+    recommendedProductWidthCm = Math.max(0, openingWidthCm + rules.blind.outsideOverlapSideCm * 2);
     recommendedProductHeightCm = Math.max(
       0,
       openingHeightCm + rules.blind.outsideOverlapTopCm + rules.blind.outsideOverlapBottomCm,

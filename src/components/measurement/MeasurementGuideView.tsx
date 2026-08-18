@@ -40,10 +40,7 @@ import { calculateCurtainMeasurements } from "@/services/measurement/curtain-mea
 import { calculateBlindMeasurements } from "@/services/measurement/blind-measurement";
 import { findMeasurementProductRecommendations } from "@/services/measurement/measurement-recommendations";
 import { findCompatibleAccessoryRecommendations } from "@/services/measurement/accessory-recommendations";
-import {
-  buildBlindSummary,
-  buildCurtainSummary,
-} from "@/services/measurement/measurement-summary";
+import { buildBlindSummary, buildCurtainSummary } from "@/services/measurement/measurement-summary";
 import {
   parseCmInput,
   validateExtensionField,
@@ -276,8 +273,8 @@ export function MeasurementGuideView() {
           <p className="eyebrow">Outil d'aide</p>
           <h1 className="mt-2 text-3xl sm:text-4xl">Guide des mesures</h1>
           <p className="mt-3 max-w-2xl text-foreground-muted">
-            Quatre étapes pour connaître la largeur, la hauteur et le nombre de pans adaptés à
-            votre fenêtre — puis les produits compatibles dans notre catalogue.
+            Quatre étapes pour connaître la largeur, la hauteur et le nombre de pans adaptés à votre
+            fenêtre — puis les produits compatibles dans notre catalogue.
           </p>
         </header>
 
@@ -458,8 +455,8 @@ export function MeasurementGuideView() {
           {step === 1 && isBlindProject && (
             <section className="space-y-6">
               <p className="text-sm text-foreground-muted">
-                Mesurez trois fois : en haut, au milieu et en bas pour la largeur, puis à gauche,
-                au centre et à droite pour la hauteur. Les fenêtres sont rarement parfaitement
+                Mesurez trois fois : en haut, au milieu et en bas pour la largeur, puis à gauche, au
+                centre et à droite pour la hauteur. Les fenêtres sont rarement parfaitement
                 d'équerre.
               </p>
 
@@ -469,9 +466,7 @@ export function MeasurementGuideView() {
                     key={label}
                     id={`blind-width-${index}`}
                     label={`Largeur — ${label}`}
-                    error={
-                      showErrors ? (blindErrors.widths[index] ?? undefined) : undefined
-                    }
+                    error={showErrors ? (blindErrors.widths[index] ?? undefined) : undefined}
                   >
                     <input
                       id={`blind-width-${index}`}
@@ -496,9 +491,7 @@ export function MeasurementGuideView() {
                     key={label}
                     id={`blind-height-${index}`}
                     label={`Hauteur — ${label}`}
-                    error={
-                      showErrors ? (blindErrors.heights[index] ?? undefined) : undefined
-                    }
+                    error={showErrors ? (blindErrors.heights[index] ?? undefined) : undefined}
                   >
                     <input
                       id={`blind-height-${index}`}
@@ -526,9 +519,9 @@ export function MeasurementGuideView() {
                 name="longueur"
                 value={curtain.lengthTarget}
                 onChange={(lengthTarget) => setCurtain((c) => ({ ...c, lengthTarget }))}
-                options={(
-                  ["rebord_fenetre", "sous_rebord", "sol"] as CurtainLengthTarget[]
-                ).map((value) => ({ value, label: CURTAIN_LENGTH_TARGET_LABELS[value] }))}
+                options={(["rebord_fenetre", "sous_rebord", "sol"] as CurtainLengthTarget[]).map(
+                  (value) => ({ value, label: CURTAIN_LENGTH_TARGET_LABELS[value] }),
+                )}
               />
 
               {curtain.lengthTarget === "sol" && (

@@ -87,7 +87,8 @@ export function getSearchHistoryRepository(): SearchHistoryRepository {
 
 /** Règles de mesure : configuration mock aujourd'hui, CMS ou API demain. */
 export function getMeasurementRulesRepository(): MeasurementRulesRepository {
-  if (!measurementRulesRepository) measurementRulesRepository = new MockMeasurementRulesRepository();
+  if (!measurementRulesRepository)
+    measurementRulesRepository = new MockMeasurementRulesRepository();
   return measurementRulesRepository;
 }
 

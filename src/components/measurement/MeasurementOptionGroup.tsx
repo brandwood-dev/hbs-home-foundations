@@ -33,9 +33,7 @@ export function MeasurementOptionGroup<T extends string>({
             <label
               key={option.value}
               className={`flex min-h-[48px] cursor-pointer flex-col justify-center rounded-sm border px-3 py-2 text-sm transition-colors ${
-                selected
-                  ? "border-accent bg-accent/10"
-                  : "border-border hover:border-taupe"
+                selected ? "border-accent bg-accent/10" : "border-border hover:border-taupe"
               }`}
             >
               <span className="flex items-center gap-2">

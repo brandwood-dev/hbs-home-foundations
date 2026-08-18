@@ -44,7 +44,9 @@ function ProfessionnelsPage() {
   return (
     <SiteLayout>
       <div className="mx-auto max-w-4xl px-4 pb-20 pt-6 sm:px-6 lg:pt-10">
-        <CatalogBreadcrumbs items={[{ label: "Accueil", href: "/" }, { label: "Professionnels" }]} />
+        <CatalogBreadcrumbs
+          items={[{ label: "Accueil", href: "/" }, { label: "Professionnels" }]}
+        />
 
         <header className="mt-6">
           <p className="eyebrow">Offre B2B</p>

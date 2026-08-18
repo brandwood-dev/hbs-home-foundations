@@ -1,6 +1,4 @@
-import {
-  MEASUREMENT_MAX_PRODUCT_RECOMMENDATIONS,
-} from "@/domain/measurement/measurement.constants";
+import { MEASUREMENT_MAX_PRODUCT_RECOMMENDATIONS } from "@/domain/measurement/measurement.constants";
 import type {
   BlindMeasurementResult,
   CurtainMeasurementResult,
