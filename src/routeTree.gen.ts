@@ -11,13 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AProposRouteImport } from './routes/a-propos'
-import { Route as AccessoiresRouteImport } from './routes/accessoires'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as CgvRouteImport } from './routes/cgv'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CookiesRouteImport } from './routes/cookies'
-import { Route as CoussinsRouteImport } from './routes/coussins'
 import { Route as EmbrassesRouteImport } from './routes/embrasses'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as FavorisRouteImport } from './routes/favoris'
@@ -33,9 +31,21 @@ import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as SuiviCommandeRouteImport } from './routes/suivi-commande'
 import { Route as SurMesureRouteImport } from './routes/sur-mesure'
 import { Route as TringlesRouteImport } from './routes/tringles'
+import { Route as AccessoiresIndexRouteImport } from './routes/accessoires.index'
+import { Route as AccessoiresEmbrassesRouteImport } from './routes/accessoires.embrasses'
+import { Route as AccessoiresPetitesPiecesRouteImport } from './routes/accessoires.petites-pieces'
+import { Route as AccessoiresRailsRouteImport } from './routes/accessoires.rails'
+import { Route as AccessoiresTringlesRouteImport } from './routes/accessoires.tringles'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as CommandeIndexRouteImport } from './routes/commande.index'
 import { Route as CommandeConfirmationRouteImport } from './routes/commande.confirmation'
+import { Route as CoussinsIndexRouteImport } from './routes/coussins.index'
+import { Route as CoussinsLinRouteImport } from './routes/coussins.lin'
+import { Route as CoussinsLotsRouteImport } from './routes/coussins.lots'
+import { Route as CoussinsVeloursRouteImport } from './routes/coussins.velours'
+import { Route as GalettesDeChaiseIndexRouteImport } from './routes/galettes-de-chaise.index'
+import { Route as GalettesDeChaiseCarreesRouteImport } from './routes/galettes-de-chaise.carrees'
+import { Route as GalettesDeChaiseRondesRouteImport } from './routes/galettes-de-chaise.rondes'
 import { Route as ProduitSlugRouteImport } from './routes/produit.$slug'
 import { Route as RideauxIndexRouteImport } from './routes/rideaux.index'
 import { Route as RideauxLinRouteImport } from './routes/rideaux.lin'
@@ -69,11 +79,6 @@ const AProposRoute = AProposRouteImport.update({
   path: '/a-propos',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AccessoiresRoute = AccessoiresRouteImport.update({
-  id: '/accessoires',
-  path: '/accessoires',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -97,11 +102,6 @@ const ContactRoute = ContactRouteImport.update({
 const CookiesRoute = CookiesRouteImport.update({
   id: '/cookies',
   path: '/cookies',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CoussinsRoute = CoussinsRouteImport.update({
-  id: '/coussins',
-  path: '/coussins',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmbrassesRoute = EmbrassesRouteImport.update({
@@ -179,6 +179,32 @@ const TringlesRoute = TringlesRouteImport.update({
   path: '/tringles',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccessoiresIndexRoute = AccessoiresIndexRouteImport.update({
+  id: '/accessoires/',
+  path: '/accessoires/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessoiresEmbrassesRoute = AccessoiresEmbrassesRouteImport.update({
+  id: '/accessoires/embrasses',
+  path: '/accessoires/embrasses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessoiresPetitesPiecesRoute =
+  AccessoiresPetitesPiecesRouteImport.update({
+    id: '/accessoires/petites-pieces',
+    path: '/accessoires/petites-pieces',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AccessoiresRailsRoute = AccessoiresRailsRouteImport.update({
+  id: '/accessoires/rails',
+  path: '/accessoires/rails',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessoiresTringlesRoute = AccessoiresTringlesRouteImport.update({
+  id: '/accessoires/tringles',
+  path: '/accessoires/tringles',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -192,6 +218,41 @@ const CommandeIndexRoute = CommandeIndexRouteImport.update({
 const CommandeConfirmationRoute = CommandeConfirmationRouteImport.update({
   id: '/commande/confirmation',
   path: '/commande/confirmation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoussinsIndexRoute = CoussinsIndexRouteImport.update({
+  id: '/coussins/',
+  path: '/coussins/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoussinsLinRoute = CoussinsLinRouteImport.update({
+  id: '/coussins/lin',
+  path: '/coussins/lin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoussinsLotsRoute = CoussinsLotsRouteImport.update({
+  id: '/coussins/lots',
+  path: '/coussins/lots',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoussinsVeloursRoute = CoussinsVeloursRouteImport.update({
+  id: '/coussins/velours',
+  path: '/coussins/velours',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalettesDeChaiseIndexRoute = GalettesDeChaiseIndexRouteImport.update({
+  id: '/galettes-de-chaise/',
+  path: '/galettes-de-chaise/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalettesDeChaiseCarreesRoute = GalettesDeChaiseCarreesRouteImport.update({
+  id: '/galettes-de-chaise/carrees',
+  path: '/galettes-de-chaise/carrees',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalettesDeChaiseRondesRoute = GalettesDeChaiseRondesRouteImport.update({
+  id: '/galettes-de-chaise/rondes',
+  path: '/galettes-de-chaise/rondes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProduitSlugRoute = ProduitSlugRouteImport.update({
@@ -309,12 +370,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/a-propos': typeof AProposRoute
-  '/accessoires': typeof AccessoiresRoute
   '/cgv': typeof CgvRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
-  '/coussins': typeof CoussinsRoute
   '/embrasses': typeof EmbrassesRoute
   '/faq': typeof FaqRoute
   '/favoris': typeof FavorisRoute
@@ -330,7 +389,16 @@ export interface FileRoutesByFullPath {
   '/suivi-commande': typeof SuiviCommandeRoute
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
+  '/accessoires/embrasses': typeof AccessoiresEmbrassesRoute
+  '/accessoires/petites-pieces': typeof AccessoiresPetitesPiecesRoute
+  '/accessoires/rails': typeof AccessoiresRailsRoute
+  '/accessoires/tringles': typeof AccessoiresTringlesRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
+  '/coussins/lin': typeof CoussinsLinRoute
+  '/coussins/lots': typeof CoussinsLotsRoute
+  '/coussins/velours': typeof CoussinsVeloursRoute
+  '/galettes-de-chaise/carrees': typeof GalettesDeChaiseCarreesRoute
+  '/galettes-de-chaise/rondes': typeof GalettesDeChaiseRondesRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
   '/rideaux/occultants': typeof RideauxOccultantsRoute
@@ -350,8 +418,11 @@ export interface FileRoutesByFullPath {
   '/voilages/motifs': typeof VoilagesMotifsRoute
   '/voilages/rail': typeof VoilagesRailRoute
   '/voilages/unis': typeof VoilagesUnisRoute
+  '/accessoires/': typeof AccessoiresIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/commande/': typeof CommandeIndexRoute
+  '/coussins/': typeof CoussinsIndexRoute
+  '/galettes-de-chaise/': typeof GalettesDeChaiseIndexRoute
   '/rideaux/': typeof RideauxIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/voilages/': typeof VoilagesIndexRoute
@@ -359,12 +430,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
-  '/accessoires': typeof AccessoiresRoute
   '/cgv': typeof CgvRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
-  '/coussins': typeof CoussinsRoute
   '/embrasses': typeof EmbrassesRoute
   '/faq': typeof FaqRoute
   '/favoris': typeof FavorisRoute
@@ -380,7 +449,16 @@ export interface FileRoutesByTo {
   '/suivi-commande': typeof SuiviCommandeRoute
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
+  '/accessoires/embrasses': typeof AccessoiresEmbrassesRoute
+  '/accessoires/petites-pieces': typeof AccessoiresPetitesPiecesRoute
+  '/accessoires/rails': typeof AccessoiresRailsRoute
+  '/accessoires/tringles': typeof AccessoiresTringlesRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
+  '/coussins/lin': typeof CoussinsLinRoute
+  '/coussins/lots': typeof CoussinsLotsRoute
+  '/coussins/velours': typeof CoussinsVeloursRoute
+  '/galettes-de-chaise/carrees': typeof GalettesDeChaiseCarreesRoute
+  '/galettes-de-chaise/rondes': typeof GalettesDeChaiseRondesRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
   '/rideaux/occultants': typeof RideauxOccultantsRoute
@@ -400,8 +478,11 @@ export interface FileRoutesByTo {
   '/voilages/motifs': typeof VoilagesMotifsRoute
   '/voilages/rail': typeof VoilagesRailRoute
   '/voilages/unis': typeof VoilagesUnisRoute
+  '/accessoires': typeof AccessoiresIndexRoute
   '/admin': typeof AdminIndexRoute
   '/commande': typeof CommandeIndexRoute
+  '/coussins': typeof CoussinsIndexRoute
+  '/galettes-de-chaise': typeof GalettesDeChaiseIndexRoute
   '/rideaux': typeof RideauxIndexRoute
   '/stores': typeof StoresIndexRoute
   '/voilages': typeof VoilagesIndexRoute
@@ -411,12 +492,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/a-propos': typeof AProposRoute
-  '/accessoires': typeof AccessoiresRoute
   '/cgv': typeof CgvRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
-  '/coussins': typeof CoussinsRoute
   '/embrasses': typeof EmbrassesRoute
   '/faq': typeof FaqRoute
   '/favoris': typeof FavorisRoute
@@ -432,7 +511,16 @@ export interface FileRoutesById {
   '/suivi-commande': typeof SuiviCommandeRoute
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
+  '/accessoires/embrasses': typeof AccessoiresEmbrassesRoute
+  '/accessoires/petites-pieces': typeof AccessoiresPetitesPiecesRoute
+  '/accessoires/rails': typeof AccessoiresRailsRoute
+  '/accessoires/tringles': typeof AccessoiresTringlesRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
+  '/coussins/lin': typeof CoussinsLinRoute
+  '/coussins/lots': typeof CoussinsLotsRoute
+  '/coussins/velours': typeof CoussinsVeloursRoute
+  '/galettes-de-chaise/carrees': typeof GalettesDeChaiseCarreesRoute
+  '/galettes-de-chaise/rondes': typeof GalettesDeChaiseRondesRoute
   '/produit/$slug': typeof ProduitSlugRoute
   '/rideaux/lin': typeof RideauxLinRoute
   '/rideaux/occultants': typeof RideauxOccultantsRoute
@@ -452,8 +540,11 @@ export interface FileRoutesById {
   '/voilages/motifs': typeof VoilagesMotifsRoute
   '/voilages/rail': typeof VoilagesRailRoute
   '/voilages/unis': typeof VoilagesUnisRoute
+  '/accessoires/': typeof AccessoiresIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/commande/': typeof CommandeIndexRoute
+  '/coussins/': typeof CoussinsIndexRoute
+  '/galettes-de-chaise/': typeof GalettesDeChaiseIndexRoute
   '/rideaux/': typeof RideauxIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/voilages/': typeof VoilagesIndexRoute
@@ -464,12 +555,10 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/a-propos'
-    | '/accessoires'
     | '/cgv'
     | '/confidentialite'
     | '/contact'
     | '/cookies'
-    | '/coussins'
     | '/embrasses'
     | '/faq'
     | '/favoris'
@@ -485,7 +574,16 @@ export interface FileRouteTypes {
     | '/suivi-commande'
     | '/sur-mesure'
     | '/tringles'
+    | '/accessoires/embrasses'
+    | '/accessoires/petites-pieces'
+    | '/accessoires/rails'
+    | '/accessoires/tringles'
     | '/commande/confirmation'
+    | '/coussins/lin'
+    | '/coussins/lots'
+    | '/coussins/velours'
+    | '/galettes-de-chaise/carrees'
+    | '/galettes-de-chaise/rondes'
     | '/produit/$slug'
     | '/rideaux/lin'
     | '/rideaux/occultants'
@@ -505,8 +603,11 @@ export interface FileRouteTypes {
     | '/voilages/motifs'
     | '/voilages/rail'
     | '/voilages/unis'
+    | '/accessoires/'
     | '/admin/'
     | '/commande/'
+    | '/coussins/'
+    | '/galettes-de-chaise/'
     | '/rideaux/'
     | '/stores/'
     | '/voilages/'
@@ -514,12 +615,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/a-propos'
-    | '/accessoires'
     | '/cgv'
     | '/confidentialite'
     | '/contact'
     | '/cookies'
-    | '/coussins'
     | '/embrasses'
     | '/faq'
     | '/favoris'
@@ -535,7 +634,16 @@ export interface FileRouteTypes {
     | '/suivi-commande'
     | '/sur-mesure'
     | '/tringles'
+    | '/accessoires/embrasses'
+    | '/accessoires/petites-pieces'
+    | '/accessoires/rails'
+    | '/accessoires/tringles'
     | '/commande/confirmation'
+    | '/coussins/lin'
+    | '/coussins/lots'
+    | '/coussins/velours'
+    | '/galettes-de-chaise/carrees'
+    | '/galettes-de-chaise/rondes'
     | '/produit/$slug'
     | '/rideaux/lin'
     | '/rideaux/occultants'
@@ -555,8 +663,11 @@ export interface FileRouteTypes {
     | '/voilages/motifs'
     | '/voilages/rail'
     | '/voilages/unis'
+    | '/accessoires'
     | '/admin'
     | '/commande'
+    | '/coussins'
+    | '/galettes-de-chaise'
     | '/rideaux'
     | '/stores'
     | '/voilages'
@@ -565,12 +676,10 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/a-propos'
-    | '/accessoires'
     | '/cgv'
     | '/confidentialite'
     | '/contact'
     | '/cookies'
-    | '/coussins'
     | '/embrasses'
     | '/faq'
     | '/favoris'
@@ -586,7 +695,16 @@ export interface FileRouteTypes {
     | '/suivi-commande'
     | '/sur-mesure'
     | '/tringles'
+    | '/accessoires/embrasses'
+    | '/accessoires/petites-pieces'
+    | '/accessoires/rails'
+    | '/accessoires/tringles'
     | '/commande/confirmation'
+    | '/coussins/lin'
+    | '/coussins/lots'
+    | '/coussins/velours'
+    | '/galettes-de-chaise/carrees'
+    | '/galettes-de-chaise/rondes'
     | '/produit/$slug'
     | '/rideaux/lin'
     | '/rideaux/occultants'
@@ -606,8 +724,11 @@ export interface FileRouteTypes {
     | '/voilages/motifs'
     | '/voilages/rail'
     | '/voilages/unis'
+    | '/accessoires/'
     | '/admin/'
     | '/commande/'
+    | '/coussins/'
+    | '/galettes-de-chaise/'
     | '/rideaux/'
     | '/stores/'
     | '/voilages/'
@@ -617,12 +738,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   AProposRoute: typeof AProposRoute
-  AccessoiresRoute: typeof AccessoiresRoute
   CgvRoute: typeof CgvRoute
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   ContactRoute: typeof ContactRoute
   CookiesRoute: typeof CookiesRoute
-  CoussinsRoute: typeof CoussinsRoute
   EmbrassesRoute: typeof EmbrassesRoute
   FaqRoute: typeof FaqRoute
   FavorisRoute: typeof FavorisRoute
@@ -638,7 +757,16 @@ export interface RootRouteChildren {
   SuiviCommandeRoute: typeof SuiviCommandeRoute
   SurMesureRoute: typeof SurMesureRoute
   TringlesRoute: typeof TringlesRoute
+  AccessoiresEmbrassesRoute: typeof AccessoiresEmbrassesRoute
+  AccessoiresPetitesPiecesRoute: typeof AccessoiresPetitesPiecesRoute
+  AccessoiresRailsRoute: typeof AccessoiresRailsRoute
+  AccessoiresTringlesRoute: typeof AccessoiresTringlesRoute
   CommandeConfirmationRoute: typeof CommandeConfirmationRoute
+  CoussinsLinRoute: typeof CoussinsLinRoute
+  CoussinsLotsRoute: typeof CoussinsLotsRoute
+  CoussinsVeloursRoute: typeof CoussinsVeloursRoute
+  GalettesDeChaiseCarreesRoute: typeof GalettesDeChaiseCarreesRoute
+  GalettesDeChaiseRondesRoute: typeof GalettesDeChaiseRondesRoute
   ProduitSlugRoute: typeof ProduitSlugRoute
   RideauxLinRoute: typeof RideauxLinRoute
   RideauxOccultantsRoute: typeof RideauxOccultantsRoute
@@ -658,7 +786,10 @@ export interface RootRouteChildren {
   VoilagesMotifsRoute: typeof VoilagesMotifsRoute
   VoilagesRailRoute: typeof VoilagesRailRoute
   VoilagesUnisRoute: typeof VoilagesUnisRoute
+  AccessoiresIndexRoute: typeof AccessoiresIndexRoute
   CommandeIndexRoute: typeof CommandeIndexRoute
+  CoussinsIndexRoute: typeof CoussinsIndexRoute
+  GalettesDeChaiseIndexRoute: typeof GalettesDeChaiseIndexRoute
   RideauxIndexRoute: typeof RideauxIndexRoute
   StoresIndexRoute: typeof StoresIndexRoute
   VoilagesIndexRoute: typeof VoilagesIndexRoute
@@ -678,13 +809,6 @@ declare module '@tanstack/react-router' {
       path: '/a-propos'
       fullPath: '/a-propos'
       preLoaderRoute: typeof AProposRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/accessoires': {
-      id: '/accessoires'
-      path: '/accessoires'
-      fullPath: '/accessoires'
-      preLoaderRoute: typeof AccessoiresRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -720,13 +844,6 @@ declare module '@tanstack/react-router' {
       path: '/cookies'
       fullPath: '/cookies'
       preLoaderRoute: typeof CookiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/coussins': {
-      id: '/coussins'
-      path: '/coussins'
-      fullPath: '/coussins'
-      preLoaderRoute: typeof CoussinsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/embrasses': {
@@ -834,6 +951,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TringlesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/accessoires/': {
+      id: '/accessoires/'
+      path: '/accessoires'
+      fullPath: '/accessoires/'
+      preLoaderRoute: typeof AccessoiresIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accessoires/embrasses': {
+      id: '/accessoires/embrasses'
+      path: '/accessoires/embrasses'
+      fullPath: '/accessoires/embrasses'
+      preLoaderRoute: typeof AccessoiresEmbrassesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accessoires/petites-pieces': {
+      id: '/accessoires/petites-pieces'
+      path: '/accessoires/petites-pieces'
+      fullPath: '/accessoires/petites-pieces'
+      preLoaderRoute: typeof AccessoiresPetitesPiecesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accessoires/rails': {
+      id: '/accessoires/rails'
+      path: '/accessoires/rails'
+      fullPath: '/accessoires/rails'
+      preLoaderRoute: typeof AccessoiresRailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accessoires/tringles': {
+      id: '/accessoires/tringles'
+      path: '/accessoires/tringles'
+      fullPath: '/accessoires/tringles'
+      preLoaderRoute: typeof AccessoiresTringlesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
@@ -853,6 +1005,55 @@ declare module '@tanstack/react-router' {
       path: '/commande/confirmation'
       fullPath: '/commande/confirmation'
       preLoaderRoute: typeof CommandeConfirmationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coussins/': {
+      id: '/coussins/'
+      path: '/coussins'
+      fullPath: '/coussins/'
+      preLoaderRoute: typeof CoussinsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coussins/lin': {
+      id: '/coussins/lin'
+      path: '/coussins/lin'
+      fullPath: '/coussins/lin'
+      preLoaderRoute: typeof CoussinsLinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coussins/lots': {
+      id: '/coussins/lots'
+      path: '/coussins/lots'
+      fullPath: '/coussins/lots'
+      preLoaderRoute: typeof CoussinsLotsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coussins/velours': {
+      id: '/coussins/velours'
+      path: '/coussins/velours'
+      fullPath: '/coussins/velours'
+      preLoaderRoute: typeof CoussinsVeloursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/galettes-de-chaise/': {
+      id: '/galettes-de-chaise/'
+      path: '/galettes-de-chaise'
+      fullPath: '/galettes-de-chaise/'
+      preLoaderRoute: typeof GalettesDeChaiseIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/galettes-de-chaise/carrees': {
+      id: '/galettes-de-chaise/carrees'
+      path: '/galettes-de-chaise/carrees'
+      fullPath: '/galettes-de-chaise/carrees'
+      preLoaderRoute: typeof GalettesDeChaiseCarreesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/galettes-de-chaise/rondes': {
+      id: '/galettes-de-chaise/rondes'
+      path: '/galettes-de-chaise/rondes'
+      fullPath: '/galettes-de-chaise/rondes'
+      preLoaderRoute: typeof GalettesDeChaiseRondesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/produit/$slug': {
@@ -1028,12 +1229,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   AProposRoute: AProposRoute,
-  AccessoiresRoute: AccessoiresRoute,
   CgvRoute: CgvRoute,
   ConfidentialiteRoute: ConfidentialiteRoute,
   ContactRoute: ContactRoute,
   CookiesRoute: CookiesRoute,
-  CoussinsRoute: CoussinsRoute,
   EmbrassesRoute: EmbrassesRoute,
   FaqRoute: FaqRoute,
   FavorisRoute: FavorisRoute,
@@ -1049,7 +1248,16 @@ const rootRouteChildren: RootRouteChildren = {
   SuiviCommandeRoute: SuiviCommandeRoute,
   SurMesureRoute: SurMesureRoute,
   TringlesRoute: TringlesRoute,
+  AccessoiresEmbrassesRoute: AccessoiresEmbrassesRoute,
+  AccessoiresPetitesPiecesRoute: AccessoiresPetitesPiecesRoute,
+  AccessoiresRailsRoute: AccessoiresRailsRoute,
+  AccessoiresTringlesRoute: AccessoiresTringlesRoute,
   CommandeConfirmationRoute: CommandeConfirmationRoute,
+  CoussinsLinRoute: CoussinsLinRoute,
+  CoussinsLotsRoute: CoussinsLotsRoute,
+  CoussinsVeloursRoute: CoussinsVeloursRoute,
+  GalettesDeChaiseCarreesRoute: GalettesDeChaiseCarreesRoute,
+  GalettesDeChaiseRondesRoute: GalettesDeChaiseRondesRoute,
   ProduitSlugRoute: ProduitSlugRoute,
   RideauxLinRoute: RideauxLinRoute,
   RideauxOccultantsRoute: RideauxOccultantsRoute,
@@ -1069,7 +1277,10 @@ const rootRouteChildren: RootRouteChildren = {
   VoilagesMotifsRoute: VoilagesMotifsRoute,
   VoilagesRailRoute: VoilagesRailRoute,
   VoilagesUnisRoute: VoilagesUnisRoute,
+  AccessoiresIndexRoute: AccessoiresIndexRoute,
   CommandeIndexRoute: CommandeIndexRoute,
+  CoussinsIndexRoute: CoussinsIndexRoute,
+  GalettesDeChaiseIndexRoute: GalettesDeChaiseIndexRoute,
   RideauxIndexRoute: RideauxIndexRoute,
   StoresIndexRoute: StoresIndexRoute,
   VoilagesIndexRoute: VoilagesIndexRoute,
