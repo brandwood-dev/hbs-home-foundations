@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
+import { MeasurementGuideView } from "@/components/measurement/MeasurementGuideView";
 
-const title = "Guide des mesures — HBS HOME";
+const title = "Guide des mesures rideaux et stores | HBS HOME";
 const description =
-  "Guide des mesures — HBS HOME, rideaux, voilages et décoration textile en Tunisie.";
+  "Calculez en 4 étapes la largeur, la hauteur et le nombre de pans adaptés à votre fenêtre, puis découvrez les rideaux, voilages et stores compatibles.";
 
 export const Route = createFileRoute("/guide-des-mesures")({
   head: () => ({
@@ -12,11 +12,13 @@ export const Route = createFileRoute("/guide-des-mesures")({
       { name: "description", content: description },
       { property: "og:title", content: title },
       { property: "og:description", content: description },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: GuideDesMesuresPage,
 });
 
 function GuideDesMesuresPage() {
-  return <PlaceholderPage title="Guide des mesures" />;
+  return <MeasurementGuideView />;
 }
