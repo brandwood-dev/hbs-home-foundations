@@ -140,7 +140,11 @@ export function AdminCustomersPage() {
       <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <AdminKpiCard label="Clients" value={data?.total ?? 0} />
         <AdminKpiCard label="Page courante" value={rows.length} />
-        <AdminKpiCard label="CA cumulé (page)" value={formatMoney(totalSpentMinor)} tone="success" />
+        <AdminKpiCard
+          label="CA cumulé (page)"
+          value={formatMoney(totalSpentMinor)}
+          tone="success"
+        />
         <AdminKpiCard
           label="Doublons possibles (page)"
           value={duplicateCount}

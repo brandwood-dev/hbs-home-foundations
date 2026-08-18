@@ -22,7 +22,8 @@ const salesKeys = [
 
 export function useUpdateOrderStatus() {
   return useAdminMutation({
-    mutationFn: (input: UpdateAdminOrderStatusInput) => adminRepositories.orders.updateStatus(input),
+    mutationFn: (input: UpdateAdminOrderStatusInput) =>
+      adminRepositories.orders.updateStatus(input),
     successMessage: "Statut de la commande mis à jour.",
     invalidate: salesKeys,
   });
@@ -31,7 +32,10 @@ export function useUpdateOrderStatus() {
 /** Actions groupées : chaque commande est traitée indépendamment. */
 export function useBulkUpdateOrderStatus() {
   return useAdminMutation({
-    mutationFn: async (input: { orderIds: string[]; status: UpdateAdminOrderStatusInput["status"] }) => {
+    mutationFn: async (input: {
+      orderIds: string[];
+      status: UpdateAdminOrderStatusInput["status"];
+    }) => {
       const succeeded: string[] = [];
       const failures: Array<{ orderId: string; message: string }> = [];
       for (const orderId of input.orderIds) {

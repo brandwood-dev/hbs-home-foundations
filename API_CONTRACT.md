@@ -160,17 +160,20 @@ DELETE /api/v1/favorites
 ## Guide des mesures, sur-mesure et professionnels
 
 ### GET /api/v1/measurement-rules
+
 Retourne l'objet `MeasurementRules` (limites, ampleurs autorisées, ajustements sol, jeux de pose
 store, tolérances de recommandation). Aujourd'hui servi par `MockMeasurementRulesRepository`.
 Réponse : `{ "data": MeasurementRules }`. Doit être reconfigurable sans redéploiement.
 
 ### POST /api/v1/custom-quotes
+
 Corps : `CustomQuoteRequest` (type de produit, liste d'ouvertures avec dimensions, préférences,
 coordonnées, métadonnées de pièces jointes, consentement).
 Réponse : `{ "data": { "reference": "DEV-YYMMDD-XXXX", "submittedAt": ISO8601 } }`.
 Les fichiers seront envoyés séparément (upload signé) ; le front n'envoie que les métadonnées.
 
 ### POST /api/v1/professional-leads
+
 Corps : `ProfessionalLeadRequest` (raison sociale, activité, volume, contact, message, consentement).
 Réponse : `{ "data": { "reference": "PRO-YYMMDD-XXXX", "submittedAt": ISO8601 } }`.
 

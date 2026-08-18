@@ -181,7 +181,6 @@ export type StockMovementReason =
   | "manual_adjustment"
   | "other";
 
-
 export interface StockMovement {
   id: string;
   variantId: string;
@@ -391,7 +390,6 @@ export interface AdminCustomer {
   mergedAt?: string;
   updatedAt?: string;
 }
-
 
 export type PromotionType = "automatic" | "coupon";
 export type DiscountType = "percentage" | "fixed_amount" | "free_shipping";
