@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getRouteApi } from "@tanstack/react-router";
+import { SiteLayout } from "@/components/layout/SiteLayout";
 import { AppLink } from "@/components/ui/app-link";
 import { CatalogPagination } from "@/components/catalog/CatalogPagination";
 import { ProductCardSkeleton } from "@/components/catalog/ProductCardSkeleton";
@@ -52,93 +53,95 @@ export function SearchPageView() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <nav aria-label="Fil d'ariane" className="mb-4 text-sm text-foreground-muted">
-        <AppLink href="/" className="hover:text-accent-dark">
-          Accueil
-        </AppLink>
-        <span aria-hidden="true"> / </span>
-        <span aria-current="page">Recherche</span>
-      </nav>
+    <SiteLayout>
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <nav aria-label="Fil d'ariane" className="mb-4 text-sm text-foreground-muted">
+          <AppLink href="/" className="hover:text-accent-dark">
+            Accueil
+          </AppLink>
+          <span aria-hidden="true"> / </span>
+          <span aria-current="page">Recherche</span>
+        </nav>
 
-      <h1 className="text-3xl sm:text-4xl">
-        {search.q ? <>Résultats pour « {search.q} »</> : "Rechercher"}
-      </h1>
+        <h1 className="text-3xl sm:text-4xl">
+          {search.q ? <>Résultats pour « {search.q} »</> : "Rechercher"}
+        </h1>
 
-      <div className="mt-6 max-w-2xl">
-        <SearchInput
-          value={draft}
-          onChange={setDraft}
-          onSubmit={() => submit(draft)}
-          isLoading={isFetching}
-        />
-      </div>
-
-      {!isValidQuery ? (
-        <p className="mt-10 text-sm text-foreground-muted">
-          Saisissez au moins {SEARCH_MIN_QUERY_LENGTH} caractères pour lancer une recherche.
-        </p>
-      ) : isPending ? (
-        <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <ProductCardSkeleton key={index} />
-          ))}
-        </div>
-      ) : !results || results.totalProducts === 0 ? (
-        <SearchEmptyState query={search.q} onSuggestionClick={(value) => submit(value)} />
-      ) : (
-        <div className="mt-8">
-          <SearchResultsToolbar
-            total={results.totalProducts}
-            categoryCounts={results.categoryCounts}
-            activeCategory={params.category}
-            sort={params.sort}
-            onCategoryChange={(category: ProductCategory | undefined) =>
-              updateSearch({ category: category ?? "", page: 1 })
-            }
-            onSortChange={(sort: SearchSort) => updateSearch({ sort, page: 1 })}
+        <div className="mt-6 max-w-2xl">
+          <SearchInput
+            value={draft}
+            onChange={setDraft}
+            onSubmit={() => submit(draft)}
+            isLoading={isFetching}
           />
+        </div>
 
+        {!isValidQuery ? (
+          <p className="mt-10 text-sm text-foreground-muted">
+            Saisissez au moins {SEARCH_MIN_QUERY_LENGTH} caractères pour lancer une recherche.
+          </p>
+        ) : isPending ? (
+          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <ProductCardSkeleton key={index} />
+            ))}
+          </div>
+        ) : !results || results.totalProducts === 0 ? (
+          <SearchEmptyState query={search.q} onSuggestionClick={(value) => submit(value)} />
+        ) : (
           <div className="mt-8">
-            <ProductGrid products={results.products.map((hit) => hit.product)} />
-          </div>
+            <SearchResultsToolbar
+              total={results.totalProducts}
+              categoryCounts={results.categoryCounts}
+              activeCategory={params.category}
+              sort={params.sort}
+              onCategoryChange={(category: ProductCategory | undefined) =>
+                updateSearch({ category: category ?? "", page: 1 })
+              }
+              onSortChange={(sort: SearchSort) => updateSearch({ sort, page: 1 })}
+            />
 
-          <CatalogPagination
-            page={results.page}
-            totalPages={results.totalPages}
-            onPageChange={(page) => {
-              updateSearch({ page });
-              if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          />
-        </div>
-      )}
+            <div className="mt-8">
+              <ProductGrid products={results.products.map((hit) => hit.product)} />
+            </div>
 
-      {results && (results.categories.length > 0 || results.articles.length > 0) ? (
-        <section className="mt-14 border-t border-border pt-8">
-          <h2 className="text-xl">Voir aussi</h2>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {results.categories.map((category) => (
-              <AppLink
-                key={category.id}
-                href={category.href}
-                className="rounded-full border border-border px-4 py-2 text-sm hover:border-accent hover:text-accent-dark"
-              >
-                {category.label}
-              </AppLink>
-            ))}
-            {results.articles.map((article) => (
-              <AppLink
-                key={article.id}
-                href="/inspirations"
-                className="rounded-full border border-border px-4 py-2 text-sm hover:border-accent hover:text-accent-dark"
-              >
-                {article.title}
-              </AppLink>
-            ))}
+            <CatalogPagination
+              page={results.page}
+              totalPages={results.totalPages}
+              onPageChange={(page) => {
+                updateSearch({ page });
+                if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
           </div>
-        </section>
-      ) : null}
-    </div>
+        )}
+
+        {results && (results.categories.length > 0 || results.articles.length > 0) ? (
+          <section className="mt-14 border-t border-border pt-8">
+            <h2 className="text-xl">Voir aussi</h2>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {results.categories.map((category) => (
+                <AppLink
+                  key={category.id}
+                  href={category.href}
+                  className="rounded-full border border-border px-4 py-2 text-sm hover:border-accent hover:text-accent-dark"
+                >
+                  {category.label}
+                </AppLink>
+              ))}
+              {results.articles.map((article) => (
+                <AppLink
+                  key={article.id}
+                  href="/inspirations"
+                  className="rounded-full border border-border px-4 py-2 text-sm hover:border-accent hover:text-accent-dark"
+                >
+                  {article.title}
+                </AppLink>
+              ))}
+            </div>
+          </section>
+        ) : null}
+      </div>
+    </SiteLayout>
   );
 }
