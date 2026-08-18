@@ -128,7 +128,9 @@ export type FurnitureType =
   | "etagere"
   | "console"
   | "pouf"
-  | "tete_de_lit";
+  | "tete_de_lit"
+  | "meridienne"
+  | "banc";
 
 export type FurnitureRoom = "salon" | "chambre" | "salle_a_manger" | "bureau" | "entree";
 

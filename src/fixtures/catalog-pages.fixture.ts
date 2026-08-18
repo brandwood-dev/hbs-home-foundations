@@ -526,7 +526,7 @@ export const catalogPages: CatalogPageConfig[] = [
     path: "/mobilier/canapes",
     title: "Canapés",
     description: "Canapés 2 et 3 places en lin, velours et bouclette, structures en bois massif.",
-    scope: { furnitureTypes: ["canape"] },
+    scope: { furnitureTypes: ["canape", "meridienne"] },
     lockedFilterLabel: "Canapés",
     seoTitle: "Canapés en tissu et velours | HBS HOME",
     seoDescription:
@@ -582,7 +582,7 @@ export const catalogPages: CatalogPageConfig[] = [
     path: "/mobilier/rangements",
     title: "Meubles TV et rangements",
     description: "Meubles TV, buffets et étagères en bois massif et cannage.",
-    scope: { furnitureTypes: ["meuble_tv", "buffet", "etagere"] },
+    scope: { furnitureTypes: ["meuble_tv", "buffet", "etagere", "banc"] },
     lockedFilterLabel: "Rangements",
     seoTitle: "Meubles TV, buffets et étagères | HBS HOME",
     seoDescription:

@@ -355,6 +355,8 @@ export const FURNITURE_TYPE_LABELS: Record<FurnitureType, string> = {
   console: "Console",
   pouf: "Pouf",
   tete_de_lit: "Tête de lit",
+  meridienne: "Méridienne",
+  banc: "Banc et banquette",
 };
 
 export const FURNITURE_ROOM_LABELS: Record<FurnitureRoom, string> = {
