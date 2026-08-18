@@ -7,13 +7,16 @@ export interface Crumb {
 }
 
 export function CatalogBreadcrumbs({ items }: { items: Crumb[] }) {
+  // Une page d'index porte le même libellé que son univers : on évite le doublon.
+  const crumbs = items.filter((item, index) => item.label !== items[index - 1]?.label);
+
   return (
     <nav aria-label="Fil d'Ariane" className="text-xs text-foreground-muted">
       <ol className="flex flex-wrap items-center gap-1">
-        {items.map((item, index) => {
-          const isLast = index === items.length - 1;
+        {crumbs.map((item, index) => {
+          const isLast = index === crumbs.length - 1;
           return (
-            <li key={item.label} className="flex items-center gap-1">
+            <li key={`${item.label}-${index}`} className="flex items-center gap-1">
               {item.href && !isLast ? (
                 <AppLink href={item.href} className="hover:text-accent-dark">
                   {item.label}
