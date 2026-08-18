@@ -1,4 +1,8 @@
 import type {
+  BlindControlSide,
+  BlindMechanismColor,
+  BlindMountingType,
+  BlindType,
   CatalogSort,
   ColorFamily,
   CurtainHeader,
@@ -8,7 +12,21 @@ import type {
   EyeletColor,
   OpacityLevel,
   ProductAvailability,
+  ProductCategory,
+  ProductPattern,
 } from "@/domain/product/product.types";
+
+export const CATEGORY_LABELS: Record<ProductCategory, string> = {
+  rideaux: "Rideaux",
+  voilages: "Voilages",
+  stores: "Stores",
+};
+
+export const CATEGORY_PATHS: Record<ProductCategory, string> = {
+  rideaux: "/rideaux",
+  voilages: "/voilages",
+  stores: "/stores",
+};
 
 export const MATERIAL_LABELS: Record<CurtainMaterial, string> = {
   velours: "Velours",
@@ -16,14 +34,66 @@ export const MATERIAL_LABELS: Record<CurtainMaterial, string> = {
   lin: "Lin",
   jacquard: "Jacquard",
   polyester: "Polyester",
+  voile: "Voile",
+  melange_lin: "Mélange lin",
+  jacquard_leger: "Jacquard léger",
+  toile_technique: "Toile technique",
+  bambou: "Bambou",
 };
 
 export const OPACITY_LABELS: Record<OpacityLevel, string> = {
+  transparent: "Transparent",
   tamisant_leger: "Tamisant léger",
   tamisant: "Tamisant",
   obscurcissant: "Obscurcissant",
   occultant: "Occultant",
 };
+
+export const PATTERN_LABELS: Record<ProductPattern, string> = {
+  uni: "Uni",
+  brode: "Brodé",
+  raye: "Rayé",
+  imprime: "Imprimé",
+  jacquard: "Jacquard",
+};
+
+export const BLIND_TYPE_LABELS: Record<BlindType, string> = {
+  enrouleur: "Store enrouleur",
+  jour_nuit: "Store jour/nuit",
+  occultant: "Store occultant",
+  tamisant: "Store tamisant",
+  bambou: "Store en bambou",
+};
+
+export const BLIND_MOUNTING_LABELS: Record<BlindMountingType, string> = {
+  mur: "Pose murale",
+  plafond: "Pose plafond",
+  sans_percage: "Sans perçage",
+};
+
+export const BLIND_MOUNTING_DESCRIPTIONS: Record<BlindMountingType, string> = {
+  mur: "Supports vissés au mur, au-dessus de l'encadrement.",
+  plafond: "Supports fixés au plafond, pour couvrir toute la hauteur.",
+  sans_percage: "Supports à clipser sur le battant, sans percer.",
+};
+
+export const BLIND_CONTROL_SIDE_LABELS: Record<BlindControlSide, string> = {
+  gauche: "Manœuvre à gauche",
+  droite: "Manœuvre à droite",
+};
+
+export const BLIND_MECHANISM_COLOR_LABELS: Record<BlindMechanismColor, string> = {
+  blanc: "Mécanisme blanc",
+  gris: "Mécanisme gris",
+  noir: "Mécanisme noir",
+};
+
+export const BLIND_MECHANISM_COLOR_SWATCHES: Record<BlindMechanismColor, string> = {
+  blanc: "#F5F4F1",
+  gris: "#9C9C99",
+  noir: "#2B2A28",
+};
+
 
 export const HEADER_LABELS: Record<CurtainHeader, string> = {
   oeillets: "Œillets",

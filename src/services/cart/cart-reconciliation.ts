@@ -17,6 +17,7 @@ import {
   calculateCartTotals,
   createCartLineId,
 } from "@/services/cart/cart-calculations";
+import { getVariantDisplayOptions } from "@/services/product/product-options";
 
 const MISSING_IMAGE_ALT = "Article indisponible";
 
@@ -102,12 +103,16 @@ export function resolveCartItem(
     priceChanged,
     imageUrl: image.url,
     imageAlt: image.alt,
+    category: product.category,
     ...(color ? { colorLabel: color.name } : {}),
     widthCm: variant.widthCm,
     heightCm: variant.heightCm,
-    curtainHeaderLabel: HEADER_LABELS[variant.curtainHeader],
+    ...(variant.curtainHeader
+      ? { curtainHeaderLabel: HEADER_LABELS[variant.curtainHeader] }
+      : {}),
     ...(variant.eyeletColor ? { eyeletColorLabel: EYELET_COLOR_LABELS[variant.eyeletColor] } : {}),
-    liningLabel: LINING_LABELS[variant.lining],
+    ...(variant.lining ? { liningLabel: LINING_LABELS[variant.lining] } : {}),
+    selectedOptions: getVariantDisplayOptions(product, variant),
     sellingUnitLabel: SELLING_MODE_LABELS[product.sellingMode],
     availability: variant.availability,
     availableQuantity: outOfStock ? 0 : maxQuantity,

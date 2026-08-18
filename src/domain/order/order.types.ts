@@ -4,6 +4,7 @@ import type {
   DeliveryMethod,
   PaymentMethod,
 } from "@/domain/checkout/checkout.types";
+import type { ProductCategory, ProductOptionDisplay } from "@/domain/product/product.types";
 
 export type OrderStatus =
   "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
@@ -27,12 +28,15 @@ export interface OrderItemSnapshot {
   unitPriceMinor: number;
   lineTotalMinor: number;
 
+  category?: ProductCategory;
   colorLabel?: string;
   widthCm?: number;
   heightCm?: number;
   curtainHeaderLabel?: string;
   eyeletColorLabel?: string;
   liningLabel?: string;
+  /** Options affichables figées au moment de la commande. */
+  selectedOptions?: ProductOptionDisplay[];
   sellingUnitLabel: string;
 }
 

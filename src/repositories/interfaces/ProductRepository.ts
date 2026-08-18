@@ -1,4 +1,7 @@
 import type {
+  BlindControlSide,
+  BlindMountingType,
+  BlindType,
   CatalogSort,
   CurtainHeader,
   CurtainMaterial,
@@ -6,16 +9,25 @@ import type {
   OpacityLevel,
   Product,
   ProductAvailability,
+  ProductCategory,
+  ProductPattern,
 } from "@/domain/product/product.types";
 
 export interface ProductListParams {
   page: number;
   pageSize: number;
 
+  categories?: ProductCategory[] | undefined;
+
   materials?: CurtainMaterial[] | undefined;
   colors?: string[] | undefined;
   opacityLevels?: OpacityLevel[] | undefined;
   curtainHeaders?: CurtainHeader[] | undefined;
+  patterns?: ProductPattern[] | undefined;
+
+  blindTypes?: BlindType[] | undefined;
+  mountings?: BlindMountingType[] | undefined;
+  controlSides?: BlindControlSide[] | undefined;
 
   widths?: number[] | undefined;
   heights?: number[] | undefined;
@@ -30,6 +42,7 @@ export interface ProductListParams {
   onlyBestSellers?: boolean | undefined;
   onlyDiscounted?: boolean | undefined;
   onlyThermal?: boolean | undefined;
+  onlyLargeWidth?: boolean | undefined;
 
   sort: CatalogSort;
 }
@@ -37,7 +50,16 @@ export interface ProductListParams {
 /** Subset of params imposed by a sub-route (locked context). */
 export type CatalogScope = Pick<
   ProductListParams,
-  "materials" | "opacityLevels" | "curtainHeaders" | "sellingMode" | "onlyThermal"
+  | "categories"
+  | "materials"
+  | "opacityLevels"
+  | "curtainHeaders"
+  | "patterns"
+  | "blindTypes"
+  | "mountings"
+  | "sellingMode"
+  | "onlyThermal"
+  | "onlyLargeWidth"
 >;
 
 export interface PaginatedProducts {

@@ -34,6 +34,8 @@ export function toOrderItemSnapshot(item: ResolvedCartItem): OrderItemSnapshot {
     ...(item.curtainHeaderLabel ? { curtainHeaderLabel: item.curtainHeaderLabel } : {}),
     ...(item.eyeletColorLabel ? { eyeletColorLabel: item.eyeletColorLabel } : {}),
     ...(item.liningLabel ? { liningLabel: item.liningLabel } : {}),
+    ...(item.category ? { category: item.category } : {}),
+    ...(item.selectedOptions ? { selectedOptions: item.selectedOptions } : {}),
     sellingUnitLabel: item.sellingUnitLabel,
   };
 }

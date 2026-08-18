@@ -1,4 +1,7 @@
 import type {
+  BlindControlSide,
+  BlindMechanismColor,
+  BlindMountingType,
   CurtainHeader,
   CurtainLining,
   EyeletColor,
@@ -15,9 +18,12 @@ import type {
 export interface VariantSelection {
   colorId: string;
   sizeKey: string;
-  curtainHeader: CurtainHeader;
+  curtainHeader?: CurtainHeader | undefined;
   eyeletColor?: EyeletColor | undefined;
-  lining: CurtainLining;
+  lining?: CurtainLining | undefined;
+  blindMountingType?: BlindMountingType | undefined;
+  blindControlSide?: BlindControlSide | undefined;
+  blindMechanismColor?: BlindMechanismColor | undefined;
 }
 
 export type VariantAxis = keyof VariantSelection;
@@ -28,6 +34,9 @@ export const VARIANT_AXES: VariantAxis[] = [
   "curtainHeader",
   "eyeletColor",
   "lining",
+  "blindMountingType",
+  "blindControlSide",
+  "blindMechanismColor",
 ];
 
 export function sizeKeyOf(variant: ProductVariant): string {
@@ -47,6 +56,9 @@ export function selectionOf(variant: ProductVariant): VariantSelection {
     curtainHeader: variant.curtainHeader,
     eyeletColor: variant.eyeletColor,
     lining: variant.lining,
+    blindMountingType: variant.blindMountingType,
+    blindControlSide: variant.blindControlSide,
+    blindMechanismColor: variant.blindMechanismColor,
   };
 }
 
