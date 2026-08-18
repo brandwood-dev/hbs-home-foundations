@@ -1298,7 +1298,7 @@ const seeds: DecorSeed[] = [
     recommendationScore: 80,
     variants: [
       {
-        color: COLORS.ecru,
+        color: COLORS.ivoire,
         widthCm: 165,
         heightCm: 80,
         depthCm: 90,
@@ -1362,7 +1362,7 @@ const seeds: DecorSeed[] = [
         quantity: 7,
       },
       {
-        color: COLORS.vertOlive,
+        color: COLORS.vert,
         widthCm: 130,
         heightCm: 45,
         depthCm: 40,
@@ -1405,7 +1405,7 @@ const seeds: DecorSeed[] = [
     recommendationScore: 74,
     variants: [
       {
-        color: COLORS.naturel,
+        color: COLORS.bois,
         widthCm: 100,
         heightCm: 48,
         depthCm: 38,
