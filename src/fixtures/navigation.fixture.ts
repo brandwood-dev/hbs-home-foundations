@@ -100,8 +100,63 @@ export const mainNavigation: NavItem[] = [
       },
     ],
   },
-  { id: "coussins", label: "Coussins", href: "/coussins" },
-  { id: "accessoires", label: "Accessoires", href: "/accessoires" },
+  {
+    id: "coussins",
+    label: "Coussins",
+    href: "/coussins",
+    megaMenu: [
+      {
+        title: "Par matière",
+        links: [
+          { label: "Lin lavé", href: "/coussins/lin" },
+          { label: "Velours", href: "/coussins/velours" },
+          { label: "Tous les coussins", href: "/coussins" },
+        ],
+      },
+      {
+        title: "Par format",
+        links: [
+          { label: "Lots de coussins", href: "/coussins/lots" },
+          { label: "Galettes de chaise", href: "/galettes-de-chaise" },
+        ],
+      },
+      {
+        title: "Assises",
+        links: [
+          { label: "Galettes carrées", href: "/galettes-de-chaise/carrees" },
+          { label: "Galettes rondes", href: "/galettes-de-chaise/rondes" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "accessoires",
+    label: "Accessoires",
+    href: "/accessoires",
+    megaMenu: [
+      {
+        title: "Suspendre",
+        links: [
+          { label: "Tringles", href: "/accessoires/tringles" },
+          { label: "Rails de plafond", href: "/accessoires/rails" },
+          { label: "Tous les accessoires", href: "/accessoires" },
+        ],
+      },
+      {
+        title: "Retenir",
+        links: [
+          { label: "Embrasses et attaches", href: "/accessoires/embrasses" },
+        ],
+      },
+      {
+        title: "Poser",
+        links: [
+          { label: "Anneaux, supports et kits", href: "/accessoires/petites-pieces" },
+          { label: "Guide des mesures", href: "/guide-des-mesures" },
+        ],
+      },
+    ],
+  },
   { id: "sur-mesure", label: "Sur mesure", href: "/sur-mesure" },
   { id: "inspirations", label: "Inspirations", href: "/inspirations" },
   { id: "promotions", label: "Promotions", href: "/promotions", highlight: true },
@@ -115,6 +170,7 @@ export const footerColumns: FooterColumn[] = [
       { label: "Voilages", href: "/voilages" },
       { label: "Stores", href: "/stores" },
       { label: "Coussins", href: "/coussins" },
+      { label: "Galettes de chaise", href: "/galettes-de-chaise" },
       { label: "Accessoires", href: "/accessoires" },
     ],
   },
