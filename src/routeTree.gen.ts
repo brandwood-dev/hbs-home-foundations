@@ -37,6 +37,9 @@ import { Route as AccessoiresPetitesPiecesRouteImport } from './routes/accessoir
 import { Route as AccessoiresRailsRouteImport } from './routes/accessoires.rails'
 import { Route as AccessoiresTringlesRouteImport } from './routes/accessoires.tringles'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminAttributsRouteImport } from './routes/admin/attributs'
+import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
+import { Route as AdminStockRouteImport } from './routes/admin/stock'
 import { Route as CommandeIndexRouteImport } from './routes/commande.index'
 import { Route as CommandeConfirmationRouteImport } from './routes/commande.confirmation'
 import { Route as CoussinsIndexRouteImport } from './routes/coussins.index'
@@ -83,6 +86,9 @@ import { Route as VoilagesGrandeLargeurRouteImport } from './routes/voilages.gra
 import { Route as VoilagesMotifsRouteImport } from './routes/voilages.motifs'
 import { Route as VoilagesRailRouteImport } from './routes/voilages.rail'
 import { Route as VoilagesUnisRouteImport } from './routes/voilages.unis'
+import { Route as AdminProduitsIndexRouteImport } from './routes/admin/produits.index'
+import { Route as AdminProduitsProductIdRouteImport } from './routes/admin/produits.$productId'
+import { Route as AdminProduitsNouveauRouteImport } from './routes/admin/produits.nouveau'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -223,6 +229,21 @@ const AccessoiresTringlesRoute = AccessoiresTringlesRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminAttributsRoute = AdminAttributsRouteImport.update({
+  id: '/attributs',
+  path: '/attributs',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminStockRoute = AdminStockRouteImport.update({
+  id: '/stock',
+  path: '/stock',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const CommandeIndexRoute = CommandeIndexRouteImport.update({
@@ -455,6 +476,21 @@ const VoilagesUnisRoute = VoilagesUnisRouteImport.update({
   path: '/voilages/unis',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminProduitsIndexRoute = AdminProduitsIndexRouteImport.update({
+  id: '/produits/',
+  path: '/produits/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminProduitsProductIdRoute = AdminProduitsProductIdRouteImport.update({
+  id: '/produits/$productId',
+  path: '/produits/$productId',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminProduitsNouveauRoute = AdminProduitsNouveauRouteImport.update({
+  id: '/produits/nouveau',
+  path: '/produits/nouveau',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -483,6 +519,9 @@ export interface FileRoutesByFullPath {
   '/accessoires/petites-pieces': typeof AccessoiresPetitesPiecesRoute
   '/accessoires/rails': typeof AccessoiresRailsRoute
   '/accessoires/tringles': typeof AccessoiresTringlesRoute
+  '/admin/attributs': typeof AdminAttributsRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/stock': typeof AdminStockRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
   '/coussins/lin': typeof CoussinsLinRoute
   '/coussins/lots': typeof CoussinsLotsRoute
@@ -531,6 +570,9 @@ export interface FileRoutesByFullPath {
   '/rideaux/': typeof RideauxIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/voilages/': typeof VoilagesIndexRoute
+  '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
+  '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/admin/produits/': typeof AdminProduitsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -558,6 +600,9 @@ export interface FileRoutesByTo {
   '/accessoires/petites-pieces': typeof AccessoiresPetitesPiecesRoute
   '/accessoires/rails': typeof AccessoiresRailsRoute
   '/accessoires/tringles': typeof AccessoiresTringlesRoute
+  '/admin/attributs': typeof AdminAttributsRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/stock': typeof AdminStockRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
   '/coussins/lin': typeof CoussinsLinRoute
   '/coussins/lots': typeof CoussinsLotsRoute
@@ -606,6 +651,9 @@ export interface FileRoutesByTo {
   '/rideaux': typeof RideauxIndexRoute
   '/stores': typeof StoresIndexRoute
   '/voilages': typeof VoilagesIndexRoute
+  '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
+  '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/admin/produits': typeof AdminProduitsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -635,6 +683,9 @@ export interface FileRoutesById {
   '/accessoires/petites-pieces': typeof AccessoiresPetitesPiecesRoute
   '/accessoires/rails': typeof AccessoiresRailsRoute
   '/accessoires/tringles': typeof AccessoiresTringlesRoute
+  '/admin/attributs': typeof AdminAttributsRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/stock': typeof AdminStockRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
   '/coussins/lin': typeof CoussinsLinRoute
   '/coussins/lots': typeof CoussinsLotsRoute
@@ -683,6 +734,9 @@ export interface FileRoutesById {
   '/rideaux/': typeof RideauxIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/voilages/': typeof VoilagesIndexRoute
+  '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
+  '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/admin/produits/': typeof AdminProduitsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -713,6 +767,9 @@ export interface FileRouteTypes {
     | '/accessoires/petites-pieces'
     | '/accessoires/rails'
     | '/accessoires/tringles'
+    | '/admin/attributs'
+    | '/admin/categories'
+    | '/admin/stock'
     | '/commande/confirmation'
     | '/coussins/lin'
     | '/coussins/lots'
@@ -761,6 +818,9 @@ export interface FileRouteTypes {
     | '/rideaux/'
     | '/stores/'
     | '/voilages/'
+    | '/admin/produits/$productId'
+    | '/admin/produits/nouveau'
+    | '/admin/produits/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -788,6 +848,9 @@ export interface FileRouteTypes {
     | '/accessoires/petites-pieces'
     | '/accessoires/rails'
     | '/accessoires/tringles'
+    | '/admin/attributs'
+    | '/admin/categories'
+    | '/admin/stock'
     | '/commande/confirmation'
     | '/coussins/lin'
     | '/coussins/lots'
@@ -836,6 +899,9 @@ export interface FileRouteTypes {
     | '/rideaux'
     | '/stores'
     | '/voilages'
+    | '/admin/produits/$productId'
+    | '/admin/produits/nouveau'
+    | '/admin/produits'
   id:
     | '__root__'
     | '/'
@@ -864,6 +930,9 @@ export interface FileRouteTypes {
     | '/accessoires/petites-pieces'
     | '/accessoires/rails'
     | '/accessoires/tringles'
+    | '/admin/attributs'
+    | '/admin/categories'
+    | '/admin/stock'
     | '/commande/confirmation'
     | '/coussins/lin'
     | '/coussins/lots'
@@ -912,6 +981,9 @@ export interface FileRouteTypes {
     | '/rideaux/'
     | '/stores/'
     | '/voilages/'
+    | '/admin/produits/$productId'
+    | '/admin/produits/nouveau'
+    | '/admin/produits/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1186,6 +1258,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/attributs': {
+      id: '/admin/attributs'
+      path: '/attributs'
+      fullPath: '/admin/attributs'
+      preLoaderRoute: typeof AdminAttributsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/categories': {
+      id: '/admin/categories'
+      path: '/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AdminCategoriesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/stock': {
+      id: '/admin/stock'
+      path: '/stock'
+      fullPath: '/admin/stock'
+      preLoaderRoute: typeof AdminStockRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/commande/': {
@@ -1510,15 +1603,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VoilagesUnisRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/produits/': {
+      id: '/admin/produits/'
+      path: '/produits'
+      fullPath: '/admin/produits/'
+      preLoaderRoute: typeof AdminProduitsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/produits/$productId': {
+      id: '/admin/produits/$productId'
+      path: '/produits/$productId'
+      fullPath: '/admin/produits/$productId'
+      preLoaderRoute: typeof AdminProduitsProductIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/produits/nouveau': {
+      id: '/admin/produits/nouveau'
+      path: '/produits/nouveau'
+      fullPath: '/admin/produits/nouveau'
+      preLoaderRoute: typeof AdminProduitsNouveauRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
 interface AdminRouteRouteChildren {
+  AdminAttributsRoute: typeof AdminAttributsRoute
+  AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminStockRoute: typeof AdminStockRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminProduitsProductIdRoute: typeof AdminProduitsProductIdRoute
+  AdminProduitsNouveauRoute: typeof AdminProduitsNouveauRoute
+  AdminProduitsIndexRoute: typeof AdminProduitsIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminAttributsRoute: AdminAttributsRoute,
+  AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminStockRoute: AdminStockRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminProduitsProductIdRoute: AdminProduitsProductIdRoute,
+  AdminProduitsNouveauRoute: AdminProduitsNouveauRoute,
+  AdminProduitsIndexRoute: AdminProduitsIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(

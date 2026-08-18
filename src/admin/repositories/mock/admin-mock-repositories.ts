@@ -45,6 +45,7 @@ import type {
   DashboardMetrics,
   InventoryRow,
   StockAdjustmentInput,
+  StockSettingsInput,
 } from "@/admin/repositories/interfaces";
 import { adminId, normalizeKey } from "@/admin/utils/admin.utils";
 import { canTransition, transitionError } from "@/admin/services/order-status";
@@ -74,11 +75,18 @@ function assertUniqueSkus(variants: AdminVariant[]): void {
       variant.curtainHeader,
       variant.eyeletColor ?? "-",
       variant.lining ?? "-",
+      variant.packQuantity ?? "-",
+      JSON.stringify(variant.options ?? {}),
     ].join("|");
     if (combos.has(combo)) throw new Error("Deux variantes ont exactement la même combinaison.");
     combos.add(combo);
 
     if (variant.stock < 0) throw new Error("Le stock ne peut pas être négatif.");
+    if (variant.lowStockThreshold < 0) throw new Error("Le seuil ne peut pas être négatif.");
+    if (variant.priceMinor < 0) throw new Error("Le prix ne peut pas être négatif.");
+    if (variant.packQuantity != null && variant.packQuantity < 1) {
+      throw new Error("La quantité du pack doit être supérieure ou égale à 1.");
+    }
     if (variant.compareAtPriceMinor != null && variant.compareAtPriceMinor < variant.priceMinor) {
       throw new Error("L'ancien prix ne peut pas être inférieur au prix actuel.");
     }
@@ -212,6 +220,11 @@ export class MockAdminProductRepository implements AdminProductRepository {
 
   async setStatus(id: string, status: AdminProduct["status"]): Promise<AdminProduct> {
     return this.update(id, { status });
+  }
+
+  async isUsedInOrders(id: string): Promise<boolean> {
+    const db = getDb();
+    return delay(db.orders.some((order) => order.items.some((item) => item.productId === id)));
   }
 }
 
@@ -396,7 +409,11 @@ export class MockAdminInventoryRepository implements AdminInventoryRepository {
       const product = db.products.find((item) => item.id === input.productId);
       const variant = product?.variants.find((item) => item.id === input.variantId);
       if (!product || !variant) throw new Error("Variante introuvable.");
+      if (!Number.isInteger(input.quantity) || input.quantity < 0) {
+        throw new Error("La quantité doit être un entier positif.");
+      }
 
+      const previous = variant.stock;
       const next =
         input.type === "set"
           ? input.quantity
@@ -421,6 +438,9 @@ export class MockAdminInventoryRepository implements AdminInventoryRepository {
         type: input.type,
         quantity: input.quantity,
         reason: input.reason,
+        ...(input.note ? { note: input.note } : {}),
+        previousStock: previous,
+        resultingStock: next,
         createdAt: nowIso(),
         userId: "usr_1",
       };
@@ -439,6 +459,32 @@ export class MockAdminInventoryRepository implements AdminInventoryRepository {
       resourceType: "inventory",
       resourceId: input.variantId,
       details: `Stock ajusté (${input.reason})`,
+    });
+    return delay(row);
+  }
+
+  async updateSettings(input: StockSettingsInput): Promise<InventoryRow> {
+    if (input.lowStockThreshold < 0) throw new Error("Le seuil ne peut pas être négatif.");
+    const row = mutateDb((db) => {
+      const product = db.products.find((item) => item.id === input.productId);
+      const variant = product?.variants.find((item) => item.id === input.variantId);
+      if (!product || !variant) throw new Error("Variante introuvable.");
+      variant.lowStockThreshold = input.lowStockThreshold;
+      if (input.availability) variant.availability = input.availability;
+      product.updatedAt = nowIso();
+      return {
+        productId: product.id,
+        productName: product.name,
+        categoryId: product.categoryId,
+        variant: clone(variant),
+        updatedAt: product.updatedAt,
+      } satisfies InventoryRow;
+    });
+    logActivity({
+      action: "update",
+      resourceType: "inventory",
+      resourceId: input.variantId,
+      details: `Seuil de faible stock : ${input.lowStockThreshold}`,
     });
     return delay(row);
   }
