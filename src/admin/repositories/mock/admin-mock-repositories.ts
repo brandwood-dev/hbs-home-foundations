@@ -495,106 +495,759 @@ export class MockAdminInventoryRepository implements AdminInventoryRepository {
   }
 }
 
+const ACTOR = { userId: "usr_1", userName: "Hana Ben Salah" };
+
+function pushEvent(order: AdminOrder, event: Omit<AdminOrderEvent, "id" | "at">): void {
+  order.timeline.push({ id: adminId("evt"), at: nowIso(), ...ACTOR, ...event });
+  order.updatedAt = nowIso();
+}
+
+function recomputeAvailability(variant: AdminVariant): void {
+  if (variant.trackInventory === false || variant.availability === "made_to_order") return;
+  if (variant.stock <= 0) variant.availability = "out_of_stock";
+  else if (variant.stock <= variant.lowStockThreshold) variant.availability = "low_stock";
+  else variant.availability = "in_stock";
+}
+
+/** Déduction/restauration idempotente du stock d'une commande. */
+function moveStock(
+  db: AdminMockDatabase,
+  order: AdminOrder,
+  direction: "deduct" | "restore",
+): string[] {
+  const ids: string[] = [];
+  for (const item of order.items) {
+    const product = db.products.find((entry) => entry.id === item.productId);
+    if (!isTrackedLine(item, product)) continue;
+    const variant = product?.variants.find((entry) => entry.id === item.variantId);
+    if (!variant || !product) continue;
+    const previousStock = variant.stock;
+    variant.stock =
+      direction === "deduct"
+        ? Math.max(0, previousStock - item.quantity)
+        : previousStock + item.quantity;
+    recomputeAvailability(variant);
+    product.updatedAt = nowIso();
+    const movement: StockMovement = {
+      id: adminId("mov"),
+      variantId: variant.id,
+      productId: product.id,
+      type: direction === "deduct" ? "decrease" : "increase",
+      quantity: item.quantity,
+      reason: direction === "deduct" ? "order_confirmation" : "order_cancellation",
+      note: `Commande ${order.orderNumber}`,
+      previousStock,
+      resultingStock: variant.stock,
+      createdAt: nowIso(),
+      userId: ACTOR.userId,
+    };
+    db.stockMovements.unshift(movement);
+    ids.push(movement.id);
+  }
+  return ids;
+}
+
+function deductStock(db: AdminMockDatabase, order: AdminOrder): void {
+  if (order.inventoryState?.deductedAt) return;
+  const shortages = findStockShortages(order, db.products);
+  if (shortages.length > 0) throw new Error(stockShortageMessage(shortages));
+  const ids = moveStock(db, order, "deduct");
+  order.inventoryState = {
+    ...(order.inventoryState ?? {}),
+    deductedAt: nowIso(),
+    deductionMovementIds: ids,
+  };
+  pushEvent(order, {
+    status: order.status,
+    kind: "inventory",
+    label: "Stock déduit",
+    summary: `${ids.length} ligne(s) déduite(s) du stock.`,
+  });
+}
+
+function restoreStock(db: AdminMockDatabase, order: AdminOrder): void {
+  if (!order.inventoryState?.deductedAt) return;
+  if (order.inventoryState.restoredAt) return;
+  const ids = moveStock(db, order, "restore");
+  order.inventoryState = {
+    ...order.inventoryState,
+    restoredAt: nowIso(),
+    restorationMovementIds: ids,
+  };
+  pushEvent(order, {
+    status: order.status,
+    kind: "inventory",
+    label: "Stock restauré",
+    summary: `${ids.length} ligne(s) remise(s) en stock.`,
+  });
+}
+
+function findOrder(db: AdminMockDatabase, id: string): AdminOrder {
+  const order = db.orders.find((item) => item.id === id);
+  if (!order) throw new Error("Commande introuvable.");
+  return order;
+}
+
+/** Recherche privée : jamais persistée, jamais loggée. */
+function matchesOrderSearch(order: AdminOrder, query: string): boolean {
+  const needle = normalizeKey(query);
+  if (!needle) return true;
+  const phone = order.customerPhone.replace(/\D/g, "");
+  return (
+    normalizeKey(order.orderNumber).includes(needle) ||
+    normalizeKey(order.customerName).includes(needle) ||
+    normalizeKey(order.customerEmail ?? "").includes(needle) ||
+    phone.includes(needle.replace(/\D/g, "")) ||
+    order.items.some(
+      (item) =>
+        normalizeKey(item.sku).includes(needle) ||
+        normalizeKey(item.productName).includes(needle) ||
+        normalizeKey(item.productReference ?? "").includes(needle),
+    )
+  );
+}
+
+function inRange(value: string, from?: string, to?: string): boolean {
+  if (from && value < from) return false;
+  if (to && value > `${to}\uffff`) return false;
+  return true;
+}
+
 export class MockAdminOrderRepository implements AdminOrderRepository {
-  async list(): Promise<AdminOrder[]> {
-    return delay(clone(getDb().orders).sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
+  async list(
+    params: AdminOrderListParams,
+    privateSearchQuery?: string,
+  ): Promise<PaginatedAdminOrders> {
+    const all = clone(getDb().orders);
+    const governorates = [...new Set(all.map((order) => order.governorate))].sort();
+
+    let rows = all.filter((order) => {
+      if (params.status?.length && !params.status.includes(order.status)) return false;
+      if (params.paymentStatus?.length && !params.paymentStatus.includes(order.paymentStatus))
+        return false;
+      if (params.shippingStatus?.length && !params.shippingStatus.includes(getShippingStatus(order)))
+        return false;
+      if (
+        params.shippingProfiles?.length &&
+        !params.shippingProfiles.includes(getOrderShippingProfile(order))
+      )
+        return false;
+      if (params.deliveryMethod?.length && !params.deliveryMethod.includes(order.deliveryMethod))
+        return false;
+      if (params.governorates?.length && !params.governorates.includes(order.governorate))
+        return false;
+      if (!inRange(order.createdAt, params.dateFrom, params.dateTo)) return false;
+      return true;
+    });
+
+    if (privateSearchQuery?.trim()) {
+      rows = rows.filter((order) => matchesOrderSearch(order, privateSearchQuery));
+    }
+
+    const counters: AdminOrderCounters = {
+      total: rows.length,
+      pendingConfirmation: rows.filter(
+        (order) => order.status === "pending_confirmation" || order.status === "received",
+      ).length,
+      confirmed: rows.filter((order) => order.status === "confirmed").length,
+      preparing: rows.filter((order) => order.status === "preparing").length,
+      shipped: rows.filter((order) => order.status === "shipped").length,
+      delivered: rows.filter((order) => order.status === "delivered").length,
+      cancelled: rows.filter((order) => order.status === "cancelled").length,
+      shippingToConfirm: rows.filter((order) => isShippingToConfirm(order)).length,
+      paymentPending: rows.filter((order) => order.paymentStatus === "pending").length,
+    };
+
+    rows.sort((a, b) => {
+      switch (params.sort) {
+        case "oldest":
+          return a.createdAt.localeCompare(b.createdAt);
+        case "total_desc":
+          return b.totalMinor - a.totalMinor;
+        case "total_asc":
+          return a.totalMinor - b.totalMinor;
+        case "status":
+          return a.status.localeCompare(b.status) || b.createdAt.localeCompare(a.createdAt);
+        default:
+          return b.createdAt.localeCompare(a.createdAt);
+      }
+    });
+
+    const pageSize = Math.max(1, params.pageSize);
+    const pageCount = Math.max(1, Math.ceil(rows.length / pageSize));
+    const page = Math.min(Math.max(1, params.page), pageCount);
+    const start = (page - 1) * pageSize;
+
+    return delay({
+      rows: rows.slice(start, start + pageSize),
+      total: rows.length,
+      page,
+      pageSize,
+      pageCount,
+      counters,
+      governorates,
+    });
   }
 
-  async getById(id: string): Promise<AdminOrder | null> {
-    return delay(clone(getDb().orders.find((item) => item.id === id) ?? null));
+  async getById(orderId: string): Promise<AdminOrder | null> {
+    return delay(clone(getDb().orders.find((item) => item.id === orderId) ?? null));
   }
 
-  async updateStatus(id: string, status: AdminOrderStatus): Promise<AdminOrder> {
+  async updateStatus(input: UpdateAdminOrderStatusInput): Promise<AdminOrder> {
     const order = mutateDb((db) => {
-      const found = db.orders.find((item) => item.id === id);
-      if (!found) throw new Error("Commande introuvable.");
-      if (!canTransition(found.status, status))
-        throw new Error(transitionError(found.status, status));
-      found.status = status;
-      found.updatedAt = nowIso();
-      if (status === "delivered") found.paymentStatus = "collected";
-      if (status === "returned") found.paymentStatus = "refunded";
-      found.timeline.push({ id: adminId("evt"), at: nowIso(), status, label: `Statut mis à jour` });
+      const found = findOrder(db, input.orderId);
+      const from = found.status;
+      assertStatusTransition(found, input.status, input.reason);
+
+      if (input.status === "confirmed") deductStock(db, found);
+      found.status = input.status;
+
+      if (input.status === "shipped") {
+        found.shipment = {
+          shippingStatus: getShippingStatus(found),
+          ...(found.shipment ?? {}),
+          ...(input.carrierName ? { carrierName: input.carrierName } : {}),
+          ...(input.trackingNumber ? { trackingNumber: input.trackingNumber } : {}),
+          shippedAt: input.shippedAt ?? nowIso(),
+        };
+      }
+      if (input.status === "delivered") {
+        found.shipment = {
+          shippingStatus: getShippingStatus(found),
+          ...(found.shipment ?? {}),
+          deliveredAt: input.deliveredAt ?? nowIso(),
+        };
+        if (input.paymentCollected !== false) found.paymentStatus = "collected";
+      }
+      if (input.status === "return_requested") {
+        found.returnInfo = {
+          ...(found.returnInfo ?? {}),
+          requestedAt: nowIso(),
+          ...(input.reason ? { reason: input.reason } : {}),
+        };
+      }
+
+      pushEvent(found, {
+        status: input.status,
+        kind: "status",
+        fromStatus: from,
+        toStatus: input.status,
+        label: `${ORDER_STATUS_LABELS[from]} → ${ORDER_STATUS_LABELS[input.status]}`,
+        ...(input.reason ? { reason: input.reason } : {}),
+        ...(input.note ? { note: input.note } : {}),
+      });
+      return found;
+    });
+
+    logActivity({
+      action: "status_change",
+      resourceType: "order",
+      resourceId: input.orderId,
+      details: `Commande ${order.orderNumber} → ${ORDER_STATUS_LABELS[input.status]}`,
+    });
+    return delay(clone(order));
+  }
+
+  async updatePaymentStatus(input: UpdateAdminPaymentStatusInput): Promise<AdminOrder> {
+    const order = mutateDb((db) => {
+      const found = findOrder(db, input.orderId);
+      if (!getAllowedPaymentTransitions(found).includes(input.paymentStatus)) {
+        throw new Error(paymentTransitionError(found.paymentStatus, input.paymentStatus));
+      }
+      if (paymentRequiresReason(input.paymentStatus) && !input.reason?.trim()) {
+        throw new Error("Un motif est obligatoire pour un remboursement.");
+      }
+      const from = found.paymentStatus;
+      found.paymentStatus = input.paymentStatus;
+      pushEvent(found, {
+        status: found.status,
+        kind: "payment",
+        label: `Paiement : ${PAYMENT_STATUS_LABELS[from]} → ${PAYMENT_STATUS_LABELS[input.paymentStatus]}`,
+        ...(input.reason ? { reason: input.reason } : {}),
+        ...(input.note ? { note: input.note } : {}),
+      });
+      return found;
+    });
+    logActivity({
+      action: "update",
+      resourceType: "order",
+      resourceId: input.orderId,
+      details: `Paiement ${order.orderNumber} → ${PAYMENT_STATUS_LABELS[input.paymentStatus]}`,
+    });
+    return delay(clone(order));
+  }
+
+  async updateShipping(input: UpdateAdminOrderShippingInput): Promise<AdminOrder> {
+    if (input.shippingFeeMinor < 0) throw new Error("Les frais de livraison doivent être positifs.");
+    const order = mutateDb((db) => {
+      const found = findOrder(db, input.orderId);
+      found.shipment = {
+        ...(found.shipment ?? { shippingStatus: "calculated" }),
+        shippingStatus: "calculated",
+        shippingFeeMinor: input.shippingFeeMinor,
+        ...(input.carrierName ? { carrierName: input.carrierName } : {}),
+      };
+      applyShippingFee(found, input.shippingFeeMinor);
+      pushEvent(found, {
+        status: found.status,
+        kind: "shipping_fee",
+        label: "Frais de livraison définis",
+        summary: `${(input.shippingFeeMinor / 1000).toFixed(3)} DT`,
+        ...(input.note ? { note: input.note } : {}),
+      });
+      return found;
+    });
+    logActivity({
+      action: "update",
+      resourceType: "order",
+      resourceId: input.orderId,
+      details: `Frais de livraison définis pour ${order.orderNumber}`,
+    });
+    return delay(clone(order));
+  }
+
+  async updateContact(orderId: string, contact: AdminOrderContact): Promise<AdminOrder> {
+    const order = mutateDb((db) => {
+      const found = findOrder(db, orderId);
+      if (!canEditOrderDetails(found)) {
+        throw new Error("Les coordonnées ne sont plus modifiables après expédition.");
+      }
+      const name = contact.customerName.trim();
+      if (!name) throw new Error("Le nom du client est obligatoire.");
+      found.customerName = name;
+      found.customerPhone = normalizeTunisianPhone(contact.customerPhone);
+      const email = assertEmail(contact.customerEmail ?? "");
+      if (email) found.customerEmail = email;
+      else delete found.customerEmail;
+      pushEvent(found, { status: found.status, kind: "contact", label: "Coordonnées modifiées" });
+      return found;
+    });
+    logActivity({
+      action: "update",
+      resourceType: "order",
+      resourceId: orderId,
+      details: `Coordonnées modifiées (${order.orderNumber})`,
+    });
+    return delay(clone(order));
+  }
+
+  async updateAddress(orderId: string, address: AdminOrderAddress): Promise<AdminOrder> {
+    const order = mutateDb((db) => {
+      const found = findOrder(db, orderId);
+      if (!canEditOrderDetails(found)) {
+        throw new Error("L'adresse n'est plus modifiable après expédition.");
+      }
+      if (!address.governorate.trim() || !address.city.trim() || !address.addressLine.trim()) {
+        throw new Error("Gouvernorat, ville et adresse sont obligatoires.");
+      }
+      found.governorate = address.governorate.trim();
+      found.city = address.city.trim();
+      found.addressLine = address.addressLine.trim();
+      if (address.postalCode?.trim()) found.postalCode = address.postalCode.trim();
+      if (address.landmark?.trim()) found.landmark = address.landmark.trim();
+      if (address.deliveryNote?.trim()) found.deliveryNote = address.deliveryNote.trim();
+      pushEvent(found, { status: found.status, kind: "address", label: "Adresse modifiée" });
+      return found;
+    });
+    logActivity({
+      action: "update",
+      resourceType: "order",
+      resourceId: orderId,
+      details: `Adresse modifiée (${order.orderNumber})`,
+    });
+    return delay(clone(order));
+  }
+
+  async addNote(orderId: string, text: string): Promise<AdminOrder> {
+    const body = sanitizeNoteText(text);
+    const order = mutateDb((db) => {
+      const found = findOrder(db, orderId);
+      found.notes.unshift({
+        id: adminId("note"),
+        at: nowIso(),
+        author: ACTOR.userName,
+        userId: ACTOR.userId,
+        body,
+      });
+      pushEvent(found, { status: found.status, kind: "note", label: "Note interne ajoutée" });
+      return found;
+    });
+    return delay(clone(order));
+  }
+
+  async cancelOrder(input: CancelAdminOrderInput): Promise<AdminOrder> {
+    if (!input.reason.trim()) throw new Error("Un motif d'annulation est obligatoire.");
+    const order = mutateDb((db) => {
+      const found = findOrder(db, input.orderId);
+      assertStatusTransition(found, "cancelled", input.reason);
+      const from = found.status;
+      found.status = "cancelled";
+      found.cancellationReason = input.reason.trim();
+      if (input.restoreStock) restoreStock(db, found);
+      if (input.refundPayment && found.paymentStatus === "collected") {
+        found.paymentStatus = "refunded";
+      }
+      pushEvent(found, {
+        status: "cancelled",
+        kind: "status",
+        fromStatus: from,
+        toStatus: "cancelled",
+        label: "Commande annulée",
+        reason: input.reason.trim(),
+        ...(input.note ? { note: input.note } : {}),
+      });
       return found;
     });
     logActivity({
       action: "status_change",
       resourceType: "order",
-      resourceId: id,
-      details: `Commande ${order.orderNumber} → ${status}`,
+      resourceId: input.orderId,
+      details: `Commande ${order.orderNumber} annulée`,
     });
     return delay(clone(order));
   }
 
-  async updatePaymentStatus(id: string, status: AdminOrder["paymentStatus"]): Promise<AdminOrder> {
+  async returnOrder(input: ReturnAdminOrderInput): Promise<AdminOrder> {
+    if (!input.reason.trim()) throw new Error("Un motif de retour est obligatoire.");
     const order = mutateDb((db) => {
-      const found = db.orders.find((item) => item.id === id);
-      if (!found) throw new Error("Commande introuvable.");
-      found.paymentStatus = status;
-      found.updatedAt = nowIso();
+      const found = findOrder(db, input.orderId);
+      if (input.action === "request") {
+        assertStatusTransition(found, "return_requested", input.reason);
+        found.status = "return_requested";
+        found.returnInfo = { requestedAt: nowIso(), reason: input.reason.trim() };
+        pushEvent(found, {
+          status: found.status,
+          kind: "status",
+          toStatus: "return_requested",
+          label: "Retour demandé",
+          reason: input.reason.trim(),
+        });
+        return found;
+      }
+
+      const accepted = input.action === "accept";
+      const next: AdminOrderStatus = accepted ? "returned" : "delivered";
+      assertStatusTransition(found, next, input.reason);
+      found.status = next;
+      found.returnInfo = {
+        ...(found.returnInfo ?? {}),
+        resolvedAt: nowIso(),
+        resolution: accepted ? "accepted" : "refused",
+        reason: input.reason.trim(),
+        ...(input.conditionReason ? { conditionReason: input.conditionReason } : {}),
+        restocked: Boolean(accepted && input.restock),
+      };
+      if (accepted && input.restock) restoreStock(db, found);
+      if (accepted && input.refundPayment !== false && found.paymentStatus === "collected") {
+        found.paymentStatus = "refunded";
+      }
+      pushEvent(found, {
+        status: next,
+        kind: "status",
+        toStatus: next,
+        label: accepted ? "Retour accepté" : "Retour refusé",
+        reason: input.reason.trim(),
+        ...(input.note ? { note: input.note } : {}),
+      });
       return found;
     });
-    return delay(clone(order));
-  }
-
-  async addNote(id: string, body: string): Promise<AdminOrder> {
-    const order = mutateDb((db) => {
-      const found = db.orders.find((item) => item.id === id);
-      if (!found) throw new Error("Commande introuvable.");
-      found.notes.unshift({ id: adminId("note"), at: nowIso(), author: "Hana Ben Salah", body });
-      return found;
+    logActivity({
+      action: "status_change",
+      resourceType: "order",
+      resourceId: input.orderId,
+      details: `Retour ${input.action} — ${order.orderNumber}`,
     });
     return delay(clone(order));
   }
 }
 
-function statsFor(orders: AdminOrder[]): CustomerStats {
-  const delivered = orders.filter((order) => order.status === "delivered");
-  const totalSpentMinor = delivered.reduce((total, order) => total + order.subtotalMinor, 0);
-  const last = orders
-    .map((order) => order.createdAt)
-    .sort()
-    .at(-1);
-  return {
-    orderCount: orders.length,
-    deliveredCount: delivered.length,
-    totalSpentMinor,
-    averageOrderValueMinor:
-      delivered.length > 0 ? Math.round(totalSpentMinor / delivered.length) : 0,
-    ...(last ? { lastOrderAt: last } : {}),
-  };
+function matchesCustomerSearch(customer: AdminCustomer, query: string): boolean {
+  const needle = normalizeKey(query);
+  if (!needle) return true;
+  const digits = needle.replace(/\D/g, "");
+  return (
+    normalizeKey(`${customer.firstName} ${customer.lastName}`).includes(needle) ||
+    normalizeKey(customer.email ?? "").includes(needle) ||
+    (digits.length > 0 && customer.phone.replace(/\D/g, "").includes(digits))
+  );
+}
+
+function findCustomer(db: AdminMockDatabase, id: string): AdminCustomer {
+  const customer = db.customers.find((item) => item.id === id);
+  if (!customer) throw new Error("Client introuvable.");
+  return customer;
 }
 
 export class MockAdminCustomerRepository implements AdminCustomerRepository {
-  async list() {
+  async list(
+    params: AdminCustomerListParams,
+    privateSearchQuery?: string,
+  ): Promise<PaginatedAdminCustomers> {
     const db = getDb();
-    return delay(
-      clone(db.customers).map((customer) => ({
-        ...customer,
-        stats: statsFor(db.orders.filter((order) => order.customerId === customer.id)),
-      })),
-    );
+    const all = clone(db.customers).filter((customer) => !customer.mergedIntoCustomerId);
+    const orders = clone(db.orders);
+    const governorates = [...new Set(all.map((customer) => customer.governorate))].sort();
+    const tags = [...new Set(all.flatMap((customer) => customer.tags))].sort();
+
+    let rows: AdminCustomerRow[] = all.map((customer) => ({
+      ...customer,
+      metrics: calculateCustomerMetrics(orders.filter((o) => o.customerId === customer.id)),
+      hasPotentialDuplicate: findPotentialCustomerDuplicates(customer, all).some(
+        (match) => match.strong,
+      ),
+    }));
+
+    rows = rows.filter((row) => {
+      if (params.governorates?.length && !params.governorates.includes(row.governorate))
+        return false;
+      if (params.hasOrders && row.metrics.totalOrders === 0) return false;
+      if (params.hasDeliveredOrders && row.metrics.deliveredOrders === 0) return false;
+      if (params.minSpentMinor && row.metrics.totalSpentMinor < params.minSpentMinor) return false;
+      if (params.tags?.length && !params.tags.some((tag) => row.tags.includes(tag))) return false;
+      if (params.onlyPotentialDuplicates && !row.hasPotentialDuplicate) return false;
+      if (params.lastOrderFrom || params.lastOrderTo) {
+        if (!row.metrics.lastOrderAt) return false;
+        if (!inRange(row.metrics.lastOrderAt, params.lastOrderFrom, params.lastOrderTo))
+          return false;
+      }
+      return true;
+    });
+
+    if (privateSearchQuery?.trim()) {
+      rows = rows.filter((row) => matchesCustomerSearch(row, privateSearchQuery));
+    }
+
+    rows.sort((a, b) => {
+      switch (params.sort) {
+        case "name_asc":
+          return `${a.lastName} ${a.firstName}`.localeCompare(`${b.lastName} ${b.firstName}`, "fr");
+        case "spent_desc":
+          return b.metrics.totalSpentMinor - a.metrics.totalSpentMinor;
+        case "orders_desc":
+          return b.metrics.totalOrders - a.metrics.totalOrders;
+        case "aov_desc":
+          return b.metrics.averageOrderValueMinor - a.metrics.averageOrderValueMinor;
+        default:
+          return (b.metrics.lastOrderAt ?? "").localeCompare(a.metrics.lastOrderAt ?? "");
+      }
+    });
+
+    const pageSize = Math.max(1, params.pageSize);
+    const pageCount = Math.max(1, Math.ceil(rows.length / pageSize));
+    const page = Math.min(Math.max(1, params.page), pageCount);
+    const start = (page - 1) * pageSize;
+
+    return delay({
+      rows: rows.slice(start, start + pageSize),
+      total: rows.length,
+      page,
+      pageSize,
+      pageCount,
+      governorates,
+      tags,
+    });
   }
 
-  async getById(id: string) {
+  async getById(customerId: string): Promise<AdminCustomerDetail | null> {
     const db = getDb();
-    const customer = db.customers.find((item) => item.id === id);
+    const customer = db.customers.find((item) => item.id === customerId);
     if (!customer) return delay(null);
-    const orders = clone(db.orders.filter((order) => order.customerId === id));
-    return delay({ ...clone(customer), stats: statsFor(orders), orders });
+    const orders = clone(db.orders.filter((order) => order.customerId === customerId)).sort((a, b) =>
+      b.createdAt.localeCompare(a.createdAt),
+    );
+    const duplicates = findPotentialCustomerDuplicates(customer, clone(db.customers)).map(
+      (match) => match.customer,
+    );
+    return delay({
+      ...clone(customer),
+      metrics: calculateCustomerMetrics(orders),
+      hasPotentialDuplicate: duplicates.length > 0,
+      orders,
+      duplicates,
+    });
   }
 
-  async update(id: string, input: Partial<AdminCustomer>): Promise<AdminCustomer> {
+  async update(customerId: string, input: UpdateAdminCustomerInput): Promise<AdminCustomer> {
     const updated = mutateDb((db) => {
-      const index = db.customers.findIndex((item) => item.id === id);
-      if (index === -1) throw new Error("Client introuvable.");
-      const next = { ...(db.customers[index] as AdminCustomer), ...clone(input), id };
-      db.customers[index] = next;
-      return next;
+      const customer = findCustomer(db, customerId);
+      if (input.firstName !== undefined) {
+        if (!input.firstName.trim()) throw new Error("Le prénom est obligatoire.");
+        customer.firstName = input.firstName.trim();
+      }
+      if (input.lastName !== undefined) {
+        if (!input.lastName.trim()) throw new Error("Le nom est obligatoire.");
+        customer.lastName = input.lastName.trim();
+      }
+      if (input.phone !== undefined) customer.phone = normalizeTunisianPhone(input.phone);
+      if (input.email !== undefined) {
+        const email = assertEmail(input.email);
+        if (email) customer.email = email;
+        else delete customer.email;
+      }
+      if (input.governorate !== undefined) customer.governorate = input.governorate;
+      if (input.preferredChannel !== undefined) customer.preferredChannel = input.preferredChannel;
+      customer.updatedAt = nowIso();
+      return customer;
+    });
+    logActivity({
+      action: "update",
+      resourceType: "customer",
+      resourceId: customerId,
+      details: `Fiche client modifiée : ${updated.firstName} ${updated.lastName}`,
     });
     return delay(clone(updated));
   }
+
+  async addAddress(
+    customerId: string,
+    address: AdminCustomerAddressInput,
+  ): Promise<AdminCustomer> {
+    const updated = mutateDb((db) => {
+      const customer = findCustomer(db, customerId);
+      const isFirst = customer.addresses.length === 0;
+      customer.addresses.push({
+        ...clone(address),
+        id: adminId("addr"),
+        isDefault: isFirst || Boolean(address.isDefault),
+        createdAt: nowIso(),
+        updatedAt: nowIso(),
+      });
+      if (address.isDefault || isFirst) {
+        for (const entry of customer.addresses) {
+          entry.isDefault = entry.id === customer.addresses.at(-1)?.id;
+        }
+      }
+      return customer;
+    });
+    return delay(clone(updated));
+  }
+
+  async updateAddress(
+    customerId: string,
+    addressId: string,
+    input: AdminCustomerAddressInput,
+  ): Promise<AdminCustomer> {
+    const updated = mutateDb((db) => {
+      const customer = findCustomer(db, customerId);
+      const index = customer.addresses.findIndex((entry) => entry.id === addressId);
+      if (index === -1) throw new Error("Adresse introuvable.");
+      const current = customer.addresses[index] as AdminCustomerAddress;
+      customer.addresses[index] = {
+        ...current,
+        ...clone(input),
+        id: addressId,
+        updatedAt: nowIso(),
+      };
+      return customer;
+    });
+    return delay(clone(updated));
+  }
+
+  async deleteAddress(customerId: string, addressId: string): Promise<AdminCustomer> {
+    const updated = mutateDb((db) => {
+      const customer = findCustomer(db, customerId);
+      customer.addresses = customer.addresses.filter((entry) => entry.id !== addressId);
+      if (customer.addresses.length > 0 && !customer.addresses.some((entry) => entry.isDefault)) {
+        (customer.addresses[0] as AdminCustomerAddress).isDefault = true;
+      }
+      return customer;
+    });
+    return delay(clone(updated));
+  }
+
+  async setDefaultAddress(customerId: string, addressId: string): Promise<AdminCustomer> {
+    const updated = mutateDb((db) => {
+      const customer = findCustomer(db, customerId);
+      if (!customer.addresses.some((entry) => entry.id === addressId)) {
+        throw new Error("Adresse introuvable.");
+      }
+      for (const entry of customer.addresses) entry.isDefault = entry.id === addressId;
+      return customer;
+    });
+    return delay(clone(updated));
+  }
+
+  async updateTags(customerId: string, tags: string[]): Promise<AdminCustomer> {
+    const updated = mutateDb((db) => {
+      const customer = findCustomer(db, customerId);
+      customer.tags = [...new Set(tags.map((tag) => tag.trim()).filter(Boolean))];
+      customer.updatedAt = nowIso();
+      return customer;
+    });
+    return delay(clone(updated));
+  }
+
+  async addNote(customerId: string, text: string): Promise<AdminCustomer> {
+    const body = sanitizeCustomerNote(text);
+    const updated = mutateDb((db) => {
+      const customer = findCustomer(db, customerId);
+      customer.notes = [
+        { id: adminId("cnote"), text: body, createdAt: nowIso(), ...ACTOR },
+        ...(customer.notes ?? []),
+      ];
+      return customer;
+    });
+    return delay(clone(updated));
+  }
+
+  async findPotentialDuplicates(customerId: string): Promise<AdminCustomer[]> {
+    const db = getDb();
+    const customer = db.customers.find((item) => item.id === customerId);
+    if (!customer) return delay([]);
+    return delay(
+      findPotentialCustomerDuplicates(customer, clone(db.customers)).map((match) => match.customer),
+    );
+  }
+
+  /** Fusion : le client secondaire est archivé, jamais supprimé. */
+  async mergeCustomers(input: MergeAdminCustomersInput): Promise<AdminCustomer> {
+    if (input.primaryCustomerId === input.secondaryCustomerId) {
+      throw new Error("Impossible de fusionner un client avec lui-même.");
+    }
+    const merged = mutateDb((db) => {
+      const primary = findCustomer(db, input.primaryCustomerId);
+      const secondary = findCustomer(db, input.secondaryCustomerId);
+      if (secondary.mergedIntoCustomerId) throw new Error("Ce client est déjà fusionné.");
+
+      if (input.keepPhoneFrom === "secondary") primary.phone = secondary.phone;
+      if (input.keepEmailFrom === "secondary" && secondary.email) primary.email = secondary.email;
+
+      const known = new Set(
+        primary.addresses.map((entry) =>
+          normalizeKey(`${entry.addressLine} ${entry.city} ${entry.governorate}`),
+        ),
+      );
+      for (const address of secondary.addresses) {
+        const key = normalizeKey(`${address.addressLine} ${address.city} ${address.governorate}`);
+        if (known.has(key)) continue;
+        known.add(key);
+        primary.addresses.push({ ...clone(address), id: adminId("addr"), isDefault: false });
+      }
+
+      primary.tags = [...new Set([...primary.tags, ...secondary.tags])];
+      primary.notes = [...(primary.notes ?? []), ...(secondary.notes ?? [])].sort((a, b) =>
+        b.createdAt.localeCompare(a.createdAt),
+      );
+      primary.updatedAt = nowIso();
+
+      for (const order of db.orders) {
+        if (order.customerId === secondary.id) order.customerId = primary.id;
+      }
+
+      secondary.mergedIntoCustomerId = primary.id;
+      secondary.mergedAt = nowIso();
+      return primary;
+    });
+    logActivity({
+      action: "update",
+      resourceType: "customer",
+      resourceId: input.primaryCustomerId,
+      details: `Fusion du client ${input.secondaryCustomerId} vers ${input.primaryCustomerId}`,
+    });
+    return delay(clone(merged));
+  }
 }
+
 
 export class MockAdminPromotionRepository implements AdminPromotionRepository {
   async list(): Promise<AdminPromotion[]> {
