@@ -32,6 +32,8 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   coussins: "Coussins",
   galettes_de_chaise: "Galettes de chaise",
   accessoires: "Accessoires",
+  mobilier_interieur: "Mobilier d'intérieur",
+  plantes_decoration: "Plantes et décoration",
 };
 
 export const CATEGORY_PATHS: Record<ProductCategory, string> = {
@@ -41,6 +43,8 @@ export const CATEGORY_PATHS: Record<ProductCategory, string> = {
   coussins: "/coussins",
   galettes_de_chaise: "/galettes-de-chaise",
   accessoires: "/accessoires",
+  mobilier_interieur: "/mobilier",
+  plantes_decoration: "/plantes",
 };
 
 export const MATERIAL_LABELS: Record<ProductMaterial, string> = {
@@ -65,6 +69,18 @@ export const MATERIAL_LABELS: Record<ProductMaterial, string> = {
   jacquard_leger: "Jacquard léger",
   toile_technique: "Toile technique",
   bambou: "Bambou",
+  bois_massif: "Bois massif",
+  rotin: "Rotin",
+  cannage: "Cannage",
+  metal_laque: "Métal laqué",
+  verre: "Verre",
+  marbre: "Marbre",
+  ceramique: "Céramique",
+  terre_cuite: "Terre cuite",
+  cuir_synthetique: "Cuir synthétique",
+  fibre_naturelle: "Fibre naturelle",
+  plante_naturelle: "Plante naturelle",
+  plante_synthetique: "Feuillage artificiel",
 };
 
 export const OPACITY_LABELS: Record<OpacityLevel, string> = {
