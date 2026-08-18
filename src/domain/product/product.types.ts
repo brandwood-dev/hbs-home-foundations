@@ -194,6 +194,9 @@ export interface ProductVariant {
   blindControlSide?: BlindControlSide;
   blindMechanismColor?: BlindMechanismColor;
 
+  /** Libellé de dimension affiché quand largeur × hauteur ne suffit pas. */
+  sizeLabel?: string;
+
   /** Axes coussins. */
   cushionContent?: CushionContent;
   cushionClosure?: CushionClosure;
