@@ -7,6 +7,8 @@ import {
   normalizeSearchQuery,
   tokenizeSearchQuery,
 } from "@/services/search/normalize-search-query";
+import { expandSearchTokens } from "@/services/search/search-synonyms";
+import { extractSearchMeasurements } from "@/services/search/search-measurements";
 
 export interface SearchScoreResult {
   score: number;
@@ -28,8 +30,13 @@ function anyTermMatches(terms: string[], tokens: string[]): boolean {
  */
 export function calculateSearchScore(doc: ProductSearchDoc, rawQuery: string): SearchScoreResult {
   const query = normalizeSearchQuery(rawQuery);
-  const tokens = tokenizeSearchQuery(rawQuery);
-  if (!query || tokens.length === 0) return { score: 0, matchedFields: [] };
+  const allTokens = tokenizeSearchQuery(rawQuery);
+  if (!query || allTokens.length === 0) return { score: 0, matchedFields: [] };
+
+  const measurements = extractSearchMeasurements(rawQuery);
+  // Les nombres alimentent la pertinence dimensionnelle, pas la correspondance texte.
+  const tokens = allTokens.filter((token) => !/^\d+(x\d+)?$/.test(token));
+  const textTokens = tokens.length > 0 ? tokens : allTokens;
 
   const matchedFields: string[] = [];
   let score = 0;
@@ -54,7 +61,7 @@ export function calculateSearchScore(doc: ProductSearchDoc, rawQuery: string): S
     matchedFields.push("name");
   } else {
     const nameWords = doc.name.split(" ");
-    const allTokensInName = tokens.every((token) =>
+    const allTokensInName = textTokens.every((token) =>
       nameWords.some((word) => word.startsWith(token)),
     );
     if (allTokensInName) {
@@ -63,36 +70,66 @@ export function calculateSearchScore(doc: ProductSearchDoc, rawQuery: string): S
     }
   }
 
-  if (someTermMatches(doc.categoryTerms, tokens) || anyTermMatches(doc.categoryTerms, tokens)) {
-    const full = someTermMatches(doc.categoryTerms, tokens);
+  // Synonymes éditoriaux : équivalences explicites uniquement.
+  const synonymTokens = expandSearchTokens(textTokens);
+  if (synonymTokens.length > 0) {
+    const searchable = [
+      doc.name,
+      ...doc.categoryTerms,
+      ...doc.productTypeTerms,
+      ...doc.materialTerms,
+      ...doc.attributeTerms,
+    ];
+    if (synonymTokens.some((term) => searchable.some((value) => value.includes(term)))) {
+      score += SEARCH_SCORE_WEIGHTS.synonym;
+      matchedFields.push("synonym");
+    }
+  }
+
+  if (anyTermMatches(doc.productTypeTerms, textTokens)) {
+    const full = someTermMatches(doc.productTypeTerms, textTokens);
+    score += full ? SEARCH_SCORE_WEIGHTS.subcategory : SEARCH_SCORE_WEIGHTS.productType;
+    matchedFields.push("type");
+  }
+
+  if (anyTermMatches(doc.categoryTerms, textTokens)) {
+    const full = someTermMatches(doc.categoryTerms, textTokens);
     score += full ? SEARCH_SCORE_WEIGHTS.category : Math.round(SEARCH_SCORE_WEIGHTS.category / 2);
     matchedFields.push("category");
   }
 
-  if (anyTermMatches(doc.materialTerms, tokens)) {
+  if (anyTermMatches(doc.materialTerms, textTokens)) {
     score += SEARCH_SCORE_WEIGHTS.material;
     matchedFields.push("material");
   }
 
-  if (anyTermMatches(doc.colorTerms, tokens)) {
+  if (anyTermMatches(doc.colorTerms, textTokens)) {
     score += SEARCH_SCORE_WEIGHTS.color;
     matchedFields.push("color");
   }
 
-  if (anyTermMatches(doc.attributeTerms, tokens)) {
+  if (anyTermMatches(doc.attributeTerms, textTokens)) {
     score += SEARCH_SCORE_WEIGHTS.attributes;
     matchedFields.push("attribute");
   }
 
-  if (tokens.every((token) => doc.description.includes(token))) {
+  if (
+    measurements.terms.length > 0 &&
+    measurements.terms.some((term) => doc.measurementTerms.includes(term))
+  ) {
+    score += SEARCH_SCORE_WEIGHTS.dimensions;
+    matchedFields.push("dimensions");
+  }
+
+  if (textTokens.every((token) => doc.description.includes(token))) {
     score += SEARCH_SCORE_WEIGHTS.description;
     matchedFields.push("description");
   }
 
   // Un seul mot très court doit correspondre à un champ fort, pas à une sous-chaîne quelconque.
-  if (tokens.length === 1 && tokens[0]!.length <= 2) {
+  if (textTokens.length === 1 && textTokens[0]!.length <= 2) {
     const strong = matchedFields.some((field) =>
-      ["reference", "sku", "name", "category"].includes(field),
+      ["reference", "sku", "name", "category", "type"].includes(field),
     );
     if (!strong) return { score: 0, matchedFields: [] };
   }

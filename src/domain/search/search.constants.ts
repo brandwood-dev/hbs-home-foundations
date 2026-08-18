@@ -29,14 +29,18 @@ export const SEARCH_SORT_LABELS: Record<SearchSort, string> = {
 
 /** Barème déterministe du classement par pertinence. */
 export const SEARCH_SCORE_WEIGHTS = {
-  reference: 120,
-  sku: 115,
-  nameExact: 100,
-  namePrefix: 85,
-  nameWords: 70,
-  category: 55,
-  material: 45,
-  color: 40,
-  attributes: 30,
+  reference: 140,
+  sku: 135,
+  nameExact: 120,
+  namePrefix: 100,
+  nameWords: 85,
+  synonym: 75,
+  subcategory: 65,
+  category: 60,
+  productType: 55,
+  material: 50,
+  color: 45,
+  attributes: 35,
+  dimensions: 25,
   description: 15,
 } as const;
