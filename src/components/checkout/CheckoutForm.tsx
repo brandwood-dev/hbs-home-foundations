@@ -55,7 +55,7 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
   const deliveryMethod = watch("deliveryMethod");
   const totalMinor = useMemo(() => {
     const subtotal = cart.totals.subtotalMinor;
-    return subtotal + calculateCheckoutShipping(subtotal, deliveryMethod);
+    return subtotal + calculateCheckoutShipping(subtotal, deliveryMethod, undefined, undefined, cart.totals.requiresShippingQuote);
   }, [cart.totals.subtotalMinor, deliveryMethod]);
 
   const busy = isSubmitting || createOrder.isPending;
@@ -114,7 +114,13 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
           register={register}
           errors={errors}
           deliveryMethod={deliveryMethod}
-          shippingMinor={calculateCheckoutShipping(cart.totals.subtotalMinor, deliveryMethod)}
+          shippingMinor={calculateCheckoutShipping(
+            cart.totals.subtotalMinor,
+            deliveryMethod,
+            undefined,
+            undefined,
+            cart.totals.requiresShippingQuote,
+          )}
         />
         <CheckoutPaymentSection register={register} errors={errors} />
       </div>

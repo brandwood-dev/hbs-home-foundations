@@ -13,7 +13,14 @@ export function CheckoutSummary({
   deliveryMethod: DeliveryMethod;
 }) {
   const subtotalMinor = cart.totals.subtotalMinor;
-  const shippingMinor = calculateCheckoutShipping(subtotalMinor, deliveryMethod);
+  const quoteRequired = cart.totals.requiresShippingQuote;
+  const shippingMinor = calculateCheckoutShipping(
+    subtotalMinor,
+    deliveryMethod,
+    undefined,
+    undefined,
+    quoteRequired,
+  );
   const totalMinor = subtotalMinor + shippingMinor;
 
   return (
@@ -65,13 +72,26 @@ export function CheckoutSummary({
           <dt className="text-foreground-muted">
             {deliveryMethod === "store_pickup" ? "Retrait en magasin" : "Livraison"}
           </dt>
-          <dd>{shippingMinor === 0 ? "Offerte" : formatMoney(shippingMinor)}</dd>
+          <dd>
+            {quoteRequired && deliveryMethod !== "store_pickup"
+              ? "Sur devis"
+              : shippingMinor === 0
+                ? "Offerte"
+                : formatMoney(shippingMinor)}
+          </dd>
         </div>
         <div className="flex items-baseline justify-between border-t border-border pt-2 text-base font-medium">
           <dt>Total à payer</dt>
           <dd>{formatMoney(totalMinor)}</dd>
         </div>
       </dl>
+
+      {quoteRequired && deliveryMethod !== "store_pickup" ? (
+        <p className="rounded-sm bg-surface-muted p-3 text-xs text-foreground">
+          Article volumineux : les frais de livraison et le créneau de mise en place sont confirmés
+          par téléphone avant l&apos;expédition.
+        </p>
+      ) : null}
 
       <p className="text-xs text-foreground-muted">{CART_ESTIMATE_NOTICE}</p>
     </section>

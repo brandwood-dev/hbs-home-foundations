@@ -36,6 +36,7 @@ export function toOrderItemSnapshot(item: ResolvedCartItem): OrderItemSnapshot {
     ...(item.liningLabel ? { liningLabel: item.liningLabel } : {}),
     ...(item.category ? { category: item.category } : {}),
     ...(item.selectedOptions ? { selectedOptions: item.selectedOptions } : {}),
+    ...(item.shippingProfile ? { shippingProfile: item.shippingProfile } : {}),
     sellingUnitLabel: item.sellingUnitLabel,
   };
 }
