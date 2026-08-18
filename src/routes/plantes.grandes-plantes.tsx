@@ -1,0 +1,38 @@
+import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
+import { CatalogView } from "@/components/catalog/CatalogView";
+import { getCatalogPage } from "@/fixtures/catalog-pages.fixture";
+import {
+  EMPTY_SEARCH,
+  validateCatalogSearch,
+  type CatalogSearch,
+} from "@/services/catalog/catalog.search-params";
+
+const config = getCatalogPage("plantes-grandes");
+const title = "Grandes plantes et arbres d'intérieur | HBS HOME";
+const description =
+  "Oliviers, ficus et grandes plantes de plus d'un mètre pour salon et entrée. Livraison sur rendez-vous en Tunisie.";
+
+export const Route = createFileRoute("/plantes/grandes-plantes")({
+  validateSearch: validateCatalogSearch,
+  search: { middlewares: [stripSearchParams(EMPTY_SEARCH)] },
+  head: () => ({
+    meta: [
+      { title },
+      { name: "description", content: description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: CatalogPlantesGrandesPlantesPage,
+});
+
+function CatalogPlantesGrandesPlantesPage() {
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const onSearchChange = (next: CatalogSearch) => {
+    void navigate({ to: ".", search: next, resetScroll: false });
+  };
+  return <CatalogView config={config} search={search} onSearchChange={onSearchChange} />;
+}
