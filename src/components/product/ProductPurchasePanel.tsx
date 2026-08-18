@@ -2,6 +2,7 @@ import { Minus, Plus } from "lucide-react";
 import { ProductAvailabilityBadge } from "@/components/product/ProductAvailabilityBadge";
 import { ProductPrice } from "@/components/product/ProductPrice";
 import { ProductPurchaseActions } from "@/components/product/ProductPurchaseActions";
+import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import type { Product, ProductVariant } from "@/domain/product/product.types";
 
 interface ProductPurchasePanelProps {
@@ -63,7 +64,15 @@ export function ProductPurchasePanel({
             missingOptionLabel="Sélectionnez une dimension"
           />
         </div>
+
+        <FavoriteButton
+          productId={product.id}
+          productName={product.name}
+          variant="inline"
+          className="w-full sm:w-auto"
+        />
       </div>
+
     </div>
   );
 }

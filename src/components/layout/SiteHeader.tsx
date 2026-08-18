@@ -8,11 +8,14 @@ import { mainNavigation } from "@/fixtures/navigation.fixture";
 import { storeConfig } from "@/config/store.config";
 import { useCartCount } from "@/components/cart/CartCountBadge";
 import { openCartDrawer } from "@/hooks/cart/useCartDrawer";
+import { openSearchPanel } from "@/hooks/search/useSearchPanel";
+import { useFavoritesCount } from "@/hooks/favorites/useFavorites";
 
 export function SiteHeader() {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { count: cartCount, label: cartLabel } = useCartCount();
+  const favoritesCount = useFavoritesCount();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur">
@@ -30,12 +33,31 @@ export function SiteHeader() {
           {storeConfig.brandName}
         </Link>
         <div className="flex items-center">
-          <AppLink
-            href="/recherche"
+          <button
+            type="button"
+            onClick={openSearchPanel}
             aria-label="Rechercher"
+            aria-haspopup="dialog"
             className="flex h-11 w-11 items-center justify-center rounded-md hover:bg-surface-muted"
           >
             <Search className="h-5 w-5" aria-hidden="true" />
+          </button>
+          <AppLink
+            href="/favoris"
+            aria-label={
+              favoritesCount > 0 ? `Favoris, ${favoritesCount} article(s)` : "Favoris"
+            }
+            className="relative flex h-11 w-11 items-center justify-center rounded-md hover:bg-surface-muted"
+          >
+            <Heart className="h-5 w-5" aria-hidden="true" />
+            {favoritesCount > 0 ? (
+              <span
+                aria-hidden="true"
+                className="absolute right-1 top-1 min-w-4 rounded-full bg-accent px-1 text-center text-[10px] leading-4 text-accent-foreground"
+              >
+                {favoritesCount > 99 ? "99+" : favoritesCount}
+              </span>
+            ) : null}
           </AppLink>
           <button
             type="button"
@@ -65,19 +87,29 @@ export function SiteHeader() {
           </Link>
 
           <div className="flex items-center gap-1 text-sm">
-            <AppLink
-              href="/recherche"
+            <button
+              type="button"
+              onClick={openSearchPanel}
+              aria-haspopup="dialog"
               className="flex items-center gap-2 rounded-md px-3 py-2 text-foreground-muted hover:text-accent-dark"
             >
               <Search className="h-4 w-4" aria-hidden="true" />
               Recherche
-            </AppLink>
+            </button>
             <AppLink
               href="/favoris"
               className="flex items-center gap-2 rounded-md px-3 py-2 text-foreground-muted hover:text-accent-dark"
             >
               <Heart className="h-4 w-4" aria-hidden="true" />
               Favoris
+              {favoritesCount > 0 ? (
+                <span
+                  aria-hidden="true"
+                  className="rounded-full bg-accent px-1.5 text-[11px] leading-5 text-accent-foreground"
+                >
+                  {favoritesCount > 99 ? "99+" : favoritesCount}
+                </span>
+              ) : null}
             </AppLink>
             <AppLink
               href="/suivi-commande"

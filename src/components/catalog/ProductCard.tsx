@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AppLink } from "@/components/ui/app-link";
+import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import {
   AVAILABILITY_LABELS,
   BLIND_TYPE_LABELS,
@@ -56,7 +57,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 
   return (
     <article
-      className="group flex flex-col"
+      className="group relative flex flex-col"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -89,6 +90,11 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           </div>
         )}
       </AppLink>
+
+      {/* Hors du lien : un bouton ne peut pas être imbriqué dans une ancre. */}
+      <div className="absolute right-2 top-2 z-10">
+        <FavoriteButton productId={product.id} productName={product.name} />
+      </div>
 
       <div className="mt-3 flex flex-1 flex-col">
         <p className="eyebrow">
