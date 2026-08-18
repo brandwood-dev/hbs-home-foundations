@@ -1232,8 +1232,17 @@ const seeds: DecorSeed[] = [
     secondaryImage: fauteuilImg,
     details: furnitureDetails(
       "Structure bois massif, mousse haute résilience, housse 100 % lin lavé",
-      ["Aspirer avec une brosse douce", "Housse déhoussable, nettoyage pressing", "Éviter le soleil direct prolongé"],
-      ["Accoudoir à gauche", "Housse déhoussable", "Assise profonde 95 cm", "Piètement bois massif"],
+      [
+        "Aspirer avec une brosse douce",
+        "Housse déhoussable, nettoyage pressing",
+        "Éviter le soleil direct prolongé",
+      ],
+      [
+        "Accoudoir à gauche",
+        "Housse déhoussable",
+        "Assise profonde 95 cm",
+        "Piètement bois massif",
+      ],
       ["Livraison sur rendez-vous", "Prévoir un passage de porte d'au moins 85 cm"],
     ),
     isNew: true,
@@ -1279,7 +1288,8 @@ const seeds: DecorSeed[] = [
     furnitureRooms: ["salon", "chambre"],
     furnitureStyle: "contemporain",
     furnitureAssembly: "montage_simple",
-    shortDescription: "Méridienne réversible en bouclette, accoudoir montable à droite ou à gauche.",
+    shortDescription:
+      "Méridienne réversible en bouclette, accoudoir montable à droite ou à gauche.",
     longDescription:
       "Pensée pour les salons qui évoluent, la méridienne Hammamet se monte avec l'accoudoir à droite ou à gauche. Le revêtement bouclette apporte du relief et se marie avec des rideaux unis en lin ou en velours.",
     imageAlt: "Méridienne réversible en bouclette écrue dans une chambre",
@@ -1288,7 +1298,11 @@ const seeds: DecorSeed[] = [
     details: furnitureDetails(
       "Structure bois et métal, mousse et fibre creuse, revêtement bouclette polyester",
       ["Aspirer dans le sens du poil", "Tamponner les taches à l'eau tiède", "Ne pas frotter"],
-      ["Accoudoir réversible droite ou gauche", "Coussin de dossier fourni", "Pieds métal noir mat"],
+      [
+        "Accoudoir réversible droite ou gauche",
+        "Coussin de dossier fourni",
+        "Pieds métal noir mat",
+      ],
       ["Montage de l'accoudoir et des pieds à la livraison", "Livraison sur rendez-vous"],
     ),
     isNew: true,
@@ -1341,7 +1355,11 @@ const seeds: DecorSeed[] = [
     secondaryImage: poufImg,
     details: furnitureDetails(
       "Bois massif de manguier, assise mousse recouverte de coton épais",
-      ["Dépoussiérer avec un chiffon sec", "Nettoyer l'assise à la mousse sèche", "Éviter l'humidité prolongée"],
+      [
+        "Dépoussiérer avec un chiffon sec",
+        "Nettoyer l'assise à la mousse sèche",
+        "Éviter l'humidité prolongée",
+      ],
       ["Coffre de rangement intérieur", "Charnières freinées", "Assise capitonnée", "Livré monté"],
       ["Livraison sur rendez-vous", "Prévoir 100 cm de dégagement pour ouvrir le plateau"],
     ),
@@ -1394,8 +1412,17 @@ const seeds: DecorSeed[] = [
     secondaryImage: chaiseImg,
     details: furnitureDetails(
       "Rotin tressé à la main sur structure bois massif",
-      ["Dépoussiérer au pinceau souple", "Nettoyer avec un chiffon à peine humide", "Éviter l'exposition à l'humidité"],
-      ["Assise deux places", "Tablette basse intégrée", "Tressage artisanal", "Compatible galettes 40 × 40 cm"],
+      [
+        "Dépoussiérer au pinceau souple",
+        "Nettoyer avec un chiffon à peine humide",
+        "Éviter l'exposition à l'humidité",
+      ],
+      [
+        "Assise deux places",
+        "Tablette basse intégrée",
+        "Tressage artisanal",
+        "Compatible galettes 40 × 40 cm",
+      ],
       ["Fixation des pieds à la livraison", "Livraison sur rendez-vous"],
     ),
     isNew: false,
@@ -1426,7 +1453,6 @@ const seeds: DecorSeed[] = [
       },
     ],
   },
-
 ];
 
 export const demoFurniture = buildDecorItems(seeds, "mob");

@@ -13,6 +13,7 @@ import type {
   AdminUser,
   AdminVariant,
   StockMovement,
+  StockMovementReason,
 } from "@/admin/types/admin.types";
 
 /** Contrat CRUD générique — implémenté par les mocks aujourd'hui, l'API demain. */
@@ -33,6 +34,8 @@ export interface AdminProductRepository extends CrudRepository<
 > {
   duplicate(id: string): Promise<AdminProduct>;
   setStatus(id: string, status: AdminProduct["status"]): Promise<AdminProduct>;
+  /** Un produit référencé par une commande ne peut plus être supprimé. */
+  isUsedInOrders(id: string): Promise<boolean>;
 }
 
 export type AdminCategoryInput = Omit<AdminCategory, "id">;
@@ -46,11 +49,11 @@ export interface AdminCategoryRepository extends CrudRepository<
 }
 
 export type AdminAttributeInput = Omit<AdminAttribute, "id">;
-export interface AdminAttributeRepository extends CrudRepository<
+export type AdminAttributeRepository = CrudRepository<
   AdminAttribute,
   AdminAttributeInput,
   Partial<AdminAttributeInput>
-> {}
+>;
 
 export interface InventoryRow {
   productId: string;
@@ -65,14 +68,23 @@ export interface StockAdjustmentInput {
   variantId: string;
   type: StockMovement["type"];
   quantity: number;
-  reason: string;
+  reason: StockMovementReason;
+  note?: string;
   lowStockThreshold?: number;
+  availability?: AdminVariant["availability"];
+}
+
+export interface StockSettingsInput {
+  productId: string;
+  variantId: string;
+  lowStockThreshold: number;
   availability?: AdminVariant["availability"];
 }
 
 export interface AdminInventoryRepository {
   list(): Promise<InventoryRow[]>;
   adjust(input: StockAdjustmentInput): Promise<InventoryRow>;
+  updateSettings(input: StockSettingsInput): Promise<InventoryRow>;
   movements(variantId?: string): Promise<StockMovement[]>;
 }
 
@@ -101,11 +113,11 @@ export interface AdminCustomerRepository {
 }
 
 export type AdminPromotionInput = Omit<AdminPromotion, "id" | "usageCount">;
-export interface AdminPromotionRepository extends CrudRepository<
+export type AdminPromotionRepository = CrudRepository<
   AdminPromotion,
   AdminPromotionInput,
   Partial<AdminPromotionInput>
-> {}
+>;
 
 export interface AdminContentRepository {
   get(): Promise<AdminContent>;
@@ -122,11 +134,11 @@ export interface AdminSettingsRepository {
 }
 
 export type AdminUserInput = Omit<AdminUser, "id" | "createdAt">;
-export interface AdminUserRepository extends CrudRepository<
+export type AdminUserRepository = CrudRepository<
   AdminUser,
   AdminUserInput,
   Partial<AdminUserInput>
-> {}
+>;
 
 export interface AdminAuditRepository {
   list(): Promise<AdminAuditLog[]>;

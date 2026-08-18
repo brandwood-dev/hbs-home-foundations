@@ -6,6 +6,41 @@
 
 export type ProductPublicationStatus = "draft" | "published" | "archived";
 
+/** Clés de catégorie partagées avec le catalogue public (`src/domain/product`). */
+export type AdminProductCategoryKey =
+  | "rideaux"
+  | "voilages"
+  | "stores"
+  | "coussins"
+  | "galettes_de_chaise"
+  | "accessoires"
+  | "mobilier_interieur"
+  | "plantes_decoration";
+
+export const ADMIN_PRODUCT_CATEGORY_LABELS: Record<AdminProductCategoryKey, string> = {
+  rideaux: "Rideaux",
+  voilages: "Voilages",
+  stores: "Stores",
+  coussins: "Coussins",
+  galettes_de_chaise: "Galettes de chaise",
+  accessoires: "Accessoires",
+  mobilier_interieur: "Mobilier d'intérieur",
+  plantes_decoration: "Plantes et décoration",
+};
+
+/** Valeur d'un champ spécifique de catégorie (data-driven). */
+export type AdminAttributeValueInput = string | number | boolean | string[];
+
+export interface AdminProductImage {
+  id: string;
+  url: string;
+  alt: string;
+  order: number;
+  isPrimary: boolean;
+  colorId?: string;
+  variantId?: string;
+}
+
 export type AdminSellingMode =
   "single_panel" | "pair" | "pack" | "per_meter" | "ready_made" | "custom_quote" | "accessory";
 
@@ -29,6 +64,11 @@ export interface AdminVariant {
   availability: AdminAvailability;
   imageUrl?: string;
   isActive: boolean;
+  /** Axes de variante spécifiques à la catégorie (data-driven). */
+  options?: Record<string, string | number>;
+  packQuantity?: number;
+  /** Faux pour les produits sans suivi de stock (sur devis, services). */
+  trackInventory?: boolean;
 }
 
 export interface AdminProduct {
@@ -56,6 +96,22 @@ export interface AdminProduct {
   promoStartAt?: string;
   promoEndAt?: string;
   publicSlug?: string;
+  /** Catégorie fonctionnelle partagée avec le frontend public. */
+  category?: AdminProductCategoryKey;
+  /** Champs spécifiques à la catégorie. */
+  attributes?: Record<string, AdminAttributeValueInput>;
+  imageAssets?: AdminProductImage[];
+  seoIndexable?: boolean;
+  seoOgImageUrl?: string;
+  packContent?: string;
+  packQuantity?: number;
+  perMeter?: {
+    pricePerMeterMinor: number;
+    minLengthCm: number;
+    maxLengthCm: number;
+    stepCm: number;
+  };
+  customQuoteEnabled?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -71,9 +127,19 @@ export interface AdminCategory {
   imageUrl?: string;
   seoTitle: string;
   seoDescription: string;
+  showInNavigation?: boolean;
 }
 
-export type AdminAttributeFieldType = "select" | "multiselect" | "color" | "number" | "boolean";
+export type AdminAttributeFieldType =
+  | "text"
+  | "number"
+  | "boolean"
+  | "select"
+  | "multiselect"
+  | "single_select"
+  | "multi_select"
+  | "color"
+  | "measurement";
 
 export interface AdminAttributeValue {
   id: string;
@@ -94,15 +160,35 @@ export interface AdminAttribute {
   isVariantAxis: boolean;
   order: number;
   values: AdminAttributeValue[];
+  /** Catégories concernées ; vide = toutes. */
+  categories?: AdminProductCategoryKey[];
+  isRequired?: boolean;
+  isActive?: boolean;
+  /** Attribut nécessaire au frontend public : suppression interdite. */
+  isSystem?: boolean;
 }
+
+export type StockAdjustmentMode = "increase" | "decrease" | "set";
+
+export type StockMovementReason =
+  | "purchase"
+  | "sale_correction"
+  | "customer_return"
+  | "damaged"
+  | "inventory_correction"
+  | "manual_adjustment"
+  | "other";
 
 export interface StockMovement {
   id: string;
   variantId: string;
   productId: string;
-  type: "increase" | "decrease" | "set";
+  type: StockAdjustmentMode;
   quantity: number;
   reason: string;
+  note?: string;
+  previousStock?: number;
+  resultingStock?: number;
   createdAt: string;
   userId?: string;
 }

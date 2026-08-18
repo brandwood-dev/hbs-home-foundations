@@ -2,6 +2,7 @@ import { ADMIN_STORAGE_KEY, ADMIN_STORAGE_VERSION } from "@/admin/config/admin.c
 import type { AdminAuditLog, AdminMockDatabase } from "@/admin/types/admin.types";
 import { createSeedDatabase } from "@/admin/mock/admin-seed";
 import { adminId } from "@/admin/utils/admin.utils";
+import { migrateAdminDatabase } from "@/admin/mock/admin-migrations";
 
 /**
  * Base mock persistée. Seul ce module touche localStorage :
@@ -45,19 +46,20 @@ export function getDb(): AdminMockDatabase {
       if (raw) {
         const parsed: unknown = JSON.parse(raw);
         if (isValid(parsed)) {
-          cache = parsed;
+          cache = migrateAdminDatabase(parsed);
+          persist(cache);
           return cache;
         }
       }
     } catch {
       /* données corrompues : on repart du seed */
     }
-    cache = createSeedDatabase();
+    cache = migrateAdminDatabase(createSeedDatabase());
     persist(cache);
     return cache;
   }
   // Rendu serveur : base éphémère, jamais persistée.
-  cache = createSeedDatabase();
+  cache = migrateAdminDatabase(createSeedDatabase());
   return cache;
 }
 
@@ -88,7 +90,7 @@ export function logActivity(entry: {
 }
 
 export function resetDb(): AdminMockDatabase {
-  cache = createSeedDatabase();
+  cache = migrateAdminDatabase(createSeedDatabase());
   persist(cache);
   return cache;
 }
@@ -100,7 +102,7 @@ export function exportDb(): string {
 export function importDb(json: string): AdminMockDatabase {
   const parsed: unknown = JSON.parse(json);
   if (!isValid(parsed)) throw new Error("Fichier de démonstration invalide.");
-  cache = parsed;
+  cache = migrateAdminDatabase(parsed);
   persist(cache);
   return cache;
 }
