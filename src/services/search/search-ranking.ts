@@ -46,7 +46,9 @@ export function calculateSearchScore(doc: ProductSearchDoc, rawQuery: string): S
     matchedFields.push("reference");
   }
 
-  if (doc.skus.some((sku) => sku === query || sku.replace(/\s/g, "") === query.replace(/\s/g, ""))) {
+  if (
+    doc.skus.some((sku) => sku === query || sku.replace(/\s/g, "") === query.replace(/\s/g, ""))
+  ) {
     score += SEARCH_SCORE_WEIGHTS.sku;
     matchedFields.push("sku");
   }

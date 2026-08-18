@@ -31,7 +31,12 @@ export const searchSynonyms: Record<string, string[]> = {
 const synonymFamilies: Map<string, string[]> = (() => {
   const map = new Map<string, string[]>();
   for (const [key, values] of Object.entries(searchSynonyms)) {
-    const family = [...new Set([normalizeSearchQuery(key.replace(/_/g, " ")), ...values.map(normalizeSearchQuery)])].filter(Boolean);
+    const family = [
+      ...new Set([
+        normalizeSearchQuery(key.replace(/_/g, " ")),
+        ...values.map(normalizeSearchQuery),
+      ]),
+    ].filter(Boolean);
     for (const term of family) {
       const firstWord = term.split(" ")[0]!;
       map.set(term, family);

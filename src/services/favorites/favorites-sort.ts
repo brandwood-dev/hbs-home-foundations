@@ -20,14 +20,15 @@ export function sortFavorites(
     a.product.name.localeCompare(b.product.name, "fr");
   const price = (item: ResolvedFavoriteItem) => getProductStartingPrice(item.product).amountMinor;
 
-  const comparators: Record<FavoritesSort, (a: ResolvedFavoriteItem, b: ResolvedFavoriteItem) => number> =
-    {
-      recent: (a, b) =>
-        new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime() || byName(a, b),
-      price_asc: (a, b) => price(a) - price(b) || byName(a, b),
-      price_desc: (a, b) => price(b) - price(a) || byName(a, b),
-      name_asc: byName,
-    };
+  const comparators: Record<
+    FavoritesSort,
+    (a: ResolvedFavoriteItem, b: ResolvedFavoriteItem) => number
+  > = {
+    recent: (a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime() || byName(a, b),
+    price_asc: (a, b) => price(a) - price(b) || byName(a, b),
+    price_desc: (a, b) => price(b) - price(a) || byName(a, b),
+    name_asc: byName,
+  };
 
   return [...items].sort(comparators[sort] ?? comparators.recent);
 }

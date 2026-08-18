@@ -110,7 +110,10 @@ export function buildProductSearchDoc(product: Product): ProductSearchDoc {
   for (const finish of finishes) pushLabel(colorTerms, ACCESSORY_FINISH_LABELS[finish]);
 
   const attributeTerms: string[] = [];
-  pushLabel(attributeTerms, product.opacityLevel ? OPACITY_LABELS[product.opacityLevel] : undefined);
+  pushLabel(
+    attributeTerms,
+    product.opacityLevel ? OPACITY_LABELS[product.opacityLevel] : undefined,
+  );
   pushLabel(attributeTerms, product.pattern ? PATTERN_LABELS[product.pattern] : undefined);
   pushLabel(
     attributeTerms,
@@ -136,7 +139,8 @@ export function buildProductSearchDoc(product: Product): ProductSearchDoc {
     attributeTerms,
     product.furnitureAssembly ? FURNITURE_ASSEMBLY_LABELS[product.furnitureAssembly] : undefined,
   );
-  for (const room of product.furnitureRooms ?? []) pushLabel(attributeTerms, FURNITURE_ROOM_LABELS[room]);
+  for (const room of product.furnitureRooms ?? [])
+    pushLabel(attributeTerms, FURNITURE_ROOM_LABELS[room]);
 
   // Plantes décoratives.
   pushLabel(
@@ -153,7 +157,10 @@ export function buildProductSearchDoc(product: Product): ProductSearchDoc {
   const measurementTerms: string[] = [];
 
   for (const variant of indexableVariants(product)) {
-    pushLabel(attributeTerms, variant.curtainHeader ? HEADER_LABELS[variant.curtainHeader] : undefined);
+    pushLabel(
+      attributeTerms,
+      variant.curtainHeader ? HEADER_LABELS[variant.curtainHeader] : undefined,
+    );
     pushLabel(
       attributeTerms,
       variant.eyeletColor ? EYELET_COLOR_LABELS[variant.eyeletColor] : undefined,
