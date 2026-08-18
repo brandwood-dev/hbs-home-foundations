@@ -86,6 +86,10 @@ import { Route as VoilagesGrandeLargeurRouteImport } from './routes/voilages.gra
 import { Route as VoilagesMotifsRouteImport } from './routes/voilages.motifs'
 import { Route as VoilagesRailRouteImport } from './routes/voilages.rail'
 import { Route as VoilagesUnisRouteImport } from './routes/voilages.unis'
+import { Route as AdminClientsIndexRouteImport } from './routes/admin/clients.index'
+import { Route as AdminClientsCustomerIdRouteImport } from './routes/admin/clients.$customerId'
+import { Route as AdminCommandesIndexRouteImport } from './routes/admin/commandes.index'
+import { Route as AdminCommandesOrderIdRouteImport } from './routes/admin/commandes.$orderId'
 import { Route as AdminProduitsIndexRouteImport } from './routes/admin/produits.index'
 import { Route as AdminProduitsProductIdRouteImport } from './routes/admin/produits.$productId'
 import { Route as AdminProduitsNouveauRouteImport } from './routes/admin/produits.nouveau'
@@ -476,6 +480,26 @@ const VoilagesUnisRoute = VoilagesUnisRouteImport.update({
   path: '/voilages/unis',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminClientsIndexRoute = AdminClientsIndexRouteImport.update({
+  id: '/clients/',
+  path: '/clients/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminClientsCustomerIdRoute = AdminClientsCustomerIdRouteImport.update({
+  id: '/clients/$customerId',
+  path: '/clients/$customerId',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminCommandesIndexRoute = AdminCommandesIndexRouteImport.update({
+  id: '/commandes/',
+  path: '/commandes/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminCommandesOrderIdRoute = AdminCommandesOrderIdRouteImport.update({
+  id: '/commandes/$orderId',
+  path: '/commandes/$orderId',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminProduitsIndexRoute = AdminProduitsIndexRouteImport.update({
   id: '/produits/',
   path: '/produits/',
@@ -570,8 +594,12 @@ export interface FileRoutesByFullPath {
   '/rideaux/': typeof RideauxIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/voilages/': typeof VoilagesIndexRoute
+  '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
+  '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/admin/clients/': typeof AdminClientsIndexRoute
+  '/admin/commandes/': typeof AdminCommandesIndexRoute
   '/admin/produits/': typeof AdminProduitsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -651,8 +679,12 @@ export interface FileRoutesByTo {
   '/rideaux': typeof RideauxIndexRoute
   '/stores': typeof StoresIndexRoute
   '/voilages': typeof VoilagesIndexRoute
+  '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
+  '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/admin/clients': typeof AdminClientsIndexRoute
+  '/admin/commandes': typeof AdminCommandesIndexRoute
   '/admin/produits': typeof AdminProduitsIndexRoute
 }
 export interface FileRoutesById {
@@ -734,8 +766,12 @@ export interface FileRoutesById {
   '/rideaux/': typeof RideauxIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/voilages/': typeof VoilagesIndexRoute
+  '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
+  '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/admin/clients/': typeof AdminClientsIndexRoute
+  '/admin/commandes/': typeof AdminCommandesIndexRoute
   '/admin/produits/': typeof AdminProduitsIndexRoute
 }
 export interface FileRouteTypes {
@@ -818,8 +854,12 @@ export interface FileRouteTypes {
     | '/rideaux/'
     | '/stores/'
     | '/voilages/'
+    | '/admin/clients/$customerId'
+    | '/admin/commandes/$orderId'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
+    | '/admin/clients/'
+    | '/admin/commandes/'
     | '/admin/produits/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -899,8 +939,12 @@ export interface FileRouteTypes {
     | '/rideaux'
     | '/stores'
     | '/voilages'
+    | '/admin/clients/$customerId'
+    | '/admin/commandes/$orderId'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
+    | '/admin/clients'
+    | '/admin/commandes'
     | '/admin/produits'
   id:
     | '__root__'
@@ -981,8 +1025,12 @@ export interface FileRouteTypes {
     | '/rideaux/'
     | '/stores/'
     | '/voilages/'
+    | '/admin/clients/$customerId'
+    | '/admin/commandes/$orderId'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
+    | '/admin/clients/'
+    | '/admin/commandes/'
     | '/admin/produits/'
   fileRoutesById: FileRoutesById
 }
@@ -1603,6 +1651,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VoilagesUnisRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/clients/': {
+      id: '/admin/clients/'
+      path: '/clients'
+      fullPath: '/admin/clients/'
+      preLoaderRoute: typeof AdminClientsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/clients/$customerId': {
+      id: '/admin/clients/$customerId'
+      path: '/clients/$customerId'
+      fullPath: '/admin/clients/$customerId'
+      preLoaderRoute: typeof AdminClientsCustomerIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/commandes/': {
+      id: '/admin/commandes/'
+      path: '/commandes'
+      fullPath: '/admin/commandes/'
+      preLoaderRoute: typeof AdminCommandesIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/commandes/$orderId': {
+      id: '/admin/commandes/$orderId'
+      path: '/commandes/$orderId'
+      fullPath: '/admin/commandes/$orderId'
+      preLoaderRoute: typeof AdminCommandesOrderIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/produits/': {
       id: '/admin/produits/'
       path: '/produits'
@@ -1632,8 +1708,12 @@ interface AdminRouteRouteChildren {
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminStockRoute: typeof AdminStockRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminClientsCustomerIdRoute: typeof AdminClientsCustomerIdRoute
+  AdminCommandesOrderIdRoute: typeof AdminCommandesOrderIdRoute
   AdminProduitsProductIdRoute: typeof AdminProduitsProductIdRoute
   AdminProduitsNouveauRoute: typeof AdminProduitsNouveauRoute
+  AdminClientsIndexRoute: typeof AdminClientsIndexRoute
+  AdminCommandesIndexRoute: typeof AdminCommandesIndexRoute
   AdminProduitsIndexRoute: typeof AdminProduitsIndexRoute
 }
 
@@ -1642,8 +1722,12 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminStockRoute: AdminStockRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminClientsCustomerIdRoute: AdminClientsCustomerIdRoute,
+  AdminCommandesOrderIdRoute: AdminCommandesOrderIdRoute,
   AdminProduitsProductIdRoute: AdminProduitsProductIdRoute,
   AdminProduitsNouveauRoute: AdminProduitsNouveauRoute,
+  AdminClientsIndexRoute: AdminClientsIndexRoute,
+  AdminCommandesIndexRoute: AdminCommandesIndexRoute,
   AdminProduitsIndexRoute: AdminProduitsIndexRoute,
 }
 
