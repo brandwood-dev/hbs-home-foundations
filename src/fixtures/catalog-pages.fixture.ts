@@ -339,10 +339,11 @@ export const catalogPages: CatalogPageConfig[] = [
   },
 ];
 
+/** La catégorie du groupe est toujours verrouillée, en plus du scope propre à la page. */
 export function getCatalogPage(routeId: string): CatalogPageConfig {
   const page = catalogPages.find((entry) => entry.routeId === routeId);
   if (!page) throw new Error(`Unknown catalog page: ${routeId}`);
-  return page;
+  return { ...page, scope: { ...page.scope, categories: [page.group] } };
 }
 
 /** Sous-catégories d'un groupe, hors page racine — utilisé par la barre de navigation locale. */
