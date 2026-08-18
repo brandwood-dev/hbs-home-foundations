@@ -44,18 +44,33 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+function withDeliveryHeaders(response: Response): Response {
+  const headers = new Headers(response.headers);
+  headers.set("x-hbs-release", import.meta.env.VITE_RELEASE_SHA?.trim() || "local");
+  if (import.meta.env.VITE_APP_ENVIRONMENT !== "production") {
+    headers.set("x-robots-tag", "noindex, nofollow");
+  }
+  return new Response(response.body, {
+    headers,
+    status: response.status,
+    statusText: response.statusText,
+  });
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      return withDeliveryHeaders(await normalizeCatastrophicSsrResponse(response));
     } catch (error) {
       console.error(error);
-      return new Response(renderErrorPage(), {
-        status: 500,
-        headers: { "content-type": "text/html; charset=utf-8" },
-      });
+      return withDeliveryHeaders(
+        new Response(renderErrorPage(), {
+          status: 500,
+          headers: { "content-type": "text/html; charset=utf-8" },
+        }),
+      );
     }
   },
 };

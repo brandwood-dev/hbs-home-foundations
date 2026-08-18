@@ -234,4 +234,3 @@ const SHIPPING_PROFILE_BY_CATEGORY: Record<AdminProductCategoryKey, AdminShippin
   mobilier_interieur: "bulky",
   plantes_decoration: "fragile",
 };
-

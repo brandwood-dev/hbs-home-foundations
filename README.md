@@ -157,7 +157,6 @@ Utiliser comme palette initiale :
 --success: #387A53;
 --error: #B54747;
 
-
 Utiliser :
 
 Cormorant Garamond pour les grands titres ;
@@ -191,29 +190,28 @@ Ne pas utiliser d’émojis comme icônes d’interface.
 Créer une configuration centralisée, par exemple :
 
 export const storeConfig = {
-  brandName: "HBS HOME",
-  locale: "fr-TN",
-  currency: "TND",
+brandName: "HBS HOME",
+locale: "fr-TN",
+currency: "TND",
 
-  standardShippingFeeMinor: 7000,
-  freeShippingThresholdMinor: 200000,
-  estimatedDeliveryLabel: "24 à 48 heures",
+standardShippingFeeMinor: 7000,
+freeShippingThresholdMinor: 200000,
+estimatedDeliveryLabel: "24 à 48 heures",
 
-  cashOnDeliveryEnabled: true,
-  storePickupEnabled: true,
+cashOnDeliveryEnabled: true,
+storePickupEnabled: true,
 
-  whatsappNumber: "",
-  customerServicePhone: "",
-  customerServiceEmail: "",
-  storeAddress: "Ras Jebel, Bizerte, Tunisie",
+whatsappNumber: "",
+customerServicePhone: "",
+customerServiceEmail: "",
+storeAddress: "Ras Jebel, Bizerte, Tunisie",
 
-  socialLinks: {
-    facebook: "",
-    instagram: "",
-    tiktok: "",
-  },
+socialLinks: {
+facebook: "",
+instagram: "",
+tiktok: "",
+},
 };
-
 
 Toutes les valeurs commerciales doivent être modifiables depuis un seul fichier.
 
@@ -488,22 +486,21 @@ Ne pas afficher de faux numéro ou de faux réseau social.
 Créer au minimum :
 
 src/
-  components/
-    layout/
-    home/
-    ui/
+components/
+layout/
+home/
+ui/
 
-  config/
-    store.config.ts
+config/
+store.config.ts
 
-  fixtures/
-    navigation.fixture.ts
-    home.fixture.ts
+fixtures/
+navigation.fixture.ts
+home.fixture.ts
 
-  types/
-    navigation.types.ts
-    home.types.ts
-
+types/
+navigation.types.ts
+home.types.ts
 
 Créer des composants réutilisables :
 
@@ -516,7 +513,6 @@ HomeHero
 TrustStrip
 CollectionCard
 FeaturedCollections
-
 
 Ne place pas les données directement dans les composants.
 

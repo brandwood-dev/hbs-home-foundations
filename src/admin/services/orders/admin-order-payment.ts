@@ -30,10 +30,7 @@ export function getAllowedPaymentTransitions(order: AdminOrder): AdminPaymentSta
   return [];
 }
 
-export function paymentTransitionError(
-  order: AdminOrder,
-  next: AdminPaymentStatus,
-): string | null {
+export function paymentTransitionError(order: AdminOrder, next: AdminPaymentStatus): string | null {
   if (order.paymentStatus === next) return null;
   if (!getAllowedPaymentTransitions(order).includes(next)) {
     return `Transition de paiement impossible : « ${PAYMENT_STATUS_LABELS[order.paymentStatus]} » → « ${PAYMENT_STATUS_LABELS[next]} ».`;

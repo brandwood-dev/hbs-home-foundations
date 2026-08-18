@@ -65,7 +65,7 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
         cart.totals.requiresShippingQuote,
       )
     );
-  }, [cart.totals.subtotalMinor, deliveryMethod]);
+  }, [cart.totals.requiresShippingQuote, cart.totals.subtotalMinor, deliveryMethod]);
 
   const busy = isSubmitting || createOrder.isPending;
 

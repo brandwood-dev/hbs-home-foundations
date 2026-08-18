@@ -13,10 +13,7 @@ import {
 import { AdminKpiCard, AdminStatusBadge } from "@/admin/components/ui/AdminStates";
 import { useAdminOrders } from "@/admin/hooks/admin.queries";
 import { useBulkUpdateOrderStatus } from "@/admin/hooks/admin-sales.mutations";
-import type {
-  AdminOrderListParams,
-  AdminOrderSort,
-} from "@/admin/repositories/interfaces";
+import type { AdminOrderListParams, AdminOrderSort } from "@/admin/repositories/interfaces";
 import type { AdminOrder, AdminOrderStatus } from "@/admin/types/admin.types";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_TONE } from "@/admin/services/order-status";
 import {
@@ -168,8 +165,16 @@ export function AdminOrdersPage() {
           value={counters?.pendingConfirmation ?? 0}
           tone="warning"
         />
-        <AdminKpiCard label="Frais à confirmer" value={counters?.shippingToConfirm ?? 0} tone="warning" />
-        <AdminKpiCard label="Paiement en attente" value={counters?.paymentPending ?? 0} tone="info" />
+        <AdminKpiCard
+          label="Frais à confirmer"
+          value={counters?.shippingToConfirm ?? 0}
+          tone="warning"
+        />
+        <AdminKpiCard
+          label="Paiement en attente"
+          value={counters?.paymentPending ?? 0}
+          tone="info"
+        />
       </div>
 
       <AdminDataTable
