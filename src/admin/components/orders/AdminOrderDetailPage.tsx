@@ -290,16 +290,16 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
             <div className="flex flex-col gap-2">
               {actions.map((action) => (
                 <Button
-                  key={action.status}
+                  key={action.to}
                   size="sm"
-                  variant={action.destructive ? "destructive" : "default"}
+                  variant={action.critical ? "destructive" : "default"}
                   onClick={() =>
                     setDialog(
-                      action.status === "cancelled"
+                      action.to === "cancelled"
                         ? { kind: "cancel" }
-                        : action.status === "return_requested"
+                        : action.to === "return_requested"
                           ? { kind: "return", action: "request" }
-                          : { kind: "status", status: action.status },
+                          : { kind: "status", status: action.to },
                     )
                   }
                 >
