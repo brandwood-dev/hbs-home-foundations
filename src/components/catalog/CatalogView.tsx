@@ -12,7 +12,11 @@ import { SiteLayout } from "@/components/layout/SiteLayout";
 import { AppLink } from "@/components/ui/app-link";
 import { DEFAULT_PAGE_SIZE } from "@/domain/product/product.constants";
 import type { CatalogSort } from "@/domain/product/product.types";
-import { catalogSubcategories, type CatalogPageConfig } from "@/fixtures/catalog-pages.fixture";
+import {
+  getCatalogGroup,
+  getCatalogSubcategories,
+  type CatalogPageConfig,
+} from "@/fixtures/catalog-pages.fixture";
 import { catalogFacetsQuery, catalogListQuery } from "@/services/catalog/catalog.queries";
 import {
   EMPTY_SEARCH,
@@ -30,6 +34,8 @@ interface CatalogViewProps {
 export function CatalogView({ config, search, onSearchChange }: CatalogViewProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
+  const group = getCatalogGroup(config.group);
+  const subcategories = getCatalogSubcategories(config.group);
   const params = toListParams(search, config.scope, DEFAULT_PAGE_SIZE);
   const listQuery = useQuery({ ...catalogListQuery(params), placeholderData: keepPreviousData });
   const facetsQuery = useQuery(catalogFacetsQuery(config.routeId, config.scope));
@@ -75,9 +81,9 @@ export function CatalogView({ config, search, onSearchChange }: CatalogViewProps
         <CatalogBreadcrumbs
           items={[
             { label: "Accueil", href: "/" },
-            ...(config.routeId === "rideaux"
-              ? [{ label: "Rideaux" }]
-              : [{ label: "Rideaux", href: "/rideaux" }, { label: config.title }]),
+            ...(config.routeId === config.group
+              ? [{ label: group.label }]
+              : [{ label: group.label, href: group.path }, { label: config.title }]),
           ]}
         />
 
@@ -90,7 +96,7 @@ export function CatalogView({ config, search, onSearchChange }: CatalogViewProps
 
         <nav aria-label="Sous-catégories" className="mt-6 -mx-4 overflow-x-auto px-4">
           <ul className="flex w-max gap-2 pb-1">
-            {catalogSubcategories.map((item) => (
+            {subcategories.map((item) => (
               <li key={item.routeId}>
                 <AppLink
                   href={item.path}
