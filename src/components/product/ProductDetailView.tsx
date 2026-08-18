@@ -8,6 +8,7 @@ import { ProductStickyBar } from "@/components/product/ProductStickyBar";
 import { ProductTrustPoints } from "@/components/product/ProductTrustPoints";
 import { RelatedProducts } from "@/components/product/RelatedProducts";
 import { SiteLayout } from "@/components/layout/SiteLayout";
+import { getCatalogGroup } from "@/fixtures/catalog-pages.fixture";
 import {
   MATERIAL_LABELS,
   OPACITY_LABELS,
@@ -48,7 +49,7 @@ export function ProductDetailView({ product }: { product: Product }) {
         <CatalogBreadcrumbs
           items={[
             { label: "Accueil", href: "/" },
-            { label: "Rideaux", href: "/rideaux" },
+            { label: getCatalogGroup(product.category).label, href: getCatalogGroup(product.category).path },
             { label: product.name },
           ]}
         />
