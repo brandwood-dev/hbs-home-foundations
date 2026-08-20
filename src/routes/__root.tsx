@@ -13,8 +13,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { WhatsAppFloatingButton } from "@/components/WhatsAppFloatingButton";
 import { AdminAuthProvider } from "@/admin/auth/AdminAuthProvider";
 
-
 import appCss from "../styles.css?url";
+
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -138,8 +138,8 @@ function RootComponent() {
         <Outlet />
         <Toaster position="bottom-center" />
         <WhatsAppFloatingButton />
-
       </AdminAuthProvider>
+
     </QueryClientProvider>
   );
 }
