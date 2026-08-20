@@ -55,6 +55,91 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List published products with filters and pagination */
+        get: operations["listProducts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products/scope": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List products for catalog scope calculations */
+        get: operations["listCatalogScopeProducts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products/by-ids": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List products by identifiers */
+        get: operations["listProductsByIds"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one product by slug */
+        get: operations["getProductBySlug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products/{slug}/related": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List related products for the current slug */
+        get: operations["getRelatedProducts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/session": {
         parameters: {
             query?: never;
@@ -317,6 +402,825 @@ export interface operations {
                         gitSha: string;
                         builtAt: string;
                         environment: "development" | "test" | "staging" | "production";
+                    };
+                };
+            };
+        };
+    };
+    listProducts: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+                sort?: "recommended" | "newest" | "best_sellers" | "price_asc" | "price_desc" | "discount";
+                categories?: string;
+                materials?: string;
+                colors?: string;
+                opacityLevels?: string;
+                curtainHeaders?: string;
+                patterns?: string;
+                blindTypes?: string;
+                shapes?: string;
+                cushionContents?: string;
+                chairPadFastenings?: string;
+                accessoryTypes?: string;
+                accessoryFinishes?: string;
+                mountings?: string;
+                controlSides?: string;
+                widths?: string;
+                heights?: string;
+                availability?: string;
+                minPriceMinor?: number;
+                maxPriceMinor?: number;
+                sellingMode?: string;
+                onlyNew?: string | boolean;
+                onlyBestSellers?: string | boolean;
+                onlyDiscounted?: string | boolean;
+                onlyThermal?: string | boolean;
+                onlyLargeWidth?: string | boolean;
+                ids?: string;
+                plantCareLevels?: string;
+                plantLightNeeds?: string;
+                plantNatures?: string;
+                plantTypes?: string;
+                plantSizes?: string;
+                furnitureTypes?: string;
+                furnitureRooms?: string;
+                furnitureStyles?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            id: string;
+                            slug: string;
+                            name: string;
+                            reference: string;
+                            category: string;
+                            material: string;
+                            opacityLevel?: string;
+                            sellingMode: string;
+                            pattern?: string;
+                            blindType?: string;
+                            isLargeWidth: boolean;
+                            cushionShape?: string;
+                            removableCover?: boolean;
+                            machineWashable?: boolean;
+                            chairPadShape?: string;
+                            accessoryType?: string;
+                            accessoryMaterial?: string;
+                            accessoryCompatibilities?: string[];
+                            furnitureType?: string;
+                            furnitureRooms?: string[];
+                            furnitureStyle?: string;
+                            furnitureAssembly?: string;
+                            plantNature?: string;
+                            plantType?: string;
+                            plantLightNeed?: string;
+                            plantCareLevel?: string;
+                            petFriendly?: boolean;
+                            potIncluded?: boolean;
+                            shortDescription: string;
+                            longDescription: string;
+                            imageAlt: string;
+                            images: {
+                                id: string;
+                                url: string;
+                                alt: string;
+                                type: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                                colorId?: string;
+                            }[];
+                            variants: {
+                                id: string;
+                                sku: string;
+                                colorId: string;
+                                widthCm: number;
+                                heightCm: number;
+                                curtainHeader?: string;
+                                eyeletColor?: string;
+                                lining?: string;
+                                blindMountingType?: string;
+                                blindControlSide?: string;
+                                blindMechanismColor?: string;
+                                sizeLabel?: string;
+                                cushionContent?: string;
+                                cushionClosure?: string;
+                                chairPadFastening?: string;
+                                accessoryFinish?: string;
+                                accessoryMountingType?: string;
+                                minLengthCm?: number;
+                                maxLengthCm?: number;
+                                diameterMm?: number;
+                                depthCm?: number;
+                                seatCount?: number;
+                                plantHeightCm?: number;
+                                potDiameterCm?: number;
+                                plantSize?: string;
+                                packQuantity?: number;
+                                price: {
+                                    amountMinor: number;
+                                    /** @enum {string} */
+                                    currency: "TND";
+                                };
+                                compareAtPrice?: {
+                                    amountMinor: number;
+                                    /** @enum {string} */
+                                    currency: "TND";
+                                };
+                                availability: string;
+                                availableQuantity: number;
+                                imageUrl: string;
+                                secondaryImageUrl?: string;
+                                imageIds: string[];
+                            }[];
+                            colors: {
+                                id: string;
+                                name: string;
+                                slug: string;
+                                family: string;
+                                hex: string;
+                            }[];
+                            details: {
+                                [key: string]: unknown;
+                            };
+                            seo: {
+                                title: string;
+                                description: string;
+                            };
+                            isThermal: boolean;
+                            isNew: boolean;
+                            isBestSeller: boolean;
+                            isFeatured: boolean;
+                            createdAt: string;
+                            recommendationScore: number;
+                            isDemo: boolean;
+                        }[];
+                        page: number;
+                        pageSize: number;
+                        total: number;
+                        totalPages: number;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    listCatalogScopeProducts: {
+        parameters: {
+            query?: {
+                categories?: string;
+                materials?: string;
+                opacityLevels?: string;
+                curtainHeaders?: string;
+                patterns?: string;
+                blindTypes?: string;
+                shapes?: string;
+                accessoryTypes?: string;
+                furnitureTypes?: string;
+                furnitureRooms?: string;
+                furnitureStyles?: string;
+                plantNatures?: string;
+                plantTypes?: string;
+                plantSizes?: string;
+                sellingMode?: string;
+                onlyThermal?: string | boolean;
+                onlyLargeWidth?: string | boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        slug: string;
+                        name: string;
+                        reference: string;
+                        category: string;
+                        material: string;
+                        opacityLevel?: string;
+                        sellingMode: string;
+                        pattern?: string;
+                        blindType?: string;
+                        isLargeWidth: boolean;
+                        cushionShape?: string;
+                        removableCover?: boolean;
+                        machineWashable?: boolean;
+                        chairPadShape?: string;
+                        accessoryType?: string;
+                        accessoryMaterial?: string;
+                        accessoryCompatibilities?: string[];
+                        furnitureType?: string;
+                        furnitureRooms?: string[];
+                        furnitureStyle?: string;
+                        furnitureAssembly?: string;
+                        plantNature?: string;
+                        plantType?: string;
+                        plantLightNeed?: string;
+                        plantCareLevel?: string;
+                        petFriendly?: boolean;
+                        potIncluded?: boolean;
+                        shortDescription: string;
+                        longDescription: string;
+                        imageAlt: string;
+                        images: {
+                            id: string;
+                            url: string;
+                            alt: string;
+                            type: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                            colorId?: string;
+                        }[];
+                        variants: {
+                            id: string;
+                            sku: string;
+                            colorId: string;
+                            widthCm: number;
+                            heightCm: number;
+                            curtainHeader?: string;
+                            eyeletColor?: string;
+                            lining?: string;
+                            blindMountingType?: string;
+                            blindControlSide?: string;
+                            blindMechanismColor?: string;
+                            sizeLabel?: string;
+                            cushionContent?: string;
+                            cushionClosure?: string;
+                            chairPadFastening?: string;
+                            accessoryFinish?: string;
+                            accessoryMountingType?: string;
+                            minLengthCm?: number;
+                            maxLengthCm?: number;
+                            diameterMm?: number;
+                            depthCm?: number;
+                            seatCount?: number;
+                            plantHeightCm?: number;
+                            potDiameterCm?: number;
+                            plantSize?: string;
+                            packQuantity?: number;
+                            price: {
+                                amountMinor: number;
+                                /** @enum {string} */
+                                currency: "TND";
+                            };
+                            compareAtPrice?: {
+                                amountMinor: number;
+                                /** @enum {string} */
+                                currency: "TND";
+                            };
+                            availability: string;
+                            availableQuantity: number;
+                            imageUrl: string;
+                            secondaryImageUrl?: string;
+                            imageIds: string[];
+                        }[];
+                        colors: {
+                            id: string;
+                            name: string;
+                            slug: string;
+                            family: string;
+                            hex: string;
+                        }[];
+                        details: {
+                            [key: string]: unknown;
+                        };
+                        seo: {
+                            title: string;
+                            description: string;
+                        };
+                        isThermal: boolean;
+                        isNew: boolean;
+                        isBestSeller: boolean;
+                        isFeatured: boolean;
+                        createdAt: string;
+                        recommendationScore: number;
+                        isDemo: boolean;
+                    }[];
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    listProductsByIds: {
+        parameters: {
+            query: {
+                ids: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            id: string;
+                            slug: string;
+                            name: string;
+                            reference: string;
+                            category: string;
+                            material: string;
+                            opacityLevel?: string;
+                            sellingMode: string;
+                            pattern?: string;
+                            blindType?: string;
+                            isLargeWidth: boolean;
+                            cushionShape?: string;
+                            removableCover?: boolean;
+                            machineWashable?: boolean;
+                            chairPadShape?: string;
+                            accessoryType?: string;
+                            accessoryMaterial?: string;
+                            accessoryCompatibilities?: string[];
+                            furnitureType?: string;
+                            furnitureRooms?: string[];
+                            furnitureStyle?: string;
+                            furnitureAssembly?: string;
+                            plantNature?: string;
+                            plantType?: string;
+                            plantLightNeed?: string;
+                            plantCareLevel?: string;
+                            petFriendly?: boolean;
+                            potIncluded?: boolean;
+                            shortDescription: string;
+                            longDescription: string;
+                            imageAlt: string;
+                            images: {
+                                id: string;
+                                url: string;
+                                alt: string;
+                                type: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                                colorId?: string;
+                            }[];
+                            variants: {
+                                id: string;
+                                sku: string;
+                                colorId: string;
+                                widthCm: number;
+                                heightCm: number;
+                                curtainHeader?: string;
+                                eyeletColor?: string;
+                                lining?: string;
+                                blindMountingType?: string;
+                                blindControlSide?: string;
+                                blindMechanismColor?: string;
+                                sizeLabel?: string;
+                                cushionContent?: string;
+                                cushionClosure?: string;
+                                chairPadFastening?: string;
+                                accessoryFinish?: string;
+                                accessoryMountingType?: string;
+                                minLengthCm?: number;
+                                maxLengthCm?: number;
+                                diameterMm?: number;
+                                depthCm?: number;
+                                seatCount?: number;
+                                plantHeightCm?: number;
+                                potDiameterCm?: number;
+                                plantSize?: string;
+                                packQuantity?: number;
+                                price: {
+                                    amountMinor: number;
+                                    /** @enum {string} */
+                                    currency: "TND";
+                                };
+                                compareAtPrice?: {
+                                    amountMinor: number;
+                                    /** @enum {string} */
+                                    currency: "TND";
+                                };
+                                availability: string;
+                                availableQuantity: number;
+                                imageUrl: string;
+                                secondaryImageUrl?: string;
+                                imageIds: string[];
+                            }[];
+                            colors: {
+                                id: string;
+                                name: string;
+                                slug: string;
+                                family: string;
+                                hex: string;
+                            }[];
+                            details: {
+                                [key: string]: unknown;
+                            };
+                            seo: {
+                                title: string;
+                                description: string;
+                            };
+                            isThermal: boolean;
+                            isNew: boolean;
+                            isBestSeller: boolean;
+                            isFeatured: boolean;
+                            createdAt: string;
+                            recommendationScore: number;
+                            isDemo: boolean;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    getProductBySlug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        slug: string;
+                        name: string;
+                        reference: string;
+                        category: string;
+                        material: string;
+                        opacityLevel?: string;
+                        sellingMode: string;
+                        pattern?: string;
+                        blindType?: string;
+                        isLargeWidth: boolean;
+                        cushionShape?: string;
+                        removableCover?: boolean;
+                        machineWashable?: boolean;
+                        chairPadShape?: string;
+                        accessoryType?: string;
+                        accessoryMaterial?: string;
+                        accessoryCompatibilities?: string[];
+                        furnitureType?: string;
+                        furnitureRooms?: string[];
+                        furnitureStyle?: string;
+                        furnitureAssembly?: string;
+                        plantNature?: string;
+                        plantType?: string;
+                        plantLightNeed?: string;
+                        plantCareLevel?: string;
+                        petFriendly?: boolean;
+                        potIncluded?: boolean;
+                        shortDescription: string;
+                        longDescription: string;
+                        imageAlt: string;
+                        images: {
+                            id: string;
+                            url: string;
+                            alt: string;
+                            type: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                            colorId?: string;
+                        }[];
+                        variants: {
+                            id: string;
+                            sku: string;
+                            colorId: string;
+                            widthCm: number;
+                            heightCm: number;
+                            curtainHeader?: string;
+                            eyeletColor?: string;
+                            lining?: string;
+                            blindMountingType?: string;
+                            blindControlSide?: string;
+                            blindMechanismColor?: string;
+                            sizeLabel?: string;
+                            cushionContent?: string;
+                            cushionClosure?: string;
+                            chairPadFastening?: string;
+                            accessoryFinish?: string;
+                            accessoryMountingType?: string;
+                            minLengthCm?: number;
+                            maxLengthCm?: number;
+                            diameterMm?: number;
+                            depthCm?: number;
+                            seatCount?: number;
+                            plantHeightCm?: number;
+                            potDiameterCm?: number;
+                            plantSize?: string;
+                            packQuantity?: number;
+                            price: {
+                                amountMinor: number;
+                                /** @enum {string} */
+                                currency: "TND";
+                            };
+                            compareAtPrice?: {
+                                amountMinor: number;
+                                /** @enum {string} */
+                                currency: "TND";
+                            };
+                            availability: string;
+                            availableQuantity: number;
+                            imageUrl: string;
+                            secondaryImageUrl?: string;
+                            imageIds: string[];
+                        }[];
+                        colors: {
+                            id: string;
+                            name: string;
+                            slug: string;
+                            family: string;
+                            hex: string;
+                        }[];
+                        details: {
+                            [key: string]: unknown;
+                        };
+                        seo: {
+                            title: string;
+                            description: string;
+                        };
+                        isThermal: boolean;
+                        isNew: boolean;
+                        isBestSeller: boolean;
+                        isFeatured: boolean;
+                        createdAt: string;
+                        recommendationScore: number;
+                        isDemo: boolean;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    getRelatedProducts: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        slug: string;
+                        name: string;
+                        reference: string;
+                        category: string;
+                        material: string;
+                        opacityLevel?: string;
+                        sellingMode: string;
+                        pattern?: string;
+                        blindType?: string;
+                        isLargeWidth: boolean;
+                        cushionShape?: string;
+                        removableCover?: boolean;
+                        machineWashable?: boolean;
+                        chairPadShape?: string;
+                        accessoryType?: string;
+                        accessoryMaterial?: string;
+                        accessoryCompatibilities?: string[];
+                        furnitureType?: string;
+                        furnitureRooms?: string[];
+                        furnitureStyle?: string;
+                        furnitureAssembly?: string;
+                        plantNature?: string;
+                        plantType?: string;
+                        plantLightNeed?: string;
+                        plantCareLevel?: string;
+                        petFriendly?: boolean;
+                        potIncluded?: boolean;
+                        shortDescription: string;
+                        longDescription: string;
+                        imageAlt: string;
+                        images: {
+                            id: string;
+                            url: string;
+                            alt: string;
+                            type: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                            colorId?: string;
+                        }[];
+                        variants: {
+                            id: string;
+                            sku: string;
+                            colorId: string;
+                            widthCm: number;
+                            heightCm: number;
+                            curtainHeader?: string;
+                            eyeletColor?: string;
+                            lining?: string;
+                            blindMountingType?: string;
+                            blindControlSide?: string;
+                            blindMechanismColor?: string;
+                            sizeLabel?: string;
+                            cushionContent?: string;
+                            cushionClosure?: string;
+                            chairPadFastening?: string;
+                            accessoryFinish?: string;
+                            accessoryMountingType?: string;
+                            minLengthCm?: number;
+                            maxLengthCm?: number;
+                            diameterMm?: number;
+                            depthCm?: number;
+                            seatCount?: number;
+                            plantHeightCm?: number;
+                            potDiameterCm?: number;
+                            plantSize?: string;
+                            packQuantity?: number;
+                            price: {
+                                amountMinor: number;
+                                /** @enum {string} */
+                                currency: "TND";
+                            };
+                            compareAtPrice?: {
+                                amountMinor: number;
+                                /** @enum {string} */
+                                currency: "TND";
+                            };
+                            availability: string;
+                            availableQuantity: number;
+                            imageUrl: string;
+                            secondaryImageUrl?: string;
+                            imageIds: string[];
+                        }[];
+                        colors: {
+                            id: string;
+                            name: string;
+                            slug: string;
+                            family: string;
+                            hex: string;
+                        }[];
+                        details: {
+                            [key: string]: unknown;
+                        };
+                        seo: {
+                            title: string;
+                            description: string;
+                        };
+                        isThermal: boolean;
+                        isNew: boolean;
+                        isBestSeller: boolean;
+                        isFeatured: boolean;
+                        createdAt: string;
+                        recommendationScore: number;
+                        isDemo: boolean;
+                    }[];
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
                     };
                 };
             };

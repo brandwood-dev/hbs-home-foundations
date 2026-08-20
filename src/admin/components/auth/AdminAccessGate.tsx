@@ -76,6 +76,13 @@ export function AdminAccessGate({ children }: { children: ReactNode }) {
           <p role="alert" className="text-sm text-red-700">
             {apiState.message}
           </p>
+          {apiState.code === "NOT_FOUND" ? (
+            <p className="text-xs text-muted-foreground">
+              Vérifiez que <code>VITE_HBS_API_BASE_URL</code> est bien l’URL racine de l’API (ex:{" "}
+              <code>https://api-preview.hbs-home.com</code>) et ne contient pas de suffixe{" "}
+              <code>/api</code>.
+            </p>
+          ) : null}
           <div className="flex gap-2">
             {!denied ? (
               <Button onClick={() => setAttempt((value) => value + 1)}>Réessayer</Button>

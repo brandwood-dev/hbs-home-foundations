@@ -41,6 +41,25 @@ Supabase Auth doit autoriser exactement la redirection
 `https://preview.hbs-home.com/admin/auth/callback`. Le frontend refuse l'accès aux modules Admin
 tant que l'API n'a pas confirmé un profil actif, la permission demandée et le niveau MFA `aal2`.
 
+Si l'interface affiche `Supabase Auth n’est pas configuré pour cet environnement.` sur
+`/admin/auth/callback`, cela signifie que le build actuel a été fait sans
+`VITE_SUPABASE_URL` ou `VITE_SUPABASE_PUBLISHABLE_KEY`.
+La correction consiste à relancer le déploiement avec les variables Supabase définies
+avant `bun run build`, puis à redéployer le worker.
+
+Exemple PowerShell local :
+
+```powershell
+$env:VITE_SUPABASE_URL = "https://<project-ref>.supabase.co"
+$env:VITE_SUPABASE_PUBLISHABLE_KEY = "<anon-key>"
+cd hbs-home-foundations
+bun run deploy:manual
+```
+
+Le script injecte automatiquement la révision Git dans `VITE_RELEASE_SHA`. Si le working tree
+contient des changements non commités, la release est suffixée par `-dirty` et ne doit servir
+qu'au diagnostic local ; une release staging validée doit toujours provenir d'un commit propre.
+
 ## Retour arrière
 
 Pour annuler une livraison staging, redéployer depuis GitHub Actions la dernière révision verte ou

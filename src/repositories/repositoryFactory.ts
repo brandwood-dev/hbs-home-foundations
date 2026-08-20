@@ -9,6 +9,8 @@ import { MockSearchRepository } from "@/repositories/mock/MockSearchRepository";
 import { MockMeasurementRulesRepository } from "@/repositories/mock/MockMeasurementRulesRepository";
 import { MockCustomQuoteRepository } from "@/repositories/mock/MockCustomQuoteRepository";
 import { MockProfessionalLeadRepository } from "@/repositories/mock/MockProfessionalLeadRepository";
+import { ApiProductRepository } from "@/repositories/api/ApiProductRepository";
+import { dataProvider } from "@/config/features.config";
 import type { ProductRepository } from "@/repositories/interfaces/ProductRepository";
 import type { CartRepository } from "@/repositories/interfaces/CartRepository";
 import type { OrderRepository } from "@/repositories/interfaces/OrderRepository";
@@ -38,7 +40,10 @@ let professionalLeadRepository: ProfessionalLeadRepository | null = null;
  * Swap the implementation here when the real API is available.
  */
 export function getProductRepository(): ProductRepository {
-  if (!productRepository) productRepository = new MockProductRepository();
+  if (!productRepository) {
+    productRepository =
+      dataProvider === "api" ? new ApiProductRepository() : new MockProductRepository();
+  }
   return productRepository;
 }
 

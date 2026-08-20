@@ -24,15 +24,25 @@ export interface HbsApiClientOptions {
   fetch?: typeof globalThis.fetch;
 }
 
-function resolveBaseUrl(explicit?: string): string {
+const API_BASE_URL_MISSING_ERROR = "VITE_HBS_API_BASE_URL est requis pour les appels API.";
+
+function resolveBaseUrl(explicit?: string): string | null {
   const configured = explicit?.trim() || import.meta.env.VITE_HBS_API_BASE_URL?.trim();
   if (!configured) {
-    if (import.meta.env.PROD) {
-      throw new Error("VITE_HBS_API_BASE_URL is required in production.");
-    }
+    if (import.meta.env.PROD) return null;
     return "http://localhost:3000";
   }
-  return new URL(configured).toString().replace(/\/$/, "");
+  try {
+    const base = new URL(configured);
+    base.pathname = base.pathname.replace(/\/+$/, "");
+
+    const normalizedPath = base.pathname.replace(/\/api\/v1$/, "/").replace(/\/api$/, "/");
+    base.pathname = normalizedPath || "/";
+
+    return base.toString().replace(/\/$/, "");
+  } catch {
+    return null;
+  }
 }
 
 function isProblem(value: unknown): value is ApiProblem {
@@ -59,26 +69,39 @@ async function readProblem(response: Response): Promise<ApiProblem | undefined> 
 }
 
 export class HbsApiClient {
-  private readonly baseUrl: string;
+  private readonly baseUrl: string | null;
   private readonly fetchImplementation: typeof globalThis.fetch;
 
   constructor(options: HbsApiClientOptions = {}) {
     this.baseUrl = resolveBaseUrl(options.baseUrl);
-    this.fetchImplementation = options.fetch ?? globalThis.fetch;
+    // `window.fetch` can lose its receiver when stored and called later in
+    // some browsers. Bind the native implementation once, while keeping
+    // injected test implementations untouched.
+    this.fetchImplementation = options.fetch ?? globalThis.fetch.bind(globalThis);
   }
 
-  private async get<T>(path: string, signal?: AbortSignal, accessToken?: string): Promise<T> {
+  public async get<T>(path: string, signal?: AbortSignal, accessToken?: string): Promise<T> {
+    if (!this.baseUrl) {
+      throw new HbsApiError(0, API_BASE_URL_MISSING_ERROR);
+    }
+
     const headers: Record<string, string> = {
       accept: "application/json, application/problem+json",
     };
     if (accessToken) headers["authorization"] = `Bearer ${accessToken}`;
 
-    const response = await this.fetchImplementation(`${this.baseUrl}${path}`, {
-      method: "GET",
-      credentials: "include",
-      headers,
-      ...(signal ? { signal } : {}),
-    });
+    let response: Response;
+    try {
+      response = await this.fetchImplementation(`${this.baseUrl}${path}`, {
+        method: "GET",
+        credentials: "include",
+        headers,
+        ...(signal ? { signal } : {}),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Fetch API failed.";
+      throw new HbsApiError(0, message);
+    }
 
     if (!response.ok) {
       const problem = await readProblem(response);
