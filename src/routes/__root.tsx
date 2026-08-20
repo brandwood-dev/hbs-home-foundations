@@ -140,6 +140,6 @@ function RootComponent() {
         <WhatsAppFloatingButton />
       </AdminAuthProvider>
     </QueryClientProvider>
-
   );
+
 }
