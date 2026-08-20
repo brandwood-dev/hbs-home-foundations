@@ -141,5 +141,5 @@ function RootComponent() {
       </AdminAuthProvider>
     </QueryClientProvider>
   );
-
 }
+
