@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, X } from "lucide-react";
+import { createPortal } from "react-dom";
+import { ChevronDown, Package, Phone, X } from "lucide-react";
 import { AppLink } from "@/components/ui/app-link";
 import { mainNavigation } from "@/fixtures/navigation.fixture";
 import { storeConfig } from "@/config/store.config";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
 
 interface MobileMenuProps {
   open: boolean;
@@ -12,6 +14,7 @@ interface MobileMenuProps {
 export function MobileMenu({ open, onClose }: MobileMenuProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const hydrated = useIsHydrated();
 
   useEffect(() => {
     if (!open) return;
@@ -28,15 +31,15 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || !hydrated) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 lg:hidden">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] lg:hidden">
       <button
         type="button"
         aria-label="Fermer le menu"
         onClick={onClose}
-        className="absolute inset-0 bg-foreground/30"
+        className="absolute inset-0 bg-foreground/60"
       />
       <div
         ref={panelRef}
@@ -44,9 +47,10 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         aria-modal="true"
         aria-label="Menu principal"
         tabIndex={-1}
-        className="absolute inset-0 flex h-full w-full flex-col bg-surface"
+        className="absolute inset-y-0 left-0 flex h-full w-[88%] max-w-sm flex-col bg-surface opacity-100 shadow-2xl outline-none"
+        style={{ backgroundColor: "var(--surface)" }}
       >
-        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+        <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3">
           <span className="font-display text-xl tracking-wide">{storeConfig.brandName}</span>
           <button
             type="button"
@@ -58,7 +62,10 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-2 py-2">
+        <nav
+          aria-label="Navigation principale mobile"
+          className="flex-1 overflow-y-auto overscroll-contain bg-surface px-2 py-2"
+        >
           <ul>
             {mainNavigation.map((item) => {
               const hasChildren = Boolean(item.megaMenu?.length);
@@ -67,20 +74,29 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                 <li key={item.id} className="border-b border-border/70">
                   {hasChildren ? (
                     <>
-                      <button
-                        type="button"
-                        aria-expanded={isOpen}
-                        onClick={() => setExpanded(isOpen ? null : item.id)}
-                        className="flex min-h-[44px] w-full items-center justify-between px-3 py-3 text-left text-base"
-                      >
-                        {item.label}
-                        <ChevronDown
-                          className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
-                          aria-hidden="true"
-                        />
-                      </button>
+                      <div className="flex items-stretch">
+                        <AppLink
+                          href={item.href}
+                          onClick={onClose}
+                          className="flex min-h-12 flex-1 items-center px-3 py-3 text-base font-medium text-foreground"
+                        >
+                          {item.label}
+                        </AppLink>
+                        <button
+                          type="button"
+                          aria-expanded={isOpen}
+                          aria-label={`${isOpen ? "Masquer" : "Afficher"} les sous-catégories ${item.label}`}
+                          onClick={() => setExpanded(isOpen ? null : item.id)}
+                          className="flex min-h-12 w-12 shrink-0 items-center justify-center rounded-md text-foreground-muted hover:bg-surface-muted"
+                        >
+                          <ChevronDown
+                            className={`h-5 w-5 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                            aria-hidden="true"
+                          />
+                        </button>
+                      </div>
                       {isOpen && (
-                        <div className="pb-3">
+                        <div className="bg-surface-muted/60 pb-3">
                           {item.megaMenu?.map((column) => (
                             <div key={column.title} className="px-3 pt-2">
                               <p className="eyebrow mb-1">{column.title}</p>
@@ -90,7 +106,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                                     <AppLink
                                       href={link.href}
                                       onClick={onClose}
-                                      className="flex min-h-[44px] items-center text-sm text-foreground-muted"
+                                      className="flex min-h-11 items-center text-sm text-foreground-muted"
                                     >
                                       {link.label}
                                     </AppLink>
@@ -106,7 +122,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                     <AppLink
                       href={item.href}
                       onClick={onClose}
-                      className="flex min-h-[44px] items-center px-3 py-3 text-base"
+                      className="flex min-h-12 items-center px-3 py-3 text-base font-medium text-foreground"
                     >
                       {item.label}
                     </AppLink>
@@ -117,19 +133,20 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           </ul>
         </nav>
 
-        <div className="border-t border-border px-4 py-4 text-sm text-foreground-muted">
+        <div className="border-t border-border bg-surface px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-sm text-foreground-muted">
           <AppLink
             href="/suivi-commande"
             onClick={onClose}
-            className="flex min-h-[44px] items-center"
+            className="flex min-h-11 items-center gap-2"
           >
-            Suivi de commande
+            <Package className="h-4 w-4" aria-hidden="true" /> Suivi de commande
           </AppLink>
-          <AppLink href="/contact" onClick={onClose} className="flex min-h-[44px] items-center">
-            Contact
+          <AppLink href="/contact" onClick={onClose} className="flex min-h-11 items-center gap-2">
+            <Phone className="h-4 w-4" aria-hidden="true" /> Contact
           </AppLink>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
