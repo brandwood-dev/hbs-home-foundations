@@ -72,7 +72,6 @@
   --whatsapp: oklch(0.69 0.13 152);
   --whatsapp-foreground: oklch(0.99 0.004 90);
 
-
   --card: var(--surface);
   --card-foreground: var(--foreground);
   --popover: var(--surface);
