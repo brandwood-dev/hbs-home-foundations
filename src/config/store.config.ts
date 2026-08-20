@@ -11,9 +11,11 @@ export const storeConfig = {
   cashOnDeliveryEnabled: true,
   storePickupEnabled: true,
 
-  whatsappNumber: "",
+  whatsappNumber: "+216 00 000 000",
+  whatsappMessage: "Bonjour HBS HOME, j'aimerais avoir des informations.",
   customerServicePhone: "",
   customerServiceEmail: "",
+
   storeAddress: "Ras Jebel, Bizerte, Tunisie",
 
   socialLinks: {
