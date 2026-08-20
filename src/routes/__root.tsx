@@ -131,6 +131,31 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const hasAuthToken = window.location.hash.includes("access_token=");
+    const hasAuthCode = new URLSearchParams(window.location.search).has("code");
+    const hashType = new URLSearchParams(window.location.hash.slice(1)).get("type");
+    const queryType = new URLSearchParams(window.location.search).get("type");
+    const validAuthTypes = new Set(["recovery", "signup", "invite", "magiclink"]);
+    const hasAuthFlowInHashType = hashType ? validAuthTypes.has(hashType) : false;
+    const hasAuthFlowInQueryType = queryType ? validAuthTypes.has(queryType) : false;
+    const hasAuthFlow = hasAuthFlowInHashType || hasAuthFlowInQueryType;
+
+    const isAdminAuthFlow = hasAuthToken || hasAuthCode || hasAuthFlow;
+
+    if (
+      isAdminAuthFlow &&
+      window.location.pathname !== "/admin/auth/callback" &&
+      window.location.pathname !== "/admin/connexion"
+    ) {
+      const query = window.location.search;
+      const fragment = window.location.hash;
+      window.location.replace(`/admin/auth/callback${query}${fragment}`);
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AdminAuthProvider>

@@ -10,3 +10,4 @@ src/routeTree.gen.ts
 src/api/generated
 .env*
 AGENTS.md
+.tmp
