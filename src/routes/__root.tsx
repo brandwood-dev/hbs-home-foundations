@@ -139,7 +139,7 @@ function RootComponent() {
         <Toaster position="bottom-center" />
         <WhatsAppFloatingButton />
       </AdminAuthProvider>
-
     </QueryClientProvider>
+
   );
 }
