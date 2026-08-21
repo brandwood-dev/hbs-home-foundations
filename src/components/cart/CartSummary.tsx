@@ -20,6 +20,12 @@ export function CartSummary({ cart, title = "Résumé estimatif" }: { cart: Cart
           </dt>
           <dd>{formatMoney(totals.subtotalMinor)}</dd>
         </div>
+        {totals.discountMinor && totals.discountMinor > 0 ? (
+          <div className="flex items-baseline justify-between text-success">
+            <dt>Promotion{cart.promotion?.code ? ` (${cart.promotion.code})` : ""}</dt>
+            <dd>-{formatMoney(totals.discountMinor)}</dd>
+          </div>
+        ) : null}
         <div className="flex items-baseline justify-between">
           <dt className="text-foreground-muted">Livraison estimée</dt>
           <dd>

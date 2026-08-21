@@ -81,7 +81,7 @@ export class HbsApiClient {
   }
 
   private async request<T>(
-    method: "GET" | "POST" | "PATCH",
+    method: "GET" | "POST" | "PATCH" | "DELETE",
     path: string,
     options: {
       body?: unknown;
@@ -128,23 +128,29 @@ export class HbsApiClient {
     return (await response.json()) as T;
   }
 
-  public get<T>(path: string, signal?: AbortSignal, accessToken?: string): Promise<T> {
+  public get<T>(
+    path: string,
+    signal?: AbortSignal,
+    accessToken?: string,
+    headers?: Record<string, string>,
+  ): Promise<T> {
     return this.request<T>("GET", path, {
       ...(signal ? { signal } : {}),
       ...(accessToken ? { accessToken } : {}),
+      ...(headers ? { headers } : {}),
     });
   }
 
   public post<T>(
     path: string,
     body: unknown,
-    accessToken: string,
+    accessToken?: string,
     signal?: AbortSignal,
     headers?: Record<string, string>,
   ): Promise<T> {
     return this.request<T>("POST", path, {
       body,
-      accessToken,
+      ...(accessToken ? { accessToken } : {}),
       ...(signal ? { signal } : {}),
       ...(headers ? { headers } : {}),
     });
@@ -153,14 +159,18 @@ export class HbsApiClient {
   public patch<T>(
     path: string,
     body: unknown,
-    accessToken: string,
+    accessToken?: string,
     signal?: AbortSignal,
   ): Promise<T> {
     return this.request<T>("PATCH", path, {
       body,
-      accessToken,
+      ...(accessToken ? { accessToken } : {}),
       ...(signal ? { signal } : {}),
     });
+  }
+
+  public delete<T>(path: string, signal?: AbortSignal): Promise<T> {
+    return this.request<T>("DELETE", path, signal ? { signal } : {});
   }
 
   getLiveness(signal?: AbortSignal): Promise<ApiHealth> {

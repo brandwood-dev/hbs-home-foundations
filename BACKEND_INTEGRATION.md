@@ -10,6 +10,7 @@ Les données métier du frontend sont encore mixtes :
 - les écrans Admin Produits, Catégories et Attributs utilisent désormais les
   repositories HTTP de `src/admin/repositories/api/admin-catalog-api-repositories.ts` ;
 - `LocalCartRepository` — panier persistant (localStorage, versionné) ;
+- `ApiCartRepository` — panier invité serveur dès que `VITE_HBS_API_BASE_URL` est défini ;
 - `MockOrderRepository` — commandes créées et lues dans `sessionStorage`.
 
 Le site public lit les produits publiés via les endpoints publics `/api/v1/products*`. Le
@@ -19,6 +20,14 @@ commandes, clients, stock et contenu restent explicitement mockés jusqu'à leur
 Le provider public est sélectionné au build : `"api"` si `VITE_HBS_API_BASE_URL` est défini,
 sinon `"mock"` en développement local. Les données de contenu éditorial et les configurations de
 pages de catégories restent statiques jusqu'à l'intégration CMS dédiée.
+
+### Panier serveur (phase 5A)
+
+En preview/staging, `repositoryFactory.ts` sélectionne `ApiCartRepository`. Le cookie de panier est
+géré par l'API et envoyé avec `credentials: include`; aucun prix ou stock ne vient du localStorage.
+Le repository local reste disponible uniquement pour le développement isolé sans URL API. La réponse
+serveur peut signaler une variation de prix, une quantité ajustée, une ligne indisponible ou une
+promotion non applicable afin que l'UI demande une confirmation avant le checkout.
 
 ### Catalogue public (phase 3C.4)
 

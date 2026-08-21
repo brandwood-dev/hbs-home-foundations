@@ -10,6 +10,7 @@ import { MockMeasurementRulesRepository } from "@/repositories/mock/MockMeasurem
 import { MockCustomQuoteRepository } from "@/repositories/mock/MockCustomQuoteRepository";
 import { MockProfessionalLeadRepository } from "@/repositories/mock/MockProfessionalLeadRepository";
 import { ApiProductRepository } from "@/repositories/api/ApiProductRepository";
+import { ApiCartRepository } from "@/repositories/api/ApiCartRepository";
 import { dataProvider } from "@/config/features.config";
 import type { ProductRepository } from "@/repositories/interfaces/ProductRepository";
 import type { CartRepository } from "@/repositories/interfaces/CartRepository";
@@ -47,9 +48,14 @@ export function getProductRepository(): ProductRepository {
   return productRepository;
 }
 
-/** Panier : LocalCartRepository aujourd'hui, ApiCartRepository demain. */
+/** Panier serveur dès que l'URL API est configurée, local uniquement en développement isolé. */
 export function getCartRepository(): CartRepository {
-  if (!cartRepository) cartRepository = new LocalCartRepository(getProductRepository());
+  if (!cartRepository) {
+    cartRepository =
+      dataProvider === "api"
+        ? new ApiCartRepository()
+        : new LocalCartRepository(getProductRepository());
+  }
   return cartRepository;
 }
 

@@ -258,3 +258,25 @@ Réponse : `{ "data": { "reference": "PRO-YYMMDD-XXXX", "submittedAt": ISO8601 }
 
 Les recommandations produits du guide restent calculées côté client à partir du catalogue
 (`GET /api/v1/products`) ; aucune donnée de mesure n'est transmise tant qu'un devis n'est pas envoyé.
+
+## Panier serveur et prix (phase 5A)
+
+Le panier invité est identifié par un jeton opaque envoyé dans un cookie `HttpOnly`, `Secure` et
+`SameSite=Lax` sur le domaine HBS HOME. Le navigateur ne transmet jamais de prix comme source de
+vérité. Le backend relit la variante publiée et le stock disponible à chaque mutation et lecture.
+L'ajout au panier ne réserve pas le stock ; la réservation transactionnelle intervient au checkout.
+
+```text
+GET    /api/v1/cart
+POST   /api/v1/cart/items                  { "productId": "…", "variantId": "…", "quantity": 1 }
+PATCH  /api/v1/cart/items/:lineId          { "quantity": 2 }
+DELETE /api/v1/cart/items/:lineId
+DELETE /api/v1/cart
+POST   /api/v1/cart/promotion              { "code": "…" }
+DELETE /api/v1/cart/promotion
+```
+
+La réponse expose les lignes réconciliées, le prix courant, le prix observé à l'ajout, la
+disponibilité, les frais de livraison estimés et `discountMinor`. Une seule promotion peut être
+attachée au panier en V1. Les promotions sont vérifiées par fenêtre de validité, minimum de panier
+et limite d'utilisation ; leur compteur n'est consommé qu'à la création de commande.
