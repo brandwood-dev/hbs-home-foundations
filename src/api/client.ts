@@ -80,7 +80,11 @@ export class HbsApiClient {
     this.fetchImplementation = options.fetch ?? globalThis.fetch.bind(globalThis);
   }
 
-  public async get<T>(path: string, signal?: AbortSignal, accessToken?: string): Promise<T> {
+  private async request<T>(
+    method: "GET" | "POST" | "PATCH",
+    path: string,
+    options: { body?: unknown; signal?: AbortSignal; accessToken?: string } = {},
+  ): Promise<T> {
     if (!this.baseUrl) {
       throw new HbsApiError(0, API_BASE_URL_MISSING_ERROR);
     }
@@ -88,15 +92,17 @@ export class HbsApiClient {
     const headers: Record<string, string> = {
       accept: "application/json, application/problem+json",
     };
-    if (accessToken) headers["authorization"] = `Bearer ${accessToken}`;
+    if (options.accessToken) headers["authorization"] = `Bearer ${options.accessToken}`;
+    if (options.body !== undefined) headers["content-type"] = "application/json";
 
     let response: Response;
     try {
       response = await this.fetchImplementation(`${this.baseUrl}${path}`, {
-        method: "GET",
+        method,
         credentials: "include",
         headers,
-        ...(signal ? { signal } : {}),
+        ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {}),
+        ...(options.signal ? { signal: options.signal } : {}),
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Fetch API failed.";
@@ -112,7 +118,41 @@ export class HbsApiClient {
       );
     }
 
+    if (response.status === 204) return undefined as T;
     return (await response.json()) as T;
+  }
+
+  public get<T>(path: string, signal?: AbortSignal, accessToken?: string): Promise<T> {
+    return this.request<T>("GET", path, {
+      ...(signal ? { signal } : {}),
+      ...(accessToken ? { accessToken } : {}),
+    });
+  }
+
+  public post<T>(
+    path: string,
+    body: unknown,
+    accessToken: string,
+    signal?: AbortSignal,
+  ): Promise<T> {
+    return this.request<T>("POST", path, {
+      body,
+      accessToken,
+      ...(signal ? { signal } : {}),
+    });
+  }
+
+  public patch<T>(
+    path: string,
+    body: unknown,
+    accessToken: string,
+    signal?: AbortSignal,
+  ): Promise<T> {
+    return this.request<T>("PATCH", path, {
+      body,
+      accessToken,
+      ...(signal ? { signal } : {}),
+    });
   }
 
   getLiveness(signal?: AbortSignal): Promise<ApiHealth> {

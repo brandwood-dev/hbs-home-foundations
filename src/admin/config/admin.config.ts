@@ -6,6 +6,8 @@ export type AdminDataProvider = "mock" | "api";
 
 export const adminConfig = {
   dataProvider: "mock" as AdminDataProvider,
+  /** Le catalogue est la première surface Admin migrée vers l'API. */
+  catalogDataProvider: "api" as AdminDataProvider,
   demoMode: true,
   pageSize: 20,
   currency: "TND",
