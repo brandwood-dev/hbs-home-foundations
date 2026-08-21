@@ -243,6 +243,7 @@ function mapVariant(variant: ApiVariant): AdminVariant {
     availability: resolvedAvailability,
     ...(imageUrl ? { imageUrl } : {}),
     isActive: variant.status !== "archived",
+    isDefault: variant.isDefault,
     options: publicOptions,
     ...(typeof packQuantity === "number" ? { packQuantity } : {}),
     trackInventory: booleanValue(trackInventory, true),
@@ -397,9 +398,23 @@ function variantBody(variant: AdminVariant): VariantCreateBody {
     status: variant.isActive ? "active" : "archived",
     options: variantOptions(variant),
     payload: variantPayload(variant),
-    isDefault: variant.id.endsWith("-default"),
+    isDefault: variant.isDefault ?? variant.id.endsWith("-default"),
     sortOrder: 0,
   };
+}
+
+function stableValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(stableValue);
+  if (typeof value !== "object" || value === null) return value;
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, item]) => [key, stableValue(item)]),
+  );
+}
+
+function variantFingerprint(variant: AdminVariant): string {
+  return JSON.stringify(stableValue(variantBody(variant)));
 }
 
 function variantPatch(variant: AdminVariant, expectedVersion: number): VariantPatchBody {
@@ -647,13 +662,20 @@ export class ApiAdminProductRepository implements AdminProductRepository {
   async update(id: string, input: Partial<AdminProductInput>): Promise<AdminProduct> {
     const current = await this.api.getProduct(id);
     let dto = await this.api.updateProduct(id, productPatch(input, current.version));
-    const variants = input.variants ?? [];
+    const variants = input.variants;
+    if (variants === undefined) return mapProduct(dto);
+
+    // The product PATCH already bumps the product version. Re-read it before
+    // touching a real variant so an API response/cache cannot provide a stale
+    // expectedVersion to the variant endpoint.
+    dto = await this.api.getProduct(id);
     const seen = new Set<string>();
 
     for (const variant of variants) {
       const existing = current.variants.find((item) => item.id === variant.id);
       if (existing) {
         seen.add(existing.id);
+        if (variantFingerprint(variant) === variantFingerprint(mapVariant(existing))) continue;
         dto = await this.api.updateVariant(id, existing.id, variantPatch(variant, dto.version));
       } else {
         dto = await this.api.createVariant(id, variantBody(variant));

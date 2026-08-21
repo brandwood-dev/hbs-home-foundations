@@ -67,6 +67,7 @@ export interface AdminVariant {
   availability: AdminAvailability;
   imageUrl?: string;
   isActive: boolean;
+  isDefault?: boolean;
   /** Axes de variante spécifiques à la catégorie (data-driven). */
   options?: Record<string, string | number>;
   packQuantity?: number;

@@ -140,4 +140,42 @@ describe("Admin catalog API adapters", () => {
       }),
     );
   });
+
+  it("does not rewrite unchanged variants when saving product media", async () => {
+    const mapped = mapProduct(product);
+    let productReads = 0;
+    const fetchImplementation = vi.fn<typeof fetch>().mockImplementation(async (input, init) => {
+      const url = String(input);
+      const method = init?.method ?? "GET";
+      if (method === "GET") {
+        productReads += 1;
+        return Response.json(productReads === 1 ? product : { ...product, version: 3 });
+      }
+      if (method === "PATCH" && url.endsWith("/api/v1/admin/products/product-1")) {
+        return Response.json({ ...product, version: 3 });
+      }
+      throw new Error(`Unexpected request: ${method} ${url}`);
+    });
+    const api = new AdminCatalogApi(
+      new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
+      async () => "admin-token",
+    );
+    const repository = new ApiAdminProductRepository(api);
+
+    await repository.update("product-1", {
+      images: mapped.images,
+      imageAssets: mapped.imageAssets ?? [],
+      variants: mapped.variants,
+    });
+
+    expect(
+      fetchImplementation.mock.calls.map(
+        ([input, init]) => `${init?.method ?? "GET"} ${String(input)}`,
+      ),
+    ).toEqual([
+      "GET https://api.example.test/api/v1/admin/products/product-1",
+      "PATCH https://api.example.test/api/v1/admin/products/product-1",
+      "GET https://api.example.test/api/v1/admin/products/product-1",
+    ]);
+  });
 });
