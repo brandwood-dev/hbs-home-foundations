@@ -13,8 +13,7 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   cancelled: "Annulée",
 };
 
-export const ORDER_DEMO_NOTICE =
-  "Commande de démonstration : aucun paiement n'est encaissé et aucune donnée n'est transmise à un serveur.";
+export const ORDER_DEMO_NOTICE = "Paiement à la livraison : aucun paiement en ligne n'est demandé.";
 
 export const ORDER_CONFIRMATION_NEXT_STEPS = [
   "Notre équipe vous appelle pour confirmer les articles et l'adresse de livraison.",
