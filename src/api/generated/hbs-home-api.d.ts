@@ -535,6 +535,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List persisted customer orders for the Admin back-office */
+        get: operations["listAdminOrders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read one persisted customer order for the Admin back-office */
+        get: operations["getAdminOrder"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/cart": {
         parameters: {
             query?: never;
@@ -1187,6 +1221,161 @@ export interface components {
         ReservationExpiryResponse: {
             releasedCount: number;
             reservationIds: string[];
+        };
+        AdminOrder: {
+            /** Format: uuid */
+            id: string;
+            orderNumber: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+            paymentStatus: "pending" | "collected" | "refunded";
+            /** @enum {string} */
+            paymentMethod: "cash_on_delivery";
+            /** Format: uuid */
+            customerId: string;
+            customerName: string;
+            customerPhone: string;
+            customerEmail: string | null;
+            deliveryMethod: "home_delivery" | "store_pickup";
+            governorate: string;
+            city: string;
+            postalCode: string | null;
+            addressLine: string;
+            landmark: string | null;
+            deliveryNote: string | null;
+            items: {
+                productId: string;
+                variantId: string;
+                productName: string;
+                variantLabel: string;
+                sku: string;
+                quantity: number;
+                unitPriceMinor: number;
+                lineTotalMinor: number;
+                productReference: string;
+                productSlug: string;
+                imageUrl: string;
+                imageAlt: string;
+                selectedOptions: {
+                    label: string;
+                    value: string;
+                }[];
+                sellingUnitLabel: string;
+                shippingProfile: string | null;
+            }[];
+            subtotalMinor: number;
+            shippingMinor: number;
+            discountMinor: number;
+            totalMinor: number;
+            timeline: {
+                id: string;
+                /** Format: date-time */
+                at: string;
+                status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                label: string;
+                kind: "created" | "status";
+                reason: string | null;
+            }[];
+            notes: unknown[];
+            shipment: {
+                shippingStatus: "calculated" | "to_confirm";
+                shippingFeeMinor: number;
+            };
+        };
+        AdminOrderListResponse: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                orderNumber: string;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                paymentStatus: "pending" | "collected" | "refunded";
+                /** @enum {string} */
+                paymentMethod: "cash_on_delivery";
+                /** Format: uuid */
+                customerId: string;
+                customerName: string;
+                customerPhone: string;
+                customerEmail: string | null;
+                deliveryMethod: "home_delivery" | "store_pickup";
+                governorate: string;
+                city: string;
+                postalCode: string | null;
+                addressLine: string;
+                landmark: string | null;
+                deliveryNote: string | null;
+                items: {
+                    productId: string;
+                    variantId: string;
+                    productName: string;
+                    variantLabel: string;
+                    sku: string;
+                    quantity: number;
+                    unitPriceMinor: number;
+                    lineTotalMinor: number;
+                    productReference: string;
+                    productSlug: string;
+                    imageUrl: string;
+                    imageAlt: string;
+                    selectedOptions: {
+                        label: string;
+                        value: string;
+                    }[];
+                    sellingUnitLabel: string;
+                    shippingProfile: string | null;
+                }[];
+                subtotalMinor: number;
+                shippingMinor: number;
+                discountMinor: number;
+                totalMinor: number;
+                timeline: {
+                    id: string;
+                    /** Format: date-time */
+                    at: string;
+                    status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                    label: string;
+                    kind: "created" | "status";
+                    reason: string | null;
+                }[];
+                notes: unknown[];
+                shipment: {
+                    shippingStatus: "calculated" | "to_confirm";
+                    shippingFeeMinor: number;
+                };
+            }[];
+            total: number;
+            page: number;
+            pageSize: number;
+            pageCount: number;
+            counters: {
+                total: number;
+                pendingConfirmation: number;
+                confirmed: number;
+                preparing: number;
+                shipped: number;
+                delivered: number;
+                cancelled: number;
+                shippingToConfirm: number;
+                paymentPending: number;
+            };
+            governorates: string[];
+        };
+        AdminOrderCounters: {
+            total: number;
+            pendingConfirmation: number;
+            confirmed: number;
+            preparing: number;
+            shipped: number;
+            delivered: number;
+            cancelled: number;
+            shippingToConfirm: number;
+            paymentPending: number;
         };
         CartLine: {
             lineId: string;
@@ -6586,6 +6775,307 @@ export interface operations {
             };
             /** @description Default Response */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    listAdminOrders: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+                status?: string;
+                governorate?: string;
+                q?: string;
+                sort?: "newest" | "oldest" | "total_desc" | "total_asc" | "status";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            /** Format: uuid */
+                            id: string;
+                            orderNumber: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                            paymentStatus: "pending" | "collected" | "refunded";
+                            /** @enum {string} */
+                            paymentMethod: "cash_on_delivery";
+                            /** Format: uuid */
+                            customerId: string;
+                            customerName: string;
+                            customerPhone: string;
+                            customerEmail: string | null;
+                            deliveryMethod: "home_delivery" | "store_pickup";
+                            governorate: string;
+                            city: string;
+                            postalCode: string | null;
+                            addressLine: string;
+                            landmark: string | null;
+                            deliveryNote: string | null;
+                            items: {
+                                productId: string;
+                                variantId: string;
+                                productName: string;
+                                variantLabel: string;
+                                sku: string;
+                                quantity: number;
+                                unitPriceMinor: number;
+                                lineTotalMinor: number;
+                                productReference: string;
+                                productSlug: string;
+                                imageUrl: string;
+                                imageAlt: string;
+                                selectedOptions: {
+                                    label: string;
+                                    value: string;
+                                }[];
+                                sellingUnitLabel: string;
+                                shippingProfile: string | null;
+                            }[];
+                            subtotalMinor: number;
+                            shippingMinor: number;
+                            discountMinor: number;
+                            totalMinor: number;
+                            timeline: {
+                                id: string;
+                                /** Format: date-time */
+                                at: string;
+                                status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                                label: string;
+                                kind: "created" | "status";
+                                reason: string | null;
+                            }[];
+                            notes: unknown[];
+                            shipment: {
+                                shippingStatus: "calculated" | "to_confirm";
+                                shippingFeeMinor: number;
+                            };
+                        }[];
+                        total: number;
+                        page: number;
+                        pageSize: number;
+                        pageCount: number;
+                        counters: {
+                            total: number;
+                            pendingConfirmation: number;
+                            confirmed: number;
+                            preparing: number;
+                            shipped: number;
+                            delivered: number;
+                            cancelled: number;
+                            shippingToConfirm: number;
+                            paymentPending: number;
+                        };
+                        governorates: string[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    getAdminOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        orderNumber: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                        paymentStatus: "pending" | "collected" | "refunded";
+                        /** @enum {string} */
+                        paymentMethod: "cash_on_delivery";
+                        /** Format: uuid */
+                        customerId: string;
+                        customerName: string;
+                        customerPhone: string;
+                        customerEmail: string | null;
+                        deliveryMethod: "home_delivery" | "store_pickup";
+                        governorate: string;
+                        city: string;
+                        postalCode: string | null;
+                        addressLine: string;
+                        landmark: string | null;
+                        deliveryNote: string | null;
+                        items: {
+                            productId: string;
+                            variantId: string;
+                            productName: string;
+                            variantLabel: string;
+                            sku: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            lineTotalMinor: number;
+                            productReference: string;
+                            productSlug: string;
+                            imageUrl: string;
+                            imageAlt: string;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile: string | null;
+                        }[];
+                        subtotalMinor: number;
+                        shippingMinor: number;
+                        discountMinor: number;
+                        totalMinor: number;
+                        timeline: {
+                            id: string;
+                            /** Format: date-time */
+                            at: string;
+                            status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                            label: string;
+                            kind: "created" | "status";
+                            reason: string | null;
+                        }[];
+                        notes: unknown[];
+                        shipment: {
+                            shippingStatus: "calculated" | "to_confirm";
+                            shippingFeeMinor: number;
+                        };
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

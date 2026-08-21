@@ -9,6 +9,8 @@ export const adminConfig = {
   /** Le catalogue est la première surface Admin migrée vers l'API. */
   catalogDataProvider: "api" as AdminDataProvider,
   promotionDataProvider: "api" as AdminDataProvider,
+  /** Les commandes persistées sont lues depuis l'API ; les actions suivront. */
+  orderDataProvider: "api" as AdminDataProvider,
   demoMode: false,
   pageSize: 20,
   currency: "TND",
