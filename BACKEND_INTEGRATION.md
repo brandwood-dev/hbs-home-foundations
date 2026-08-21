@@ -2,18 +2,41 @@
 
 ## État actuel
 
-Les données métier du frontend fonctionnent encore en mode mock :
+Les données métier du frontend sont encore mixtes :
 
-- `MockProductRepository` — catalogue statique (24 produits) ;
+- le catalogue public utilise encore `MockProductRepository` tant que la bascule
+  `dataProvider` globale n'est pas validée ;
+- les écrans Admin Produits, Catégories et Attributs utilisent désormais les
+  repositories HTTP de `src/admin/repositories/api/admin-catalog-api-repositories.ts` ;
 - `LocalCartRepository` — panier persistant (localStorage, versionné) ;
 - `MockOrderRepository` — commandes créées et lues dans `sessionStorage`.
 
-`dataProvider` dans `src/config/features.config.ts` vaut `"mock"`. Le futur `ApiOrderRepository`
-devra implémenter la même interface ; aucun composant ne devra changer.
+`dataProvider` dans `src/config/features.config.ts` vaut encore `"mock"` pour le public. Le
+back-office utilise `adminConfig.catalogDataProvider = "api"` pour le catalogue uniquement ; les
+commandes, clients, stock et contenu restent explicitement mockés jusqu'à leurs phases dédiées.
 
 L'authentification du back-office n'est plus simulée. La phase 2 fournit une connexion Supabase
 Auth en PKCE, une activation par invitation, un MFA TOTP obligatoire et une résolution des rôles et
-permissions par l'API. Les écrans métier Admin restent alimentés par leurs repositories actuels.
+permissions par l'API. Chaque mutation catalogue transmet le bearer Supabase et laisse l'API
+appliquer MFA, permissions et audit. Les erreurs `401`, `403` et `409/422` sont remontées à l'UI.
+
+### Catalogue Admin (phase 3C.3)
+
+Les routes suivantes sont consommées avec la session Supabase courante :
+
+```text
+GET/PATCH/POST /api/v1/admin/categories
+GET/PATCH/POST /api/v1/admin/attributes
+GET/POST/PATCH /api/v1/admin/products
+POST           /api/v1/admin/products/:id/publish|archive
+POST/PATCH     /api/v1/admin/products/:id/variants
+POST           /api/v1/admin/products/:id/variants/:variantId/archive
+```
+
+Le modèle API normalisé est adapté vers les types Admin historiques. Les champs UI plus riches
+(médias, SEO, tags et axes) sont conservés dans le `payload` de création lorsqu'ils sont pris en
+charge ; leur édition persistée complète relève de la phase Storage/Media. La suppression est
+volontairement une archive réversible, car l'API ne propose pas de suppression physique.
 
 Variables publiques requises au build staging :
 

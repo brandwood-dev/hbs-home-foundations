@@ -1,0 +1,673 @@
+import type { components, operations } from "@/api/generated/hbs-home-api";
+import { HbsApiClient, HbsApiError } from "@/api";
+import { getSupabaseBrowserClient } from "@/auth/supabase-browser";
+import type {
+  AdminAttribute,
+  AdminAttributeValue,
+  AdminCategory,
+  AdminProduct,
+  AdminProductCategoryKey,
+  AdminProductImage,
+  AdminSellingMode,
+  AdminVariant,
+  ProductPublicationStatus,
+} from "@/admin/types/admin.types";
+import { ADMIN_PRODUCT_CATEGORY_LABELS } from "@/admin/types/admin.types";
+import type {
+  AdminAttributeInput,
+  AdminAttributeRepository,
+  AdminCategoryInput,
+  AdminCategoryRepository,
+  AdminProductInput,
+  AdminProductRepository,
+} from "@/admin/repositories/interfaces";
+
+type ApiCategory = components["schemas"]["AdminCategory"];
+type ApiAttribute = components["schemas"]["AdminAttribute"];
+type ApiProduct = components["schemas"]["AdminProduct"];
+type ApiVariant = components["schemas"]["AdminProductVariant"];
+type ProductCreateBody =
+  operations["adminCreateProduct"]["requestBody"]["content"]["application/json"];
+type ProductPatchBody =
+  operations["adminUpdateProduct"]["requestBody"]["content"]["application/json"];
+type VariantCreateBody =
+  operations["adminCreateVariant"]["requestBody"]["content"]["application/json"];
+type VariantPatchBody =
+  operations["adminUpdateVariant"]["requestBody"]["content"]["application/json"];
+type CategoryCreateBody =
+  operations["adminCreateCategory"]["requestBody"]["content"]["application/json"];
+type CategoryPatchBody =
+  operations["adminUpdateCategory"]["requestBody"]["content"]["application/json"];
+type AttributeCreateBody =
+  operations["adminCreateAttribute"]["requestBody"]["content"]["application/json"];
+type AttributePatchBody =
+  operations["adminUpdateAttribute"]["requestBody"]["content"]["application/json"];
+
+export type AdminAccessTokenProvider = () => Promise<string>;
+
+async function defaultAccessToken(): Promise<string> {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) {
+    throw new Error("Supabase Auth n’est pas configuré pour cet environnement.");
+  }
+  const { data, error } = await supabase.auth.getSession();
+  if (error) throw error;
+  if (!data.session?.access_token) {
+    throw new HbsApiError(401, "Session Admin expirée. Veuillez vous reconnecter.");
+  }
+  return data.session.access_token;
+}
+
+function record(value: unknown): Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function stringValue(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value : undefined;
+}
+
+function numberValue(value: unknown, fallback: number): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+}
+
+function booleanValue(value: unknown, fallback: boolean): boolean {
+  return typeof value === "boolean" ? value : fallback;
+}
+
+function categoryKey(value: string | null): AdminProductCategoryKey | undefined {
+  return value && value in ADMIN_PRODUCT_CATEGORY_LABELS
+    ? (value as AdminProductCategoryKey)
+    : undefined;
+}
+
+function mapCategory(category: ApiCategory): AdminCategory {
+  return {
+    id: category.id,
+    name: category.name,
+    slug: category.slug,
+    ...(category.parentId ? { parentId: category.parentId } : {}),
+    order: category.sortOrder,
+    isActive: category.status === "active",
+    description: category.description ?? "",
+    seoTitle: category.name,
+    seoDescription: category.description ?? "",
+  };
+}
+
+function categoryBody(input: AdminCategoryInput): CategoryCreateBody {
+  return {
+    slug: input.slug.trim(),
+    name: input.name.trim(),
+    description: input.description?.trim() || null,
+    parentId: input.parentId || null,
+    status: input.isActive ? "active" : "draft",
+    sortOrder: input.order,
+  };
+}
+
+function categoryPatch(input: Partial<AdminCategoryInput>): CategoryPatchBody {
+  return {
+    ...(input.slug === undefined ? {} : { slug: input.slug.trim() }),
+    ...(input.name === undefined ? {} : { name: input.name.trim() }),
+    ...(input.description === undefined ? {} : { description: input.description.trim() || null }),
+    ...(input.parentId === undefined ? {} : { parentId: input.parentId || null }),
+    ...(input.isActive === undefined ? {} : { status: input.isActive ? "active" : "draft" }),
+    ...(input.order === undefined ? {} : { sortOrder: input.order }),
+  };
+}
+
+function mapAttribute(attribute: ApiAttribute): AdminAttribute {
+  const fieldType = attribute.valueType === "dimension" ? "measurement" : attribute.valueType;
+  return {
+    id: attribute.id,
+    key: attribute.key,
+    name: attribute.name,
+    fieldType,
+    isFilterable: attribute.isFilterable,
+    isVariantAxis: false,
+    isRequired: attribute.isRequired,
+    isActive: attribute.status === "active",
+    order: 0,
+    categories: [],
+    values: attribute.options.map((option): AdminAttributeValue => ({
+      id: option.id,
+      label: option.label,
+      slug: option.value,
+      order: option.sortOrder,
+      isActive: true,
+    })),
+    isSystem: false,
+  };
+}
+
+function attributeValueType(
+  value: AdminAttributeInput["fieldType"],
+): AttributeCreateBody["valueType"] {
+  if (value === "measurement") return "dimension";
+  if (value === "single_select" || value === "multi_select" || value === "multiselect") {
+    return "select";
+  }
+  return value === "select" ||
+    value === "text" ||
+    value === "number" ||
+    value === "boolean" ||
+    value === "color"
+    ? value
+    : "text";
+}
+
+function attributeBody(input: AdminAttributeInput): AttributeCreateBody {
+  return {
+    key: input.key.trim(),
+    name: input.name.trim(),
+    valueType: attributeValueType(input.fieldType),
+    isFilterable: input.isFilterable,
+    isRequired: input.isRequired ?? false,
+    status: input.isActive === false ? "draft" : "active",
+    options: input.values.map((value, index) => ({
+      value: value.slug.trim() || value.label.trim(),
+      label: value.label.trim(),
+      sortOrder: value.order || index + 1,
+    })),
+  };
+}
+
+function attributePatch(input: Partial<AdminAttributeInput>): AttributePatchBody {
+  return {
+    ...(input.key === undefined ? {} : { key: input.key.trim() }),
+    ...(input.name === undefined ? {} : { name: input.name.trim() }),
+    ...(input.fieldType === undefined ? {} : { valueType: attributeValueType(input.fieldType) }),
+    ...(input.isFilterable === undefined ? {} : { isFilterable: input.isFilterable }),
+    ...(input.isRequired === undefined ? {} : { isRequired: input.isRequired }),
+    ...(input.isActive === undefined ? {} : { status: input.isActive ? "active" : "draft" }),
+    ...(input.values === undefined
+      ? {}
+      : {
+          options: input.values.map((value, index) => ({
+            value: value.slug.trim() || value.label.trim(),
+            label: value.label.trim(),
+            sortOrder: value.order || index + 1,
+          })),
+        }),
+  };
+}
+
+function mapVariant(variant: ApiVariant): AdminVariant {
+  const options = record(variant.options);
+  const payload = record(variant.payload);
+  const merged = { ...options, ...payload };
+  const stock = numberValue(merged["stock"], 0);
+  const lowStockThreshold = numberValue(merged["lowStockThreshold"], 3);
+  const availability = stringValue(merged["availability"]);
+  const allowedAvailability = new Set<AdminVariant["availability"]>([
+    "in_stock",
+    "low_stock",
+    "out_of_stock",
+    "made_to_order",
+  ]);
+  const resolvedAvailability = allowedAvailability.has(availability as AdminVariant["availability"])
+    ? (availability as AdminVariant["availability"])
+    : stock <= 0
+      ? "out_of_stock"
+      : stock <= lowStockThreshold
+        ? "low_stock"
+        : "in_stock";
+  const publicOptions: Record<string, string | number> = {};
+  for (const [key, value] of Object.entries(options)) {
+    if (typeof value === "string" || typeof value === "number") publicOptions[key] = value;
+  }
+  const eyeletColor = stringValue(merged["eyeletColor"]);
+  const lining = stringValue(merged["lining"]);
+  const imageUrl = stringValue(merged["imageUrl"]);
+  const packQuantity = merged["packQuantity"];
+  const trackInventory = merged["trackInventory"];
+  return {
+    id: variant.id,
+    sku: variant.sku,
+    colorId: stringValue(merged["colorId"]) ?? "",
+    colorLabel: stringValue(merged["colorLabel"]) ?? "",
+    widthCm: numberValue(merged["widthCm"], 0),
+    heightCm: numberValue(merged["heightCm"], 0),
+    curtainHeader: stringValue(merged["curtainHeader"]) ?? variant.title ?? "",
+    ...(eyeletColor ? { eyeletColor } : {}),
+    ...(lining ? { lining } : {}),
+    priceMinor: variant.priceAmountMinor,
+    ...(variant.compareAtPriceAmountMinor === null
+      ? {}
+      : { compareAtPriceMinor: variant.compareAtPriceAmountMinor }),
+    stock,
+    lowStockThreshold,
+    availability: resolvedAvailability,
+    ...(imageUrl ? { imageUrl } : {}),
+    isActive: variant.status !== "archived",
+    options: publicOptions,
+    ...(typeof packQuantity === "number" ? { packQuantity } : {}),
+    trackInventory: booleanValue(trackInventory, true),
+  };
+}
+
+function mapProduct(product: ApiProduct): AdminProduct {
+  const status: ProductPublicationStatus =
+    product.status === "active" ? "published" : product.status;
+  const category = categoryKey(product.categorySlug);
+  return {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    reference: product.reference,
+    categoryId: product.categoryId ?? "",
+    sellingMode: product.sellingMode as AdminSellingMode,
+    shortDescription: product.shortDescription ?? "",
+    longDescription: product.longDescription ?? "",
+    ...(product.material ? { material: product.material } : {}),
+    status,
+    images: [],
+    tags: [],
+    rooms: [],
+    variants: product.variants.map(mapVariant),
+    seoTitle: product.name,
+    seoDescription: product.shortDescription ?? "",
+    ...(category ? { category } : {}),
+    publicSlug: product.slug,
+    seoIndexable: true,
+    createdAt: product.createdAt,
+    updatedAt: product.updatedAt,
+  };
+}
+
+function productPayload(input: AdminProductInput): Record<string, unknown> {
+  return {
+    brand: input.brand,
+    tags: input.tags,
+    rooms: input.rooms,
+    style: input.style,
+    opacityLevel: input.opacityLevel,
+    images: input.images,
+    imageAssets: input.imageAssets,
+    seoTitle: input.seoTitle,
+    seoDescription: input.seoDescription,
+    seoIndexable: input.seoIndexable,
+    seoOgImageUrl: input.seoOgImageUrl,
+    packContent: input.packContent,
+    packQuantity: input.packQuantity,
+    perMeter: input.perMeter,
+    customQuoteEnabled: input.customQuoteEnabled,
+    attributes: input.attributes,
+  };
+}
+
+function productBody(input: AdminProductInput): ProductCreateBody {
+  return {
+    slug: input.slug.trim(),
+    name: input.name.trim(),
+    reference: input.reference.trim(),
+    categoryId: input.categoryId,
+    material: input.material?.trim() ?? "",
+    sellingMode: input.sellingMode,
+    shortDescription: input.shortDescription.trim() || null,
+    longDescription: input.longDescription.trim() || null,
+    imageAlt: null,
+    payload: productPayload(input),
+  };
+}
+
+function productPatch(
+  input: Partial<AdminProductInput>,
+  expectedVersion?: number,
+): ProductPatchBody {
+  return {
+    ...(input.slug === undefined ? {} : { slug: input.slug.trim() }),
+    ...(input.name === undefined ? {} : { name: input.name.trim() }),
+    ...(input.reference === undefined ? {} : { reference: input.reference.trim() }),
+    ...(input.categoryId === undefined ? {} : { categoryId: input.categoryId }),
+    ...(input.material === undefined ? {} : { material: input.material?.trim() ?? "" }),
+    ...(input.sellingMode === undefined ? {} : { sellingMode: input.sellingMode }),
+    ...(input.shortDescription === undefined
+      ? {}
+      : { shortDescription: input.shortDescription.trim() || null }),
+    ...(input.longDescription === undefined
+      ? {}
+      : { longDescription: input.longDescription.trim() || null }),
+    ...(expectedVersion === undefined ? {} : { expectedVersion }),
+  };
+}
+
+function variantOptions(variant: AdminVariant): Record<string, unknown> {
+  return {
+    ...(variant.options ?? {}),
+    colorId: variant.colorId,
+    colorLabel: variant.colorLabel,
+    widthCm: variant.widthCm,
+    heightCm: variant.heightCm,
+    curtainHeader: variant.curtainHeader,
+    ...(variant.eyeletColor ? { eyeletColor: variant.eyeletColor } : {}),
+    ...(variant.lining ? { lining: variant.lining } : {}),
+    ...(variant.packQuantity === undefined ? {} : { packQuantity: variant.packQuantity }),
+  };
+}
+
+function variantPayload(variant: AdminVariant): Record<string, unknown> {
+  return {
+    stock: variant.stock,
+    lowStockThreshold: variant.lowStockThreshold,
+    availability: variant.availability,
+    trackInventory: variant.trackInventory ?? true,
+    ...(variant.imageUrl ? { imageUrl: variant.imageUrl } : {}),
+  };
+}
+
+function variantBody(variant: AdminVariant): VariantCreateBody {
+  return {
+    sku: variant.sku.trim(),
+    title: variant.curtainHeader.trim() || null,
+    priceAmountMinor: variant.priceMinor,
+    ...(variant.compareAtPriceMinor === undefined
+      ? {}
+      : { compareAtPriceAmountMinor: variant.compareAtPriceMinor }),
+    status: variant.isActive ? "active" : "archived",
+    options: variantOptions(variant),
+    payload: variantPayload(variant),
+    isDefault: variant.id.endsWith("-default"),
+    sortOrder: 0,
+  };
+}
+
+function variantPatch(variant: AdminVariant, expectedVersion: number): VariantPatchBody {
+  return { ...variantBody(variant), expectedVersion };
+}
+
+export class AdminCatalogApi {
+  constructor(
+    private readonly client = new HbsApiClient(),
+    private readonly accessToken: AdminAccessTokenProvider = defaultAccessToken,
+  ) {}
+
+  private async token(): Promise<string> {
+    return this.accessToken();
+  }
+
+  listCategories(): Promise<{ items: ApiCategory[] }> {
+    return this.token().then((token) =>
+      this.client.get<{ items: ApiCategory[] }>("/api/v1/admin/categories", undefined, token),
+    );
+  }
+
+  createCategory(input: CategoryCreateBody): Promise<ApiCategory> {
+    return this.token().then((token) =>
+      this.client.post<ApiCategory>("/api/v1/admin/categories", input, token),
+    );
+  }
+
+  updateCategory(id: string, input: CategoryPatchBody): Promise<ApiCategory> {
+    return this.token().then((token) =>
+      this.client.patch<ApiCategory>(
+        `/api/v1/admin/categories/${encodeURIComponent(id)}`,
+        input,
+        token,
+      ),
+    );
+  }
+
+  listAttributes(): Promise<{ items: ApiAttribute[] }> {
+    return this.token().then((token) =>
+      this.client.get<{ items: ApiAttribute[] }>("/api/v1/admin/attributes", undefined, token),
+    );
+  }
+
+  createAttribute(input: AttributeCreateBody): Promise<ApiAttribute> {
+    return this.token().then((token) =>
+      this.client.post<ApiAttribute>("/api/v1/admin/attributes", input, token),
+    );
+  }
+
+  updateAttribute(id: string, input: AttributePatchBody): Promise<ApiAttribute> {
+    return this.token().then((token) =>
+      this.client.patch<ApiAttribute>(
+        `/api/v1/admin/attributes/${encodeURIComponent(id)}`,
+        input,
+        token,
+      ),
+    );
+  }
+
+  listProducts(query?: string): Promise<components["schemas"]["AdminProductsResponse"]> {
+    const params = new URLSearchParams({ limit: "100", offset: "0" });
+    if (query?.trim()) params.set("q", query.trim());
+    return this.token().then((token) =>
+      this.client.get<components["schemas"]["AdminProductsResponse"]>(
+        `/api/v1/admin/products?${params.toString()}`,
+        undefined,
+        token,
+      ),
+    );
+  }
+
+  getProduct(id: string): Promise<ApiProduct> {
+    return this.token().then((token) =>
+      this.client.get<ApiProduct>(
+        `/api/v1/admin/products/${encodeURIComponent(id)}`,
+        undefined,
+        token,
+      ),
+    );
+  }
+
+  createProduct(input: ProductCreateBody): Promise<ApiProduct> {
+    return this.token().then((token) =>
+      this.client.post<ApiProduct>("/api/v1/admin/products", input, token),
+    );
+  }
+
+  updateProduct(id: string, input: ProductPatchBody): Promise<ApiProduct> {
+    return this.token().then((token) =>
+      this.client.patch<ApiProduct>(
+        `/api/v1/admin/products/${encodeURIComponent(id)}`,
+        input,
+        token,
+      ),
+    );
+  }
+
+  publishProduct(id: string): Promise<ApiProduct> {
+    return this.token().then((token) =>
+      this.client.post<ApiProduct>(
+        `/api/v1/admin/products/${encodeURIComponent(id)}/publish`,
+        {},
+        token,
+      ),
+    );
+  }
+
+  archiveProduct(id: string): Promise<ApiProduct> {
+    return this.token().then((token) =>
+      this.client.post<ApiProduct>(
+        `/api/v1/admin/products/${encodeURIComponent(id)}/archive`,
+        {},
+        token,
+      ),
+    );
+  }
+
+  createVariant(productId: string, input: VariantCreateBody): Promise<ApiProduct> {
+    return this.token().then((token) =>
+      this.client.post<ApiProduct>(
+        `/api/v1/admin/products/${encodeURIComponent(productId)}/variants`,
+        input,
+        token,
+      ),
+    );
+  }
+
+  updateVariant(
+    productId: string,
+    variantId: string,
+    input: VariantPatchBody,
+  ): Promise<ApiProduct> {
+    return this.token().then((token) =>
+      this.client.patch<ApiProduct>(
+        `/api/v1/admin/products/${encodeURIComponent(productId)}/variants/${encodeURIComponent(variantId)}`,
+        input,
+        token,
+      ),
+    );
+  }
+
+  archiveVariant(productId: string, variantId: string): Promise<ApiProduct> {
+    return this.token().then((token) =>
+      this.client.post<ApiProduct>(
+        `/api/v1/admin/products/${encodeURIComponent(productId)}/variants/${encodeURIComponent(variantId)}/archive`,
+        {},
+        token,
+      ),
+    );
+  }
+}
+
+export class ApiAdminCategoryRepository implements AdminCategoryRepository {
+  constructor(private readonly api = new AdminCatalogApi()) {}
+
+  async list(): Promise<AdminCategory[]> {
+    return (await this.api.listCategories()).items.map(mapCategory);
+  }
+
+  async getById(id: string): Promise<AdminCategory | null> {
+    return (await this.list()).find((category) => category.id === id) ?? null;
+  }
+
+  async create(input: AdminCategoryInput): Promise<AdminCategory> {
+    return mapCategory(await this.api.createCategory(categoryBody(input)));
+  }
+
+  async update(id: string, input: Partial<AdminCategoryInput>): Promise<AdminCategory> {
+    return mapCategory(await this.api.updateCategory(id, categoryPatch(input)));
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.api.updateCategory(id, { status: "archived" });
+  }
+
+  async move(id: string, direction: "up" | "down"): Promise<void> {
+    const categories = await this.list();
+    const index = categories.findIndex((category) => category.id === id);
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (index < 0 || targetIndex < 0 || targetIndex >= categories.length) return;
+    const current = categories[index];
+    const target = categories[targetIndex];
+    if (!current || !target) return;
+    await Promise.all([
+      this.update(current.id, { order: target.order }),
+      this.update(target.id, { order: current.order }),
+    ]);
+  }
+
+  async isUsed(): Promise<boolean> {
+    return false;
+  }
+}
+
+export class ApiAdminAttributeRepository implements AdminAttributeRepository {
+  constructor(private readonly api = new AdminCatalogApi()) {}
+
+  async list(): Promise<AdminAttribute[]> {
+    return (await this.api.listAttributes()).items.map(mapAttribute);
+  }
+
+  async getById(id: string): Promise<AdminAttribute | null> {
+    return (await this.list()).find((attribute) => attribute.id === id) ?? null;
+  }
+
+  async create(input: AdminAttributeInput): Promise<AdminAttribute> {
+    return mapAttribute(await this.api.createAttribute(attributeBody(input)));
+  }
+
+  async update(id: string, input: Partial<AdminAttributeInput>): Promise<AdminAttribute> {
+    return mapAttribute(await this.api.updateAttribute(id, attributePatch(input)));
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.api.updateAttribute(id, { status: "archived" });
+  }
+}
+
+export class ApiAdminProductRepository implements AdminProductRepository {
+  constructor(private readonly api = new AdminCatalogApi()) {}
+
+  async list(): Promise<AdminProduct[]> {
+    const response = await this.api.listProducts();
+    return response.items.map(mapProduct);
+  }
+
+  async getById(id: string): Promise<AdminProduct | null> {
+    try {
+      return mapProduct(await this.api.getProduct(id));
+    } catch (error) {
+      if (error instanceof HbsApiError && error.status === 404) return null;
+      throw error;
+    }
+  }
+
+  async create(input: AdminProductInput): Promise<AdminProduct> {
+    let dto = await this.api.createProduct(productBody(input));
+    for (const variant of input.variants) {
+      dto = await this.api.createVariant(dto.id, variantBody(variant));
+    }
+    return mapProduct(dto);
+  }
+
+  async update(id: string, input: Partial<AdminProductInput>): Promise<AdminProduct> {
+    const current = await this.api.getProduct(id);
+    let dto = await this.api.updateProduct(id, productPatch(input, current.version));
+    const variants = input.variants ?? [];
+    const seen = new Set<string>();
+
+    for (const variant of variants) {
+      const existing = current.variants.find((item) => item.id === variant.id);
+      if (existing) {
+        seen.add(existing.id);
+        dto = await this.api.updateVariant(id, existing.id, variantPatch(variant, dto.version));
+      } else {
+        dto = await this.api.createVariant(id, variantBody(variant));
+      }
+    }
+
+    for (const existing of current.variants) {
+      if (!seen.has(existing.id) && variants.some((variant) => variant.id === existing.id))
+        continue;
+      if (!variants.some((variant) => variant.id === existing.id)) {
+        dto = await this.api.archiveVariant(id, existing.id);
+      }
+    }
+    return mapProduct(dto);
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.api.archiveProduct(id);
+  }
+
+  async duplicate(id: string): Promise<AdminProduct> {
+    const source = await this.getById(id);
+    if (!source) throw new Error("Produit introuvable.");
+    const suffix = Date.now().toString(36).slice(-5);
+    return this.create({
+      ...source,
+      name: `${source.name} (copie)`,
+      slug: `${source.slug}-copie-${suffix}`,
+      reference: `${source.reference}-C${suffix.toUpperCase()}`,
+      status: "draft",
+    });
+  }
+
+  async setStatus(id: string, status: AdminProduct["status"]): Promise<AdminProduct> {
+    if (status === "published") return mapProduct(await this.api.publishProduct(id));
+    if (status === "archived") return mapProduct(await this.api.archiveProduct(id));
+    throw new Error("La dépublication sera disponible avec l’endpoint d’unpublish du backend.");
+  }
+
+  async isUsedInOrders(): Promise<boolean> {
+    return false;
+  }
+}
+
+export { mapAttribute, mapCategory, mapProduct, mapVariant };

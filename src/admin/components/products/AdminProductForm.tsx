@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { AlertTriangle, ExternalLink, Save } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -70,6 +70,11 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
   const [dirty, setDirty] = useState(false);
   const [showLeave, setShowLeave] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (product || values.categoryId || categories.length === 0) return;
+    setValues((current) => ({ ...current, categoryId: categories[0]?.id ?? "" }));
+  }, [categories, product, values.categoryId]);
 
   const config = adminProductCategoryConfigs[values.category];
   const others = useMemo(

@@ -29,6 +29,35 @@ explicite, audit.
 Erreurs normalisées : `401 AUTH_REQUIRED`, `401 INVALID_ACCESS_TOKEN`, `403 ADMIN_ACCESS_DENIED`,
 `403 MFA_REQUIRED`, `403 PERMISSION_DENIED`.
 
+## Catalogue Admin (phase 3C)
+
+Le back-office consomme les routes catalogue avec le même bearer Supabase. Les lectures requièrent
+`products.read` ou `categories.read`; les écritures requièrent respectivement `products.write` ou
+`categories.write`, et la publication/archivage produit requiert `products.publish`. Les mutations
+sont protégées par `aal2` et écrivent un événement d'audit.
+
+```text
+GET    /api/v1/admin/categories
+POST   /api/v1/admin/categories
+PATCH  /api/v1/admin/categories/:id
+GET    /api/v1/admin/attributes
+POST   /api/v1/admin/attributes
+PATCH  /api/v1/admin/attributes/:id
+GET    /api/v1/admin/products?status=&q=&limit=&offset=
+POST   /api/v1/admin/products
+GET    /api/v1/admin/products/:id
+PATCH  /api/v1/admin/products/:id
+POST   /api/v1/admin/products/:id/publish
+POST   /api/v1/admin/products/:id/archive
+POST   /api/v1/admin/products/:id/variants
+PATCH  /api/v1/admin/products/:id/variants/:variantId
+POST   /api/v1/admin/products/:id/variants/:variantId/archive
+```
+
+Les produits et variantes utilisent des montants entiers en millimes et un champ JSON `payload`
+pour les attributs spécifiques non encore normalisés. Une suppression demandée depuis l'interface
+est traduite en archivage afin de préserver l'historique des commandes.
+
 ## Suivi de commande sans compte
 
 ### `POST /api/v1/orders/track`

@@ -74,4 +74,28 @@ describe("HbsApiClient", () => {
       problem: { code: "route_not_found", requestId: "req-123" },
     });
   });
+
+  it("serializes authenticated catalog mutations without losing the bearer token", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(Response.json({ id: "cat-1", slug: "rideaux", name: "Rideaux" }));
+    const client = new HbsApiClient({
+      baseUrl: "https://api.example.test",
+      fetch: fetchImplementation,
+    });
+
+    await client.post("/api/v1/admin/categories", { slug: "rideaux", name: "Rideaux" }, "token");
+
+    expect(fetchImplementation).toHaveBeenCalledWith(
+      "https://api.example.test/api/v1/admin/categories",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ slug: "rideaux", name: "Rideaux" }),
+        headers: expect.objectContaining({
+          authorization: "Bearer token",
+          "content-type": "application/json",
+        }),
+      }),
+    );
+  });
 });
