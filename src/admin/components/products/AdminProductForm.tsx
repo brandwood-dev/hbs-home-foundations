@@ -73,8 +73,19 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
 
   useEffect(() => {
     if (product || values.categoryId || categories.length === 0) return;
-    setValues((current) => ({ ...current, categoryId: categories[0]?.id ?? "" }));
-  }, [categories, product, values.categoryId]);
+    setValues((current) => {
+      const matchingCategory = categories.find((category) => category.slug === current.category);
+      const selectedCategory = matchingCategory ?? categories[0];
+      if (!selectedCategory) return current;
+      const nextCategory = Object.prototype.hasOwnProperty.call(
+        ADMIN_PRODUCT_CATEGORY_LABELS,
+        selectedCategory.slug,
+      )
+        ? (selectedCategory.slug as AdminProductCategoryKey)
+        : current.category;
+      return { ...current, category: nextCategory, categoryId: selectedCategory.id };
+    });
+  }, [categories, product, values.category, values.categoryId]);
 
   const config = adminProductCategoryConfigs[values.category];
   const others = useMemo(
