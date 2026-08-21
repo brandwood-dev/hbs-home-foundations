@@ -4,16 +4,34 @@
 
 Les données métier du frontend sont encore mixtes :
 
-- le catalogue public utilise encore `MockProductRepository` tant que la bascule
-  `dataProvider` globale n'est pas validée ;
+- le catalogue public utilise `ApiProductRepository` dès que
+  `VITE_HBS_API_BASE_URL` est fourni au build (preview/staging et production) ; sans cette
+  variable, le fallback local reste `MockProductRepository` pour permettre le développement isolé ;
 - les écrans Admin Produits, Catégories et Attributs utilisent désormais les
   repositories HTTP de `src/admin/repositories/api/admin-catalog-api-repositories.ts` ;
 - `LocalCartRepository` — panier persistant (localStorage, versionné) ;
 - `MockOrderRepository` — commandes créées et lues dans `sessionStorage`.
 
-`dataProvider` dans `src/config/features.config.ts` vaut encore `"mock"` pour le public. Le
+Le site public lit les produits publiés via les endpoints publics `/api/v1/products*`. Le
 back-office utilise `adminConfig.catalogDataProvider = "api"` pour le catalogue uniquement ; les
 commandes, clients, stock et contenu restent explicitement mockés jusqu'à leurs phases dédiées.
+
+Le provider public est sélectionné au build : `"api"` si `VITE_HBS_API_BASE_URL` est défini,
+sinon `"mock"` en développement local. Les données de contenu éditorial et les configurations de
+pages de catégories restent statiques jusqu'à l'intégration CMS dédiée.
+
+### Catalogue public (phase 3C.4)
+
+Le même `ProductRepository` est utilisé par les listes, la page détail, les recommandations,
+les sélections de la page d'accueil et la résolution des favoris locaux. En preview, le scénario
+attendu est :
+
+```text
+Admin publie un produit → GET /api/v1/products* → catalogue public
+```
+
+Les produits renvoyés par l'API conservent leur indicateur `isDemo`; le frontend ne force plus
+tous les produits API en mode démonstration.
 
 L'authentification du back-office n'est plus simulée. La phase 2 fournit une connexion Supabase
 Auth en PKCE, une activation par invitation, un MFA TOTP obligatoire et une résolution des rôles et

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { ActiveFilterChips } from "@/components/catalog/ActiveFilterChips";
 import { CatalogBreadcrumbs } from "@/components/catalog/CatalogBreadcrumbs";
+import { CatalogErrorState } from "@/components/catalog/CatalogErrorState";
 import { CatalogEmptyState } from "@/components/catalog/CatalogEmptyState";
 import { CatalogFilters } from "@/components/catalog/CatalogFilters";
 import { CatalogMobileFilters } from "@/components/catalog/CatalogMobileFilters";
@@ -141,7 +142,9 @@ export function CatalogView({ config, search, onSearchChange }: CatalogViewProps
             )}
 
             <div className="mt-6">
-              {listQuery.isPending ? (
+              {listQuery.isError ? (
+                <CatalogErrorState onRetry={() => void listQuery.refetch()} />
+              ) : listQuery.isPending ? (
                 <ProductGrid products={[]} loading skeletonCount={DEFAULT_PAGE_SIZE} />
               ) : products.length === 0 ? (
                 <CatalogEmptyState onReset={resetFilters} />

@@ -14,5 +14,12 @@ export const features = {
   reviews: false,
 } as const;
 
-/** Source de données courante — bascule vers "api" lors du branchement backend. */
-export const dataProvider: "mock" | "api" = "mock";
+/**
+ * Source de données du site public.
+ *
+ * Le preview/production fournit l’URL API au build ; le fallback mock permet
+ * de conserver un démarrage local sans dépendance à un backend distant.
+ */
+export const dataProvider: "mock" | "api" = import.meta.env.VITE_HBS_API_BASE_URL?.trim().length
+  ? "api"
+  : "mock";

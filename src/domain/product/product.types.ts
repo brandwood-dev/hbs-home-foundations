@@ -359,7 +359,8 @@ export interface Product {
   createdAt: string;
   recommendationScore: number;
 
-  isDemo: true;
+  /** Indique si la fiche provient encore d’un jeu de données de démonstration. */
+  isDemo: boolean;
 }
 
 /** Option de variante prête à afficher (panier, commande, suivi). */

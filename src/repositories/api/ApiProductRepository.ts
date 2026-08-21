@@ -602,7 +602,7 @@ function mapProductColor(color: ApiProductColor) {
   return { id, name, slug, family, hex };
 }
 
-function mapProduct(input: ApiProduct): Product {
+export function mapProduct(input: ApiProduct): Product {
   const images = input.images.map((image) => mapProductImage(image));
   const variants = input.variants.map((variant) => mapProductVariant(variant));
   const colors = input.colors
@@ -635,7 +635,7 @@ function mapProduct(input: ApiProduct): Product {
     isFeatured: asBoolean(input.isFeatured, false),
     createdAt: asString(input.createdAt, new Date().toISOString()),
     recommendationScore: asNumber(input.recommendationScore, 0),
-    isDemo: true,
+    isDemo: asBoolean(input.isDemo, false),
   };
 
   const opacityLevel = asEnum(input.opacityLevel, OPACITY_LEVELS);
