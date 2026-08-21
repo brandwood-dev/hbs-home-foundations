@@ -20,6 +20,11 @@ export function calculateCheckoutShipping(
   );
 }
 
+/** Apply the server-provided discount without allowing a negative subtotal. */
+export function calculateDiscountedSubtotal(subtotalMinor: number, discountMinor = 0): number {
+  return Math.max(0, subtotalMinor - Math.max(0, Math.min(discountMinor, subtotalMinor)));
+}
+
 /** Un article volumineux ou hors norme sort du forfait de livraison standard. */
 export function orderRequiresShippingQuote(
   items: Pick<OrderItemSnapshot, "shippingProfile">[],
@@ -32,14 +37,22 @@ export function orderRequiresShippingQuote(
 export function calculateOrderTotals(
   items: Pick<OrderItemSnapshot, "lineTotalMinor" | "shippingProfile">[],
   deliveryMethod: DeliveryMethod,
+  discountMinor = 0,
 ): OrderTotals {
   const subtotalMinor = items.reduce((total, item) => total + item.lineTotalMinor, 0);
+  const appliedDiscountMinor = Math.max(0, Math.min(discountMinor, subtotalMinor));
+  const discountedSubtotalMinor = calculateDiscountedSubtotal(subtotalMinor, appliedDiscountMinor);
   const shippingMinor = calculateCheckoutShipping(
-    subtotalMinor,
+    discountedSubtotalMinor,
     deliveryMethod,
     storeConfig.freeShippingThresholdMinor,
     storeConfig.standardShippingFeeMinor,
     orderRequiresShippingQuote(items),
   );
-  return { subtotalMinor, shippingMinor, totalMinor: subtotalMinor + shippingMinor };
+  return {
+    subtotalMinor,
+    discountMinor: appliedDiscountMinor,
+    shippingMinor,
+    totalMinor: discountedSubtotalMinor + shippingMinor,
+  };
 }

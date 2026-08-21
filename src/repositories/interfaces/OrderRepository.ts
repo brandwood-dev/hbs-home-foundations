@@ -22,6 +22,8 @@ export interface CreateOrderInput {
   shippingAddress?: CheckoutAddress;
   paymentMethod: PaymentMethod;
   items: CreateOrderItemInput[];
+  /** Demo-only handoff; the future API must recalculate this server-side. */
+  discountMinor?: number;
 }
 
 /**

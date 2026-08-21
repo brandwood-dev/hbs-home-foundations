@@ -16,10 +16,13 @@ import {
 } from "@/domain/checkout/checkout.schemas";
 import { ORDER_DEMO_NOTICE } from "@/domain/order/order.constants";
 import { useCreateOrderMutation } from "@/hooks/order/useCreateOrder";
-import { calculateCheckoutShipping } from "@/services/checkout/checkout-calculations";
 import { createIdempotencyKey } from "@/services/checkout/checkout-idempotency";
 import { toOrderItemInputs } from "@/services/checkout/checkout-mappers";
 import { formatMoney } from "@/lib/money/money";
+import {
+  calculateCheckoutShipping,
+  calculateDiscountedSubtotal,
+} from "@/services/checkout/checkout-calculations";
 
 const defaultValues: CheckoutFormInput = {
   customer: { firstName: "", lastName: "", phone: "", email: "" },
@@ -53,19 +56,29 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
   });
 
   const deliveryMethod = watch("deliveryMethod");
+  const discountMinor = cart.totals.discountMinor ?? 0;
+  const discountedSubtotalMinor = calculateDiscountedSubtotal(
+    cart.totals.subtotalMinor,
+    discountMinor,
+  );
   const totalMinor = useMemo(() => {
-    const subtotal = cart.totals.subtotalMinor;
+    const subtotal = discountedSubtotalMinor;
     return (
       subtotal +
       calculateCheckoutShipping(
         subtotal,
         deliveryMethod,
-        undefined,
+        cart.totals.freeShippingThresholdMinor,
         undefined,
         cart.totals.requiresShippingQuote,
       )
     );
-  }, [cart.totals.requiresShippingQuote, cart.totals.subtotalMinor, deliveryMethod]);
+  }, [
+    cart.totals.freeShippingThresholdMinor,
+    cart.totals.requiresShippingQuote,
+    deliveryMethod,
+    discountedSubtotalMinor,
+  ]);
 
   const busy = isSubmitting || createOrder.isPending;
 
@@ -102,6 +115,7 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
         : {}),
       paymentMethod: values.paymentMethod,
       items: toOrderItemInputs(cart),
+      ...(discountMinor > 0 ? { discountMinor } : {}),
     });
 
     void order;
@@ -124,9 +138,9 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
           errors={errors}
           deliveryMethod={deliveryMethod}
           shippingMinor={calculateCheckoutShipping(
-            cart.totals.subtotalMinor,
+            discountedSubtotalMinor,
             deliveryMethod,
-            undefined,
+            cart.totals.freeShippingThresholdMinor,
             undefined,
             cart.totals.requiresShippingQuote,
           )}
