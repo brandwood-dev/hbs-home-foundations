@@ -1,5 +1,6 @@
 import { MockProductRepository } from "@/repositories/mock/MockProductRepository";
 import { MockOrderRepository } from "@/repositories/mock/MockOrderRepository";
+import { ApiOrderRepository } from "@/repositories/api/ApiOrderRepository";
 import { MockContentRepository } from "@/repositories/mock/MockContentRepository";
 import { MockNewsletterRepository } from "@/repositories/mock/MockNewsletterRepository";
 import { LocalCartRepository } from "@/repositories/local/LocalCartRepository";
@@ -59,9 +60,14 @@ export function getCartRepository(): CartRepository {
   return cartRepository;
 }
 
-/** Commandes : MockOrderRepository aujourd'hui, ApiOrderRepository demain. */
+/** Commandes serveur dès que l'API est configurée, mock en développement isolé. */
 export function getOrderRepository(): OrderRepository {
-  if (!orderRepository) orderRepository = new MockOrderRepository(getProductRepository());
+  if (!orderRepository) {
+    orderRepository =
+      dataProvider === "api"
+        ? new ApiOrderRepository()
+        : new MockOrderRepository(getProductRepository());
+  }
   return orderRepository;
 }
 

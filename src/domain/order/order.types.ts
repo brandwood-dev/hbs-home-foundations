@@ -74,6 +74,6 @@ export interface Order {
   updatedAt?: string;
   idempotencyKey: string;
 
-  /** Commande créée par le MockOrderRepository (phase de démonstration). */
-  isDemo: true;
+  /** Indique si la commande provient encore du provider de démonstration local. */
+  isDemo: boolean;
 }

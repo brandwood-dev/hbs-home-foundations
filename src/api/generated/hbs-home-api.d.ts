@@ -606,6 +606,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create an authoritative guest order from the current cart */
+        post: operations["createGuestOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orders/track": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Track a guest order with its number and phone */
+        post: operations["trackGuestOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1245,6 +1279,175 @@ export interface components {
             };
             hasUnavailableItems: boolean;
             hasPriceChanges: boolean;
+        };
+        OrderItemSnapshot: {
+            productId: string;
+            variantId: string;
+            productSlug: string;
+            productName: string;
+            productReference: string;
+            sku: string;
+            imageUrl: string;
+            imageAlt: string;
+            category: string;
+            colorLabel?: string;
+            widthCm?: number;
+            heightCm?: number;
+            curtainHeaderLabel?: string;
+            eyeletColorLabel?: string;
+            liningLabel?: string;
+            selectedOptions: {
+                label: string;
+                value: string;
+            }[];
+            sellingUnitLabel: string;
+            shippingProfile?: string;
+            quantity: number;
+            unitPriceMinor: number;
+            lineTotalMinor: number;
+        };
+        OrderAddress: {
+            governorate: string;
+            city: string;
+            postalCode?: string;
+            addressLine: string;
+            landmark?: string;
+            deliveryNote?: string;
+        };
+        OrderCustomer: {
+            firstName: string;
+            lastName: string;
+            phone: string;
+            email?: string;
+        };
+        OrderTotals: {
+            subtotalMinor: number;
+            discountMinor: number;
+            shippingMinor: number;
+            totalMinor: number;
+        };
+        Order: {
+            /** Format: uuid */
+            id: string;
+            orderNumber: string;
+            status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+            customer: {
+                firstName: string;
+                lastName: string;
+                phone: string;
+                email?: string;
+            };
+            deliveryMethod: "home_delivery" | "store_pickup";
+            shippingAddress?: {
+                governorate: string;
+                city: string;
+                postalCode?: string;
+                addressLine: string;
+                landmark?: string;
+                deliveryNote?: string;
+            };
+            /** @enum {string} */
+            paymentMethod: "cash_on_delivery";
+            items: {
+                productId: string;
+                variantId: string;
+                productSlug: string;
+                productName: string;
+                productReference: string;
+                sku: string;
+                imageUrl: string;
+                imageAlt: string;
+                category: string;
+                colorLabel?: string;
+                widthCm?: number;
+                heightCm?: number;
+                curtainHeaderLabel?: string;
+                eyeletColorLabel?: string;
+                liningLabel?: string;
+                selectedOptions: {
+                    label: string;
+                    value: string;
+                }[];
+                sellingUnitLabel: string;
+                shippingProfile?: string;
+                quantity: number;
+                unitPriceMinor: number;
+                lineTotalMinor: number;
+            }[];
+            totals: {
+                subtotalMinor: number;
+                discountMinor: number;
+                shippingMinor: number;
+                totalMinor: number;
+            };
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            idempotencyKey: string;
+            /** @enum {boolean} */
+            isDemo: false;
+        };
+        OrderTracking: {
+            orderNumber: string;
+            status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+            statusLabel: string;
+            statusDescription: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            customerFirstName?: string;
+            maskedPhone: string;
+            deliveryMethod: "home_delivery" | "store_pickup";
+            deliveryLocation?: {
+                governorate?: string;
+                city?: string;
+            };
+            items: {
+                productId: string;
+                variantId: string;
+                productSlug: string;
+                productName: string;
+                productReference: string;
+                sku: string;
+                imageUrl: string;
+                imageAlt: string;
+                category: string;
+                colorLabel?: string;
+                widthCm?: number;
+                heightCm?: number;
+                curtainHeaderLabel?: string;
+                eyeletColorLabel?: string;
+                liningLabel?: string;
+                selectedOptions: {
+                    label: string;
+                    value: string;
+                }[];
+                sellingUnitLabel: string;
+                shippingProfile?: string;
+                quantity: number;
+                unitPriceMinor: number;
+                lineTotalMinor: number;
+            }[];
+            totals: {
+                subtotalMinor: number;
+                discountMinor: number;
+                shippingMinor: number;
+                totalMinor: number;
+            };
+            timeline: {
+                key: "received" | "confirmed" | "preparing" | "shipped" | "delivered";
+                label: string;
+                description: string;
+                state: "completed" | "current" | "upcoming" | "cancelled";
+                /** Format: date-time */
+                completedAt?: string;
+            }[];
+            nextStepTitle: string;
+            nextStepDescription: string;
+            /** @enum {boolean} */
+            isDemo: false;
         };
     };
     responses: never;
@@ -7204,6 +7407,270 @@ export interface operations {
                         };
                         hasUnavailableItems: boolean;
                         hasPriceChanges: boolean;
+                    };
+                };
+            };
+        };
+    };
+    createGuestOrder: {
+        parameters: {
+            query?: never;
+            header: {
+                "idempotency-key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    customer: {
+                        firstName: string;
+                        lastName: string;
+                        phone: string;
+                        email?: string;
+                    };
+                    deliveryMethod: "home_delivery" | "store_pickup";
+                    shippingAddress?: {
+                        governorate: string;
+                        city: string;
+                        postalCode?: string;
+                        addressLine: string;
+                        landmark?: string;
+                        deliveryNote?: string;
+                    };
+                    /** @enum {string} */
+                    paymentMethod: "cash_on_delivery";
+                    items: {
+                        productId: string;
+                        variantId: string;
+                        quantity: number;
+                        expectedUnitPriceMinor: number;
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        orderNumber: string;
+                        status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                        customer: {
+                            firstName: string;
+                            lastName: string;
+                            phone: string;
+                            email?: string;
+                        };
+                        deliveryMethod: "home_delivery" | "store_pickup";
+                        shippingAddress?: {
+                            governorate: string;
+                            city: string;
+                            postalCode?: string;
+                            addressLine: string;
+                            landmark?: string;
+                            deliveryNote?: string;
+                        };
+                        /** @enum {string} */
+                        paymentMethod: "cash_on_delivery";
+                        items: {
+                            productId: string;
+                            variantId: string;
+                            productSlug: string;
+                            productName: string;
+                            productReference: string;
+                            sku: string;
+                            imageUrl: string;
+                            imageAlt: string;
+                            category: string;
+                            colorLabel?: string;
+                            widthCm?: number;
+                            heightCm?: number;
+                            curtainHeaderLabel?: string;
+                            eyeletColorLabel?: string;
+                            liningLabel?: string;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile?: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            lineTotalMinor: number;
+                        }[];
+                        totals: {
+                            subtotalMinor: number;
+                            discountMinor: number;
+                            shippingMinor: number;
+                            totalMinor: number;
+                        };
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        idempotencyKey: string;
+                        /** @enum {boolean} */
+                        isDemo: false;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    trackGuestOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    orderNumber: string;
+                    phone: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        orderNumber: string;
+                        status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                        statusLabel: string;
+                        statusDescription: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        customerFirstName?: string;
+                        maskedPhone: string;
+                        deliveryMethod: "home_delivery" | "store_pickup";
+                        deliveryLocation?: {
+                            governorate?: string;
+                            city?: string;
+                        };
+                        items: {
+                            productId: string;
+                            variantId: string;
+                            productSlug: string;
+                            productName: string;
+                            productReference: string;
+                            sku: string;
+                            imageUrl: string;
+                            imageAlt: string;
+                            category: string;
+                            colorLabel?: string;
+                            widthCm?: number;
+                            heightCm?: number;
+                            curtainHeaderLabel?: string;
+                            eyeletColorLabel?: string;
+                            liningLabel?: string;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile?: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            lineTotalMinor: number;
+                        }[];
+                        totals: {
+                            subtotalMinor: number;
+                            discountMinor: number;
+                            shippingMinor: number;
+                            totalMinor: number;
+                        };
+                        timeline: {
+                            key: "received" | "confirmed" | "preparing" | "shipped" | "delivered";
+                            label: string;
+                            description: string;
+                            state: "completed" | "current" | "upcoming" | "cancelled";
+                            /** Format: date-time */
+                            completedAt?: string;
+                        }[];
+                        nextStepTitle: string;
+                        nextStepDescription: string;
+                        /** @enum {boolean} */
+                        isDemo: false;
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
                     };
                 };
             };
