@@ -25,6 +25,7 @@ import type {
 type ApiCategory = components["schemas"]["AdminCategory"];
 type ApiAttribute = components["schemas"]["AdminAttribute"];
 type ApiProduct = components["schemas"]["AdminProduct"];
+type ApiProductMedia = components["schemas"]["AdminProductMedia"];
 type ApiVariant = components["schemas"]["AdminProductVariant"];
 type ProductCreateBody =
   operations["adminCreateProduct"]["requestBody"]["content"]["application/json"];
@@ -248,10 +249,27 @@ function mapVariant(variant: ApiVariant): AdminVariant {
   };
 }
 
+function mapMedia(media: ApiProductMedia): AdminProductImage {
+  return {
+    id: media.id,
+    url: media.publicUrl ?? media.storagePath,
+    alt: media.alt,
+    order: media.sortOrder + 1,
+    isPrimary: media.isPrimary,
+    storagePath: media.storagePath,
+    ...(media.publicUrl ? { publicUrl: media.publicUrl } : {}),
+    type: media.mediaType,
+    ...(media.variantId ? { variantId: media.variantId } : {}),
+  };
+}
+
 function mapProduct(product: ApiProduct): AdminProduct {
   const status: ProductPublicationStatus =
     product.status === "active" ? "published" : product.status;
   const category = categoryKey(product.categorySlug);
+  const imageAssets = product.media.map(mapMedia);
+  const images = imageAssets.map((image) => image.url);
+  const primary = imageAssets.find((image) => image.isPrimary) ?? imageAssets[0];
   return {
     id: product.id,
     name: product.name,
@@ -263,7 +281,9 @@ function mapProduct(product: ApiProduct): AdminProduct {
     longDescription: product.longDescription ?? "",
     ...(product.material ? { material: product.material } : {}),
     status,
-    images: [],
+    ...(primary ? { imageUrl: primary.url } : {}),
+    images,
+    ...(imageAssets.length > 0 ? { imageAssets } : {}),
     tags: [],
     rooms: [],
     variants: product.variants.map(mapVariant),
@@ -317,6 +337,13 @@ function productPatch(
   input: Partial<AdminProductInput>,
   expectedVersion?: number,
 ): ProductPatchBody {
+  const mediaPayload =
+    input.imageAssets === undefined && input.images === undefined
+      ? {}
+      : {
+          images: input.images ?? input.imageAssets?.map((image) => image.url) ?? [],
+          imageAssets: input.imageAssets ?? [],
+        };
   return {
     ...(input.slug === undefined ? {} : { slug: input.slug.trim() }),
     ...(input.name === undefined ? {} : { name: input.name.trim() }),
@@ -330,6 +357,7 @@ function productPatch(
     ...(input.longDescription === undefined
       ? {}
       : { longDescription: input.longDescription.trim() || null }),
+    ...(Object.keys(mediaPayload).length > 0 ? { payload: mediaPayload } : {}),
     ...(expectedVersion === undefined ? {} : { expectedVersion }),
   };
 }

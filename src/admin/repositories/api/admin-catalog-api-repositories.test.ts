@@ -27,6 +27,22 @@ const product = {
   archivedAt: null,
   version: 2,
   isDemo: false,
+  media: [
+    {
+      id: "media-1",
+      productId: "product-1",
+      variantId: null,
+      storagePath: "products/rideau-lin/media-1.jpg",
+      publicUrl: "https://cdn.example.test/media-1.jpg",
+      alt: "Rideau en lin",
+      mediaType: "front",
+      status: "active",
+      isPrimary: true,
+      sortOrder: 0,
+      createdAt: "2026-08-21T00:00:00.000Z",
+      updatedAt: "2026-08-21T00:00:00.000Z",
+    },
+  ],
   variants: [
     {
       id: "variant-1",
@@ -67,6 +83,9 @@ describe("Admin catalog API adapters", () => {
       heightCm: 250,
       stock: 4,
     });
+    expect(mapped.imageAssets).toMatchObject([
+      { url: "https://cdn.example.test/media-1.jpg", alt: "Rideau en lin", isPrimary: true },
+    ]);
   });
 
   it("preserves category and attribute semantics used by the Admin screens", () => {
