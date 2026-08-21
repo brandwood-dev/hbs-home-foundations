@@ -11,6 +11,7 @@ import type {
   AdminSellingMode,
   AdminVariant,
   ProductPublicationStatus,
+  StockMovement,
 } from "@/admin/types/admin.types";
 import { ADMIN_PRODUCT_CATEGORY_LABELS } from "@/admin/types/admin.types";
 import type {
@@ -20,6 +21,10 @@ import type {
   AdminCategoryRepository,
   AdminProductInput,
   AdminProductRepository,
+  AdminInventoryRepository,
+  InventoryRow,
+  StockAdjustmentInput,
+  StockSettingsInput,
 } from "@/admin/repositories/interfaces";
 
 type ApiCategory = components["schemas"]["AdminCategory"];
@@ -43,6 +48,9 @@ type AttributeCreateBody =
   operations["adminCreateAttribute"]["requestBody"]["content"]["application/json"];
 type AttributePatchBody =
   operations["adminUpdateAttribute"]["requestBody"]["content"]["application/json"];
+
+type ApiInventoryRow = components["schemas"]["AdminInventoryRow"];
+type ApiStockMovement = components["schemas"]["AdminStockMovement"];
 
 export type AdminAccessTokenProvider = () => Promise<string>;
 
@@ -566,6 +574,48 @@ export class AdminCatalogApi {
       ),
     );
   }
+
+  listInventory(): Promise<{ items: ApiInventoryRow[] }> {
+    return this.token().then((token) =>
+      this.client.get<{ items: ApiInventoryRow[] }>("/api/v1/admin/inventory", undefined, token),
+    );
+  }
+
+  listStockMovements(variantId?: string): Promise<{ items: ApiStockMovement[] }> {
+    const query = variantId ? `?variantId=${encodeURIComponent(variantId)}` : "";
+    return this.token().then((token) =>
+      this.client.get<{ items: ApiStockMovement[] }>(
+        `/api/v1/admin/inventory/movements${query}`,
+        undefined,
+        token,
+      ),
+    );
+  }
+
+  adjustInventory(input: Record<string, unknown>, operationKey: string): Promise<ApiInventoryRow> {
+    return this.token().then((token) =>
+      this.client.post<ApiInventoryRow>(
+        "/api/v1/admin/inventory/adjustments",
+        input,
+        token,
+        undefined,
+        { "idempotency-key": operationKey },
+      ),
+    );
+  }
+
+  updateInventorySettings(
+    variantId: string,
+    input: Record<string, unknown>,
+  ): Promise<ApiInventoryRow> {
+    return this.token().then((token) =>
+      this.client.patch<ApiInventoryRow>(
+        `/api/v1/admin/inventory/${encodeURIComponent(variantId)}`,
+        input,
+        token,
+      ),
+    );
+  }
 }
 
 export class ApiAdminCategoryRepository implements AdminCategoryRepository {
@@ -717,6 +767,112 @@ export class ApiAdminProductRepository implements AdminProductRepository {
 
   async isUsedInOrders(): Promise<boolean> {
     return false;
+  }
+}
+
+function mapInventoryRow(row: ApiInventoryRow): InventoryRow {
+  const variant: AdminVariant = {
+    id: row.variant.id,
+    sku: row.variant.sku,
+    colorId: row.variant.colorId,
+    colorLabel: row.variant.colorLabel,
+    widthCm: row.variant.widthCm,
+    heightCm: row.variant.heightCm,
+    curtainHeader: row.variant.curtainHeader,
+    ...(row.variant.eyeletColor ? { eyeletColor: row.variant.eyeletColor } : {}),
+    ...(row.variant.lining ? { lining: row.variant.lining } : {}),
+    priceMinor: row.variant.priceMinor,
+    ...(row.variant.compareAtPriceMinor === undefined
+      ? {}
+      : { compareAtPriceMinor: row.variant.compareAtPriceMinor }),
+    stock: row.variant.stock,
+    lowStockThreshold: row.variant.lowStockThreshold,
+    availability: row.variant.availability,
+    ...(row.variant.imageUrl ? { imageUrl: row.variant.imageUrl } : {}),
+    isActive: row.variant.isActive,
+    isDefault: row.variant.isDefault,
+    options: row.variant.options,
+    ...(row.variant.packQuantity === undefined ? {} : { packQuantity: row.variant.packQuantity }),
+    trackInventory: row.variant.trackInventory,
+  };
+  return {
+    productId: row.productId,
+    productName: row.productName,
+    categoryId: row.categoryId,
+    variant,
+    updatedAt: row.updatedAt,
+  };
+}
+
+function mapStockMovement(movement: ApiStockMovement): StockMovement {
+  return {
+    id: movement.id,
+    variantId: movement.variantId,
+    productId: movement.productId,
+    type: movement.type,
+    quantity: movement.quantity,
+    reason: movement.reason,
+    ...(movement.note ? { note: movement.note } : {}),
+    ...(movement.previousStock === undefined ? {} : { previousStock: movement.previousStock }),
+    ...(movement.resultingStock === undefined ? {} : { resultingStock: movement.resultingStock }),
+    createdAt: movement.createdAt,
+    ...(movement.userId ? { userId: movement.userId } : {}),
+  };
+}
+
+function operationKey(): string {
+  return globalThis.crypto?.randomUUID?.() ?? `admin-${Date.now()}-${Math.random()}`;
+}
+
+export class ApiAdminInventoryRepository implements AdminInventoryRepository {
+  constructor(private readonly api = new AdminCatalogApi()) {}
+
+  async list(): Promise<InventoryRow[]> {
+    return (await this.api.listInventory()).items.map(mapInventoryRow);
+  }
+
+  async adjust(input: StockAdjustmentInput): Promise<InventoryRow> {
+    const reason = [
+      "purchase",
+      "sale_correction",
+      "customer_return",
+      "damaged",
+      "inventory_correction",
+      "manual_adjustment",
+      "other",
+    ].includes(input.reason)
+      ? input.reason
+      : "other";
+    const row = await this.api.adjustInventory(
+      {
+        productId: input.productId,
+        variantId: input.variantId,
+        type: input.type,
+        quantity: input.quantity,
+        reason,
+        ...(input.note ? { note: input.note } : {}),
+        ...(input.lowStockThreshold === undefined
+          ? {}
+          : { lowStockThreshold: input.lowStockThreshold }),
+        ...(input.availability ? { availability: input.availability } : {}),
+      },
+      operationKey(),
+    );
+    return mapInventoryRow(row);
+  }
+
+  async updateSettings(input: StockSettingsInput): Promise<InventoryRow> {
+    return mapInventoryRow(
+      await this.api.updateInventorySettings(input.variantId, {
+        productId: input.productId,
+        lowStockThreshold: input.lowStockThreshold,
+        ...(input.availability ? { availability: input.availability } : {}),
+      }),
+    );
+  }
+
+  async movements(variantId?: string): Promise<StockMovement[]> {
+    return (await this.api.listStockMovements(variantId)).items.map(mapStockMovement);
   }
 }
 

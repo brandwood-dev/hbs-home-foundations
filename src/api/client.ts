@@ -83,7 +83,12 @@ export class HbsApiClient {
   private async request<T>(
     method: "GET" | "POST" | "PATCH",
     path: string,
-    options: { body?: unknown; signal?: AbortSignal; accessToken?: string } = {},
+    options: {
+      body?: unknown;
+      signal?: AbortSignal;
+      accessToken?: string;
+      headers?: Record<string, string>;
+    } = {},
   ): Promise<T> {
     if (!this.baseUrl) {
       throw new HbsApiError(0, API_BASE_URL_MISSING_ERROR);
@@ -92,6 +97,7 @@ export class HbsApiClient {
     const headers: Record<string, string> = {
       accept: "application/json, application/problem+json",
     };
+    Object.assign(headers, options.headers);
     if (options.accessToken) headers["authorization"] = `Bearer ${options.accessToken}`;
     if (options.body !== undefined) headers["content-type"] = "application/json";
 
@@ -134,11 +140,13 @@ export class HbsApiClient {
     body: unknown,
     accessToken: string,
     signal?: AbortSignal,
+    headers?: Record<string, string>,
   ): Promise<T> {
     return this.request<T>("POST", path, {
       body,
       accessToken,
       ...(signal ? { signal } : {}),
+      ...(headers ? { headers } : {}),
     });
   }
 

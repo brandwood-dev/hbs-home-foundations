@@ -350,6 +350,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/inventory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["adminListInventory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/inventory/movements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["adminListStockMovements"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/inventory/adjustments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["adminAdjustInventory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/inventory/{variantId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["adminUpdateInventorySettings"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -704,6 +768,131 @@ export interface components {
             total: number;
             limit: number;
             offset: number;
+        };
+        AdminInventoryVariant: {
+            id: string;
+            sku: string;
+            colorId: string;
+            colorLabel: string;
+            widthCm: number;
+            heightCm: number;
+            curtainHeader: string;
+            eyeletColor?: string;
+            lining?: string;
+            priceMinor: number;
+            compareAtPriceMinor?: number;
+            stock: number;
+            reserved: number;
+            lowStockThreshold: number;
+            availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+            imageUrl?: string;
+            isActive: boolean;
+            isDefault: boolean;
+            options: {
+                [key: string]: string | number;
+            };
+            packQuantity?: number;
+            trackInventory: boolean;
+        };
+        AdminInventoryRow: {
+            productId: string;
+            productName: string;
+            categoryId: string;
+            variant: {
+                id: string;
+                sku: string;
+                colorId: string;
+                colorLabel: string;
+                widthCm: number;
+                heightCm: number;
+                curtainHeader: string;
+                eyeletColor?: string;
+                lining?: string;
+                priceMinor: number;
+                compareAtPriceMinor?: number;
+                stock: number;
+                reserved: number;
+                lowStockThreshold: number;
+                availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                imageUrl?: string;
+                isActive: boolean;
+                isDefault: boolean;
+                options: {
+                    [key: string]: string | number;
+                };
+                packQuantity?: number;
+                trackInventory: boolean;
+            };
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        AdminInventoryResponse: {
+            items: {
+                productId: string;
+                productName: string;
+                categoryId: string;
+                variant: {
+                    id: string;
+                    sku: string;
+                    colorId: string;
+                    colorLabel: string;
+                    widthCm: number;
+                    heightCm: number;
+                    curtainHeader: string;
+                    eyeletColor?: string;
+                    lining?: string;
+                    priceMinor: number;
+                    compareAtPriceMinor?: number;
+                    stock: number;
+                    reserved: number;
+                    lowStockThreshold: number;
+                    availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                    imageUrl?: string;
+                    isActive: boolean;
+                    isDefault: boolean;
+                    options: {
+                        [key: string]: string | number;
+                    };
+                    packQuantity?: number;
+                    trackInventory: boolean;
+                };
+                /** Format: date-time */
+                updatedAt: string;
+            }[];
+        };
+        AdminStockMovement: {
+            /** Format: uuid */
+            id: string;
+            variantId: string;
+            productId: string;
+            type: "increase" | "decrease" | "set";
+            quantity: number;
+            reason: string;
+            note?: string;
+            previousStock?: number;
+            resultingStock?: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: uuid */
+            userId?: string;
+        };
+        AdminStockMovementsResponse: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                variantId: string;
+                productId: string;
+                type: "increase" | "decrease" | "set";
+                quantity: number;
+                reason: string;
+                note?: string;
+                previousStock?: number;
+                resultingStock?: number;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: uuid */
+                userId?: string;
+            }[];
         };
     };
     responses: never;
@@ -4156,6 +4345,509 @@ export interface operations {
                         createdAt: string;
                         /** Format: date-time */
                         updatedAt: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminListInventory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            productId: string;
+                            productName: string;
+                            categoryId: string;
+                            variant: {
+                                id: string;
+                                sku: string;
+                                colorId: string;
+                                colorLabel: string;
+                                widthCm: number;
+                                heightCm: number;
+                                curtainHeader: string;
+                                eyeletColor?: string;
+                                lining?: string;
+                                priceMinor: number;
+                                compareAtPriceMinor?: number;
+                                stock: number;
+                                reserved: number;
+                                lowStockThreshold: number;
+                                availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                                imageUrl?: string;
+                                isActive: boolean;
+                                isDefault: boolean;
+                                options: {
+                                    [key: string]: string | number;
+                                };
+                                packQuantity?: number;
+                                trackInventory: boolean;
+                            };
+                            /** Format: date-time */
+                            updatedAt: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminListStockMovements: {
+        parameters: {
+            query?: {
+                variantId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            /** Format: uuid */
+                            id: string;
+                            variantId: string;
+                            productId: string;
+                            type: "increase" | "decrease" | "set";
+                            quantity: number;
+                            reason: string;
+                            note?: string;
+                            previousStock?: number;
+                            resultingStock?: number;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: uuid */
+                            userId?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminAdjustInventory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    productId: string;
+                    variantId: string;
+                    type: "increase" | "decrease" | "set";
+                    quantity: number;
+                    reason: "purchase" | "sale_correction" | "customer_return" | "damaged" | "inventory_correction" | "manual_adjustment" | "other";
+                    note?: string;
+                    lowStockThreshold?: number;
+                    availability?: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        productId: string;
+                        productName: string;
+                        categoryId: string;
+                        variant: {
+                            id: string;
+                            sku: string;
+                            colorId: string;
+                            colorLabel: string;
+                            widthCm: number;
+                            heightCm: number;
+                            curtainHeader: string;
+                            eyeletColor?: string;
+                            lining?: string;
+                            priceMinor: number;
+                            compareAtPriceMinor?: number;
+                            stock: number;
+                            reserved: number;
+                            lowStockThreshold: number;
+                            availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                            imageUrl?: string;
+                            isActive: boolean;
+                            isDefault: boolean;
+                            options: {
+                                [key: string]: string | number;
+                            };
+                            packQuantity?: number;
+                            trackInventory: boolean;
+                        };
+                        /** Format: date-time */
+                        updatedAt: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminUpdateInventorySettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                variantId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    productId: string;
+                    lowStockThreshold: number;
+                    availability?: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        productId: string;
+                        productName: string;
+                        categoryId: string;
+                        variant: {
+                            id: string;
+                            sku: string;
+                            colorId: string;
+                            colorLabel: string;
+                            widthCm: number;
+                            heightCm: number;
+                            curtainHeader: string;
+                            eyeletColor?: string;
+                            lining?: string;
+                            priceMinor: number;
+                            compareAtPriceMinor?: number;
+                            stock: number;
+                            reserved: number;
+                            lowStockThreshold: number;
+                            availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                            imageUrl?: string;
+                            isActive: boolean;
+                            isDefault: boolean;
+                            options: {
+                                [key: string]: string | number;
+                            };
+                            packQuantity?: number;
+                            trackInventory: boolean;
+                        };
+                        /** Format: date-time */
+                        updatedAt: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
                     };
                 };
             };
