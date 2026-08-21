@@ -74,6 +74,8 @@ export interface ResolvedCartItem {
 
 export interface CartTotals {
   subtotalMinor: number;
+  /** Remise calculée par l'API (absente du panier local historique). */
+  discountMinor?: number;
   shippingMinor: number;
   totalEstimatedMinor: number;
 
@@ -92,4 +94,11 @@ export interface Cart {
 
   hasUnavailableItems: boolean;
   hasPriceChanges: boolean;
+  /** Promotion serveur actuellement attachée au panier, si présente. */
+  promotion?: {
+    code: string;
+    valid: boolean;
+    discountMinor: number;
+    reason: "minimum_subtotal" | "expired" | "usage_limit" | "inactive" | null;
+  };
 }
