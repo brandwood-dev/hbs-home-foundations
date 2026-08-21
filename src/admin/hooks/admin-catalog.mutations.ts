@@ -4,6 +4,7 @@ import type {
   AdminAttributeInput,
   AdminCategoryInput,
   AdminProductInput,
+  AdminPromotionInput,
   StockAdjustmentInput,
   StockSettingsInput,
 } from "@/admin/repositories/interfaces";
@@ -121,5 +122,24 @@ export function useUpdateStockSettings() {
       adminRepositories.inventory.updateSettings(variables),
     successMessage: "Paramètres de stock mis à jour.",
     invalidate: [adminKeys.inventory(), adminKeys.products()],
+  });
+}
+
+export function useSaveAdminPromotion() {
+  return useAdminMutation({
+    mutationFn: (variables: { id?: string; input: AdminPromotionInput }) =>
+      variables.id
+        ? adminRepositories.promotions.update(variables.id, variables.input)
+        : adminRepositories.promotions.create(variables.input),
+    successMessage: "Promotion enregistrée.",
+    invalidate: [adminKeys.promotions()],
+  });
+}
+
+export function useDeleteAdminPromotion() {
+  return useAdminMutation({
+    mutationFn: (id: string) => adminRepositories.promotions.delete(id),
+    successMessage: "Promotion désactivée.",
+    invalidate: [adminKeys.promotions()],
   });
 }

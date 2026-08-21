@@ -205,4 +205,16 @@ export class ApiCartRepository implements CartRepository {
   async clearCart(): Promise<Cart> {
     return mapCart(await this.apiClient.delete<ApiCartResponse>("/api/v1/cart"));
   }
+
+  async applyPromotion(code: string): Promise<Cart> {
+    return mapCart(
+      await this.apiClient.post<ApiCartResponse>("/api/v1/cart/promotion", {
+        code: code.trim(),
+      }),
+    );
+  }
+
+  async removePromotion(): Promise<Cart> {
+    return mapCart(await this.apiClient.delete<ApiCartResponse>("/api/v1/cart/promotion"));
+  }
 }

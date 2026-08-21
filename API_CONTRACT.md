@@ -266,7 +266,7 @@ Le panier invité est identifié par un jeton opaque envoyé dans un cookie `Htt
 vérité. Le backend relit la variante publiée et le stock disponible à chaque mutation et lecture.
 L'ajout au panier ne réserve pas le stock ; la réservation transactionnelle intervient au checkout.
 
-```text
+````text
 GET    /api/v1/cart
 POST   /api/v1/cart/items                  { "productId": "…", "variantId": "…", "quantity": 1 }
 PATCH  /api/v1/cart/items/:lineId          { "quantity": 2 }
@@ -274,9 +274,30 @@ DELETE /api/v1/cart/items/:lineId
 DELETE /api/v1/cart
 POST   /api/v1/cart/promotion              { "code": "…" }
 DELETE /api/v1/cart/promotion
+
+### Promotions Admin — Phase 5B
+
+Les règles de promotion sont gérées exclusivement par l’API avec une permission
+`promotions.read` (lecture) ou `promotions.write` (mutations, MFA `aal2`). Les écritures
+sont auditées et une promotion est désactivée par archivage logique.
+
+```text
+GET    /api/v1/admin/promotions
+POST   /api/v1/admin/promotions
+GET    /api/v1/admin/promotions/:id
+PATCH  /api/v1/admin/promotions/:id
+POST   /api/v1/admin/promotions/:id/archive
+````
+
+Le corps utilise `name`, `code`, `discountType` (`percentage` ou `fixed_amount`),
+`discountValue`, `minSubtotalMinor`, `startsAt`, `endsAt`, `maxRedemptions` et `isActive`.
+Le serveur normalise le code en majuscules et recalcule toujours la remise à partir du
+sous-total serveur.
+
 ```
 
 La réponse expose les lignes réconciliées, le prix courant, le prix observé à l'ajout, la
 disponibilité, les frais de livraison estimés et `discountMinor`. Une seule promotion peut être
 attachée au panier en V1. Les promotions sont vérifiées par fenêtre de validité, minimum de panier
 et limite d'utilisation ; leur compteur n'est consommé qu'à la création de commande.
+```

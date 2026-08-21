@@ -29,6 +29,16 @@ Le repository local reste disponible uniquement pour le développement isolé sa
 serveur peut signaler une variation de prix, une quantité ajustée, une ligne indisponible ou une
 promotion non applicable afin que l'UI demande une confirmation avant le checkout.
 
+### Promotions Admin — Phase 5B
+
+L’écran `/admin/promotions` consomme `GET/POST/PATCH /api/v1/admin/promotions` et
+`POST /api/v1/admin/promotions/:id/archive`. Le navigateur ne lit jamais la table
+`commerce.promotions` directement : le token Supabase est transmis à l’API, qui applique
+RBAC (`promotions.read`/`promotions.write`), MFA pour les mutations et l’audit append-only.
+
+Le panier public expose le champ code sur `/panier` et dans le drawer. `POST`/`DELETE`
+`/api/v1/cart/promotion` sont la source de vérité des totaux et du retrait du code.
+
 ### Catalogue public (phase 3C.4)
 
 Le même `ProductRepository` est utilisé par les listes, la page détail, les recommandations,

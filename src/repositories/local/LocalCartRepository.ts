@@ -75,4 +75,15 @@ export class LocalCartRepository implements CartRepository {
     writePersistedCart([]);
     return buildCart([], new Map());
   }
+
+  async applyPromotion(_code: string): Promise<Cart> {
+    throw new CartError(
+      "promotion_unavailable",
+      "Les codes promotionnels sont disponibles lorsque le panier serveur est activé.",
+    );
+  }
+
+  async removePromotion(): Promise<Cart> {
+    return this.getCart();
+  }
 }
