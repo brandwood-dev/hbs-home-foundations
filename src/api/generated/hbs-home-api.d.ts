@@ -569,6 +569,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/orders/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change the status of a persisted customer order */
+        patch: operations["updateAdminOrderStatus"];
+        trace?: never;
+    };
     "/api/v1/cart": {
         parameters: {
             query?: never;
@@ -7076,6 +7093,214 @@ export interface operations {
             };
             /** @description Default Response */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    updateAdminOrderStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                    reason?: string;
+                    note?: string;
+                    carrierName?: string;
+                    trackingNumber?: string;
+                    /** Format: date-time */
+                    shippedAt?: string;
+                    /** Format: date-time */
+                    deliveredAt?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        orderNumber: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                        paymentStatus: "pending" | "collected" | "refunded";
+                        /** @enum {string} */
+                        paymentMethod: "cash_on_delivery";
+                        /** Format: uuid */
+                        customerId: string;
+                        customerName: string;
+                        customerPhone: string;
+                        customerEmail: string | null;
+                        deliveryMethod: "home_delivery" | "store_pickup";
+                        governorate: string;
+                        city: string;
+                        postalCode: string | null;
+                        addressLine: string;
+                        landmark: string | null;
+                        deliveryNote: string | null;
+                        items: {
+                            productId: string;
+                            variantId: string;
+                            productName: string;
+                            variantLabel: string;
+                            sku: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            lineTotalMinor: number;
+                            productReference: string;
+                            productSlug: string;
+                            imageUrl: string;
+                            imageAlt: string;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile: string | null;
+                        }[];
+                        subtotalMinor: number;
+                        shippingMinor: number;
+                        discountMinor: number;
+                        totalMinor: number;
+                        timeline: {
+                            id: string;
+                            /** Format: date-time */
+                            at: string;
+                            status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                            label: string;
+                            kind: "created" | "status";
+                            reason: string | null;
+                        }[];
+                        notes: unknown[];
+                        shipment: {
+                            shippingStatus: "calculated" | "to_confirm";
+                            shippingFeeMinor: number;
+                        };
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
