@@ -350,6 +350,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/promotions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List promotion rules */
+        get: operations["adminListPromotions"];
+        put?: never;
+        /** Create a promotion rule */
+        post: operations["adminCreatePromotion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/promotions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a promotion rule */
+        get: operations["adminGetPromotion"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update a promotion rule */
+        patch: operations["adminUpdatePromotion"];
+        trace?: never;
+    };
+    "/api/v1/admin/promotions/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Deactivate a promotion rule */
+        post: operations["adminArchivePromotion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/inventory": {
         parameters: {
             query?: never;
@@ -414,6 +467,145 @@ export interface paths {
         patch: operations["adminUpdateInventorySettings"];
         trace?: never;
     };
+    "/api/v1/admin/inventory/reservations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reserve available stock transactionally */
+        post: operations["adminCreateInventoryReservation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/inventory/reservations/{reservationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read one stock reservation */
+        get: operations["adminGetInventoryReservation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/inventory/reservations/{reservationId}/release": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Release a stock reservation idempotently */
+        post: operations["adminReleaseInventoryReservation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/inventory/reservations/expire": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Release expired stock reservations */
+        post: operations["adminExpireInventoryReservations"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cart": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read or create the current opaque-token guest cart */
+        get: operations["getCart"];
+        put?: never;
+        post?: never;
+        /** Clear the current cart */
+        delete: operations["clearCart"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cart/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a catalog variant to the current cart */
+        post: operations["addCartItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cart/items/{lineId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a cart line */
+        delete: operations["removeCartItem"];
+        options?: never;
+        head?: never;
+        /** Change a cart line quantity */
+        patch: operations["updateCartItem"];
+        trace?: never;
+    };
+    "/api/v1/cart/promotion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply one promotion code to the cart */
+        post: operations["applyCartPromotion"];
+        /** Remove the current promotion code */
+        delete: operations["removeCartPromotion"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -472,7 +664,7 @@ export interface components {
             /** @enum {string} */
             apiVersion: "v1";
             /** @enum {string} */
-            contractVersion: "1.1.0";
+            contractVersion: "1.4.0";
             releaseVersion: string;
             gitSha: string;
             builtAt: string;
@@ -769,6 +961,51 @@ export interface components {
             limit: number;
             offset: number;
         };
+        AdminPromotion: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            code: string;
+            discountType: "percentage" | "fixed_amount";
+            discountValue: number;
+            /** @enum {string} */
+            currency: "TND";
+            minSubtotalMinor: number;
+            startsAt: string | null;
+            endsAt: string | null;
+            maxRedemptions: number | null;
+            redeemedCount: number;
+            isActive: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        AdminPromotionsResponse: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                code: string;
+                discountType: "percentage" | "fixed_amount";
+                discountValue: number;
+                /** @enum {string} */
+                currency: "TND";
+                minSubtotalMinor: number;
+                startsAt: string | null;
+                endsAt: string | null;
+                maxRedemptions: number | null;
+                redeemedCount: number;
+                isActive: boolean;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+            }[];
+            total: number;
+            limit: number;
+            offset: number;
+        };
         AdminInventoryVariant: {
             id: string;
             sku: string;
@@ -894,6 +1131,121 @@ export interface components {
                 userId?: string;
             }[];
         };
+        StockReservation: {
+            /** Format: uuid */
+            id: string;
+            reservationKey: string;
+            orderId: string | null;
+            status: "active" | "released" | "expired" | "converted";
+            /** Format: date-time */
+            expiresAt: string;
+            releasedAt: string | null;
+            releaseReason: string | null;
+            convertedAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            items: {
+                productId: string;
+                variantId: string;
+                quantity: number;
+            }[];
+        };
+        ReservationExpiryResponse: {
+            releasedCount: number;
+            reservationIds: string[];
+        };
+        CartLine: {
+            lineId: string;
+            productId: string;
+            productSlug: string;
+            productName: string;
+            productReference: string;
+            variantId: string;
+            sku: string;
+            quantity: number;
+            unitPriceMinor: number;
+            compareAtPriceMinor: number | null;
+            lineTotalMinor: number;
+            priceAtAddMinor: number;
+            priceChanged: boolean;
+            imageUrl: string;
+            imageAlt: string;
+            category: string;
+            colorLabel: string | null;
+            widthCm: number | null;
+            heightCm: number | null;
+            selectedOptions: {
+                label: string;
+                value: string;
+            }[];
+            sellingUnitLabel: string;
+            shippingProfile: string | null;
+            availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+            availableQuantity: number;
+            status: "available" | "low_stock" | "out_of_stock" | "variant_missing" | "product_missing" | "price_changed" | "quantity_adjusted";
+            canPurchase: boolean;
+        };
+        Cart: {
+            /** Format: uuid */
+            cartId: string;
+            /** @enum {string} */
+            currency: "TND";
+            /** Format: date-time */
+            expiresAt: string;
+            items: {
+                lineId: string;
+                productId: string;
+                productSlug: string;
+                productName: string;
+                productReference: string;
+                variantId: string;
+                sku: string;
+                quantity: number;
+                unitPriceMinor: number;
+                compareAtPriceMinor: number | null;
+                lineTotalMinor: number;
+                priceAtAddMinor: number;
+                priceChanged: boolean;
+                imageUrl: string;
+                imageAlt: string;
+                category: string;
+                colorLabel: string | null;
+                widthCm: number | null;
+                heightCm: number | null;
+                selectedOptions: {
+                    label: string;
+                    value: string;
+                }[];
+                sellingUnitLabel: string;
+                shippingProfile: string | null;
+                availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                availableQuantity: number;
+                status: "available" | "low_stock" | "out_of_stock" | "variant_missing" | "product_missing" | "price_changed" | "quantity_adjusted";
+                canPurchase: boolean;
+            }[];
+            itemCount: number;
+            lineCount: number;
+            totals: {
+                subtotalMinor: number;
+                discountMinor: number;
+                shippingMinor: number;
+                totalEstimatedMinor: number;
+                freeShippingThresholdMinor: number;
+                amountUntilFreeShippingMinor: number;
+                hasFreeShipping: boolean;
+                requiresShippingQuote: boolean;
+            };
+            promotion: null | {
+                code: string;
+                valid: boolean;
+                discountMinor: number;
+                discountType: "percentage" | "fixed_amount" | null;
+                discountValue: number | null;
+                reason: "minimum_subtotal" | "expired" | "usage_limit" | "inactive" | null;
+            };
+            hasUnavailableItems: boolean;
+            hasPriceChanges: boolean;
+        };
     };
     responses: never;
     parameters: never;
@@ -1004,7 +1356,7 @@ export interface operations {
                         /** @enum {string} */
                         apiVersion: "v1";
                         /** @enum {string} */
-                        contractVersion: "1.1.0";
+                        contractVersion: "1.4.0";
                         releaseVersion: string;
                         gitSha: string;
                         builtAt: string;
@@ -4416,6 +4768,623 @@ export interface operations {
             };
         };
     };
+    adminListPromotions: {
+        parameters: {
+            query?: {
+                q?: string;
+                isActive?: boolean;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            code: string;
+                            discountType: "percentage" | "fixed_amount";
+                            discountValue: number;
+                            /** @enum {string} */
+                            currency: "TND";
+                            minSubtotalMinor: number;
+                            startsAt: string | null;
+                            endsAt: string | null;
+                            maxRedemptions: number | null;
+                            redeemedCount: number;
+                            isActive: boolean;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        }[];
+                        total: number;
+                        limit: number;
+                        offset: number;
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminCreatePromotion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                    code: string;
+                    discountType: "percentage" | "fixed_amount";
+                    discountValue: number;
+                    minSubtotalMinor?: number;
+                    startsAt?: string | null;
+                    endsAt?: string | null;
+                    maxRedemptions?: number | null;
+                    isActive?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        name: string;
+                        code: string;
+                        discountType: "percentage" | "fixed_amount";
+                        discountValue: number;
+                        /** @enum {string} */
+                        currency: "TND";
+                        minSubtotalMinor: number;
+                        startsAt: string | null;
+                        endsAt: string | null;
+                        maxRedemptions: number | null;
+                        redeemedCount: number;
+                        isActive: boolean;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminGetPromotion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        name: string;
+                        code: string;
+                        discountType: "percentage" | "fixed_amount";
+                        discountValue: number;
+                        /** @enum {string} */
+                        currency: "TND";
+                        minSubtotalMinor: number;
+                        startsAt: string | null;
+                        endsAt: string | null;
+                        maxRedemptions: number | null;
+                        redeemedCount: number;
+                        isActive: boolean;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminUpdatePromotion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name?: string;
+                    code?: string;
+                    discountType?: "percentage" | "fixed_amount";
+                    discountValue?: number;
+                    minSubtotalMinor?: number;
+                    startsAt?: string | null;
+                    endsAt?: string | null;
+                    maxRedemptions?: number | null;
+                    isActive?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        name: string;
+                        code: string;
+                        discountType: "percentage" | "fixed_amount";
+                        discountValue: number;
+                        /** @enum {string} */
+                        currency: "TND";
+                        minSubtotalMinor: number;
+                        startsAt: string | null;
+                        endsAt: string | null;
+                        maxRedemptions: number | null;
+                        redeemedCount: number;
+                        isActive: boolean;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminArchivePromotion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        name: string;
+                        code: string;
+                        discountType: "percentage" | "fixed_amount";
+                        discountValue: number;
+                        /** @enum {string} */
+                        currency: "TND";
+                        minSubtotalMinor: number;
+                        startsAt: string | null;
+                        endsAt: string | null;
+                        maxRedemptions: number | null;
+                        redeemedCount: number;
+                        isActive: boolean;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
     adminListInventory: {
         parameters: {
             query?: never;
@@ -4914,6 +5883,1327 @@ export interface operations {
                             message: string;
                             keyword: string;
                         }[];
+                    };
+                };
+            };
+        };
+    };
+    adminCreateInventoryReservation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    reservationKey: string;
+                    orderId?: string;
+                    items: {
+                        productId: string;
+                        variantId: string;
+                        quantity: number;
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        reservationKey: string;
+                        orderId: string | null;
+                        status: "active" | "released" | "expired" | "converted";
+                        /** Format: date-time */
+                        expiresAt: string;
+                        releasedAt: string | null;
+                        releaseReason: string | null;
+                        convertedAt: string | null;
+                        /** Format: date-time */
+                        createdAt: string;
+                        items: {
+                            productId: string;
+                            variantId: string;
+                            quantity: number;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminGetInventoryReservation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reservationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        reservationKey: string;
+                        orderId: string | null;
+                        status: "active" | "released" | "expired" | "converted";
+                        /** Format: date-time */
+                        expiresAt: string;
+                        releasedAt: string | null;
+                        releaseReason: string | null;
+                        convertedAt: string | null;
+                        /** Format: date-time */
+                        createdAt: string;
+                        items: {
+                            productId: string;
+                            variantId: string;
+                            quantity: number;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminReleaseInventoryReservation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reservationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    reason?: "cancelled" | "manual";
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        reservationKey: string;
+                        orderId: string | null;
+                        status: "active" | "released" | "expired" | "converted";
+                        /** Format: date-time */
+                        expiresAt: string;
+                        releasedAt: string | null;
+                        releaseReason: string | null;
+                        convertedAt: string | null;
+                        /** Format: date-time */
+                        createdAt: string;
+                        items: {
+                            productId: string;
+                            variantId: string;
+                            quantity: number;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminExpireInventoryReservations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    limit?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        releasedCount: number;
+                        reservationIds: string[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    getCart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        cartId: string;
+                        /** @enum {string} */
+                        currency: "TND";
+                        /** Format: date-time */
+                        expiresAt: string;
+                        items: {
+                            lineId: string;
+                            productId: string;
+                            productSlug: string;
+                            productName: string;
+                            productReference: string;
+                            variantId: string;
+                            sku: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            compareAtPriceMinor: number | null;
+                            lineTotalMinor: number;
+                            priceAtAddMinor: number;
+                            priceChanged: boolean;
+                            imageUrl: string;
+                            imageAlt: string;
+                            category: string;
+                            colorLabel: string | null;
+                            widthCm: number | null;
+                            heightCm: number | null;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile: string | null;
+                            availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                            availableQuantity: number;
+                            status: "available" | "low_stock" | "out_of_stock" | "variant_missing" | "product_missing" | "price_changed" | "quantity_adjusted";
+                            canPurchase: boolean;
+                        }[];
+                        itemCount: number;
+                        lineCount: number;
+                        totals: {
+                            subtotalMinor: number;
+                            discountMinor: number;
+                            shippingMinor: number;
+                            totalEstimatedMinor: number;
+                            freeShippingThresholdMinor: number;
+                            amountUntilFreeShippingMinor: number;
+                            hasFreeShipping: boolean;
+                            requiresShippingQuote: boolean;
+                        };
+                        promotion: null | {
+                            code: string;
+                            valid: boolean;
+                            discountMinor: number;
+                            discountType: "percentage" | "fixed_amount" | null;
+                            discountValue: number | null;
+                            reason: "minimum_subtotal" | "expired" | "usage_limit" | "inactive" | null;
+                        };
+                        hasUnavailableItems: boolean;
+                        hasPriceChanges: boolean;
+                    };
+                };
+            };
+            /** @description Default Response */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    clearCart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        cartId: string;
+                        /** @enum {string} */
+                        currency: "TND";
+                        /** Format: date-time */
+                        expiresAt: string;
+                        items: {
+                            lineId: string;
+                            productId: string;
+                            productSlug: string;
+                            productName: string;
+                            productReference: string;
+                            variantId: string;
+                            sku: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            compareAtPriceMinor: number | null;
+                            lineTotalMinor: number;
+                            priceAtAddMinor: number;
+                            priceChanged: boolean;
+                            imageUrl: string;
+                            imageAlt: string;
+                            category: string;
+                            colorLabel: string | null;
+                            widthCm: number | null;
+                            heightCm: number | null;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile: string | null;
+                            availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                            availableQuantity: number;
+                            status: "available" | "low_stock" | "out_of_stock" | "variant_missing" | "product_missing" | "price_changed" | "quantity_adjusted";
+                            canPurchase: boolean;
+                        }[];
+                        itemCount: number;
+                        lineCount: number;
+                        totals: {
+                            subtotalMinor: number;
+                            discountMinor: number;
+                            shippingMinor: number;
+                            totalEstimatedMinor: number;
+                            freeShippingThresholdMinor: number;
+                            amountUntilFreeShippingMinor: number;
+                            hasFreeShipping: boolean;
+                            requiresShippingQuote: boolean;
+                        };
+                        promotion: null | {
+                            code: string;
+                            valid: boolean;
+                            discountMinor: number;
+                            discountType: "percentage" | "fixed_amount" | null;
+                            discountValue: number | null;
+                            reason: "minimum_subtotal" | "expired" | "usage_limit" | "inactive" | null;
+                        };
+                        hasUnavailableItems: boolean;
+                        hasPriceChanges: boolean;
+                    };
+                };
+            };
+        };
+    };
+    addCartItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    productId: string;
+                    variantId: string;
+                    quantity: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        cartId: string;
+                        /** @enum {string} */
+                        currency: "TND";
+                        /** Format: date-time */
+                        expiresAt: string;
+                        items: {
+                            lineId: string;
+                            productId: string;
+                            productSlug: string;
+                            productName: string;
+                            productReference: string;
+                            variantId: string;
+                            sku: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            compareAtPriceMinor: number | null;
+                            lineTotalMinor: number;
+                            priceAtAddMinor: number;
+                            priceChanged: boolean;
+                            imageUrl: string;
+                            imageAlt: string;
+                            category: string;
+                            colorLabel: string | null;
+                            widthCm: number | null;
+                            heightCm: number | null;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile: string | null;
+                            availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                            availableQuantity: number;
+                            status: "available" | "low_stock" | "out_of_stock" | "variant_missing" | "product_missing" | "price_changed" | "quantity_adjusted";
+                            canPurchase: boolean;
+                        }[];
+                        itemCount: number;
+                        lineCount: number;
+                        totals: {
+                            subtotalMinor: number;
+                            discountMinor: number;
+                            shippingMinor: number;
+                            totalEstimatedMinor: number;
+                            freeShippingThresholdMinor: number;
+                            amountUntilFreeShippingMinor: number;
+                            hasFreeShipping: boolean;
+                            requiresShippingQuote: boolean;
+                        };
+                        promotion: null | {
+                            code: string;
+                            valid: boolean;
+                            discountMinor: number;
+                            discountType: "percentage" | "fixed_amount" | null;
+                            discountValue: number | null;
+                            reason: "minimum_subtotal" | "expired" | "usage_limit" | "inactive" | null;
+                        };
+                        hasUnavailableItems: boolean;
+                        hasPriceChanges: boolean;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    removeCartItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lineId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        cartId: string;
+                        /** @enum {string} */
+                        currency: "TND";
+                        /** Format: date-time */
+                        expiresAt: string;
+                        items: {
+                            lineId: string;
+                            productId: string;
+                            productSlug: string;
+                            productName: string;
+                            productReference: string;
+                            variantId: string;
+                            sku: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            compareAtPriceMinor: number | null;
+                            lineTotalMinor: number;
+                            priceAtAddMinor: number;
+                            priceChanged: boolean;
+                            imageUrl: string;
+                            imageAlt: string;
+                            category: string;
+                            colorLabel: string | null;
+                            widthCm: number | null;
+                            heightCm: number | null;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile: string | null;
+                            availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                            availableQuantity: number;
+                            status: "available" | "low_stock" | "out_of_stock" | "variant_missing" | "product_missing" | "price_changed" | "quantity_adjusted";
+                            canPurchase: boolean;
+                        }[];
+                        itemCount: number;
+                        lineCount: number;
+                        totals: {
+                            subtotalMinor: number;
+                            discountMinor: number;
+                            shippingMinor: number;
+                            totalEstimatedMinor: number;
+                            freeShippingThresholdMinor: number;
+                            amountUntilFreeShippingMinor: number;
+                            hasFreeShipping: boolean;
+                            requiresShippingQuote: boolean;
+                        };
+                        promotion: null | {
+                            code: string;
+                            valid: boolean;
+                            discountMinor: number;
+                            discountType: "percentage" | "fixed_amount" | null;
+                            discountValue: number | null;
+                            reason: "minimum_subtotal" | "expired" | "usage_limit" | "inactive" | null;
+                        };
+                        hasUnavailableItems: boolean;
+                        hasPriceChanges: boolean;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    updateCartItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lineId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    quantity: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        cartId: string;
+                        /** @enum {string} */
+                        currency: "TND";
+                        /** Format: date-time */
+                        expiresAt: string;
+                        items: {
+                            lineId: string;
+                            productId: string;
+                            productSlug: string;
+                            productName: string;
+                            productReference: string;
+                            variantId: string;
+                            sku: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            compareAtPriceMinor: number | null;
+                            lineTotalMinor: number;
+                            priceAtAddMinor: number;
+                            priceChanged: boolean;
+                            imageUrl: string;
+                            imageAlt: string;
+                            category: string;
+                            colorLabel: string | null;
+                            widthCm: number | null;
+                            heightCm: number | null;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile: string | null;
+                            availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                            availableQuantity: number;
+                            status: "available" | "low_stock" | "out_of_stock" | "variant_missing" | "product_missing" | "price_changed" | "quantity_adjusted";
+                            canPurchase: boolean;
+                        }[];
+                        itemCount: number;
+                        lineCount: number;
+                        totals: {
+                            subtotalMinor: number;
+                            discountMinor: number;
+                            shippingMinor: number;
+                            totalEstimatedMinor: number;
+                            freeShippingThresholdMinor: number;
+                            amountUntilFreeShippingMinor: number;
+                            hasFreeShipping: boolean;
+                            requiresShippingQuote: boolean;
+                        };
+                        promotion: null | {
+                            code: string;
+                            valid: boolean;
+                            discountMinor: number;
+                            discountType: "percentage" | "fixed_amount" | null;
+                            discountValue: number | null;
+                            reason: "minimum_subtotal" | "expired" | "usage_limit" | "inactive" | null;
+                        };
+                        hasUnavailableItems: boolean;
+                        hasPriceChanges: boolean;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    applyCartPromotion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    code: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        cartId: string;
+                        /** @enum {string} */
+                        currency: "TND";
+                        /** Format: date-time */
+                        expiresAt: string;
+                        items: {
+                            lineId: string;
+                            productId: string;
+                            productSlug: string;
+                            productName: string;
+                            productReference: string;
+                            variantId: string;
+                            sku: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            compareAtPriceMinor: number | null;
+                            lineTotalMinor: number;
+                            priceAtAddMinor: number;
+                            priceChanged: boolean;
+                            imageUrl: string;
+                            imageAlt: string;
+                            category: string;
+                            colorLabel: string | null;
+                            widthCm: number | null;
+                            heightCm: number | null;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile: string | null;
+                            availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                            availableQuantity: number;
+                            status: "available" | "low_stock" | "out_of_stock" | "variant_missing" | "product_missing" | "price_changed" | "quantity_adjusted";
+                            canPurchase: boolean;
+                        }[];
+                        itemCount: number;
+                        lineCount: number;
+                        totals: {
+                            subtotalMinor: number;
+                            discountMinor: number;
+                            shippingMinor: number;
+                            totalEstimatedMinor: number;
+                            freeShippingThresholdMinor: number;
+                            amountUntilFreeShippingMinor: number;
+                            hasFreeShipping: boolean;
+                            requiresShippingQuote: boolean;
+                        };
+                        promotion: null | {
+                            code: string;
+                            valid: boolean;
+                            discountMinor: number;
+                            discountType: "percentage" | "fixed_amount" | null;
+                            discountValue: number | null;
+                            reason: "minimum_subtotal" | "expired" | "usage_limit" | "inactive" | null;
+                        };
+                        hasUnavailableItems: boolean;
+                        hasPriceChanges: boolean;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    removeCartPromotion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        cartId: string;
+                        /** @enum {string} */
+                        currency: "TND";
+                        /** Format: date-time */
+                        expiresAt: string;
+                        items: {
+                            lineId: string;
+                            productId: string;
+                            productSlug: string;
+                            productName: string;
+                            productReference: string;
+                            variantId: string;
+                            sku: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            compareAtPriceMinor: number | null;
+                            lineTotalMinor: number;
+                            priceAtAddMinor: number;
+                            priceChanged: boolean;
+                            imageUrl: string;
+                            imageAlt: string;
+                            category: string;
+                            colorLabel: string | null;
+                            widthCm: number | null;
+                            heightCm: number | null;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile: string | null;
+                            availability: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+                            availableQuantity: number;
+                            status: "available" | "low_stock" | "out_of_stock" | "variant_missing" | "product_missing" | "price_changed" | "quantity_adjusted";
+                            canPurchase: boolean;
+                        }[];
+                        itemCount: number;
+                        lineCount: number;
+                        totals: {
+                            subtotalMinor: number;
+                            discountMinor: number;
+                            shippingMinor: number;
+                            totalEstimatedMinor: number;
+                            freeShippingThresholdMinor: number;
+                            amountUntilFreeShippingMinor: number;
+                            hasFreeShipping: boolean;
+                            requiresShippingQuote: boolean;
+                        };
+                        promotion: null | {
+                            code: string;
+                            valid: boolean;
+                            discountMinor: number;
+                            discountType: "percentage" | "fixed_amount" | null;
+                            discountValue: number | null;
+                            reason: "minimum_subtotal" | "expired" | "usage_limit" | "inactive" | null;
+                        };
+                        hasUnavailableItems: boolean;
+                        hasPriceChanges: boolean;
                     };
                 };
             };

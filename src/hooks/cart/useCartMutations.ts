@@ -53,3 +53,21 @@ export function useClearCartMutation() {
     ...options,
   });
 }
+
+export function useApplyCartPromotionMutation() {
+  const options = useCartMutationOptions();
+  return useMutation({
+    mutationKey: [...cartQueryKeys.all, "promotion", "apply"],
+    mutationFn: (code: string) => getCartRepository().applyPromotion(code),
+    ...options,
+  });
+}
+
+export function useRemoveCartPromotionMutation() {
+  const options = useCartMutationOptions();
+  return useMutation({
+    mutationKey: [...cartQueryKeys.all, "promotion", "remove"],
+    mutationFn: () => getCartRepository().removePromotion(),
+    ...options,
+  });
+}

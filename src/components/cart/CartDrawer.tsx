@@ -10,6 +10,7 @@ import { CartDrawerItem } from "@/components/cart/CartDrawerItem";
 import { CartEmptyState } from "@/components/cart/CartEmptyState";
 import { CartErrorState } from "@/components/cart/CartErrorState";
 import { CartShippingProgress } from "@/components/cart/CartShippingProgress";
+import { CartPromotionForm } from "@/components/cart/CartPromotionForm";
 import { CartSkeleton } from "@/components/cart/CartSkeleton";
 import { useCart } from "@/hooks/cart/useCart";
 import { useCartDrawer } from "@/hooks/cart/useCartDrawer";
@@ -70,6 +71,7 @@ export function CartDrawer() {
 
         {cart.lineCount > 0 && !isError ? (
           <div className="space-y-3 border-t border-border px-4 py-4">
+            <CartPromotionForm cart={cart} compact />
             <div className="flex items-baseline justify-between text-sm">
               <span className="text-foreground-muted">Sous-total estimé</span>
               <span className="text-base font-medium">

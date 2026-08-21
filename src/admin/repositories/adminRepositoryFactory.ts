@@ -18,6 +18,7 @@ import {
   ApiAdminInventoryRepository,
   ApiAdminProductRepository,
 } from "@/admin/repositories/api/admin-catalog-api-repositories";
+import { ApiAdminPromotionRepository } from "@/admin/repositories/api/admin-promotion-api-repository";
 import { adminConfig } from "@/admin/config/admin.config";
 
 /**
@@ -45,7 +46,10 @@ export const adminRepositories = {
       : new MockAdminInventoryRepository(),
   orders: new MockAdminOrderRepository(),
   customers: new MockAdminCustomerRepository(),
-  promotions: new MockAdminPromotionRepository(),
+  promotions:
+    adminConfig.promotionDataProvider === "api"
+      ? new ApiAdminPromotionRepository()
+      : new MockAdminPromotionRepository(),
   content: new MockAdminContentRepository(),
   settings: new MockAdminSettingsRepository(),
   users: new MockAdminUserRepository(),

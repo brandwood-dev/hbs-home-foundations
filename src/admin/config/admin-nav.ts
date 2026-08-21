@@ -99,7 +99,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         href: "/admin/promotions",
         icon: Percent,
         requiredPermission: "promotions.read",
-        available: false,
+        available: true,
       },
     ],
   },

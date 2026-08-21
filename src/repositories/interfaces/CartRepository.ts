@@ -16,4 +16,6 @@ export interface CartRepository {
   updateItem(lineId: string, quantity: number): Promise<Cart>;
   removeItem(lineId: string): Promise<Cart>;
   clearCart(): Promise<Cart>;
+  applyPromotion(code: string): Promise<Cart>;
+  removePromotion(): Promise<Cart>;
 }

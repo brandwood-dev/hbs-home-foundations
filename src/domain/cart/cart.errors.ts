@@ -4,6 +4,7 @@ export type CartErrorCode =
   | "product_not_found"
   | "variant_not_found"
   | "variant_unavailable"
+  | "promotion_unavailable"
   | "invalid_quantity"
   | "line_not_found";
 
@@ -24,6 +25,8 @@ export const CART_ERROR_MESSAGES: Record<CartErrorCode, string> = {
   product_not_found: "Ce produit n'est plus disponible.",
   variant_not_found: "Cette variante n'est plus proposée.",
   variant_unavailable: "Cette variante est actuellement indisponible.",
+  promotion_unavailable:
+    "Les codes promotionnels sont disponibles lorsque le panier serveur est activé.",
   invalid_quantity: "La quantité demandée n'est pas valide.",
   line_not_found: "Cet article n'est plus dans votre panier.",
 };

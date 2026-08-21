@@ -8,7 +8,8 @@ export const adminConfig = {
   dataProvider: "mock" as AdminDataProvider,
   /** Le catalogue est la première surface Admin migrée vers l'API. */
   catalogDataProvider: "api" as AdminDataProvider,
-  demoMode: true,
+  promotionDataProvider: "api" as AdminDataProvider,
+  demoMode: false,
   pageSize: 20,
   currency: "TND",
 } as const;

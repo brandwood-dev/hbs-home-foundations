@@ -6,6 +6,7 @@ import { CartErrorState } from "@/components/cart/CartErrorState";
 import { CartItem } from "@/components/cart/CartItem";
 import { CartSkeleton } from "@/components/cart/CartSkeleton";
 import { CartSummary } from "@/components/cart/CartSummary";
+import { CartPromotionForm } from "@/components/cart/CartPromotionForm";
 import { ClearCartDialog } from "@/components/cart/ClearCartDialog";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { AppLink } from "@/components/ui/app-link";
@@ -103,6 +104,7 @@ function PanierPage() {
             </div>
 
             <div className="space-y-3 lg:sticky lg:top-28 lg:self-start">
+              <CartPromotionForm cart={cart} />
               <CartSummary cart={cart} />
               {features.checkout ? (
                 cart.hasUnavailableItems ? (
