@@ -20,6 +20,7 @@ import {
 } from "@/hooks/cart/useCartMutations";
 import { formatMoney } from "@/lib/money/money";
 import { features } from "@/config/features.config";
+import { calculateDiscountedSubtotal } from "@/services/checkout/checkout-calculations";
 
 export function CartDrawer() {
   const { isOpen, setOpen, close } = useCartDrawer();
@@ -27,6 +28,11 @@ export function CartDrawer() {
   const updateItem = useUpdateCartItemMutation();
   const removeItem = useRemoveCartItemMutation();
   const busy = updateItem.isPending || removeItem.isPending;
+  const discountMinor = cart.totals.discountMinor ?? 0;
+  const discountedSubtotalMinor = calculateDiscountedSubtotal(
+    cart.totals.subtotalMinor,
+    discountMinor,
+  );
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
@@ -72,12 +78,27 @@ export function CartDrawer() {
         {cart.lineCount > 0 && !isError ? (
           <div className="space-y-3 border-t border-border px-4 py-4">
             <CartPromotionForm cart={cart} compact />
-            <div className="flex items-baseline justify-between text-sm">
-              <span className="text-foreground-muted">Sous-total estimé</span>
-              <span className="text-base font-medium">
-                {formatMoney(cart.totals.subtotalMinor)}
-              </span>
-            </div>
+            <dl className="space-y-2 text-sm">
+              <div className="flex items-baseline justify-between">
+                <dt className="text-foreground-muted">Sous-total estimé</dt>
+                <dd>{formatMoney(cart.totals.subtotalMinor)}</dd>
+              </div>
+              {discountMinor > 0 ? (
+                <div className="flex items-baseline justify-between text-success">
+                  <dt>Promotion{cart.promotion?.code ? ` (${cart.promotion.code})` : ""}</dt>
+                  <dd>-{formatMoney(discountMinor)}</dd>
+                </div>
+              ) : null}
+              <div className="flex items-baseline justify-between border-t border-border pt-2 text-base font-medium">
+                <dt>Total estimé</dt>
+                <dd>{formatMoney(cart.totals.totalEstimatedMinor)}</dd>
+              </div>
+            </dl>
+            {discountMinor > 0 ? (
+              <p className="text-xs text-foreground-muted">
+                Sous-total après remise : {formatMoney(discountedSubtotalMinor)}
+              </p>
+            ) : null}
             <CartShippingProgress totals={cart.totals} />
             {features.checkout ? (
               <AppLink

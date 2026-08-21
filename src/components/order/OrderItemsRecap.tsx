@@ -56,6 +56,12 @@ export function OrderItemsRecap({ order }: { order: Order }) {
           <dt className="text-foreground-muted">Sous-total</dt>
           <dd>{formatMoney(order.totals.subtotalMinor)}</dd>
         </div>
+        {order.totals.discountMinor > 0 ? (
+          <div className="flex items-baseline justify-between text-success">
+            <dt>Promotion</dt>
+            <dd>-{formatMoney(order.totals.discountMinor)}</dd>
+          </div>
+        ) : null}
         <div className="flex items-baseline justify-between">
           <dt className="text-foreground-muted">Livraison</dt>
           <dd>

@@ -115,7 +115,7 @@ export class MockOrderRepository implements OrderRepository {
       ...(input.shippingAddress ? { shippingAddress: input.shippingAddress } : {}),
       paymentMethod: input.paymentMethod,
       items: snapshots,
-      totals: calculateOrderTotals(snapshots, input.deliveryMethod),
+      totals: calculateOrderTotals(snapshots, input.deliveryMethod, input.discountMinor ?? 0),
       createdAt: new Date().toISOString(),
       idempotencyKey: input.idempotencyKey,
       isDemo: true,

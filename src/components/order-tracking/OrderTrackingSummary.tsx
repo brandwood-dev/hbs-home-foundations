@@ -13,6 +13,12 @@ export function OrderTrackingSummary({ totals }: { totals: OrderTotals }) {
           <dt className="text-foreground-muted">Sous-total</dt>
           <dd>{formatMoney(totals.subtotalMinor)}</dd>
         </div>
+        {totals.discountMinor > 0 ? (
+          <div className="flex items-baseline justify-between text-success">
+            <dt>Promotion</dt>
+            <dd>-{formatMoney(totals.discountMinor)}</dd>
+          </div>
+        ) : null}
         <div className="flex items-baseline justify-between">
           <dt className="text-foreground-muted">Livraison</dt>
           <dd>{totals.shippingMinor === 0 ? "Offerte" : formatMoney(totals.shippingMinor)}</dd>

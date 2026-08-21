@@ -48,6 +48,7 @@ export interface OrderItemSnapshot {
 
 export interface OrderTotals {
   subtotalMinor: number;
+  discountMinor: number;
   shippingMinor: number;
   totalMinor: number;
 }

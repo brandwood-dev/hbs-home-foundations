@@ -1,7 +1,10 @@
 import type { Cart } from "@/domain/cart/cart.types";
 import type { DeliveryMethod } from "@/domain/checkout/checkout.types";
 import { CART_ESTIMATE_NOTICE } from "@/domain/cart/cart.constants";
-import { calculateCheckoutShipping } from "@/services/checkout/checkout-calculations";
+import {
+  calculateCheckoutShipping,
+  calculateDiscountedSubtotal,
+} from "@/services/checkout/checkout-calculations";
 import { formatMoney } from "@/lib/money/money";
 import { AppLink } from "@/components/ui/app-link";
 
@@ -13,15 +16,17 @@ export function CheckoutSummary({
   deliveryMethod: DeliveryMethod;
 }) {
   const subtotalMinor = cart.totals.subtotalMinor;
+  const discountMinor = cart.totals.discountMinor ?? 0;
+  const discountedSubtotalMinor = calculateDiscountedSubtotal(subtotalMinor, discountMinor);
   const quoteRequired = cart.totals.requiresShippingQuote;
   const shippingMinor = calculateCheckoutShipping(
-    subtotalMinor,
+    discountedSubtotalMinor,
     deliveryMethod,
-    undefined,
+    cart.totals.freeShippingThresholdMinor,
     undefined,
     quoteRequired,
   );
-  const totalMinor = subtotalMinor + shippingMinor;
+  const totalMinor = discountedSubtotalMinor + shippingMinor;
 
   return (
     <section
@@ -68,6 +73,12 @@ export function CheckoutSummary({
           <dt className="text-foreground-muted">Sous-total</dt>
           <dd>{formatMoney(subtotalMinor)}</dd>
         </div>
+        {discountMinor > 0 ? (
+          <div className="flex items-baseline justify-between text-success">
+            <dt>Promotion{cart.promotion?.code ? ` (${cart.promotion.code})` : ""}</dt>
+            <dd>-{formatMoney(discountMinor)}</dd>
+          </div>
+        ) : null}
         <div className="flex items-baseline justify-between">
           <dt className="text-foreground-muted">
             {deliveryMethod === "store_pickup" ? "Retrait en magasin" : "Livraison"}
