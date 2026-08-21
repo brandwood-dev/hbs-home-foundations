@@ -37,6 +37,9 @@ export interface AdminProductImage {
   alt: string;
   order: number;
   isPrimary: boolean;
+  storagePath?: string;
+  publicUrl?: string;
+  type?: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
   colorId?: string;
   variantId?: string;
 }

@@ -52,9 +52,23 @@ POST           /api/v1/admin/products/:id/variants/:variantId/archive
 ```
 
 Le modèle API normalisé est adapté vers les types Admin historiques. Les champs UI plus riches
-(médias, SEO, tags et axes) sont conservés dans le `payload` de création lorsqu'ils sont pris en
-charge ; leur édition persistée complète relève de la phase Storage/Media. La suppression est
-volontairement une archive réversible, car l'API ne propose pas de suppression physique.
+(SEO, tags et axes) restent conservés dans le `payload`. Les médias sont maintenant téléversés
+dans le bucket public Supabase `product-media`, puis leurs métadonnées sont synchronisées par
+l'API dans `catalog.product_media`. La suppression est volontairement une archive réversible,
+car l'API ne propose pas de suppression physique.
+
+### Médias produits (phase 3C.5)
+
+Le navigateur utilise uniquement `VITE_SUPABASE_PUBLISHABLE_KEY` et la session Admin MFA pour
+téléverser les images acceptées (JPG, PNG, WebP, AVIF, 10 Mo maximum). Le secret Supabase n'est
+jamais exposé. Le payload produit transmet ensuite `imageAssets` et l'API reconstruit la projection
+publique `images` à partir de `catalog.product_media` lors d'une publication.
+
+Le scénario de recette est :
+
+```text
+Admin → Storage product-media → PATCH/POST produit (métadonnées) → publication API → catalogue public
+```
 
 Variables publiques requises au build staging :
 

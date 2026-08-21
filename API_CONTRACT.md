@@ -58,6 +58,31 @@ Les produits et variantes utilisent des montants entiers en millimes et un champ
 pour les attributs spécifiques non encore normalisés. Une suppression demandée depuis l'interface
 est traduite en archivage afin de préserver l'historique des commandes.
 
+### Médias catalogue (phase 3C.5)
+
+Les images ne transitent pas par l'API en multipart. Le navigateur Admin téléverse directement les
+fichiers JPG, PNG, WebP ou AVIF (10 Mo maximum) dans le bucket public Supabase Storage
+`product-media`, avec la session MFA courante, puis transmet leurs métadonnées dans
+`payload.imageAssets` :
+
+```json
+{
+  "id": "img-001",
+  "url": "https://PROJECT_REF.supabase.co/storage/v1/object/public/product-media/products/rideau/uuid.jpg",
+  "storagePath": "products/rideau/uuid.jpg",
+  "publicUrl": "https://PROJECT_REF.supabase.co/storage/v1/object/public/product-media/products/rideau/uuid.jpg",
+  "alt": "Rideau en lin naturel",
+  "order": 1,
+  "isPrimary": true,
+  "type": "front"
+}
+```
+
+Les réponses Admin `AdminProduct` exposent `media[]` avec le chemin Storage, l'URL publique, le
+texte alternatif, le type, le statut et l'ordre. À la publication, l'API reconstruit la projection
+publique `images[]` depuis `catalog.product_media`. Une clé Supabase secrète ou `service_role` ne
+doit jamais être exposée au frontend.
+
 ## Suivi de commande sans compte
 
 ### `POST /api/v1/orders/track`

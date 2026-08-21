@@ -524,6 +524,22 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
+        AdminProductMedia: {
+            id: string;
+            productId: string;
+            variantId: string | null;
+            storagePath: string;
+            publicUrl: string | null;
+            alt: string;
+            mediaType: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+            status: "draft" | "active" | "archived";
+            isPrimary: boolean;
+            sortOrder: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
         AdminProduct: {
             id: string;
             slug: string;
@@ -542,6 +558,22 @@ export interface components {
             archivedAt: string | null;
             version: number;
             isDemo: boolean;
+            media: {
+                id: string;
+                productId: string;
+                variantId: string | null;
+                storagePath: string;
+                publicUrl: string | null;
+                alt: string;
+                mediaType: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                status: "draft" | "active" | "archived";
+                isPrimary: boolean;
+                sortOrder: number;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+            }[];
             variants: {
                 id: string;
                 productId: string;
@@ -625,6 +657,22 @@ export interface components {
                 archivedAt: string | null;
                 version: number;
                 isDemo: boolean;
+                media: {
+                    id: string;
+                    productId: string;
+                    variantId: string | null;
+                    storagePath: string;
+                    publicUrl: string | null;
+                    alt: string;
+                    mediaType: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                    status: "draft" | "active" | "archived";
+                    isPrimary: boolean;
+                    sortOrder: number;
+                    /** Format: date-time */
+                    createdAt: string;
+                    /** Format: date-time */
+                    updatedAt: string;
+                }[];
                 variants: {
                     id: string;
                     productId: string;
@@ -2551,6 +2599,22 @@ export interface operations {
                             archivedAt: string | null;
                             version: number;
                             isDemo: boolean;
+                            media: {
+                                id: string;
+                                productId: string;
+                                variantId: string | null;
+                                storagePath: string;
+                                publicUrl: string | null;
+                                alt: string;
+                                mediaType: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                                status: "draft" | "active" | "archived";
+                                isPrimary: boolean;
+                                sortOrder: number;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            }[];
                             variants: {
                                 id: string;
                                 productId: string;
@@ -2688,6 +2752,22 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        media: {
+                            id: string;
+                            productId: string;
+                            variantId: string | null;
+                            storagePath: string;
+                            publicUrl: string | null;
+                            alt: string;
+                            mediaType: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                            status: "draft" | "active" | "archived";
+                            isPrimary: boolean;
+                            sortOrder: number;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        }[];
                         variants: {
                             id: string;
                             productId: string;
@@ -2865,6 +2945,22 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        media: {
+                            id: string;
+                            productId: string;
+                            variantId: string | null;
+                            storagePath: string;
+                            publicUrl: string | null;
+                            alt: string;
+                            mediaType: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                            status: "draft" | "active" | "archived";
+                            isPrimary: boolean;
+                            sortOrder: number;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        }[];
                         variants: {
                             id: string;
                             productId: string;
@@ -3023,6 +3119,22 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        media: {
+                            id: string;
+                            productId: string;
+                            variantId: string | null;
+                            storagePath: string;
+                            publicUrl: string | null;
+                            alt: string;
+                            mediaType: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                            status: "draft" | "active" | "archived";
+                            isPrimary: boolean;
+                            sortOrder: number;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        }[];
                         variants: {
                             id: string;
                             productId: string;
@@ -3204,6 +3316,22 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        media: {
+                            id: string;
+                            productId: string;
+                            variantId: string | null;
+                            storagePath: string;
+                            publicUrl: string | null;
+                            alt: string;
+                            mediaType: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                            status: "draft" | "active" | "archived";
+                            isPrimary: boolean;
+                            sortOrder: number;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        }[];
                         variants: {
                             id: string;
                             productId: string;
@@ -3363,6 +3491,22 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        media: {
+                            id: string;
+                            productId: string;
+                            variantId: string | null;
+                            storagePath: string;
+                            publicUrl: string | null;
+                            alt: string;
+                            mediaType: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                            status: "draft" | "active" | "archived";
+                            isPrimary: boolean;
+                            sortOrder: number;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        }[];
                         variants: {
                             id: string;
                             productId: string;
@@ -3514,6 +3658,22 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        media: {
+                            id: string;
+                            productId: string;
+                            variantId: string | null;
+                            storagePath: string;
+                            publicUrl: string | null;
+                            alt: string;
+                            mediaType: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                            status: "draft" | "active" | "archived";
+                            isPrimary: boolean;
+                            sortOrder: number;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        }[];
                         variants: {
                             id: string;
                             productId: string;
@@ -3733,6 +3893,22 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        media: {
+                            id: string;
+                            productId: string;
+                            variantId: string | null;
+                            storagePath: string;
+                            publicUrl: string | null;
+                            alt: string;
+                            mediaType: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                            status: "draft" | "active" | "archived";
+                            isPrimary: boolean;
+                            sortOrder: number;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        }[];
                         variants: {
                             id: string;
                             productId: string;
@@ -3937,6 +4113,22 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        media: {
+                            id: string;
+                            productId: string;
+                            variantId: string | null;
+                            storagePath: string;
+                            publicUrl: string | null;
+                            alt: string;
+                            mediaType: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                            status: "draft" | "active" | "archived";
+                            isPrimary: boolean;
+                            sortOrder: number;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        }[];
                         variants: {
                             id: string;
                             productId: string;

@@ -1,18 +1,61 @@
-import { ArrowDown, ArrowUp, Plus, Star, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
+import type { ChangeEvent } from "react";
+import { ArrowDown, ArrowUp, Plus, Star, Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AdminFormSection } from "@/admin/components/ui/AdminForm";
 import { AdminEmptyState } from "@/admin/components/ui/AdminStates";
 import type { AdminProductImage } from "@/admin/types/admin.types";
 import { adminId } from "@/admin/utils/admin.utils";
+import {
+  PRODUCT_MEDIA_MIME_TYPES,
+  uploadProductImage,
+} from "@/admin/services/media/product-media-storage";
 
 export function AdminProductImagesEditor({
   images,
   onChange,
+  productSlug,
 }: {
   images: AdminProductImage[];
   onChange: (images: AdminProductImage[]) => void;
+  productSlug?: string;
 }) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  async function upload(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setUploadError(null);
+    setIsUploading(true);
+    try {
+      const result = await uploadProductImage(file, productSlug);
+      const alt = file.name
+        .replace(/\.[^/.]+$/, "")
+        .replace(/[-_]+/g, " ")
+        .trim();
+      onChange([
+        ...images,
+        {
+          id: adminId("img"),
+          url: result.publicUrl,
+          storagePath: result.storagePath,
+          publicUrl: result.publicUrl,
+          alt,
+          order: images.length + 1,
+          isPrimary: images.length === 0,
+        },
+      ]);
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Téléversement impossible.");
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
   function update(id: string, patch: Partial<AdminProductImage>) {
     onChange(images.map((image) => (image.id === id ? { ...image, ...patch } : image)));
   }
@@ -107,26 +150,47 @@ export function AdminProductImagesEditor({
           ))}
         </ul>
       )}
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className="justify-self-start"
-        onClick={() =>
-          onChange([
-            ...images,
-            {
-              id: adminId("img"),
-              url: "",
-              alt: "",
-              order: images.length + 1,
-              isPrimary: images.length === 0,
-            },
-          ])
-        }
-      >
-        <Plus className="mr-1 size-4" /> Ajouter une image
-      </Button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={PRODUCT_MEDIA_MIME_TYPES.join(",")}
+        className="sr-only"
+        onChange={upload}
+      />
+      <div className="flex flex-wrap gap-2">
+        <Button
+          type="button"
+          variant="default"
+          size="sm"
+          className="justify-self-start"
+          disabled={isUploading}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Upload className="mr-1 size-4" />
+          {isUploading ? "Téléversement…" : "Téléverser depuis l’ordinateur"}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="justify-self-start"
+          onClick={() =>
+            onChange([
+              ...images,
+              {
+                id: adminId("img"),
+                url: "",
+                alt: "",
+                order: images.length + 1,
+                isPrimary: images.length === 0,
+              },
+            ])
+          }
+        >
+          <Plus className="mr-1 size-4" /> Ajouter une URL
+        </Button>
+      </div>
+      {uploadError ? <p className="text-sm text-destructive">{uploadError}</p> : null}
     </AdminFormSection>
   );
 }
