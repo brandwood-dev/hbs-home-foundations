@@ -9,6 +9,7 @@ import {
   SELLING_MODE_LABELS,
 } from "@/domain/product/product.constants";
 import type { Product } from "@/domain/product/product.types";
+import { getProductCardImage } from "@/components/catalog/product-card-image";
 import {
   formatMoney,
   getDiscountPercentage,
@@ -48,7 +49,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
     (a, b) => a.price.amountMinor - b.price.amountMinor,
   )[0];
   const availability = cheapest?.availability ?? "in_stock";
-  const primaryImage = cheapest?.imageUrl ?? product.variants[0]?.imageUrl ?? "";
+  const primaryImage = getProductCardImage(product);
   const secondaryImage = cheapest?.secondaryImageUrl;
   const displayedImage = hovered && secondaryImage ? secondaryImage : primaryImage;
 
