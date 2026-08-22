@@ -480,7 +480,9 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
               orderId: order.id,
               action: dialog.action,
               reason: values.reason,
-              restock: restoreStock,
+              // The API only accepts inventory restoration while resolving a
+              // pending return. A new request must never send that option.
+              restock: dialog.action === "accept" ? restoreStock : false,
               ...(values.note ? { note: values.note } : {}),
             },
             { onSuccess: () => setDialog(null) },
