@@ -38,19 +38,17 @@ const customer = {
 
 describe("Admin customer API adapter", () => {
   it("lists persisted customers with private search and auth", async () => {
-    const fetchImplementation = vi
-      .fn<typeof fetch>()
-      .mockResolvedValue(
-        Response.json({
-          items: [customer],
-          total: 1,
-          page: 1,
-          pageSize: 20,
-          pageCount: 1,
-          governorates: ["Bizerte"],
-          tags: ["VIP"],
-        }),
-      );
+    const fetchImplementation = vi.fn<typeof fetch>().mockResolvedValue(
+      Response.json({
+        items: [customer],
+        total: 1,
+        page: 1,
+        pageSize: 20,
+        pageCount: 1,
+        governorates: ["Bizerte"],
+        tags: ["VIP"],
+      }),
+    );
     const repository = new ApiAdminCustomerRepository(
       new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
     );
