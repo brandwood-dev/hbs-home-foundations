@@ -14,6 +14,7 @@ import type {
 } from "@/admin/repositories/interfaces";
 import type {
   AdminOrder,
+  AdminOrderStatus,
   AdminOrderAddress,
   AdminOrderContact,
   AdminOrderEvent,
@@ -24,6 +25,21 @@ import type {
 type ApiOrder = components["schemas"]["AdminOrder"];
 type ApiOrderList = components["schemas"]["AdminOrderListResponse"];
 type ApiOrderQuery = operations["listAdminOrders"]["parameters"]["query"];
+type ApiOrderStatusUpdate =
+  operations["updateAdminOrderStatus"]["requestBody"]["content"]["application/json"];
+const API_ORDER_STATUSES = [
+  "pending_confirmation",
+  "confirmed",
+  "preparing",
+  "shipped",
+  "delivered",
+  "cancelled",
+] as const;
+type ApiOrderStatus = (typeof API_ORDER_STATUSES)[number];
+
+function isApiOrderStatus(status: AdminOrderStatus): status is ApiOrderStatus {
+  return (API_ORDER_STATUSES as readonly string[]).includes(status);
+}
 
 async function accessToken(): Promise<string> {
   const supabase = getSupabaseBrowserClient();
@@ -174,8 +190,28 @@ export class ApiAdminOrderRepository implements AdminOrderRepository {
     }
   }
 
-  updateStatus(_input: UpdateAdminOrderStatusInput): Promise<AdminOrder> {
-    return unsupported();
+  async updateStatus(input: UpdateAdminOrderStatusInput): Promise<AdminOrder> {
+    if (!isApiOrderStatus(input.status)) {
+      return unsupported();
+    }
+    const body: ApiOrderStatusUpdate = {
+      status: input.status,
+      ...(input.reason ? { reason: input.reason } : {}),
+      ...(input.note ? { note: input.note } : {}),
+      ...(input.carrierName ? { carrierName: input.carrierName } : {}),
+      ...(input.trackingNumber ? { trackingNumber: input.trackingNumber } : {}),
+      ...(input.shippedAt ? { shippedAt: input.shippedAt } : {}),
+      ...(input.deliveredAt ? { deliveredAt: input.deliveredAt } : {}),
+    };
+    return mapOrder(
+      await this.request((token) =>
+        this.client.patch<ApiOrder>(
+          `/api/v1/admin/orders/${encodeURIComponent(input.orderId)}/status`,
+          body,
+          token,
+        ),
+      ),
+    );
   }
   updatePaymentStatus(_input: UpdateAdminPaymentStatusInput): Promise<AdminOrder> {
     return unsupported();
