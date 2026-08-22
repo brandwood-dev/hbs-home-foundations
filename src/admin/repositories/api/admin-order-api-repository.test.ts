@@ -40,6 +40,7 @@ const order = {
   totalMinor: 25_900,
   timeline: [],
   notes: [],
+  returnInfo: null,
   shipment: { shippingStatus: "calculated", shippingFeeMinor: 7_000 },
 } as components["schemas"]["AdminOrder"];
 
@@ -131,6 +132,64 @@ describe("Admin order API adapter", () => {
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({ reason: "Test", restoreStock: true }),
+      }),
+    );
+  });
+
+  it("persists contact, address and return operations through the API", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockImplementation(async () => Response.json(order));
+    const repository = new ApiAdminOrderRepository(
+      new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
+    );
+
+    await repository.updateContact(order.id, {
+      customerName: "Client Modifié",
+      customerPhone: "+21655123456",
+      customerEmail: "client@example.com",
+    });
+    await repository.updateAddress(order.id, {
+      governorate: "Bizerte",
+      city: "Bizerte",
+      addressLine: "2 rue de test",
+    });
+    await repository.returnOrder({
+      orderId: order.id,
+      action: "request",
+      reason: "Produit endommagé",
+    });
+
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      1,
+      `https://api.example.test/api/v1/admin/orders/${order.id}/contact`,
+      expect.objectContaining({
+        method: "PATCH",
+        body: JSON.stringify({
+          customerName: "Client Modifié",
+          customerPhone: "+21655123456",
+          customerEmail: "client@example.com",
+        }),
+      }),
+    );
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      2,
+      `https://api.example.test/api/v1/admin/orders/${order.id}/address`,
+      expect.objectContaining({
+        method: "PATCH",
+        body: JSON.stringify({
+          governorate: "Bizerte",
+          city: "Bizerte",
+          addressLine: "2 rue de test",
+        }),
+      }),
+    );
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      3,
+      `https://api.example.test/api/v1/admin/orders/${order.id}/return`,
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ action: "request", reason: "Produit endommagé" }),
       }),
     );
   });
