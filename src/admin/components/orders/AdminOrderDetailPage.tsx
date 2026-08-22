@@ -311,7 +311,7 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
                   {action.label}
                 </Button>
               ))}
-              {order.status === "return_requested" ? (
+              {order.returnInfo?.status === "requested" ? (
                 <>
                   <Button
                     size="sm"
