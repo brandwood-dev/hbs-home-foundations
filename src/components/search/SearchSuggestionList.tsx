@@ -1,6 +1,7 @@
 import { AppLink } from "@/components/ui/app-link";
 import { HighlightedText } from "@/components/search/HighlightedText";
 import { CATEGORY_LABELS } from "@/domain/product/product.constants";
+import { getProductCardImage } from "@/components/catalog/product-card-image";
 import type {
   ArticleSearchHit,
   CategorySearchHit,
@@ -38,7 +39,7 @@ export function SearchSuggestionList({
           <SectionTitle>Produits</SectionTitle>
           <ul>
             {products.map((hit) => {
-              const image = hit.product.variants[0]?.imageUrl ?? "";
+              const image = getProductCardImage(hit.product);
               return (
                 <li key={hit.product.id} role="option" aria-selected="false">
                   <AppLink
