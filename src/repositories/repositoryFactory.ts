@@ -13,6 +13,7 @@ import { MockCustomQuoteRepository } from "@/repositories/mock/MockCustomQuoteRe
 import { MockProfessionalLeadRepository } from "@/repositories/mock/MockProfessionalLeadRepository";
 import { ApiProductRepository } from "@/repositories/api/ApiProductRepository";
 import { ApiCartRepository } from "@/repositories/api/ApiCartRepository";
+import { ApiFavoritesRepository } from "@/repositories/api/ApiFavoritesRepository";
 import { dataProvider } from "@/config/features.config";
 import type { ProductRepository } from "@/repositories/interfaces/ProductRepository";
 import type { CartRepository } from "@/repositories/interfaces/CartRepository";
@@ -84,10 +85,14 @@ export function getNewsletterRepository(): NewsletterRepository {
   return newsletterRepository;
 }
 
-/** Favoris : LocalFavoritesRepository aujourd'hui, ApiFavoritesRepository (compte client) demain. */
+/** Favoris : API avec cookie invité en staging/production, local en mode isolé. */
 export function getFavoritesRepository(): FavoritesRepository {
-  if (!favoritesRepository)
-    favoritesRepository = new LocalFavoritesRepository(getProductRepository());
+  if (!favoritesRepository) {
+    favoritesRepository =
+      dataProvider === "api"
+        ? new ApiFavoritesRepository()
+        : new LocalFavoritesRepository(getProductRepository());
+  }
   return favoritesRepository;
 }
 

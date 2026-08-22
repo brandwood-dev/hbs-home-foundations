@@ -144,18 +144,24 @@ Voir `API_CONTRACT.md` → `POST /api/v1/orders/track`.
 
 Le mock frontend est une démonstration fonctionnelle : il n'apporte aucune sécurité réelle.
 
-## Recherche et favoris (phase 10)
+## Recherche et favoris (phase 8A/8B)
 
 - `SearchRepository` (`suggest`, `search`) — implémentation actuelle `MockSearchRepository`,
   index mémoire construit une seule fois par cycle de données à partir du `ProductRepository`.
 - `SearchHistoryRepository` — `LocalSearchHistoryRepository`, historique local, 8 entrées max,
   jamais envoyé au serveur, même après branchement de l'API.
-- `FavoritesRepository` — `LocalFavoritesRepository` : seuls `productId` et `addedAt` sont
-  persistés ; les produits sont résolus à chaque lecture via `ProductRepository.getByIds()`,
-  les produits disparus du catalogue sont nettoyés silencieusement.
+- `FavoritesRepository` — `ApiFavoritesRepository` en preview/staging et production : les
+  favoris invités sont persistés par l'API avec le cookie HttpOnly `hbs_favorites_token` ; seuls
+  le hash du cookie, `product_id`, `added_at` et l'expiration sont conservés dans la table privée
+  `commerce.favorite_items`. `LocalFavoritesRepository` reste le fallback du développement isolé.
+- La réponse API résout toujours les produits publiés et retourne `removedProductIds` pour les
+  produits retirés. Le plafond est de 200 favoris par cookie et l'expiration est de 365 jours.
+- Une migration best-effort importe les favoris locaux existants avant de les vider, uniquement
+  après le succès de tous les appels. Un échec réseau conserve les données locales pour une reprise.
 - Synchronisation entre onglets via l'événement `storage` et invalidation TanStack Query.
 - SSR : aucun accès à `localStorage` pendant le rendu serveur ; compteurs et cœurs n'apparaissent
   qu'après hydratation.
-- Bascule backend : remplacer les implémentations dans `src/repositories/repositoryFactory.ts`
-  par `ApiSearchRepository` et `ApiFavoritesRepository` — aucun composant ne change.
-- Endpoints cibles : voir `API_CONTRACT.md` → sections Recherche globale et Favoris.
+- Bascule backend : `src/repositories/repositoryFactory.ts` sélectionne désormais
+  `ApiSearchRepository` et `ApiFavoritesRepository` dès que `VITE_HBS_API_BASE_URL` est défini —
+  aucun composant ne change.
+- Endpoints actifs : voir `API_CONTRACT.md` → sections Recherche globale et Favoris.
