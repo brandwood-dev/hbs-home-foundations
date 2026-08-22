@@ -147,6 +147,7 @@ interface ApiProductListResponse {
   pageSize: number;
   total: number;
   totalPages: number;
+  categoryCounts?: Record<string, number>;
 }
 
 interface ApiProductsByIdsResponse {
@@ -750,6 +751,7 @@ export class ApiProductRepository implements ProductRepository {
 
   async list(params: ProductListParams): Promise<PaginatedProducts> {
     const query = toQueryString({
+      q: params.query,
       page: params.page,
       pageSize: params.pageSize,
       sort: params.sort,
@@ -795,6 +797,7 @@ export class ApiProductRepository implements ProductRepository {
       pageSize: response.pageSize,
       total: response.total,
       totalPages: response.totalPages,
+      ...(response.categoryCounts ? { categoryCounts: response.categoryCounts } : {}),
     };
   }
 

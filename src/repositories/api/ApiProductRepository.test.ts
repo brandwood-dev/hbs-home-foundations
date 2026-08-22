@@ -70,4 +70,31 @@ describe("public catalogue API adapter", () => {
       }),
     );
   });
+
+  it("serializes the catalogue search query and category counts", async () => {
+    const fetchImplementation = vi.fn<typeof fetch>().mockResolvedValue(
+      Response.json({
+        items: [apiProduct],
+        page: 1,
+        pageSize: 12,
+        total: 1,
+        totalPages: 1,
+        categoryCounts: { rideaux: 1 },
+      }),
+    );
+    const repository = new ApiProductRepository(
+      new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
+    );
+
+    await expect(
+      repository.list({ page: 1, pageSize: 12, sort: "recommended", query: "RL-001" }),
+    ).resolves.toMatchObject({
+      total: 1,
+      categoryCounts: { rideaux: 1 },
+    });
+    expect(fetchImplementation).toHaveBeenCalledWith(
+      "https://api.example.test/api/v1/products?q=RL-001&page=1&pageSize=12&sort=recommended",
+      expect.anything(),
+    );
+  });
 });
