@@ -90,4 +90,48 @@ describe("Admin order API adapter", () => {
     ).rejects.toThrow("prochaine sous-phase");
     expect(fetchImplementation).not.toHaveBeenCalled();
   });
+
+  it("persists payment, shipping, notes and cancellation through the API", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockImplementation(async () => Response.json(order));
+    const repository = new ApiAdminOrderRepository(
+      new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
+    );
+
+    await repository.updatePaymentStatus({ orderId: order.id, paymentStatus: "collected" });
+    await repository.updateShipping({ orderId: order.id, shippingFeeMinor: 9_000 });
+    await repository.addNote(order.id, "Client rappelé");
+    await repository.cancelOrder({ orderId: order.id, reason: "Test", restoreStock: true });
+
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      1,
+      `https://api.example.test/api/v1/admin/orders/${order.id}/payment`,
+      expect.objectContaining({
+        method: "PATCH",
+        body: JSON.stringify({ paymentStatus: "collected" }),
+      }),
+    );
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      2,
+      `https://api.example.test/api/v1/admin/orders/${order.id}/shipping`,
+      expect.objectContaining({
+        method: "PATCH",
+        body: JSON.stringify({ shippingFeeMinor: 9_000 }),
+      }),
+    );
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      3,
+      `https://api.example.test/api/v1/admin/orders/${order.id}/notes`,
+      expect.objectContaining({ method: "POST", body: JSON.stringify({ text: "Client rappelé" }) }),
+    );
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      4,
+      `https://api.example.test/api/v1/admin/orders/${order.id}/cancel`,
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ reason: "Test", restoreStock: true }),
+      }),
+    );
+  });
 });
