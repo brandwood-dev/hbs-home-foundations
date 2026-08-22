@@ -169,8 +169,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <AdminTopbar onOpenMenu={() => setMenuOpen(true)} />
           <main className="min-w-0 flex-1 p-4 lg:p-6">{children}</main>
           <footer className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
-            Authentification et permissions connectées. Les données métier restent simulées jusqu’à
-            leur phase d’intégration API.
+            Authentification et permissions connectées. Les modules intégrés utilisent l’API HBS
+            HOME.
           </footer>
         </div>
       </div>
