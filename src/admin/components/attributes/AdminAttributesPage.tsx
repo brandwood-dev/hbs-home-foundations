@@ -23,7 +23,7 @@ import {
   AdminSelectField,
   AdminSwitchField,
 } from "@/admin/components/ui/AdminForm";
-import { useAdminAttributes } from "@/admin/hooks/admin.queries";
+import { useAdminAttributes, useAdminCategories } from "@/admin/hooks/admin.queries";
 import {
   useDeleteAdminAttribute,
   useSaveAdminAttribute,
@@ -33,7 +33,6 @@ import {
   type AdminAttribute,
   type AdminAttributeFieldType,
   type AdminAttributeValue,
-  type AdminProductCategoryKey,
 } from "@/admin/types/admin.types";
 import { adminId, normalizeKey, slugify } from "@/admin/utils/admin.utils";
 
@@ -65,7 +64,7 @@ interface AttributeDraft {
   isRequired: boolean;
   isActive: boolean;
   order: number;
-  categories: AdminProductCategoryKey[];
+  categories: string[];
   values: AdminAttributeValue[];
   isSystem: boolean;
 }
@@ -89,6 +88,7 @@ function toDraft(attribute?: AdminAttribute): AttributeDraft {
 
 export function AdminAttributesPage() {
   const { data: attributes = [], isLoading, error, refetch } = useAdminAttributes();
+  const { data: categories = [] } = useAdminCategories();
   const saveAttribute = useSaveAdminAttribute();
   const deleteAttribute = useDeleteAdminAttribute();
 
@@ -97,15 +97,26 @@ export function AdminAttributesPage() {
   const [draft, setDraft] = useState<AttributeDraft | null>(null);
   const [pendingDelete, setPendingDelete] = useState<AdminAttribute | null>(null);
 
+  const categoryOptions = useMemo(
+    () =>
+      categories.length > 0
+        ? categories.map((item) => ({ value: item.slug, label: item.name }))
+        : Object.entries(ADMIN_PRODUCT_CATEGORY_LABELS).map(([value, label]) => ({
+            value,
+            label,
+          })),
+    [categories],
+  );
+  const categoryLabels = useMemo(
+    () => new Map(categoryOptions.map((option) => [option.value, option.label])),
+    [categoryOptions],
+  );
+
   const rows = useMemo(() => {
     const query = normalizeKey(search);
     return attributes.filter((attribute) => {
       const categories = attribute.categories ?? [];
-      if (
-        category !== "all" &&
-        categories.length > 0 &&
-        !categories.includes(category as AdminProductCategoryKey)
-      ) {
+      if (category !== "all" && categories.length > 0 && !categories.includes(category)) {
         return false;
       }
       if (!query) return true;
@@ -144,9 +155,7 @@ export function AdminAttributesPage() {
       cell: (attribute) =>
         (attribute.categories ?? []).length === 0
           ? "Toutes"
-          : (attribute.categories ?? [])
-              .map((key) => ADMIN_PRODUCT_CATEGORY_LABELS[key])
-              .join(", "),
+          : (attribute.categories ?? []).map((key) => categoryLabels.get(key) ?? key).join(", "),
     },
     { id: "values", header: "Valeurs", cell: (attribute) => attribute.values.length },
     {
@@ -221,10 +230,7 @@ export function AdminAttributesPage() {
               label="Catégorie"
               value={category}
               onChange={setCategory}
-              options={Object.entries(ADMIN_PRODUCT_CATEGORY_LABELS).map(([value, label]) => ({
-                value,
-                label,
-              }))}
+              options={categoryOptions}
             />
           </>
         }
@@ -300,11 +306,10 @@ export function AdminAttributesPage() {
                 Aucune sélection = attribut disponible pour toutes les catégories.
               </p>
               <div className="grid gap-1 sm:grid-cols-2">
-                {Object.entries(ADMIN_PRODUCT_CATEGORY_LABELS).map(([key, label]) => {
-                  const value = key as AdminProductCategoryKey;
+                {categoryOptions.map(({ value, label }) => {
                   const checked = draft.categories.includes(value);
                   return (
-                    <label key={key} className="flex items-center gap-2 text-xs">
+                    <label key={value} className="flex items-center gap-2 text-xs">
                       <input
                         type="checkbox"
                         checked={checked}
@@ -363,14 +368,32 @@ export function AdminAttributesPage() {
                       }
                     />
                     {draft.fieldType === "color" ? (
-                      <Input
-                        type="color"
-                        className="w-14 p-1"
-                        aria-label="Couleur"
-                        value={value.hex ?? "#000000"}
-                        onChange={(event) => updateValue(index, { hex: event.target.value })}
-                      />
+                      <>
+                        <Input
+                          type="color"
+                          className="w-14 p-1"
+                          aria-label="Couleur"
+                          value={value.hex ?? "#000000"}
+                          onChange={(event) => updateValue(index, { hex: event.target.value })}
+                        />
+                        <Input
+                          className="min-w-28 flex-1"
+                          placeholder="Famille"
+                          aria-label="Famille de couleur"
+                          value={value.family ?? ""}
+                          onChange={(event) => updateValue(index, { family: event.target.value })}
+                        />
+                      </>
                     ) : null}
+                    <label className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <input
+                        type="checkbox"
+                        checked={value.isActive !== false}
+                        aria-label={`Activer ${value.label}`}
+                        onChange={(event) => updateValue(index, { isActive: event.target.checked })}
+                      />
+                      Active
+                    </label>
                     <Button
                       type="button"
                       variant="outline"

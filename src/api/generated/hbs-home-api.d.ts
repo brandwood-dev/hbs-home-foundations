@@ -1242,6 +1242,10 @@ export interface components {
             parentId: string | null;
             status: "draft" | "active" | "archived";
             sortOrder: number;
+            imageUrl: string | null;
+            seoTitle: string | null;
+            seoDescription: string | null;
+            showInNavigation: boolean;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
@@ -1252,6 +1256,9 @@ export interface components {
             value: string;
             label: string;
             sortOrder: number;
+            hex: string | null;
+            family: string | null;
+            isActive: boolean;
         };
         AdminAttribute: {
             id: string;
@@ -1261,11 +1268,18 @@ export interface components {
             isFilterable: boolean;
             isRequired: boolean;
             status: "draft" | "active" | "archived";
+            isVariantAxis: boolean;
+            sortOrder: number;
+            isSystem: boolean;
+            categorySlugs: string[];
             options: {
                 id: string;
                 value: string;
                 label: string;
                 sortOrder: number;
+                hex: string | null;
+                family: string | null;
+                isActive: boolean;
             }[];
             /** Format: date-time */
             createdAt: string;
@@ -1382,6 +1396,10 @@ export interface components {
                 parentId: string | null;
                 status: "draft" | "active" | "archived";
                 sortOrder: number;
+                imageUrl: string | null;
+                seoTitle: string | null;
+                seoDescription: string | null;
+                showInNavigation: boolean;
                 /** Format: date-time */
                 createdAt: string;
                 /** Format: date-time */
@@ -1397,11 +1415,18 @@ export interface components {
                 isFilterable: boolean;
                 isRequired: boolean;
                 status: "draft" | "active" | "archived";
+                isVariantAxis: boolean;
+                sortOrder: number;
+                isSystem: boolean;
+                categorySlugs: string[];
                 options: {
                     id: string;
                     value: string;
                     label: string;
                     sortOrder: number;
+                    hex: string | null;
+                    family: string | null;
+                    isActive: boolean;
                 }[];
                 /** Format: date-time */
                 createdAt: string;
@@ -3269,6 +3294,10 @@ export interface operations {
                             parentId: string | null;
                             status: "draft" | "active" | "archived";
                             sortOrder: number;
+                            imageUrl: string | null;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            showInNavigation: boolean;
                             /** Format: date-time */
                             createdAt: string;
                             /** Format: date-time */
@@ -3339,6 +3368,10 @@ export interface operations {
                     parentId?: string | null;
                     status?: "draft" | "active" | "archived";
                     sortOrder?: number;
+                    imageUrl?: string | null;
+                    seoTitle?: string | null;
+                    seoDescription?: string | null;
+                    showInNavigation?: boolean;
                 };
             };
         };
@@ -3357,6 +3390,10 @@ export interface operations {
                         parentId: string | null;
                         status: "draft" | "active" | "archived";
                         sortOrder: number;
+                        imageUrl: string | null;
+                        seoTitle: string | null;
+                        seoDescription: string | null;
+                        showInNavigation: boolean;
                         /** Format: date-time */
                         createdAt: string;
                         /** Format: date-time */
@@ -3472,6 +3509,10 @@ export interface operations {
                     parentId?: string | null;
                     status?: "draft" | "active" | "archived";
                     sortOrder?: number;
+                    imageUrl?: string | null;
+                    seoTitle?: string | null;
+                    seoDescription?: string | null;
+                    showInNavigation?: boolean;
                 };
             };
         };
@@ -3490,6 +3531,10 @@ export interface operations {
                         parentId: string | null;
                         status: "draft" | "active" | "archived";
                         sortOrder: number;
+                        imageUrl: string | null;
+                        seoTitle: string | null;
+                        seoDescription: string | null;
+                        showInNavigation: boolean;
                         /** Format: date-time */
                         createdAt: string;
                         /** Format: date-time */
@@ -3633,11 +3678,18 @@ export interface operations {
                             isFilterable: boolean;
                             isRequired: boolean;
                             status: "draft" | "active" | "archived";
+                            isVariantAxis: boolean;
+                            sortOrder: number;
+                            isSystem: boolean;
+                            categorySlugs: string[];
                             options: {
                                 id: string;
                                 value: string;
                                 label: string;
                                 sortOrder: number;
+                                hex: string | null;
+                                family: string | null;
+                                isActive: boolean;
                             }[];
                             /** Format: date-time */
                             createdAt: string;
@@ -3709,10 +3761,17 @@ export interface operations {
                     isFilterable?: boolean;
                     isRequired?: boolean;
                     status?: "draft" | "active" | "archived";
+                    isVariantAxis?: boolean;
+                    sortOrder?: number;
+                    isSystem?: boolean;
+                    categorySlugs?: string[];
                     options?: {
                         value: string;
                         label: string;
                         sortOrder?: number;
+                        hex?: string | null;
+                        family?: string | null;
+                        isActive?: boolean;
                     }[];
                 };
             };
@@ -3732,11 +3791,18 @@ export interface operations {
                         isFilterable: boolean;
                         isRequired: boolean;
                         status: "draft" | "active" | "archived";
+                        isVariantAxis: boolean;
+                        sortOrder: number;
+                        isSystem: boolean;
+                        categorySlugs: string[];
                         options: {
                             id: string;
                             value: string;
                             label: string;
                             sortOrder: number;
+                            hex: string | null;
+                            family: string | null;
+                            isActive: boolean;
                         }[];
                         /** Format: date-time */
                         createdAt: string;
@@ -3853,10 +3919,17 @@ export interface operations {
                     isFilterable?: boolean;
                     isRequired?: boolean;
                     status?: "draft" | "active" | "archived";
+                    isVariantAxis?: boolean;
+                    sortOrder?: number;
+                    isSystem?: boolean;
+                    categorySlugs?: string[];
                     options?: {
                         value: string;
                         label: string;
                         sortOrder?: number;
+                        hex?: string | null;
+                        family?: string | null;
+                        isActive?: boolean;
                     }[];
                 };
             };
@@ -3876,11 +3949,18 @@ export interface operations {
                         isFilterable: boolean;
                         isRequired: boolean;
                         status: "draft" | "active" | "archived";
+                        isVariantAxis: boolean;
+                        sortOrder: number;
+                        isSystem: boolean;
+                        categorySlugs: string[];
                         options: {
                             id: string;
                             value: string;
                             label: string;
                             sortOrder: number;
+                            hex: string | null;
+                            family: string | null;
+                            isActive: boolean;
                         }[];
                         /** Format: date-time */
                         createdAt: string;

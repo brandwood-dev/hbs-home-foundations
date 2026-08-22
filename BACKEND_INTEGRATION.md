@@ -11,7 +11,8 @@ Les données métier du frontend sont encore mixtes :
   repositories HTTP de `src/admin/repositories/api/admin-catalog-api-repositories.ts` ;
 - `LocalCartRepository` — panier persistant (localStorage, versionné) ;
 - `ApiCartRepository` — panier invité serveur dès que `VITE_HBS_API_BASE_URL` est défini ;
-- `MockOrderRepository` — commandes créées et lues dans `sessionStorage`.
+- `ApiOrderRepository` — commandes et suivi serveur dès que `VITE_HBS_API_BASE_URL` est défini ;
+  `MockOrderRepository` reste disponible uniquement pour le développement isolé.
 
 Le site public lit les produits publiés via les endpoints publics `/api/v1/products*`. Le
 back-office utilise `adminConfig.catalogDataProvider = "api"` pour le catalogue uniquement ; les
@@ -57,7 +58,7 @@ Auth en PKCE, une activation par invitation, un MFA TOTP obligatoire et une rés
 permissions par l'API. Chaque mutation catalogue transmet le bearer Supabase et laisse l'API
 appliquer MFA, permissions et audit. Les erreurs `401`, `403` et `409/422` sont remontées à l'UI.
 
-### Catalogue Admin (phase 3C.3)
+### Catalogue Admin (phases 3C.3 et 9A)
 
 Les routes suivantes sont consommées avec la session Supabase courante :
 
@@ -70,11 +71,11 @@ POST/PATCH     /api/v1/admin/products/:id/variants
 POST           /api/v1/admin/products/:id/variants/:variantId/archive
 ```
 
-Le modèle API normalisé est adapté vers les types Admin historiques. Les champs UI plus riches
-(SEO, tags et axes) restent conservés dans le `payload`. Les médias sont maintenant téléversés
-dans le bucket public Supabase `product-media`, puis leurs métadonnées sont synchronisées par
-l'API dans `catalog.product_media`. La suppression est volontairement une archive réversible,
-car l'API ne propose pas de suppression physique.
+Le modèle API normalisé est adapté vers les types Admin historiques. Les métadonnées de catégories
+(image, SEO, navigation) et les propriétés d'attributs (ordre, axe de variante, système, options
+de couleur/statut) sont persistées dans les tables normalisées. Les associations d'attributs sont
+exprimées par les slugs de catégories API ; une liste vide signifie toutes les catégories.
+L'archivage d'une ressource utilisée est refusé par l'API afin de préserver l'intégrité du catalogue.
 
 ### Médias produits (phase 3C.5)
 
@@ -105,7 +106,7 @@ secrète ou `service_role` est interdite dans toute variable `VITE_*`.
 ### Flux frontend
 
 ```
-OrderTrackingForm → useTrackOrder → OrderRepository.trackOrder → MockOrderRepository
+OrderTrackingForm → useTrackOrder → OrderRepository.trackOrder → ApiOrderRepository (staging/prod)
                                      → vérification numéro + téléphone → OrderTrackingResult
 ```
 
