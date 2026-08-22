@@ -7,6 +7,7 @@ import { LocalCartRepository } from "@/repositories/local/LocalCartRepository";
 import { LocalFavoritesRepository } from "@/repositories/local/LocalFavoritesRepository";
 import { LocalSearchHistoryRepository } from "@/repositories/local/LocalSearchHistoryRepository";
 import { MockSearchRepository } from "@/repositories/mock/MockSearchRepository";
+import { ApiSearchRepository } from "@/repositories/api/ApiSearchRepository";
 import { MockMeasurementRulesRepository } from "@/repositories/mock/MockMeasurementRulesRepository";
 import { MockCustomQuoteRepository } from "@/repositories/mock/MockCustomQuoteRepository";
 import { MockProfessionalLeadRepository } from "@/repositories/mock/MockProfessionalLeadRepository";
@@ -90,9 +91,14 @@ export function getFavoritesRepository(): FavoritesRepository {
   return favoritesRepository;
 }
 
-/** Recherche : MockSearchRepository aujourd'hui, ApiSearchRepository demain. */
+/** Recherche catalogue : API en staging/production, mock uniquement en développement isolé. */
 export function getSearchRepository(): SearchRepository {
-  if (!searchRepository) searchRepository = new MockSearchRepository(getProductRepository());
+  if (!searchRepository) {
+    searchRepository =
+      dataProvider === "api"
+        ? new ApiSearchRepository()
+        : new MockSearchRepository(getProductRepository());
+  }
   return searchRepository;
 }
 

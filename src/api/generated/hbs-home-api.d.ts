@@ -1943,6 +1943,7 @@ export interface operations {
     listProducts: {
         parameters: {
             query?: {
+                q?: string;
                 page?: number;
                 pageSize?: number;
                 sort?: "recommended" | "newest" | "best_sellers" | "price_asc" | "price_desc" | "discount";
@@ -2102,6 +2103,9 @@ export interface operations {
                         pageSize: number;
                         total: number;
                         totalPages: number;
+                        categoryCounts?: {
+                            [key: string]: number;
+                        };
                     };
                 };
             };

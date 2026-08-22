@@ -29,6 +29,9 @@ export interface ProductListParams {
   page: number;
   pageSize: number;
 
+  /** Optional server-side catalogue search text. */
+  query?: string | undefined;
+
   categories?: ProductCategory[] | undefined;
 
   materials?: ProductMaterial[] | undefined;
@@ -106,6 +109,7 @@ export interface PaginatedProducts {
   pageSize: number;
   total: number;
   totalPages: number;
+  categoryCounts?: Partial<Record<ProductCategory, number>>;
 }
 
 export interface ProductRepository {
