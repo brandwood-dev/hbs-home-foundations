@@ -9879,6 +9879,7 @@ export interface operations {
                     phone?: string;
                     email?: string | null;
                     governorate?: string;
+                    internalNotes?: string;
                     preferredChannel?: "phone" | "email" | "whatsapp" | null;
                 };
             };

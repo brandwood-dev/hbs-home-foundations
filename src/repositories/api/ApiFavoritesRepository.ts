@@ -4,6 +4,10 @@ import { FavoritesError } from "@/domain/favorites/favorites.errors";
 import { HbsApiClient, HbsApiError } from "@/api/client";
 import type { FavoritesRepository } from "@/repositories/interfaces/FavoritesRepository";
 import { readFavorites, writeFavorites } from "@/repositories/local/favorites-storage";
+import {
+  FAVORITES_SYNC_STORAGE_KEY,
+  FAVORITES_UPDATED_EVENT,
+} from "@/domain/favorites/favorites.constants";
 
 interface ApiFavoriteItem {
   productId: string;
@@ -29,6 +33,16 @@ function mapFavorites(response: ApiFavoritesResponse): ResolvedFavorites {
     removedProductIds: response.removedProductIds,
     count: response.count,
   };
+}
+
+function notifyFavoritesUpdated(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(FAVORITES_UPDATED_EVENT));
+  try {
+    window.localStorage.setItem(FAVORITES_SYNC_STORAGE_KEY, String(Date.now()));
+  } catch {
+    // Cross-tab notification is best-effort and must not break a successful API mutation.
+  }
 }
 
 function mapError(error: unknown): never {
@@ -118,9 +132,11 @@ export class ApiFavoritesRepository implements FavoritesRepository {
   async add(productId: string): Promise<ResolvedFavorites> {
     try {
       await this.migrateLocalFavorites();
-      return mapFavorites(
+      const favorites = mapFavorites(
         await this.apiClient.post<ApiFavoritesResponse>("/api/v1/favorites/items", { productId }),
       );
+      notifyFavoritesUpdated();
+      return favorites;
     } catch (error) {
       return mapError(error);
     }
@@ -129,11 +145,13 @@ export class ApiFavoritesRepository implements FavoritesRepository {
   async remove(productId: string): Promise<ResolvedFavorites> {
     try {
       await this.migrateLocalFavorites();
-      return mapFavorites(
+      const favorites = mapFavorites(
         await this.apiClient.delete<ApiFavoritesResponse>(
           `/api/v1/favorites/items/${encodeURIComponent(productId)}`,
         ),
       );
+      notifyFavoritesUpdated();
+      return favorites;
     } catch (error) {
       return mapError(error);
     }
@@ -160,6 +178,7 @@ export class ApiFavoritesRepository implements FavoritesRepository {
       } catch {
         /* localStorage is only a migration source in API mode */
       }
+      notifyFavoritesUpdated();
       return favorites;
     } catch (error) {
       return mapError(error);
