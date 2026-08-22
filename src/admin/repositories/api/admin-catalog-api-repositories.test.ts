@@ -98,10 +98,20 @@ describe("Admin catalog API adapters", () => {
         parentId: null,
         status: "active",
         sortOrder: 1,
+        imageUrl: "https://cdn.example.test/category.jpg",
+        seoTitle: "Rideaux",
+        seoDescription: "Rideaux HBS HOME",
+        showInNavigation: true,
         createdAt: "2026-08-21T00:00:00.000Z",
         updatedAt: "2026-08-21T00:00:00.000Z",
       }),
-    ).toMatchObject({ id: "category-1", isActive: true, order: 1 });
+    ).toMatchObject({
+      id: "category-1",
+      isActive: true,
+      order: 1,
+      imageUrl: "https://cdn.example.test/category.jpg",
+      showInNavigation: true,
+    });
 
     expect(
       mapAttribute({
@@ -112,12 +122,29 @@ describe("Admin catalog API adapters", () => {
         isFilterable: true,
         isRequired: false,
         status: "active",
-        options: [{ id: "value-1", value: "beige", label: "Beige", sortOrder: 1 }],
+        isVariantAxis: true,
+        sortOrder: 2,
+        isSystem: false,
+        categorySlugs: ["rideaux"],
+        options: [
+          {
+            id: "value-1",
+            value: "beige",
+            label: "Beige",
+            sortOrder: 1,
+            hex: "#d8c4a8",
+            family: "neutres",
+            isActive: true,
+          },
+        ],
         createdAt: "2026-08-21T00:00:00.000Z",
         updatedAt: "2026-08-21T00:00:00.000Z",
       }),
     ).toMatchObject({
       fieldType: "select",
+      isVariantAxis: true,
+      order: 2,
+      categories: ["rideaux"],
       values: [{ slug: "beige", label: "Beige" }],
     });
   });

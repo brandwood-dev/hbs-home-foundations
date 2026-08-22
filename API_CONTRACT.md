@@ -29,12 +29,20 @@ explicite, audit.
 Erreurs normalisées : `401 AUTH_REQUIRED`, `401 INVALID_ACCESS_TOKEN`, `403 ADMIN_ACCESS_DENIED`,
 `403 MFA_REQUIRED`, `403 PERMISSION_DENIED`.
 
-## Catalogue Admin (phase 3C)
+## Catalogue Admin (phases 3C et 9A)
 
 Le back-office consomme les routes catalogue avec le même bearer Supabase. Les lectures requièrent
 `products.read` ou `categories.read`; les écritures requièrent respectivement `products.write` ou
 `categories.write`, et la publication/archivage produit requiert `products.publish`. Les mutations
 sont protégées par `aal2` et écrivent un événement d'audit.
+
+Une catégorie expose ses métadonnées éditoriales (`imageUrl`, `seoTitle`, `seoDescription` et
+`showInNavigation`). Un attribut expose son ordre, son usage comme axe de variante, son statut
+système, ses options enrichies (`hex`, `family`, `isActive`) et les slugs des catégories auxquelles
+il est associé (`categorySlugs`). Une liste vide de catégories signifie « toutes les catégories ».
+
+L'archivage d'une catégorie ou d'un attribut utilisé par un produit, une catégorie enfant ou une
+association catalogue est refusé par l'API afin de préserver l'intégrité métier.
 
 ```text
 GET    /api/v1/admin/categories

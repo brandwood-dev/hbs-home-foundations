@@ -100,8 +100,10 @@ function mapCategory(category: ApiCategory): AdminCategory {
     order: category.sortOrder,
     isActive: category.status === "active",
     description: category.description ?? "",
-    seoTitle: category.name,
-    seoDescription: category.description ?? "",
+    ...(category.imageUrl ? { imageUrl: category.imageUrl } : {}),
+    seoTitle: category.seoTitle ?? "",
+    seoDescription: category.seoDescription ?? "",
+    showInNavigation: category.showInNavigation,
   };
 }
 
@@ -113,6 +115,10 @@ function categoryBody(input: AdminCategoryInput): CategoryCreateBody {
     parentId: input.parentId || null,
     status: input.isActive ? "active" : "draft",
     sortOrder: input.order,
+    imageUrl: input.imageUrl || null,
+    seoTitle: input.seoTitle.trim() || null,
+    seoDescription: input.seoDescription.trim() || null,
+    showInNavigation: input.showInNavigation !== false,
   };
 }
 
@@ -124,6 +130,12 @@ function categoryPatch(input: Partial<AdminCategoryInput>): CategoryPatchBody {
     ...(input.parentId === undefined ? {} : { parentId: input.parentId || null }),
     ...(input.isActive === undefined ? {} : { status: input.isActive ? "active" : "draft" }),
     ...(input.order === undefined ? {} : { sortOrder: input.order }),
+    ...(input.imageUrl === undefined ? {} : { imageUrl: input.imageUrl || null }),
+    ...(input.seoTitle === undefined ? {} : { seoTitle: input.seoTitle.trim() || null }),
+    ...(input.seoDescription === undefined
+      ? {}
+      : { seoDescription: input.seoDescription.trim() || null }),
+    ...(input.showInNavigation === undefined ? {} : { showInNavigation: input.showInNavigation }),
   };
 }
 
@@ -135,19 +147,21 @@ function mapAttribute(attribute: ApiAttribute): AdminAttribute {
     name: attribute.name,
     fieldType,
     isFilterable: attribute.isFilterable,
-    isVariantAxis: false,
+    isVariantAxis: attribute.isVariantAxis,
     isRequired: attribute.isRequired,
     isActive: attribute.status === "active",
-    order: 0,
-    categories: [],
+    order: attribute.sortOrder,
+    categories: [...attribute.categorySlugs],
     values: attribute.options.map((option): AdminAttributeValue => ({
       id: option.id,
       label: option.label,
       slug: option.value,
       order: option.sortOrder,
-      isActive: true,
+      ...(option.hex ? { hex: option.hex } : {}),
+      ...(option.family ? { family: option.family } : {}),
+      isActive: option.isActive,
     })),
-    isSystem: false,
+    isSystem: attribute.isSystem,
   };
 }
 
@@ -175,10 +189,17 @@ function attributeBody(input: AdminAttributeInput): AttributeCreateBody {
     isFilterable: input.isFilterable,
     isRequired: input.isRequired ?? false,
     status: input.isActive === false ? "draft" : "active",
+    isVariantAxis: input.isVariantAxis,
+    sortOrder: input.order,
+    isSystem: input.isSystem ?? false,
+    categorySlugs: input.categories ?? [],
     options: input.values.map((value, index) => ({
       value: value.slug.trim() || value.label.trim(),
       label: value.label.trim(),
       sortOrder: value.order || index + 1,
+      ...(value.hex ? { hex: value.hex } : {}),
+      ...(value.family ? { family: value.family } : {}),
+      isActive: value.isActive,
     })),
   };
 }
@@ -191,6 +212,10 @@ function attributePatch(input: Partial<AdminAttributeInput>): AttributePatchBody
     ...(input.isFilterable === undefined ? {} : { isFilterable: input.isFilterable }),
     ...(input.isRequired === undefined ? {} : { isRequired: input.isRequired }),
     ...(input.isActive === undefined ? {} : { status: input.isActive ? "active" : "draft" }),
+    ...(input.isVariantAxis === undefined ? {} : { isVariantAxis: input.isVariantAxis }),
+    ...(input.order === undefined ? {} : { sortOrder: input.order }),
+    ...(input.isSystem === undefined ? {} : { isSystem: input.isSystem }),
+    ...(input.categories === undefined ? {} : { categorySlugs: input.categories }),
     ...(input.values === undefined
       ? {}
       : {
@@ -198,6 +223,9 @@ function attributePatch(input: Partial<AdminAttributeInput>): AttributePatchBody
             value: value.slug.trim() || value.label.trim(),
             label: value.label.trim(),
             sortOrder: value.order || index + 1,
+            ...(value.hex ? { hex: value.hex } : {}),
+            ...(value.family ? { family: value.family } : {}),
+            isActive: value.isActive,
           })),
         }),
   };
@@ -653,10 +681,6 @@ export class ApiAdminCategoryRepository implements AdminCategoryRepository {
       this.update(current.id, { order: target.order }),
       this.update(target.id, { order: current.order }),
     ]);
-  }
-
-  async isUsed(): Promise<boolean> {
-    return false;
   }
 }
 

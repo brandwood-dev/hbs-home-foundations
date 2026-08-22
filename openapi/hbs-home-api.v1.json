@@ -898,6 +898,10 @@
           "parentId",
           "status",
           "sortOrder",
+          "imageUrl",
+          "seoTitle",
+          "seoDescription",
+          "showInNavigation",
           "createdAt",
           "updatedAt"
         ],
@@ -950,6 +954,45 @@
           "sortOrder": {
             "type": "integer"
           },
+          "imageUrl": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "maxLength": 2048,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "seoTitle": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "maxLength": 160,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "seoDescription": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "maxLength": 320,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "showInNavigation": {
+            "type": "boolean"
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string"
@@ -963,7 +1006,7 @@
       "AdminAttributeOption": {
         "additionalProperties": false,
         "type": "object",
-        "required": ["id", "value", "label", "sortOrder"],
+        "required": ["id", "value", "label", "sortOrder", "hex", "family", "isActive"],
         "properties": {
           "id": {
             "type": "string"
@@ -976,6 +1019,32 @@
           },
           "sortOrder": {
             "type": "integer"
+          },
+          "hex": {
+            "anyOf": [
+              {
+                "pattern": "^#[0-9A-Fa-f]{6}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "family": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
           }
         }
       },
@@ -990,6 +1059,10 @@
           "isFilterable",
           "isRequired",
           "status",
+          "isVariantAxis",
+          "sortOrder",
+          "isSystem",
+          "categorySlugs",
           "options",
           "createdAt",
           "updatedAt"
@@ -1054,12 +1127,30 @@
               }
             ]
           },
+          "isVariantAxis": {
+            "type": "boolean"
+          },
+          "sortOrder": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "isSystem": {
+            "type": "boolean"
+          },
+          "categorySlugs": {
+            "type": "array",
+            "items": {
+              "minLength": 1,
+              "maxLength": 160,
+              "type": "string"
+            }
+          },
           "options": {
             "type": "array",
             "items": {
               "additionalProperties": false,
               "type": "object",
-              "required": ["id", "value", "label", "sortOrder"],
+              "required": ["id", "value", "label", "sortOrder", "hex", "family", "isActive"],
               "properties": {
                 "id": {
                   "type": "string"
@@ -1072,6 +1163,32 @@
                 },
                 "sortOrder": {
                   "type": "integer"
+                },
+                "hex": {
+                  "anyOf": [
+                    {
+                      "pattern": "^#[0-9A-Fa-f]{6}$",
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "family": {
+                  "anyOf": [
+                    {
+                      "minLength": 1,
+                      "maxLength": 80,
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "isActive": {
+                  "type": "boolean"
                 }
               }
             }
@@ -1668,6 +1785,10 @@
                 "parentId",
                 "status",
                 "sortOrder",
+                "imageUrl",
+                "seoTitle",
+                "seoDescription",
+                "showInNavigation",
                 "createdAt",
                 "updatedAt"
               ],
@@ -1720,6 +1841,45 @@
                 "sortOrder": {
                   "type": "integer"
                 },
+                "imageUrl": {
+                  "anyOf": [
+                    {
+                      "minLength": 1,
+                      "maxLength": 2048,
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "seoTitle": {
+                  "anyOf": [
+                    {
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "seoDescription": {
+                  "anyOf": [
+                    {
+                      "minLength": 1,
+                      "maxLength": 320,
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "showInNavigation": {
+                  "type": "boolean"
+                },
                 "createdAt": {
                   "format": "date-time",
                   "type": "string"
@@ -1751,6 +1911,10 @@
                 "isFilterable",
                 "isRequired",
                 "status",
+                "isVariantAxis",
+                "sortOrder",
+                "isSystem",
+                "categorySlugs",
                 "options",
                 "createdAt",
                 "updatedAt"
@@ -1815,12 +1979,30 @@
                     }
                   ]
                 },
+                "isVariantAxis": {
+                  "type": "boolean"
+                },
+                "sortOrder": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "isSystem": {
+                  "type": "boolean"
+                },
+                "categorySlugs": {
+                  "type": "array",
+                  "items": {
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "type": "string"
+                  }
+                },
                 "options": {
                   "type": "array",
                   "items": {
                     "additionalProperties": false,
                     "type": "object",
-                    "required": ["id", "value", "label", "sortOrder"],
+                    "required": ["id", "value", "label", "sortOrder", "hex", "family", "isActive"],
                     "properties": {
                       "id": {
                         "type": "string"
@@ -1833,6 +2015,32 @@
                       },
                       "sortOrder": {
                         "type": "integer"
+                      },
+                      "hex": {
+                        "anyOf": [
+                          {
+                            "pattern": "^#[0-9A-Fa-f]{6}$",
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "family": {
+                        "anyOf": [
+                          {
+                            "minLength": 1,
+                            "maxLength": 80,
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "isActive": {
+                        "type": "boolean"
                       }
                     }
                   }
@@ -9435,6 +9643,10 @@
                           "parentId",
                           "status",
                           "sortOrder",
+                          "imageUrl",
+                          "seoTitle",
+                          "seoDescription",
+                          "showInNavigation",
                           "createdAt",
                           "updatedAt"
                         ],
@@ -9486,6 +9698,45 @@
                           },
                           "sortOrder": {
                             "type": "integer"
+                          },
+                          "imageUrl": {
+                            "anyOf": [
+                              {
+                                "minLength": 1,
+                                "maxLength": 2048,
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "seoTitle": {
+                            "anyOf": [
+                              {
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "seoDescription": {
+                            "anyOf": [
+                              {
+                                "minLength": 1,
+                                "maxLength": 320,
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "showInNavigation": {
+                            "type": "boolean"
                           },
                           "createdAt": {
                             "format": "date-time",
@@ -9695,6 +9946,45 @@
                   "sortOrder": {
                     "minimum": 0,
                     "type": "integer"
+                  },
+                  "imageUrl": {
+                    "anyOf": [
+                      {
+                        "minLength": 1,
+                        "maxLength": 2048,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "seoTitle": {
+                    "anyOf": [
+                      {
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "seoDescription": {
+                    "anyOf": [
+                      {
+                        "minLength": 1,
+                        "maxLength": 320,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "showInNavigation": {
+                    "type": "boolean"
                   }
                 }
               }
@@ -9722,6 +10012,10 @@
                     "parentId",
                     "status",
                     "sortOrder",
+                    "imageUrl",
+                    "seoTitle",
+                    "seoDescription",
+                    "showInNavigation",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -9773,6 +10067,45 @@
                     },
                     "sortOrder": {
                       "type": "integer"
+                    },
+                    "imageUrl": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "maxLength": 2048,
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "seoTitle": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "seoDescription": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "maxLength": 320,
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "showInNavigation": {
+                      "type": "boolean"
                     },
                     "createdAt": {
                       "format": "date-time",
@@ -10108,6 +10441,45 @@
                   "sortOrder": {
                     "minimum": 0,
                     "type": "integer"
+                  },
+                  "imageUrl": {
+                    "anyOf": [
+                      {
+                        "minLength": 1,
+                        "maxLength": 2048,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "seoTitle": {
+                    "anyOf": [
+                      {
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "seoDescription": {
+                    "anyOf": [
+                      {
+                        "minLength": 1,
+                        "maxLength": 320,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "showInNavigation": {
+                    "type": "boolean"
                   }
                 }
               }
@@ -10147,6 +10519,10 @@
                     "parentId",
                     "status",
                     "sortOrder",
+                    "imageUrl",
+                    "seoTitle",
+                    "seoDescription",
+                    "showInNavigation",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -10198,6 +10574,45 @@
                     },
                     "sortOrder": {
                       "type": "integer"
+                    },
+                    "imageUrl": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "maxLength": 2048,
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "seoTitle": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "seoDescription": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "maxLength": 320,
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "showInNavigation": {
+                      "type": "boolean"
                     },
                     "createdAt": {
                       "format": "date-time",
@@ -10567,6 +10982,10 @@
                           "isFilterable",
                           "isRequired",
                           "status",
+                          "isVariantAxis",
+                          "sortOrder",
+                          "isSystem",
+                          "categorySlugs",
                           "options",
                           "createdAt",
                           "updatedAt"
@@ -10631,12 +11050,38 @@
                               }
                             ]
                           },
+                          "isVariantAxis": {
+                            "type": "boolean"
+                          },
+                          "sortOrder": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "isSystem": {
+                            "type": "boolean"
+                          },
+                          "categorySlugs": {
+                            "type": "array",
+                            "items": {
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "type": "string"
+                            }
+                          },
                           "options": {
                             "type": "array",
                             "items": {
                               "additionalProperties": false,
                               "type": "object",
-                              "required": ["id", "value", "label", "sortOrder"],
+                              "required": [
+                                "id",
+                                "value",
+                                "label",
+                                "sortOrder",
+                                "hex",
+                                "family",
+                                "isActive"
+                              ],
                               "properties": {
                                 "id": {
                                   "type": "string"
@@ -10649,6 +11094,32 @@
                                 },
                                 "sortOrder": {
                                   "type": "integer"
+                                },
+                                "hex": {
+                                  "anyOf": [
+                                    {
+                                      "pattern": "^#[0-9A-Fa-f]{6}$",
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "family": {
+                                  "anyOf": [
+                                    {
+                                      "minLength": 1,
+                                      "maxLength": 80,
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "isActive": {
+                                  "type": "boolean"
                                 }
                               }
                             }
@@ -10870,6 +11341,24 @@
                       }
                     ]
                   },
+                  "isVariantAxis": {
+                    "type": "boolean"
+                  },
+                  "sortOrder": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "isSystem": {
+                    "type": "boolean"
+                  },
+                  "categorySlugs": {
+                    "type": "array",
+                    "items": {
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "type": "string"
+                    }
+                  },
                   "options": {
                     "type": "array",
                     "items": {
@@ -10890,6 +11379,32 @@
                         "sortOrder": {
                           "minimum": 0,
                           "type": "integer"
+                        },
+                        "hex": {
+                          "anyOf": [
+                            {
+                              "pattern": "^#[0-9A-Fa-f]{6}$",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "family": {
+                          "anyOf": [
+                            {
+                              "minLength": 1,
+                              "maxLength": 80,
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "isActive": {
+                          "type": "boolean"
                         }
                       }
                     }
@@ -10920,6 +11435,10 @@
                     "isFilterable",
                     "isRequired",
                     "status",
+                    "isVariantAxis",
+                    "sortOrder",
+                    "isSystem",
+                    "categorySlugs",
                     "options",
                     "createdAt",
                     "updatedAt"
@@ -10984,12 +11503,38 @@
                         }
                       ]
                     },
+                    "isVariantAxis": {
+                      "type": "boolean"
+                    },
+                    "sortOrder": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "isSystem": {
+                      "type": "boolean"
+                    },
+                    "categorySlugs": {
+                      "type": "array",
+                      "items": {
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "type": "string"
+                      }
+                    },
                     "options": {
                       "type": "array",
                       "items": {
                         "additionalProperties": false,
                         "type": "object",
-                        "required": ["id", "value", "label", "sortOrder"],
+                        "required": [
+                          "id",
+                          "value",
+                          "label",
+                          "sortOrder",
+                          "hex",
+                          "family",
+                          "isActive"
+                        ],
                         "properties": {
                           "id": {
                             "type": "string"
@@ -11002,6 +11547,32 @@
                           },
                           "sortOrder": {
                             "type": "integer"
+                          },
+                          "hex": {
+                            "anyOf": [
+                              {
+                                "pattern": "^#[0-9A-Fa-f]{6}$",
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "family": {
+                            "anyOf": [
+                              {
+                                "minLength": 1,
+                                "maxLength": 80,
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "isActive": {
+                            "type": "boolean"
                           }
                         }
                       }
@@ -11349,6 +11920,24 @@
                       }
                     ]
                   },
+                  "isVariantAxis": {
+                    "type": "boolean"
+                  },
+                  "sortOrder": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "isSystem": {
+                    "type": "boolean"
+                  },
+                  "categorySlugs": {
+                    "type": "array",
+                    "items": {
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "type": "string"
+                    }
+                  },
                   "options": {
                     "type": "array",
                     "items": {
@@ -11369,6 +11958,32 @@
                         "sortOrder": {
                           "minimum": 0,
                           "type": "integer"
+                        },
+                        "hex": {
+                          "anyOf": [
+                            {
+                              "pattern": "^#[0-9A-Fa-f]{6}$",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "family": {
+                          "anyOf": [
+                            {
+                              "minLength": 1,
+                              "maxLength": 80,
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "isActive": {
+                          "type": "boolean"
                         }
                       }
                     }
@@ -11411,6 +12026,10 @@
                     "isFilterable",
                     "isRequired",
                     "status",
+                    "isVariantAxis",
+                    "sortOrder",
+                    "isSystem",
+                    "categorySlugs",
                     "options",
                     "createdAt",
                     "updatedAt"
@@ -11475,12 +12094,38 @@
                         }
                       ]
                     },
+                    "isVariantAxis": {
+                      "type": "boolean"
+                    },
+                    "sortOrder": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "isSystem": {
+                      "type": "boolean"
+                    },
+                    "categorySlugs": {
+                      "type": "array",
+                      "items": {
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "type": "string"
+                      }
+                    },
                     "options": {
                       "type": "array",
                       "items": {
                         "additionalProperties": false,
                         "type": "object",
-                        "required": ["id", "value", "label", "sortOrder"],
+                        "required": [
+                          "id",
+                          "value",
+                          "label",
+                          "sortOrder",
+                          "hex",
+                          "family",
+                          "isActive"
+                        ],
                         "properties": {
                           "id": {
                             "type": "string"
@@ -11493,6 +12138,32 @@
                           },
                           "sortOrder": {
                             "type": "integer"
+                          },
+                          "hex": {
+                            "anyOf": [
+                              {
+                                "pattern": "^#[0-9A-Fa-f]{6}$",
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "family": {
+                            "anyOf": [
+                              {
+                                "minLength": 1,
+                                "maxLength": 80,
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "isActive": {
+                            "type": "boolean"
                           }
                         }
                       }

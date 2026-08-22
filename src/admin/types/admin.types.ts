@@ -165,7 +165,8 @@ export interface AdminAttribute {
   order: number;
   values: AdminAttributeValue[];
   /** Catégories concernées ; vide = toutes. */
-  categories?: AdminProductCategoryKey[];
+  /** Category slugs; empty means the attribute applies to every category. */
+  categories?: string[];
   isRequired?: boolean;
   isActive?: boolean;
   /** Attribut nécessaire au frontend public : suppression interdite. */

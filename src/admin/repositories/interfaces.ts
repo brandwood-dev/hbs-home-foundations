@@ -52,7 +52,6 @@ export interface AdminCategoryRepository extends CrudRepository<
   Partial<AdminCategoryInput>
 > {
   move(id: string, direction: "up" | "down"): Promise<void>;
-  isUsed(id: string): Promise<boolean>;
 }
 
 export type AdminAttributeInput = Omit<AdminAttribute, "id">;
