@@ -20,6 +20,7 @@ import {
 } from "@/admin/repositories/api/admin-catalog-api-repositories";
 import { ApiAdminPromotionRepository } from "@/admin/repositories/api/admin-promotion-api-repository";
 import { ApiAdminOrderRepository } from "@/admin/repositories/api/admin-order-api-repository";
+import { ApiAdminCustomerRepository } from "@/admin/repositories/api/admin-customer-api-repository";
 import { adminConfig } from "@/admin/config/admin.config";
 
 /**
@@ -49,7 +50,10 @@ export const adminRepositories = {
     adminConfig.orderDataProvider === "api"
       ? new ApiAdminOrderRepository()
       : new MockAdminOrderRepository(),
-  customers: new MockAdminCustomerRepository(),
+  customers:
+    adminConfig.customerDataProvider === "api"
+      ? new ApiAdminCustomerRepository()
+      : new MockAdminCustomerRepository(),
   promotions:
     adminConfig.promotionDataProvider === "api"
       ? new ApiAdminPromotionRepository()
