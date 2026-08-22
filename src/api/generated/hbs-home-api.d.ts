@@ -705,6 +705,161 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/customers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List persisted customer profiles */
+        get: operations["listAdminCustomers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/customers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read a persisted customer profile */
+        get: operations["getAdminCustomer"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update a customer profile */
+        patch: operations["updateAdminCustomer"];
+        trace?: never;
+    };
+    "/api/v1/admin/customers/{id}/addresses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a customer address */
+        post: operations["addAdminCustomerAddress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/customers/{id}/addresses/{addressId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a customer address */
+        delete: operations["deleteAdminCustomerAddress"];
+        options?: never;
+        head?: never;
+        /** Update a customer address */
+        patch: operations["updateAdminCustomerAddress"];
+        trace?: never;
+    };
+    "/api/v1/admin/customers/{id}/addresses/{addressId}/default": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set a customer's default address */
+        post: operations["setAdminCustomerDefaultAddress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/customers/{id}/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update customer tags */
+        patch: operations["updateAdminCustomerTags"];
+        trace?: never;
+    };
+    "/api/v1/admin/customers/{id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add an internal customer note */
+        post: operations["addAdminCustomerNote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/customers/{id}/duplicates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find potential duplicate customers */
+        get: operations["findAdminCustomerDuplicates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/customers/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Merge two customer profiles */
+        post: operations["mergeAdminCustomers"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/cart": {
         parameters: {
             query?: never;
@@ -771,6 +926,58 @@ export interface paths {
         post: operations["applyCartPromotion"];
         /** Remove the current promotion code */
         delete: operations["removeCartPromotion"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/favorites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read the current opaque-token guest favorites */
+        get: operations["getFavorites"];
+        put?: never;
+        post?: never;
+        /** Clear all guest favorites */
+        delete: operations["clearFavorites"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/favorites/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a published product to guest favorites */
+        post: operations["addFavorite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/favorites/items/{productId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a product from guest favorites */
+        delete: operations["removeFavorite"];
         options?: never;
         head?: never;
         patch?: never;
@@ -873,6 +1080,110 @@ export interface components {
             gitSha: string;
             builtAt: string;
             environment: "development" | "test" | "staging" | "production";
+        };
+        Product: {
+            id: string;
+            slug: string;
+            name: string;
+            reference: string;
+            category: string;
+            material: string;
+            opacityLevel?: string;
+            sellingMode: string;
+            pattern?: string;
+            blindType?: string;
+            isLargeWidth: boolean;
+            cushionShape?: string;
+            removableCover?: boolean;
+            machineWashable?: boolean;
+            chairPadShape?: string;
+            accessoryType?: string;
+            accessoryMaterial?: string;
+            accessoryCompatibilities?: string[];
+            furnitureType?: string;
+            furnitureRooms?: string[];
+            furnitureStyle?: string;
+            furnitureAssembly?: string;
+            plantNature?: string;
+            plantType?: string;
+            plantLightNeed?: string;
+            plantCareLevel?: string;
+            petFriendly?: boolean;
+            potIncluded?: boolean;
+            shortDescription: string;
+            longDescription: string;
+            imageAlt: string;
+            images: {
+                id: string;
+                url: string;
+                alt: string;
+                type: "front" | "lifestyle" | "fabric_detail" | "header_detail" | "mechanism_detail";
+                colorId?: string;
+            }[];
+            variants: {
+                id: string;
+                sku: string;
+                colorId: string;
+                widthCm: number;
+                heightCm: number;
+                curtainHeader?: string;
+                eyeletColor?: string;
+                lining?: string;
+                blindMountingType?: string;
+                blindControlSide?: string;
+                blindMechanismColor?: string;
+                sizeLabel?: string;
+                cushionContent?: string;
+                cushionClosure?: string;
+                chairPadFastening?: string;
+                accessoryFinish?: string;
+                accessoryMountingType?: string;
+                minLengthCm?: number;
+                maxLengthCm?: number;
+                diameterMm?: number;
+                depthCm?: number;
+                seatCount?: number;
+                plantHeightCm?: number;
+                potDiameterCm?: number;
+                plantSize?: string;
+                packQuantity?: number;
+                price: {
+                    amountMinor: number;
+                    /** @enum {string} */
+                    currency: "TND";
+                };
+                compareAtPrice?: {
+                    amountMinor: number;
+                    /** @enum {string} */
+                    currency: "TND";
+                };
+                availability: string;
+                availableQuantity: number;
+                imageUrl: string;
+                secondaryImageUrl?: string;
+                imageIds: string[];
+            }[];
+            colors: {
+                id: string;
+                name: string;
+                slug: string;
+                family: string;
+                hex: string;
+            }[];
+            details: {
+                [key: string]: unknown;
+            };
+            seo: {
+                title: string;
+                description: string;
+            };
+            isThermal: boolean;
+            isNew: boolean;
+            isBestSeller: boolean;
+            isFeatured: boolean;
+            createdAt: string;
+            recommendationScore: number;
+            isDemo: boolean;
         };
         AdminSession: {
             user: {
@@ -1650,6 +1961,17 @@ export interface components {
             };
             hasUnavailableItems: boolean;
             hasPriceChanges: boolean;
+        };
+        Favorites: {
+            items: {
+                productId: string;
+                /** Format: date-time */
+                addedAt: string;
+                product: components["schemas"]["Product"];
+                isAvailable: boolean;
+            }[];
+            removedProductIds: string[];
+            count: number;
         };
         OrderItemSnapshot: {
             productId: string;
@@ -9119,6 +9441,1975 @@ export interface operations {
             };
         };
     };
+    listAdminCustomers: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+                governorate?: string;
+                hasOrders?: boolean;
+                hasDeliveredOrders?: boolean;
+                minSpentMinor?: number;
+                tags?: string;
+                lastOrderFrom?: string;
+                lastOrderTo?: string;
+                onlyPotentialDuplicates?: boolean;
+                sort?: "last_order" | "name_asc" | "spent_desc" | "orders_desc" | "aov_desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: ({
+                            /** Format: uuid */
+                            id: string;
+                            firstName: string;
+                            lastName: string;
+                            phone: string;
+                            email?: string;
+                            governorate: string;
+                            tags: string[];
+                            internalNotes: string;
+                            addresses: {
+                                /** Format: uuid */
+                                id: string;
+                                label?: string;
+                                governorate: string;
+                                city: string;
+                                postalCode?: string;
+                                addressLine: string;
+                                landmark?: string;
+                                isDefault?: boolean;
+                                /** Format: date-time */
+                                createdAt?: string;
+                                /** Format: date-time */
+                                updatedAt?: string;
+                            }[];
+                            /** Format: date-time */
+                            createdAt: string;
+                            notes?: {
+                                /** Format: uuid */
+                                id: string;
+                                text: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: uuid */
+                                userId?: string;
+                                userName?: string;
+                            }[];
+                            preferredChannel?: "phone" | "email" | "whatsapp";
+                            /** Format: uuid */
+                            mergedIntoCustomerId?: string;
+                            /** Format: date-time */
+                            mergedAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                        } & {
+                            metrics: {
+                                totalOrders: number;
+                                deliveredOrders: number;
+                                totalSpentMinor: number;
+                                averageOrderValueMinor: number;
+                                /** Format: date-time */
+                                firstOrderAt?: string;
+                                /** Format: date-time */
+                                lastOrderAt?: string;
+                                cancelledOrders: number;
+                                returnedOrders: number;
+                            };
+                            hasPotentialDuplicate: boolean;
+                        })[];
+                        total: number;
+                        page: number;
+                        pageSize: number;
+                        pageCount: number;
+                        governorates: string[];
+                        tags: string[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    getAdminCustomer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": ({
+                        /** Format: uuid */
+                        id: string;
+                        firstName: string;
+                        lastName: string;
+                        phone: string;
+                        email?: string;
+                        governorate: string;
+                        tags: string[];
+                        internalNotes: string;
+                        addresses: {
+                            /** Format: uuid */
+                            id: string;
+                            label?: string;
+                            governorate: string;
+                            city: string;
+                            postalCode?: string;
+                            addressLine: string;
+                            landmark?: string;
+                            isDefault?: boolean;
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                        }[];
+                        /** Format: date-time */
+                        createdAt: string;
+                        notes?: {
+                            /** Format: uuid */
+                            id: string;
+                            text: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: uuid */
+                            userId?: string;
+                            userName?: string;
+                        }[];
+                        preferredChannel?: "phone" | "email" | "whatsapp";
+                        /** Format: uuid */
+                        mergedIntoCustomerId?: string;
+                        /** Format: date-time */
+                        mergedAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                    } & {
+                        metrics: {
+                            totalOrders: number;
+                            deliveredOrders: number;
+                            totalSpentMinor: number;
+                            averageOrderValueMinor: number;
+                            /** Format: date-time */
+                            firstOrderAt?: string;
+                            /** Format: date-time */
+                            lastOrderAt?: string;
+                            cancelledOrders: number;
+                            returnedOrders: number;
+                        };
+                        hasPotentialDuplicate: boolean;
+                    }) & {
+                        orders: {
+                            /** Format: uuid */
+                            id: string;
+                            orderNumber: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                            paymentStatus: "pending" | "collected" | "refunded";
+                            /** @enum {string} */
+                            paymentMethod: "cash_on_delivery";
+                            /** Format: uuid */
+                            customerId: string;
+                            customerName: string;
+                            customerPhone: string;
+                            customerEmail: string | null;
+                            deliveryMethod: "home_delivery" | "store_pickup";
+                            governorate: string;
+                            city: string;
+                            postalCode: string | null;
+                            addressLine: string;
+                            landmark: string | null;
+                            deliveryNote: string | null;
+                            items: {
+                                productId: string;
+                                variantId: string;
+                                productName: string;
+                                variantLabel: string;
+                                sku: string;
+                                quantity: number;
+                                unitPriceMinor: number;
+                                lineTotalMinor: number;
+                                productReference: string;
+                                productSlug: string;
+                                imageUrl: string;
+                                imageAlt: string;
+                                selectedOptions: {
+                                    label: string;
+                                    value: string;
+                                }[];
+                                sellingUnitLabel: string;
+                                shippingProfile: string | null;
+                            }[];
+                            subtotalMinor: number;
+                            shippingMinor: number;
+                            discountMinor: number;
+                            totalMinor: number;
+                            timeline: {
+                                id: string;
+                                /** Format: date-time */
+                                at: string;
+                                status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                                label: string;
+                                kind: "created" | "status";
+                                reason: string | null;
+                            }[];
+                            notes: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: date-time */
+                                at: string;
+                                author: string;
+                                /** Format: uuid */
+                                userId: string;
+                                body: string;
+                            }[];
+                            returnInfo?: {
+                                /** Format: uuid */
+                                id: string;
+                                status: "requested" | "accepted" | "refused";
+                                /** Format: date-time */
+                                requestedAt: string;
+                                reason: string;
+                                note: string | null;
+                                resolvedAt: string | null;
+                                resolution: "accepted" | "refused" | null;
+                                restocked: boolean;
+                                refundPayment: boolean;
+                                conditionReason: string | null;
+                            } | null;
+                            shipment: {
+                                shippingStatus: "calculated" | "to_confirm";
+                                shippingFeeMinor: number;
+                            };
+                        }[];
+                        duplicates: {
+                            /** Format: uuid */
+                            id: string;
+                            firstName: string;
+                            lastName: string;
+                            phone: string;
+                            email?: string;
+                            governorate: string;
+                            tags: string[];
+                            internalNotes: string;
+                            addresses: {
+                                /** Format: uuid */
+                                id: string;
+                                label?: string;
+                                governorate: string;
+                                city: string;
+                                postalCode?: string;
+                                addressLine: string;
+                                landmark?: string;
+                                isDefault?: boolean;
+                                /** Format: date-time */
+                                createdAt?: string;
+                                /** Format: date-time */
+                                updatedAt?: string;
+                            }[];
+                            /** Format: date-time */
+                            createdAt: string;
+                            notes?: {
+                                /** Format: uuid */
+                                id: string;
+                                text: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: uuid */
+                                userId?: string;
+                                userName?: string;
+                            }[];
+                            preferredChannel?: "phone" | "email" | "whatsapp";
+                            /** Format: uuid */
+                            mergedIntoCustomerId?: string;
+                            /** Format: date-time */
+                            mergedAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    updateAdminCustomer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    firstName?: string;
+                    lastName?: string;
+                    phone?: string;
+                    email?: string | null;
+                    governorate?: string;
+                    internalNotes?: string;
+                    preferredChannel?: "phone" | "email" | "whatsapp" | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        firstName: string;
+                        lastName: string;
+                        phone: string;
+                        email?: string;
+                        governorate: string;
+                        tags: string[];
+                        internalNotes: string;
+                        addresses: {
+                            /** Format: uuid */
+                            id: string;
+                            label?: string;
+                            governorate: string;
+                            city: string;
+                            postalCode?: string;
+                            addressLine: string;
+                            landmark?: string;
+                            isDefault?: boolean;
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                        }[];
+                        /** Format: date-time */
+                        createdAt: string;
+                        notes?: {
+                            /** Format: uuid */
+                            id: string;
+                            text: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: uuid */
+                            userId?: string;
+                            userName?: string;
+                        }[];
+                        preferredChannel?: "phone" | "email" | "whatsapp";
+                        /** Format: uuid */
+                        mergedIntoCustomerId?: string;
+                        /** Format: date-time */
+                        mergedAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    addAdminCustomerAddress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    label?: string | null;
+                    governorate: string;
+                    city: string;
+                    postalCode?: string | null;
+                    addressLine: string;
+                    landmark?: string | null;
+                    isDefault?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        firstName: string;
+                        lastName: string;
+                        phone: string;
+                        email?: string;
+                        governorate: string;
+                        tags: string[];
+                        internalNotes: string;
+                        addresses: {
+                            /** Format: uuid */
+                            id: string;
+                            label?: string;
+                            governorate: string;
+                            city: string;
+                            postalCode?: string;
+                            addressLine: string;
+                            landmark?: string;
+                            isDefault?: boolean;
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                        }[];
+                        /** Format: date-time */
+                        createdAt: string;
+                        notes?: {
+                            /** Format: uuid */
+                            id: string;
+                            text: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: uuid */
+                            userId?: string;
+                            userName?: string;
+                        }[];
+                        preferredChannel?: "phone" | "email" | "whatsapp";
+                        /** Format: uuid */
+                        mergedIntoCustomerId?: string;
+                        /** Format: date-time */
+                        mergedAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    deleteAdminCustomerAddress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                addressId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        firstName: string;
+                        lastName: string;
+                        phone: string;
+                        email?: string;
+                        governorate: string;
+                        tags: string[];
+                        internalNotes: string;
+                        addresses: {
+                            /** Format: uuid */
+                            id: string;
+                            label?: string;
+                            governorate: string;
+                            city: string;
+                            postalCode?: string;
+                            addressLine: string;
+                            landmark?: string;
+                            isDefault?: boolean;
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                        }[];
+                        /** Format: date-time */
+                        createdAt: string;
+                        notes?: {
+                            /** Format: uuid */
+                            id: string;
+                            text: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: uuid */
+                            userId?: string;
+                            userName?: string;
+                        }[];
+                        preferredChannel?: "phone" | "email" | "whatsapp";
+                        /** Format: uuid */
+                        mergedIntoCustomerId?: string;
+                        /** Format: date-time */
+                        mergedAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    updateAdminCustomerAddress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                addressId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    label?: string | null;
+                    governorate: string;
+                    city: string;
+                    postalCode?: string | null;
+                    addressLine: string;
+                    landmark?: string | null;
+                    isDefault?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        firstName: string;
+                        lastName: string;
+                        phone: string;
+                        email?: string;
+                        governorate: string;
+                        tags: string[];
+                        internalNotes: string;
+                        addresses: {
+                            /** Format: uuid */
+                            id: string;
+                            label?: string;
+                            governorate: string;
+                            city: string;
+                            postalCode?: string;
+                            addressLine: string;
+                            landmark?: string;
+                            isDefault?: boolean;
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                        }[];
+                        /** Format: date-time */
+                        createdAt: string;
+                        notes?: {
+                            /** Format: uuid */
+                            id: string;
+                            text: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: uuid */
+                            userId?: string;
+                            userName?: string;
+                        }[];
+                        preferredChannel?: "phone" | "email" | "whatsapp";
+                        /** Format: uuid */
+                        mergedIntoCustomerId?: string;
+                        /** Format: date-time */
+                        mergedAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    setAdminCustomerDefaultAddress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                addressId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        firstName: string;
+                        lastName: string;
+                        phone: string;
+                        email?: string;
+                        governorate: string;
+                        tags: string[];
+                        internalNotes: string;
+                        addresses: {
+                            /** Format: uuid */
+                            id: string;
+                            label?: string;
+                            governorate: string;
+                            city: string;
+                            postalCode?: string;
+                            addressLine: string;
+                            landmark?: string;
+                            isDefault?: boolean;
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                        }[];
+                        /** Format: date-time */
+                        createdAt: string;
+                        notes?: {
+                            /** Format: uuid */
+                            id: string;
+                            text: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: uuid */
+                            userId?: string;
+                            userName?: string;
+                        }[];
+                        preferredChannel?: "phone" | "email" | "whatsapp";
+                        /** Format: uuid */
+                        mergedIntoCustomerId?: string;
+                        /** Format: date-time */
+                        mergedAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    updateAdminCustomerTags: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    tags: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        firstName: string;
+                        lastName: string;
+                        phone: string;
+                        email?: string;
+                        governorate: string;
+                        tags: string[];
+                        internalNotes: string;
+                        addresses: {
+                            /** Format: uuid */
+                            id: string;
+                            label?: string;
+                            governorate: string;
+                            city: string;
+                            postalCode?: string;
+                            addressLine: string;
+                            landmark?: string;
+                            isDefault?: boolean;
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                        }[];
+                        /** Format: date-time */
+                        createdAt: string;
+                        notes?: {
+                            /** Format: uuid */
+                            id: string;
+                            text: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: uuid */
+                            userId?: string;
+                            userName?: string;
+                        }[];
+                        preferredChannel?: "phone" | "email" | "whatsapp";
+                        /** Format: uuid */
+                        mergedIntoCustomerId?: string;
+                        /** Format: date-time */
+                        mergedAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    addAdminCustomerNote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    text: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        firstName: string;
+                        lastName: string;
+                        phone: string;
+                        email?: string;
+                        governorate: string;
+                        tags: string[];
+                        internalNotes: string;
+                        addresses: {
+                            /** Format: uuid */
+                            id: string;
+                            label?: string;
+                            governorate: string;
+                            city: string;
+                            postalCode?: string;
+                            addressLine: string;
+                            landmark?: string;
+                            isDefault?: boolean;
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                        }[];
+                        /** Format: date-time */
+                        createdAt: string;
+                        notes?: {
+                            /** Format: uuid */
+                            id: string;
+                            text: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: uuid */
+                            userId?: string;
+                            userName?: string;
+                        }[];
+                        preferredChannel?: "phone" | "email" | "whatsapp";
+                        /** Format: uuid */
+                        mergedIntoCustomerId?: string;
+                        /** Format: date-time */
+                        mergedAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    findAdminCustomerDuplicates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        firstName: string;
+                        lastName: string;
+                        phone: string;
+                        email?: string;
+                        governorate: string;
+                        tags: string[];
+                        internalNotes: string;
+                        addresses: {
+                            /** Format: uuid */
+                            id: string;
+                            label?: string;
+                            governorate: string;
+                            city: string;
+                            postalCode?: string;
+                            addressLine: string;
+                            landmark?: string;
+                            isDefault?: boolean;
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                        }[];
+                        /** Format: date-time */
+                        createdAt: string;
+                        notes?: {
+                            /** Format: uuid */
+                            id: string;
+                            text: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: uuid */
+                            userId?: string;
+                            userName?: string;
+                        }[];
+                        preferredChannel?: "phone" | "email" | "whatsapp";
+                        /** Format: uuid */
+                        mergedIntoCustomerId?: string;
+                        /** Format: date-time */
+                        mergedAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                    }[];
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    mergeAdminCustomers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: uuid */
+                    primaryCustomerId: string;
+                    /** Format: uuid */
+                    secondaryCustomerId: string;
+                    keepPhoneFrom?: "primary" | "secondary";
+                    keepEmailFrom?: "primary" | "secondary";
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": ({
+                        /** Format: uuid */
+                        id: string;
+                        firstName: string;
+                        lastName: string;
+                        phone: string;
+                        email?: string;
+                        governorate: string;
+                        tags: string[];
+                        internalNotes: string;
+                        addresses: {
+                            /** Format: uuid */
+                            id: string;
+                            label?: string;
+                            governorate: string;
+                            city: string;
+                            postalCode?: string;
+                            addressLine: string;
+                            landmark?: string;
+                            isDefault?: boolean;
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                        }[];
+                        /** Format: date-time */
+                        createdAt: string;
+                        notes?: {
+                            /** Format: uuid */
+                            id: string;
+                            text: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: uuid */
+                            userId?: string;
+                            userName?: string;
+                        }[];
+                        preferredChannel?: "phone" | "email" | "whatsapp";
+                        /** Format: uuid */
+                        mergedIntoCustomerId?: string;
+                        /** Format: date-time */
+                        mergedAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                    } & {
+                        metrics: {
+                            totalOrders: number;
+                            deliveredOrders: number;
+                            totalSpentMinor: number;
+                            averageOrderValueMinor: number;
+                            /** Format: date-time */
+                            firstOrderAt?: string;
+                            /** Format: date-time */
+                            lastOrderAt?: string;
+                            cancelledOrders: number;
+                            returnedOrders: number;
+                        };
+                        hasPotentialDuplicate: boolean;
+                    }) & {
+                        orders: {
+                            /** Format: uuid */
+                            id: string;
+                            orderNumber: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                            paymentStatus: "pending" | "collected" | "refunded";
+                            /** @enum {string} */
+                            paymentMethod: "cash_on_delivery";
+                            /** Format: uuid */
+                            customerId: string;
+                            customerName: string;
+                            customerPhone: string;
+                            customerEmail: string | null;
+                            deliveryMethod: "home_delivery" | "store_pickup";
+                            governorate: string;
+                            city: string;
+                            postalCode: string | null;
+                            addressLine: string;
+                            landmark: string | null;
+                            deliveryNote: string | null;
+                            items: {
+                                productId: string;
+                                variantId: string;
+                                productName: string;
+                                variantLabel: string;
+                                sku: string;
+                                quantity: number;
+                                unitPriceMinor: number;
+                                lineTotalMinor: number;
+                                productReference: string;
+                                productSlug: string;
+                                imageUrl: string;
+                                imageAlt: string;
+                                selectedOptions: {
+                                    label: string;
+                                    value: string;
+                                }[];
+                                sellingUnitLabel: string;
+                                shippingProfile: string | null;
+                            }[];
+                            subtotalMinor: number;
+                            shippingMinor: number;
+                            discountMinor: number;
+                            totalMinor: number;
+                            timeline: {
+                                id: string;
+                                /** Format: date-time */
+                                at: string;
+                                status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                                label: string;
+                                kind: "created" | "status";
+                                reason: string | null;
+                            }[];
+                            notes: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: date-time */
+                                at: string;
+                                author: string;
+                                /** Format: uuid */
+                                userId: string;
+                                body: string;
+                            }[];
+                            returnInfo?: {
+                                /** Format: uuid */
+                                id: string;
+                                status: "requested" | "accepted" | "refused";
+                                /** Format: date-time */
+                                requestedAt: string;
+                                reason: string;
+                                note: string | null;
+                                resolvedAt: string | null;
+                                resolution: "accepted" | "refused" | null;
+                                restocked: boolean;
+                                refundPayment: boolean;
+                                conditionReason: string | null;
+                            } | null;
+                            shipment: {
+                                shippingStatus: "calculated" | "to_confirm";
+                                shippingFeeMinor: number;
+                            };
+                        }[];
+                        duplicates: {
+                            /** Format: uuid */
+                            id: string;
+                            firstName: string;
+                            lastName: string;
+                            phone: string;
+                            email?: string;
+                            governorate: string;
+                            tags: string[];
+                            internalNotes: string;
+                            addresses: {
+                                /** Format: uuid */
+                                id: string;
+                                label?: string;
+                                governorate: string;
+                                city: string;
+                                postalCode?: string;
+                                addressLine: string;
+                                landmark?: string;
+                                isDefault?: boolean;
+                                /** Format: date-time */
+                                createdAt?: string;
+                                /** Format: date-time */
+                                updatedAt?: string;
+                            }[];
+                            /** Format: date-time */
+                            createdAt: string;
+                            notes?: {
+                                /** Format: uuid */
+                                id: string;
+                                text: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: uuid */
+                                userId?: string;
+                                userName?: string;
+                            }[];
+                            preferredChannel?: "phone" | "email" | "whatsapp";
+                            /** Format: uuid */
+                            mergedIntoCustomerId?: string;
+                            /** Format: date-time */
+                            mergedAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
     getCart: {
         parameters: {
             query?: never;
@@ -9918,6 +12209,244 @@ export interface operations {
                         };
                         hasUnavailableItems: boolean;
                         hasPriceChanges: boolean;
+                    };
+                };
+            };
+        };
+    };
+    getFavorites: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            productId: string;
+                            /** Format: date-time */
+                            addedAt: string;
+                            product: components["schemas"]["Product"];
+                            isAvailable: boolean;
+                        }[];
+                        removedProductIds: string[];
+                        count: number;
+                    };
+                };
+            };
+            /** @description Default Response */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    clearFavorites: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            productId: string;
+                            /** Format: date-time */
+                            addedAt: string;
+                            product: components["schemas"]["Product"];
+                            isAvailable: boolean;
+                        }[];
+                        removedProductIds: string[];
+                        count: number;
+                    };
+                };
+            };
+        };
+    };
+    addFavorite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    productId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            productId: string;
+                            /** Format: date-time */
+                            addedAt: string;
+                            product: components["schemas"]["Product"];
+                            isAvailable: boolean;
+                        }[];
+                        removedProductIds: string[];
+                        count: number;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    removeFavorite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            productId: string;
+                            /** Format: date-time */
+                            addedAt: string;
+                            product: components["schemas"]["Product"];
+                            isAvailable: boolean;
+                        }[];
+                        removedProductIds: string[];
+                        count: number;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
                     };
                 };
             };

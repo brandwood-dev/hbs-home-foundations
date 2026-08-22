@@ -11,6 +11,8 @@ export const adminConfig = {
   promotionDataProvider: "api" as AdminDataProvider,
   /** Les commandes persistées sont lues depuis l'API ; les actions suivront. */
   orderDataProvider: "api" as AdminDataProvider,
+  /** Les fiches clients persistées suivent les commandes en Phase 6E. */
+  customerDataProvider: "api" as AdminDataProvider,
   demoMode: false,
   pageSize: 20,
   currency: "TND",

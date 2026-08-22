@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   FAVORITES_QUERY_KEY,
+  FAVORITES_SYNC_STORAGE_KEY,
   FAVORITES_STORAGE_KEY,
   FAVORITES_UPDATED_EVENT,
 } from "@/domain/favorites/favorites.constants";
@@ -26,7 +27,12 @@ export function useFavorites() {
       void queryClient.invalidateQueries({ queryKey: FAVORITES_QUERY_KEY });
     };
     const onStorage = (event: StorageEvent) => {
-      if (event.key !== null && event.key !== FAVORITES_STORAGE_KEY) return;
+      if (
+        event.key !== null &&
+        event.key !== FAVORITES_STORAGE_KEY &&
+        event.key !== FAVORITES_SYNC_STORAGE_KEY
+      )
+        return;
       invalidate();
     };
     window.addEventListener("storage", onStorage);

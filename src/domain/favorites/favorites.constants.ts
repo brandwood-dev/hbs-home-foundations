@@ -4,3 +4,5 @@ export const FAVORITES_VERSION = 1 as const;
 export const FAVORITES_MAX_ITEMS = 200;
 export const FAVORITES_QUERY_KEY = ["favorites"] as const;
 export const FAVORITES_UPDATED_EVENT = "hbs-home:favorites-updated";
+/** Storage-only signal used to invalidate API-backed favorites in other tabs. */
+export const FAVORITES_SYNC_STORAGE_KEY = "hbs-home-favorites-sync-v1";

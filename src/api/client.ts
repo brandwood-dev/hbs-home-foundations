@@ -169,8 +169,11 @@ export class HbsApiClient {
     });
   }
 
-  public delete<T>(path: string, signal?: AbortSignal): Promise<T> {
-    return this.request<T>("DELETE", path, signal ? { signal } : {});
+  public delete<T>(path: string, signal?: AbortSignal, accessToken?: string): Promise<T> {
+    return this.request<T>("DELETE", path, {
+      ...(signal ? { signal } : {}),
+      ...(accessToken ? { accessToken } : {}),
+    });
   }
 
   getLiveness(signal?: AbortSignal): Promise<ApiHealth> {
