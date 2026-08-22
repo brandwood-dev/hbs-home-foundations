@@ -207,9 +207,11 @@ Requête minimale : 2 caractères après normalisation.
 - analytics agrégés uniquement : requête normalisée, nombre de résultats, catégorie — jamais de
   donnée personnelle.
 
-## Favoris (phase 10)
+## Favoris (phase 8B)
 
-Mode actuel : favoris invités stockés localement (`hbs-home-favorites-v1`), aucun appel réseau.
+En preview/staging et en production, les favoris invités sont persistés côté API avec un cookie
+HttpOnly opaque (`hbs_favorites_token`, durée maximale 365 jours). Sans URL API, le repository local
+reste disponible pour le développement isolé.
 
 ```
 GET    /api/v1/favorites
@@ -220,21 +222,28 @@ DELETE /api/v1/favorites
 
 ```json
 {
-  "success": true,
-  "data": {
-    "items": [{ "product": "ProductDto", "addedAt": "2026-01-01T10:00:00.000Z" }]
-  }
+  "items": [
+    {
+      "productId": "string",
+      "addedAt": "2026-01-01T10:00:00.000Z",
+      "product": "ProductDto",
+      "isAvailable": true
+    }
+  ],
+  "removedProductIds": [],
+  "count": 1
 }
 ```
 
-### Fusion future à la connexion (non implémentée)
+### Migration locale vers le cookie invité
 
-1. lire les favoris invités locaux ;
-2. lire les favoris du compte ;
-3. fusionner par `productId` ;
-4. conserver la date d'ajout la plus ancienne en cas de conflit ;
-5. envoyer la liste fusionnée au backend ;
-6. vider le stockage local **uniquement après succès**.
+1. lire les favoris locaux existants ;
+2. envoyer chaque `productId` au backend ;
+3. ignorer uniquement les produits retirés du catalogue (404) ;
+4. vider le stockage local **uniquement après succès de tous les envois**.
+
+La future activation des comptes clients ajoutera une fusion compte/invité explicite. La table
+`commerce.favorite_items` est privée, protégée par RLS et accessible uniquement au rôle `hbs_api`.
 
 ## Guide des mesures, sur-mesure et professionnels
 
