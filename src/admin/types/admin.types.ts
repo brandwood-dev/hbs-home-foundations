@@ -299,11 +299,15 @@ export interface AdminOrderInventoryState {
 }
 
 export interface AdminOrderReturnInfo {
+  id?: string;
+  status?: "requested" | "accepted" | "refused";
   requestedAt?: string;
   reason?: string;
+  note?: string;
   resolvedAt?: string;
   resolution?: "accepted" | "refused";
   restocked?: boolean;
+  refundPayment?: boolean;
   conditionReason?: string;
 }
 

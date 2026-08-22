@@ -637,6 +637,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/orders/{id}/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update customer contact details before shipment */
+        patch: operations["updateAdminOrderContact"];
+        trace?: never;
+    };
+    "/api/v1/admin/orders/{id}/address": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update the delivery address before shipment */
+        patch: operations["updateAdminOrderAddress"];
+        trace?: never;
+    };
+    "/api/v1/admin/orders/{id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request or resolve a customer return */
+        post: operations["returnAdminOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/orders/{id}/cancel": {
         parameters: {
             query?: never;
@@ -1374,6 +1425,20 @@ export interface components {
                 userId: string;
                 body: string;
             }[];
+            returnInfo?: {
+                /** Format: uuid */
+                id: string;
+                status: "requested" | "accepted" | "refused";
+                /** Format: date-time */
+                requestedAt: string;
+                reason: string;
+                note: string | null;
+                resolvedAt: string | null;
+                resolution: "accepted" | "refused" | null;
+                restocked: boolean;
+                refundPayment: boolean;
+                conditionReason: string | null;
+            } | null;
             shipment: {
                 shippingStatus: "calculated" | "to_confirm";
                 shippingFeeMinor: number;
@@ -1447,6 +1512,20 @@ export interface components {
                     userId: string;
                     body: string;
                 }[];
+                returnInfo?: {
+                    /** Format: uuid */
+                    id: string;
+                    status: "requested" | "accepted" | "refused";
+                    /** Format: date-time */
+                    requestedAt: string;
+                    reason: string;
+                    note: string | null;
+                    resolvedAt: string | null;
+                    resolution: "accepted" | "refused" | null;
+                    restocked: boolean;
+                    refundPayment: boolean;
+                    conditionReason: string | null;
+                } | null;
                 shipment: {
                     shippingStatus: "calculated" | "to_confirm";
                     shippingFeeMinor: number;
@@ -6990,6 +7069,20 @@ export interface operations {
                                 userId: string;
                                 body: string;
                             }[];
+                            returnInfo?: {
+                                /** Format: uuid */
+                                id: string;
+                                status: "requested" | "accepted" | "refused";
+                                /** Format: date-time */
+                                requestedAt: string;
+                                reason: string;
+                                note: string | null;
+                                resolvedAt: string | null;
+                                resolution: "accepted" | "refused" | null;
+                                restocked: boolean;
+                                refundPayment: boolean;
+                                conditionReason: string | null;
+                            } | null;
                             shipment: {
                                 shippingStatus: "calculated" | "to_confirm";
                                 shippingFeeMinor: number;
@@ -7144,6 +7237,20 @@ export interface operations {
                             userId: string;
                             body: string;
                         }[];
+                        returnInfo?: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "requested" | "accepted" | "refused";
+                            /** Format: date-time */
+                            requestedAt: string;
+                            reason: string;
+                            note: string | null;
+                            resolvedAt: string | null;
+                            resolution: "accepted" | "refused" | null;
+                            restocked: boolean;
+                            refundPayment: boolean;
+                            conditionReason: string | null;
+                        } | null;
                         shipment: {
                             shippingStatus: "calculated" | "to_confirm";
                             shippingFeeMinor: number;
@@ -7317,6 +7424,20 @@ export interface operations {
                             userId: string;
                             body: string;
                         }[];
+                        returnInfo?: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "requested" | "accepted" | "refused";
+                            /** Format: date-time */
+                            requestedAt: string;
+                            reason: string;
+                            note: string | null;
+                            resolvedAt: string | null;
+                            resolution: "accepted" | "refused" | null;
+                            restocked: boolean;
+                            refundPayment: boolean;
+                            conditionReason: string | null;
+                        } | null;
                         shipment: {
                             shippingStatus: "calculated" | "to_confirm";
                             shippingFeeMinor: number;
@@ -7528,6 +7649,20 @@ export interface operations {
                             userId: string;
                             body: string;
                         }[];
+                        returnInfo?: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "requested" | "accepted" | "refused";
+                            /** Format: date-time */
+                            requestedAt: string;
+                            reason: string;
+                            note: string | null;
+                            resolvedAt: string | null;
+                            resolution: "accepted" | "refused" | null;
+                            restocked: boolean;
+                            refundPayment: boolean;
+                            conditionReason: string | null;
+                        } | null;
                         shipment: {
                             shippingStatus: "calculated" | "to_confirm";
                             shippingFeeMinor: number;
@@ -7739,6 +7874,20 @@ export interface operations {
                             userId: string;
                             body: string;
                         }[];
+                        returnInfo?: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "requested" | "accepted" | "refused";
+                            /** Format: date-time */
+                            requestedAt: string;
+                            reason: string;
+                            note: string | null;
+                            resolvedAt: string | null;
+                            resolution: "accepted" | "refused" | null;
+                            restocked: boolean;
+                            refundPayment: boolean;
+                            conditionReason: string | null;
+                        } | null;
                         shipment: {
                             shippingStatus: "calculated" | "to_confirm";
                             shippingFeeMinor: number;
@@ -7948,6 +8097,20 @@ export interface operations {
                             userId: string;
                             body: string;
                         }[];
+                        returnInfo?: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "requested" | "accepted" | "refused";
+                            /** Format: date-time */
+                            requestedAt: string;
+                            reason: string;
+                            note: string | null;
+                            resolvedAt: string | null;
+                            resolution: "accepted" | "refused" | null;
+                            restocked: boolean;
+                            refundPayment: boolean;
+                            conditionReason: string | null;
+                        } | null;
                         shipment: {
                             shippingStatus: "calculated" | "to_confirm";
                             shippingFeeMinor: number;
@@ -8023,6 +8186,687 @@ export interface operations {
             };
             /** @description Default Response */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    updateAdminOrderContact: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    customerName: string;
+                    customerPhone: string;
+                    customerEmail?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        orderNumber: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                        paymentStatus: "pending" | "collected" | "refunded";
+                        /** @enum {string} */
+                        paymentMethod: "cash_on_delivery";
+                        /** Format: uuid */
+                        customerId: string;
+                        customerName: string;
+                        customerPhone: string;
+                        customerEmail: string | null;
+                        deliveryMethod: "home_delivery" | "store_pickup";
+                        governorate: string;
+                        city: string;
+                        postalCode: string | null;
+                        addressLine: string;
+                        landmark: string | null;
+                        deliveryNote: string | null;
+                        items: {
+                            productId: string;
+                            variantId: string;
+                            productName: string;
+                            variantLabel: string;
+                            sku: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            lineTotalMinor: number;
+                            productReference: string;
+                            productSlug: string;
+                            imageUrl: string;
+                            imageAlt: string;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile: string | null;
+                        }[];
+                        subtotalMinor: number;
+                        shippingMinor: number;
+                        discountMinor: number;
+                        totalMinor: number;
+                        timeline: {
+                            id: string;
+                            /** Format: date-time */
+                            at: string;
+                            status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                            label: string;
+                            kind: "created" | "status";
+                            reason: string | null;
+                        }[];
+                        notes: {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: date-time */
+                            at: string;
+                            author: string;
+                            /** Format: uuid */
+                            userId: string;
+                            body: string;
+                        }[];
+                        returnInfo?: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "requested" | "accepted" | "refused";
+                            /** Format: date-time */
+                            requestedAt: string;
+                            reason: string;
+                            note: string | null;
+                            resolvedAt: string | null;
+                            resolution: "accepted" | "refused" | null;
+                            restocked: boolean;
+                            refundPayment: boolean;
+                            conditionReason: string | null;
+                        } | null;
+                        shipment: {
+                            shippingStatus: "calculated" | "to_confirm";
+                            shippingFeeMinor: number;
+                        };
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    updateAdminOrderAddress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    governorate: string;
+                    city: string;
+                    postalCode?: string | null;
+                    addressLine: string;
+                    landmark?: string | null;
+                    deliveryNote?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        orderNumber: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                        paymentStatus: "pending" | "collected" | "refunded";
+                        /** @enum {string} */
+                        paymentMethod: "cash_on_delivery";
+                        /** Format: uuid */
+                        customerId: string;
+                        customerName: string;
+                        customerPhone: string;
+                        customerEmail: string | null;
+                        deliveryMethod: "home_delivery" | "store_pickup";
+                        governorate: string;
+                        city: string;
+                        postalCode: string | null;
+                        addressLine: string;
+                        landmark: string | null;
+                        deliveryNote: string | null;
+                        items: {
+                            productId: string;
+                            variantId: string;
+                            productName: string;
+                            variantLabel: string;
+                            sku: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            lineTotalMinor: number;
+                            productReference: string;
+                            productSlug: string;
+                            imageUrl: string;
+                            imageAlt: string;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile: string | null;
+                        }[];
+                        subtotalMinor: number;
+                        shippingMinor: number;
+                        discountMinor: number;
+                        totalMinor: number;
+                        timeline: {
+                            id: string;
+                            /** Format: date-time */
+                            at: string;
+                            status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                            label: string;
+                            kind: "created" | "status";
+                            reason: string | null;
+                        }[];
+                        notes: {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: date-time */
+                            at: string;
+                            author: string;
+                            /** Format: uuid */
+                            userId: string;
+                            body: string;
+                        }[];
+                        returnInfo?: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "requested" | "accepted" | "refused";
+                            /** Format: date-time */
+                            requestedAt: string;
+                            reason: string;
+                            note: string | null;
+                            resolvedAt: string | null;
+                            resolution: "accepted" | "refused" | null;
+                            restocked: boolean;
+                            refundPayment: boolean;
+                            conditionReason: string | null;
+                        } | null;
+                        shipment: {
+                            shippingStatus: "calculated" | "to_confirm";
+                            shippingFeeMinor: number;
+                        };
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    returnAdminOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    action: "request" | "accept" | "refuse";
+                    reason: string;
+                    note?: string;
+                    restock?: boolean;
+                    conditionReason?: string;
+                    refundPayment?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        orderNumber: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                        paymentStatus: "pending" | "collected" | "refunded";
+                        /** @enum {string} */
+                        paymentMethod: "cash_on_delivery";
+                        /** Format: uuid */
+                        customerId: string;
+                        customerName: string;
+                        customerPhone: string;
+                        customerEmail: string | null;
+                        deliveryMethod: "home_delivery" | "store_pickup";
+                        governorate: string;
+                        city: string;
+                        postalCode: string | null;
+                        addressLine: string;
+                        landmark: string | null;
+                        deliveryNote: string | null;
+                        items: {
+                            productId: string;
+                            variantId: string;
+                            productName: string;
+                            variantLabel: string;
+                            sku: string;
+                            quantity: number;
+                            unitPriceMinor: number;
+                            lineTotalMinor: number;
+                            productReference: string;
+                            productSlug: string;
+                            imageUrl: string;
+                            imageAlt: string;
+                            selectedOptions: {
+                                label: string;
+                                value: string;
+                            }[];
+                            sellingUnitLabel: string;
+                            shippingProfile: string | null;
+                        }[];
+                        subtotalMinor: number;
+                        shippingMinor: number;
+                        discountMinor: number;
+                        totalMinor: number;
+                        timeline: {
+                            id: string;
+                            /** Format: date-time */
+                            at: string;
+                            status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                            label: string;
+                            kind: "created" | "status";
+                            reason: string | null;
+                        }[];
+                        notes: {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: date-time */
+                            at: string;
+                            author: string;
+                            /** Format: uuid */
+                            userId: string;
+                            body: string;
+                        }[];
+                        returnInfo?: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "requested" | "accepted" | "refused";
+                            /** Format: date-time */
+                            requestedAt: string;
+                            reason: string;
+                            note: string | null;
+                            resolvedAt: string | null;
+                            resolution: "accepted" | "refused" | null;
+                            restocked: boolean;
+                            refundPayment: boolean;
+                            conditionReason: string | null;
+                        } | null;
+                        shipment: {
+                            shippingStatus: "calculated" | "to_confirm";
+                            shippingFeeMinor: number;
+                        };
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8138,6 +8982,20 @@ export interface operations {
                             userId: string;
                             body: string;
                         }[];
+                        returnInfo?: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "requested" | "accepted" | "refused";
+                            /** Format: date-time */
+                            requestedAt: string;
+                            reason: string;
+                            note: string | null;
+                            resolvedAt: string | null;
+                            resolution: "accepted" | "refused" | null;
+                            restocked: boolean;
+                            refundPayment: boolean;
+                            conditionReason: string | null;
+                        } | null;
                         shipment: {
                             shippingStatus: "calculated" | "to_confirm";
                             shippingFeeMinor: number;

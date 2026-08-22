@@ -35,6 +35,11 @@ type ApiShippingUpdate =
 type ApiNoteBody = operations["addAdminOrderNote"]["requestBody"]["content"]["application/json"];
 type ApiCancellationBody =
   operations["cancelAdminOrder"]["requestBody"]["content"]["application/json"];
+type ApiContactBody =
+  operations["updateAdminOrderContact"]["requestBody"]["content"]["application/json"];
+type ApiAddressBody =
+  operations["updateAdminOrderAddress"]["requestBody"]["content"]["application/json"];
+type ApiReturnBody = operations["returnAdminOrder"]["requestBody"]["content"]["application/json"];
 const API_ORDER_STATUSES = [
   "pending_confirmation",
   "confirmed",
@@ -139,6 +144,23 @@ function mapOrder(order: ApiOrder): AdminOrder {
     totalMinor: order.totalMinor,
     timeline: order.timeline.map(mapEvent),
     notes: order.notes.map(mapNote),
+    ...(order.returnInfo
+      ? {
+          returnInfo: {
+            id: order.returnInfo.id,
+            status: order.returnInfo.status,
+            requestedAt: order.returnInfo.requestedAt,
+            reason: order.returnInfo.reason,
+            ...(order.returnInfo.note ? { note: order.returnInfo.note } : {}),
+            ...(order.returnInfo.resolvedAt ? { resolvedAt: order.returnInfo.resolvedAt } : {}),
+            ...(order.returnInfo.resolution ? { resolution: order.returnInfo.resolution } : {}),
+            restocked: order.returnInfo.restocked,
+            ...(order.returnInfo.conditionReason
+              ? { conditionReason: order.returnInfo.conditionReason }
+              : {}),
+          },
+        }
+      : {}),
     shipment: {
       shippingStatus: order.shipment.shippingStatus,
       shippingFeeMinor: order.shipment.shippingFeeMinor,
@@ -263,11 +285,42 @@ export class ApiAdminOrderRepository implements AdminOrderRepository {
       ),
     );
   }
-  updateContact(_orderId: string, _contact: AdminOrderContact): Promise<AdminOrder> {
-    return unsupported();
+  async updateContact(orderId: string, contact: AdminOrderContact): Promise<AdminOrder> {
+    const body: ApiContactBody = {
+      customerName: contact.customerName,
+      customerPhone: contact.customerPhone,
+      ...(contact.customerEmail !== undefined
+        ? { customerEmail: contact.customerEmail || null }
+        : {}),
+    };
+    return mapOrder(
+      await this.request((token) =>
+        this.client.patch<ApiOrder>(
+          `/api/v1/admin/orders/${encodeURIComponent(orderId)}/contact`,
+          body,
+          token,
+        ),
+      ),
+    );
   }
-  updateAddress(_orderId: string, _address: AdminOrderAddress): Promise<AdminOrder> {
-    return unsupported();
+  async updateAddress(orderId: string, address: AdminOrderAddress): Promise<AdminOrder> {
+    const body: ApiAddressBody = {
+      governorate: address.governorate,
+      city: address.city,
+      addressLine: address.addressLine,
+      ...(address.postalCode !== undefined ? { postalCode: address.postalCode || null } : {}),
+      ...(address.landmark !== undefined ? { landmark: address.landmark || null } : {}),
+      ...(address.deliveryNote !== undefined ? { deliveryNote: address.deliveryNote || null } : {}),
+    };
+    return mapOrder(
+      await this.request((token) =>
+        this.client.patch<ApiOrder>(
+          `/api/v1/admin/orders/${encodeURIComponent(orderId)}/address`,
+          body,
+          token,
+        ),
+      ),
+    );
   }
   async addNote(orderId: string, text: string): Promise<AdminOrder> {
     const body: ApiNoteBody = { text };
@@ -298,7 +351,23 @@ export class ApiAdminOrderRepository implements AdminOrderRepository {
       ),
     );
   }
-  returnOrder(_input: ReturnAdminOrderInput): Promise<AdminOrder> {
-    return unsupported();
+  async returnOrder(input: ReturnAdminOrderInput): Promise<AdminOrder> {
+    const body: ApiReturnBody = {
+      action: input.action,
+      reason: input.reason,
+      ...(input.note ? { note: input.note } : {}),
+      ...(input.restock !== undefined ? { restock: input.restock } : {}),
+      ...(input.conditionReason ? { conditionReason: input.conditionReason } : {}),
+      ...(input.refundPayment !== undefined ? { refundPayment: input.refundPayment } : {}),
+    };
+    return mapOrder(
+      await this.request((token) =>
+        this.client.post<ApiOrder>(
+          `/api/v1/admin/orders/${encodeURIComponent(input.orderId)}/return`,
+          body,
+          token,
+        ),
+      ),
+    );
   }
 }
