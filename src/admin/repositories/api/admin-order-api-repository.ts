@@ -19,6 +19,7 @@ import type {
   AdminOrderContact,
   AdminOrderEvent,
   AdminOrderItemOption,
+  AdminOrderNote,
   AdminShippingProfile,
 } from "@/admin/types/admin.types";
 
@@ -27,6 +28,13 @@ type ApiOrderList = components["schemas"]["AdminOrderListResponse"];
 type ApiOrderQuery = operations["listAdminOrders"]["parameters"]["query"];
 type ApiOrderStatusUpdate =
   operations["updateAdminOrderStatus"]["requestBody"]["content"]["application/json"];
+type ApiPaymentUpdate =
+  operations["updateAdminOrderPayment"]["requestBody"]["content"]["application/json"];
+type ApiShippingUpdate =
+  operations["updateAdminOrderShipping"]["requestBody"]["content"]["application/json"];
+type ApiNoteBody = operations["addAdminOrderNote"]["requestBody"]["content"]["application/json"];
+type ApiCancellationBody =
+  operations["cancelAdminOrder"]["requestBody"]["content"]["application/json"];
 const API_ORDER_STATUSES = [
   "pending_confirmation",
   "confirmed",
@@ -94,6 +102,16 @@ function mapEvent(event: ApiOrder["timeline"][number]): AdminOrderEvent {
   };
 }
 
+function mapNote(note: ApiOrder["notes"][number]): AdminOrderNote {
+  return {
+    id: note.id,
+    at: note.at,
+    author: note.author,
+    body: note.body,
+    ...(note.userId ? { userId: note.userId } : {}),
+  };
+}
+
 function mapOrder(order: ApiOrder): AdminOrder {
   return {
     id: order.id,
@@ -120,7 +138,7 @@ function mapOrder(order: ApiOrder): AdminOrder {
     discountMinor: order.discountMinor,
     totalMinor: order.totalMinor,
     timeline: order.timeline.map(mapEvent),
-    notes: [],
+    notes: order.notes.map(mapNote),
     shipment: {
       shippingStatus: order.shipment.shippingStatus,
       shippingFeeMinor: order.shipment.shippingFeeMinor,
@@ -213,11 +231,37 @@ export class ApiAdminOrderRepository implements AdminOrderRepository {
       ),
     );
   }
-  updatePaymentStatus(_input: UpdateAdminPaymentStatusInput): Promise<AdminOrder> {
-    return unsupported();
+  async updatePaymentStatus(input: UpdateAdminPaymentStatusInput): Promise<AdminOrder> {
+    const body: ApiPaymentUpdate = {
+      paymentStatus: input.paymentStatus,
+      ...(input.reason ? { reason: input.reason } : {}),
+      ...(input.note ? { note: input.note } : {}),
+    };
+    return mapOrder(
+      await this.request((token) =>
+        this.client.patch<ApiOrder>(
+          `/api/v1/admin/orders/${encodeURIComponent(input.orderId)}/payment`,
+          body,
+          token,
+        ),
+      ),
+    );
   }
-  updateShipping(_input: UpdateAdminOrderShippingInput): Promise<AdminOrder> {
-    return unsupported();
+  async updateShipping(input: UpdateAdminOrderShippingInput): Promise<AdminOrder> {
+    const body: ApiShippingUpdate = {
+      shippingFeeMinor: input.shippingFeeMinor,
+      ...(input.carrierName ? { carrierName: input.carrierName } : {}),
+      ...(input.note ? { note: input.note } : {}),
+    };
+    return mapOrder(
+      await this.request((token) =>
+        this.client.patch<ApiOrder>(
+          `/api/v1/admin/orders/${encodeURIComponent(input.orderId)}/shipping`,
+          body,
+          token,
+        ),
+      ),
+    );
   }
   updateContact(_orderId: string, _contact: AdminOrderContact): Promise<AdminOrder> {
     return unsupported();
@@ -225,11 +269,34 @@ export class ApiAdminOrderRepository implements AdminOrderRepository {
   updateAddress(_orderId: string, _address: AdminOrderAddress): Promise<AdminOrder> {
     return unsupported();
   }
-  addNote(_orderId: string, _text: string): Promise<AdminOrder> {
-    return unsupported();
+  async addNote(orderId: string, text: string): Promise<AdminOrder> {
+    const body: ApiNoteBody = { text };
+    return mapOrder(
+      await this.request((token) =>
+        this.client.post<ApiOrder>(
+          `/api/v1/admin/orders/${encodeURIComponent(orderId)}/notes`,
+          body,
+          token,
+        ),
+      ),
+    );
   }
-  cancelOrder(_input: CancelAdminOrderInput): Promise<AdminOrder> {
-    return unsupported();
+  async cancelOrder(input: CancelAdminOrderInput): Promise<AdminOrder> {
+    const body: ApiCancellationBody = {
+      reason: input.reason,
+      restoreStock: input.restoreStock,
+      ...(input.note ? { note: input.note } : {}),
+      ...(input.refundPayment !== undefined ? { refundPayment: input.refundPayment } : {}),
+    };
+    return mapOrder(
+      await this.request((token) =>
+        this.client.post<ApiOrder>(
+          `/api/v1/admin/orders/${encodeURIComponent(input.orderId)}/cancel`,
+          body,
+          token,
+        ),
+      ),
+    );
   }
   returnOrder(_input: ReturnAdminOrderInput): Promise<AdminOrder> {
     return unsupported();
