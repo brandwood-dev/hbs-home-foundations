@@ -13,6 +13,8 @@ export const adminConfig = {
   orderDataProvider: "api" as AdminDataProvider,
   /** Les fiches clients persistées suivent les commandes en Phase 6E. */
   customerDataProvider: "api" as AdminDataProvider,
+  /** La médiathèque éditoriale est migrée dans la phase 9C. */
+  mediaDataProvider: "api" as AdminDataProvider,
   demoMode: false,
   pageSize: 20,
   currency: "TND",

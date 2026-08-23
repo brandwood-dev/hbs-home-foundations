@@ -464,10 +464,12 @@ export interface AdminMedia {
   id: string;
   name: string;
   url: string;
+  storagePath?: string;
   alt: string;
-  width: number;
-  height: number;
+  width: number | null;
+  height: number | null;
   mimeType: string;
+  status: "draft" | "active" | "archived";
   createdAt: string;
   usage: string;
 }

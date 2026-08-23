@@ -12,6 +12,7 @@ import type {
   AdminAuditLog,
   AdminCategory,
   AdminContent,
+  AdminMedia,
   AdminCustomer,
   AdminCustomerAddress,
   AdminMockDatabase,
@@ -34,6 +35,9 @@ import type {
   AdminCategoryInput,
   AdminCategoryRepository,
   AdminContentRepository,
+  AdminMediaInput,
+  AdminMediaPatch,
+  AdminMediaRepository,
   AdminCustomerAddressInput,
   AdminCustomerDetail,
   AdminCustomerListParams,
@@ -1385,6 +1389,38 @@ export class MockAdminContentRepository implements AdminContentRepository {
       details: "Contenu modifié",
     });
     return delay(clone(content));
+  }
+}
+
+export class MockAdminMediaRepository implements AdminMediaRepository {
+  async list(): Promise<AdminMedia[]> {
+    return (await new MockAdminContentRepository().get()).media;
+  }
+
+  async create(input: AdminMediaInput): Promise<AdminMedia> {
+    const item: AdminMedia = {
+      ...clone(input),
+      id: `med_${Date.now()}`,
+      createdAt: new Date().toISOString(),
+    };
+    await new MockAdminContentRepository().update({
+      media: [...(await this.list()), item],
+    });
+    return item;
+  }
+
+  async update(id: string, input: AdminMediaPatch): Promise<AdminMedia> {
+    const current = (await this.list()).find((item) => item.id === id);
+    if (!current) throw new Error("Média introuvable.");
+    const item = { ...current, ...clone(input) };
+    await new MockAdminContentRepository().update({
+      media: (await this.list()).map((candidate) => (candidate.id === id ? item : candidate)),
+    });
+    return item;
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.update(id, { status: "archived" });
   }
 }
 

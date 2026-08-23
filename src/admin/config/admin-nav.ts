@@ -132,7 +132,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         href: "/admin/medias",
         icon: Image,
         requiredPermission: "media.read",
-        available: false,
+        available: true,
       },
     ],
   },

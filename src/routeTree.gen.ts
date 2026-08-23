@@ -40,6 +40,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminAttributsRouteImport } from './routes/admin/attributs'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminConnexionRouteImport } from './routes/admin/connexion'
+import { Route as AdminMediasRouteImport } from './routes/admin/medias'
 import { Route as AdminPromotionsRouteImport } from './routes/admin/promotions'
 import { Route as AdminStockRouteImport } from './routes/admin/stock'
 import { Route as CommandeIndexRouteImport } from './routes/commande.index'
@@ -251,6 +252,11 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
 const AdminConnexionRoute = AdminConnexionRouteImport.update({
   id: '/connexion',
   path: '/connexion',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminMediasRoute = AdminMediasRouteImport.update({
+  id: '/medias',
+  path: '/medias',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminPromotionsRoute = AdminPromotionsRouteImport.update({
@@ -564,6 +570,7 @@ export interface FileRoutesByFullPath {
   '/admin/attributs': typeof AdminAttributsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/connexion': typeof AdminConnexionRoute
+  '/admin/medias': typeof AdminMediasRoute
   '/admin/promotions': typeof AdminPromotionsRoute
   '/admin/stock': typeof AdminStockRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
@@ -652,6 +659,7 @@ export interface FileRoutesByTo {
   '/admin/attributs': typeof AdminAttributsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/connexion': typeof AdminConnexionRoute
+  '/admin/medias': typeof AdminMediasRoute
   '/admin/promotions': typeof AdminPromotionsRoute
   '/admin/stock': typeof AdminStockRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
@@ -742,6 +750,7 @@ export interface FileRoutesById {
   '/admin/attributs': typeof AdminAttributsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/connexion': typeof AdminConnexionRoute
+  '/admin/medias': typeof AdminMediasRoute
   '/admin/promotions': typeof AdminPromotionsRoute
   '/admin/stock': typeof AdminStockRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
@@ -833,6 +842,7 @@ export interface FileRouteTypes {
     | '/admin/attributs'
     | '/admin/categories'
     | '/admin/connexion'
+    | '/admin/medias'
     | '/admin/promotions'
     | '/admin/stock'
     | '/commande/confirmation'
@@ -921,6 +931,7 @@ export interface FileRouteTypes {
     | '/admin/attributs'
     | '/admin/categories'
     | '/admin/connexion'
+    | '/admin/medias'
     | '/admin/promotions'
     | '/admin/stock'
     | '/commande/confirmation'
@@ -1010,6 +1021,7 @@ export interface FileRouteTypes {
     | '/admin/attributs'
     | '/admin/categories'
     | '/admin/connexion'
+    | '/admin/medias'
     | '/admin/promotions'
     | '/admin/stock'
     | '/commande/confirmation'
@@ -1363,6 +1375,13 @@ declare module '@tanstack/react-router' {
       path: '/connexion'
       fullPath: '/admin/connexion'
       preLoaderRoute: typeof AdminConnexionRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/medias': {
+      id: '/admin/medias'
+      path: '/medias'
+      fullPath: '/admin/medias'
+      preLoaderRoute: typeof AdminMediasRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/promotions': {
@@ -1764,6 +1783,7 @@ interface AdminRouteRouteChildren {
   AdminAttributsRoute: typeof AdminAttributsRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminConnexionRoute: typeof AdminConnexionRoute
+  AdminMediasRoute: typeof AdminMediasRoute
   AdminPromotionsRoute: typeof AdminPromotionsRoute
   AdminStockRoute: typeof AdminStockRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1781,6 +1801,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAttributsRoute: AdminAttributsRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminConnexionRoute: AdminConnexionRoute,
+  AdminMediasRoute: AdminMediasRoute,
   AdminPromotionsRoute: AdminPromotionsRoute,
   AdminStockRoute: AdminStockRoute,
   AdminIndexRoute: AdminIndexRoute,
