@@ -122,6 +122,10 @@ un média de `content.media_assets`; la publication exige que les médias associ
 réponse publique retire les identifiants internes et ne renvoie que les pages publiées et les URLs de
 médias actifs.
 
+La lecture publique est cacheable par Cloudflare : `s-maxage=60` et
+`stale-while-revalidate=300`. Les 404 de pages non publiées sont conservées au maximum 30 secondes.
+Une publication peut donc nécessiter jusqu'à une minute avant l'expiration du cache partagé.
+
 ## Suivi de commande sans compte
 
 ### `POST /api/v1/orders/track`

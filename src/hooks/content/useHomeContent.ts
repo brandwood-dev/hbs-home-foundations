@@ -13,3 +13,17 @@ export function homeContentQuery() {
 export function useHomeContent() {
   return useSuspenseQuery(homeContentQuery());
 }
+
+export function editorialPageQuery(slug: string) {
+  return queryOptions({
+    queryKey: contentQueryKeys.editorialPage(slug),
+    queryFn: () => getContentRepository().getEditorialPage(slug),
+    staleTime: 60_000,
+    gcTime: 10 * 60_000,
+    retry: false,
+  });
+}
+
+export function useEditorialPage(slug: string) {
+  return useSuspenseQuery(editorialPageQuery(slug));
+}
