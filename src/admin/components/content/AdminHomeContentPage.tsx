@@ -625,7 +625,7 @@ export function AdminHomeContentPage() {
           <Save className="mr-1 size-4" /> Enregistrer le brouillon
         </Button>
         <Button
-          onClick={() => publishHome.mutate()}
+          onClick={() => publishHome.mutate(undefined)}
           disabled={!canPublish || dirty || !data?.draft || publishHome.isPending}
         >
           <Send className="mr-1 size-4" /> Publier
@@ -648,7 +648,7 @@ export function AdminHomeContentPage() {
         confirmLabel="Archiver"
         destructive
         onConfirm={() => {
-          archiveHome.mutate();
+          archiveHome.mutate(undefined);
           setPendingArchive(false);
         }}
       />
