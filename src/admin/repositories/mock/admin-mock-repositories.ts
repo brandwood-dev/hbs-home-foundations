@@ -12,6 +12,7 @@ import type {
   AdminAuditLog,
   AdminCategory,
   AdminContent,
+  AdminEditorialPage,
   AdminMedia,
   AdminCustomer,
   AdminCustomerAddress,
@@ -35,6 +36,9 @@ import type {
   AdminCategoryInput,
   AdminCategoryRepository,
   AdminContentRepository,
+  AdminEditorialPageInput,
+  AdminEditorialPagePatch,
+  AdminEditorialPageRepository,
   AdminMediaInput,
   AdminMediaPatch,
   AdminMediaRepository,
@@ -1389,6 +1393,102 @@ export class MockAdminContentRepository implements AdminContentRepository {
       details: "Contenu modifié",
     });
     return delay(clone(content));
+  }
+}
+
+export class MockAdminEditorialPageRepository implements AdminEditorialPageRepository {
+  async list(): Promise<AdminEditorialPage[]> {
+    return (await new MockAdminContentRepository().get()).pages.filter(
+      (page) => page.status !== "archived",
+    );
+  }
+
+  async get(id: string): Promise<AdminEditorialPage | null> {
+    return (
+      (await new MockAdminContentRepository().get()).pages.find((page) => page.id === id) ?? null
+    );
+  }
+
+  async create(input: AdminEditorialPageInput): Promise<AdminEditorialPage> {
+    const now = nowIso();
+    const item: AdminEditorialPage = {
+      id: adminId("page"),
+      title: input.title.trim(),
+      slug: input.slug.trim(),
+      status: "draft",
+      body: input.body ?? "",
+      seoTitle: input.seoTitle ?? "",
+      seoDescription: input.seoDescription ?? "",
+      updatedAt: now,
+      version: 1,
+      publishedAt: null,
+      blocks: (input.blocks ?? []).map((block, index) => ({
+        id: adminId(`block_${index}`),
+        sortOrder: block.sortOrder,
+        blockType: block.blockType,
+        payload: clone(block.payload),
+        media: null,
+      })),
+    };
+    await new MockAdminContentRepository().update({
+      pages: [...(await this.list()), item],
+    });
+    return clone(item);
+  }
+
+  async update(id: string, input: AdminEditorialPagePatch): Promise<AdminEditorialPage> {
+    const current = await this.get(id);
+    if (!current) throw new Error("Page introuvable.");
+    const item: AdminEditorialPage = {
+      ...current,
+      ...(input.slug === undefined ? {} : { slug: input.slug }),
+      ...(input.title === undefined ? {} : { title: input.title }),
+      ...(input.body === undefined ? {} : { body: input.body }),
+      seoTitle: input.seoTitle === undefined ? current.seoTitle : (input.seoTitle ?? ""),
+      seoDescription:
+        input.seoDescription === undefined ? current.seoDescription : (input.seoDescription ?? ""),
+      blocks:
+        input.blocks === undefined
+          ? (current.blocks ?? [])
+          : input.blocks.map((block, index) => ({
+              id: adminId(`block_${index}`),
+              sortOrder: block.sortOrder,
+              blockType: block.blockType,
+              payload: clone(block.payload),
+              media: null,
+            })),
+      version: (current.version ?? 1) + 1,
+      updatedAt: nowIso(),
+    };
+    await new MockAdminContentRepository().update({
+      pages: (await this.list()).map((page) => (page.id === id ? item : page)),
+    });
+    return clone(item);
+  }
+
+  async publish(id: string): Promise<AdminEditorialPage> {
+    const current = await this.get(id);
+    if (!current) throw new Error("Page introuvable.");
+    const item = {
+      ...current,
+      status: "published" as const,
+      publishedAt: nowIso(),
+      version: (current.version ?? 1) + 1,
+      updatedAt: nowIso(),
+    };
+    await new MockAdminContentRepository().update({
+      pages: (await this.list()).map((page) => (page.id === id ? item : page)),
+    });
+    return clone(item);
+  }
+
+  async archive(id: string): Promise<AdminEditorialPage> {
+    const item = await this.update(id, {});
+    item.status = "archived";
+    await new MockAdminContentRepository().update({
+      pages: (await this.list()).filter((page) => page.id !== id).concat(item),
+    });
+    return item;
   }
 }
 

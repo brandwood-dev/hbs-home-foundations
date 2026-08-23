@@ -3,6 +3,7 @@ import {
   MockAdminAuditRepository,
   MockAdminCategoryRepository,
   MockAdminContentRepository,
+  MockAdminEditorialPageRepository,
   MockAdminMediaRepository,
   MockAdminCustomerRepository,
   MockAdminDashboardRepository,
@@ -23,6 +24,7 @@ import { ApiAdminPromotionRepository } from "@/admin/repositories/api/admin-prom
 import { ApiAdminOrderRepository } from "@/admin/repositories/api/admin-order-api-repository";
 import { ApiAdminCustomerRepository } from "@/admin/repositories/api/admin-customer-api-repository";
 import { ApiAdminMediaRepository } from "@/admin/repositories/api/admin-content-api-repository";
+import { ApiAdminEditorialPageRepository } from "@/admin/repositories/api/admin-editorial-page-api-repository";
 import { adminConfig } from "@/admin/config/admin.config";
 
 /**
@@ -61,6 +63,10 @@ export const adminRepositories = {
       ? new ApiAdminPromotionRepository()
       : new MockAdminPromotionRepository(),
   content: new MockAdminContentRepository(),
+  pages:
+    adminConfig.editorialDataProvider === "api"
+      ? new ApiAdminEditorialPageRepository()
+      : new MockAdminEditorialPageRepository(),
   media:
     adminConfig.mediaDataProvider === "api"
       ? new ApiAdminMediaRepository()

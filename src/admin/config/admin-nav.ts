@@ -125,7 +125,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         href: "/admin/contenu/pages",
         icon: FileText,
         requiredPermission: "content.read",
-        available: false,
+        available: true,
       },
       {
         label: "Médias",

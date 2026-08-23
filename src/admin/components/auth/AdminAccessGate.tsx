@@ -137,6 +137,7 @@ function permissionForPath(pathname: string): string | null {
   if (pathname.startsWith("/admin/commandes")) return "orders.read";
   if (pathname.startsWith("/admin/clients")) return "customers.read";
   if (pathname.startsWith("/admin/medias")) return "media.read";
+  if (pathname.startsWith("/admin/contenu/pages")) return "content.read";
   return null;
 }
 

@@ -98,6 +98,30 @@ texte alternatif, le type, le statut et l'ordre. À la publication, l'API recons
 publique `images[]` depuis `catalog.product_media`. Une clé Supabase secrète ou `service_role` ne
 doit jamais être exposée au frontend.
 
+### Contenu éditorial et pages (phase 9C.2)
+
+Les pages suivent le flux `draft → published → archived`. Les lectures Admin requièrent
+`content.read`; les créations et mises à jour requièrent `content.write` avec une session MFA
+`aal2`; la publication et l'archivage requièrent `content.publish` avec `aal2`. Chaque mutation est
+auditée. Une page publiée ne peut pas être modifiée en place dans cette première incrémentation :
+elle doit être archivée puis remplacée par un nouveau brouillon afin qu'un brouillon ne modifie jamais
+le contenu public par accident.
+
+```text
+GET   /api/v1/admin/content/pages
+GET   /api/v1/admin/content/pages/:id
+POST  /api/v1/admin/content/pages
+PATCH /api/v1/admin/content/pages/:id
+POST  /api/v1/admin/content/pages/:id/publish
+POST  /api/v1/admin/content/pages/:id/archive
+GET   /api/v1/content/pages/:slug
+```
+
+Les blocs sont ordonnés, limités à 64 KiB chacun et stockés comme objets JSON. Un bloc peut référencer
+un média de `content.media_assets`; la publication exige que les médias associés soient actifs. La
+réponse publique retire les identifiants internes et ne renvoie que les pages publiées et les URLs de
+médias actifs.
+
 ## Suivi de commande sans compte
 
 ### `POST /api/v1/orders/track`
