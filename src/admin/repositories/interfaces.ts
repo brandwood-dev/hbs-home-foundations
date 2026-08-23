@@ -6,6 +6,7 @@ import type {
   AdminCustomer,
   AdminCustomerAddress,
   AdminMockDatabase,
+  AdminMedia,
   AdminOrder,
   AdminOrderAddress,
   AdminOrderContact,
@@ -281,6 +282,16 @@ export type AdminPromotionRepository = CrudRepository<
 export interface AdminContentRepository {
   get(): Promise<AdminContent>;
   update(input: Partial<AdminContent>): Promise<AdminContent>;
+}
+
+export type AdminMediaInput = Omit<AdminMedia, "id" | "createdAt">;
+export type AdminMediaPatch = Partial<AdminMediaInput>;
+
+export interface AdminMediaRepository {
+  list(): Promise<AdminMedia[]>;
+  create(input: AdminMediaInput): Promise<AdminMedia>;
+  update(id: string, input: AdminMediaPatch): Promise<AdminMedia>;
+  delete(id: string): Promise<void>;
 }
 
 export interface AdminSettingsRepository {

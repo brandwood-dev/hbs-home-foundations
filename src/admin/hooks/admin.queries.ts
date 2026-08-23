@@ -22,6 +22,7 @@ export const adminKeys = {
   customer: (id: string) => ["admin", "customers", id] as const,
   promotions: () => ["admin", "promotions"] as const,
   content: () => ["admin", "content"] as const,
+  media: () => ["admin", "media"] as const,
   settings: () => ["admin", "settings"] as const,
   users: () => ["admin", "users"] as const,
   audit: () => ["admin", "audit"] as const,
@@ -101,6 +102,10 @@ export function useAdminPromotions() {
 
 export function useAdminContent() {
   return useQuery(clientQuery(adminKeys.content(), () => adminRepositories.content.get()));
+}
+
+export function useAdminMedia() {
+  return useQuery(clientQuery(adminKeys.media(), () => adminRepositories.media.list()));
 }
 
 export function useAdminSettings() {

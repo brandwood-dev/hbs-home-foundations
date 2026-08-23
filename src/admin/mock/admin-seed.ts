@@ -584,6 +584,7 @@ function buildContent(products: AdminProduct[]): AdminContent {
       width: 1200,
       height: 1600,
       mimeType: "image/jpeg",
+      status: "active" as const,
       createdAt: isoDaysAgo(60 - index),
       usage: `Produit ${product.reference}`,
     })),
