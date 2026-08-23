@@ -2,6 +2,7 @@ import { MockProductRepository } from "@/repositories/mock/MockProductRepository
 import { MockOrderRepository } from "@/repositories/mock/MockOrderRepository";
 import { ApiOrderRepository } from "@/repositories/api/ApiOrderRepository";
 import { MockContentRepository } from "@/repositories/mock/MockContentRepository";
+import { ApiContentRepository } from "@/repositories/api/ApiContentRepository";
 import { MockNewsletterRepository } from "@/repositories/mock/MockNewsletterRepository";
 import { LocalCartRepository } from "@/repositories/local/LocalCartRepository";
 import { LocalFavoritesRepository } from "@/repositories/local/LocalFavoritesRepository";
@@ -73,9 +74,12 @@ export function getOrderRepository(): OrderRepository {
   return orderRepository;
 }
 
-/** Contenu éditorial : MockContentRepository aujourd'hui, CMS demain. */
+/** Contenu éditorial publié : API en staging/production, mock en développement isolé. */
 export function getContentRepository(): ContentRepository {
-  if (!contentRepository) contentRepository = new MockContentRepository();
+  if (!contentRepository) {
+    contentRepository =
+      dataProvider === "api" ? new ApiContentRepository() : new MockContentRepository();
+  }
   return contentRepository;
 }
 

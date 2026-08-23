@@ -38,6 +38,18 @@ Le backend reste la source de vérité : les pages archivées ou en brouillon ne
 par l'endpoint public. Les pages publiées sont protégées contre une modification en place dans cette
 première version ; le remplacement passe par archivage puis création d'un nouveau brouillon.
 
+### Rendu public et cache — phase 9C.3
+
+Les routes éditoriales publiques (`/a-propos`, `/cgv`, `/confidentialite`, `/contact`, `/cookies`,
+`/faq`, `/inspirations`, `/livraison-et-retours`, `/mentions-legales`) chargent exclusivement la
+page publiée via `GET /api/v1/content/pages/:slug`. Le frontend ne rend jamais le JSON de bloc comme
+du HTML arbitraire : seuls les blocs connus sont rendus et le texte est échappé par React. Le titre,
+la description SEO et le canonical sont dérivés de la page publiée. Les brouillons/archives donnent
+une page introuvable indexée `noindex`.
+
+Le cache partagé est limité à 60 secondes (`stale-while-revalidate=300`) afin de laisser le temps à
+Cloudflare d'expirer après une publication sans exposer durablement une ancienne version.
+
 ### Panier serveur (phase 5A)
 
 En preview/staging, `repositoryFactory.ts` sélectionne `ApiCartRepository`. Le cookie de panier est
