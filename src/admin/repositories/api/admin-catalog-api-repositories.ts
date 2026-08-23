@@ -3,6 +3,7 @@ import { HbsApiClient, HbsApiError } from "@/api";
 import { getSupabaseBrowserClient } from "@/auth/supabase-browser";
 import type {
   AdminAttribute,
+  AdminAttributeValueInput,
   AdminAttributeValue,
   AdminCategory,
   AdminProduct,
@@ -83,6 +84,19 @@ function numberValue(value: unknown, fallback: number): number {
 
 function booleanValue(value: unknown, fallback: boolean): boolean {
   return typeof value === "boolean" ? value : fallback;
+}
+
+function attributeValues(value: unknown): Record<string, AdminAttributeValueInput> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const result: Record<string, AdminAttributeValueInput> = {};
+  for (const [key, raw] of Object.entries(value)) {
+    if (typeof raw === "string" || typeof raw === "number" || typeof raw === "boolean") {
+      result[key] = raw;
+    } else if (Array.isArray(raw) && raw.every((item) => typeof item === "string")) {
+      result[key] = raw as string[];
+    }
+  }
+  return result;
 }
 
 function categoryKey(value: string | null): AdminProductCategoryKey | undefined {
@@ -318,6 +332,7 @@ function mapProduct(product: ApiProduct): AdminProduct {
     longDescription: product.longDescription ?? "",
     ...(product.material ? { material: product.material } : {}),
     status,
+    attributes: attributeValues(product.attributes),
     ...(primary ? { imageUrl: primary.url } : {}),
     images,
     ...(imageAssets.length > 0 ? { imageAssets } : {}),
@@ -363,6 +378,7 @@ function productBody(input: AdminProductInput): ProductCreateBody {
     categoryId: input.categoryId,
     material: input.material?.trim() ?? "",
     sellingMode: input.sellingMode,
+    ...(input.attributes === undefined ? {} : { attributes: input.attributes }),
     shortDescription: input.shortDescription.trim() || null,
     longDescription: input.longDescription.trim() || null,
     imageAlt: null,
@@ -388,6 +404,7 @@ function productPatch(
     ...(input.categoryId === undefined ? {} : { categoryId: input.categoryId }),
     ...(input.material === undefined ? {} : { material: input.material?.trim() ?? "" }),
     ...(input.sellingMode === undefined ? {} : { sellingMode: input.sellingMode }),
+    ...(input.attributes === undefined ? {} : { attributes: input.attributes }),
     ...(input.shortDescription === undefined
       ? {}
       : { shortDescription: input.shortDescription.trim() || null }),

@@ -58,7 +58,7 @@ Auth en PKCE, une activation par invitation, un MFA TOTP obligatoire et une rés
 permissions par l'API. Chaque mutation catalogue transmet le bearer Supabase et laisse l'API
 appliquer MFA, permissions et audit. Les erreurs `401`, `403` et `409/422` sont remontées à l'UI.
 
-### Catalogue Admin (phases 3C.3 et 9A)
+### Catalogue Admin (phases 3C.3, 9A et 9B)
 
 Les routes suivantes sont consommées avec la session Supabase courante :
 
@@ -76,6 +76,12 @@ Le modèle API normalisé est adapté vers les types Admin historiques. Les mét
 de couleur/statut) sont persistées dans les tables normalisées. Les associations d'attributs sont
 exprimées par les slugs de catégories API ; une liste vide signifie toutes les catégories.
 L'archivage d'une ressource utilisée est refusé par l'API afin de préserver l'intégrité du catalogue.
+
+Les valeurs dynamiques de la fiche produit sont maintenant chargées depuis `GET /admin/attributes`
+et affichées dans l'onglet « Caractéristiques ». Lors d'un enregistrement, elles sont envoyées dans
+`attributes`, validées par l'API selon le type, la catégorie et les options actives, puis persistées
+dans `catalog.product_attributes`. La publication applique aussi les attributs obligatoires. Le
+champ `payload` n'est conservé que comme projection de compatibilité pour le catalogue public.
 
 ### Médias produits (phase 3C.5)
 

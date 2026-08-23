@@ -345,6 +345,8 @@ export interface Product {
   variants: ProductVariant[];
   colors: ProductColor[];
   details: ProductDetails;
+  /** Attributs catalogue dynamiques renvoyés par l'API. */
+  attributes?: Record<string, unknown>;
 
   seo: {
     title: string;

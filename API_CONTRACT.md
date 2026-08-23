@@ -29,7 +29,7 @@ explicite, audit.
 Erreurs normalisées : `401 AUTH_REQUIRED`, `401 INVALID_ACCESS_TOKEN`, `403 ADMIN_ACCESS_DENIED`,
 `403 MFA_REQUIRED`, `403 PERMISSION_DENIED`.
 
-## Catalogue Admin (phases 3C et 9A)
+## Catalogue Admin (phases 3C, 9A et 9B)
 
 Le back-office consomme les routes catalogue avec le même bearer Supabase. Les lectures requièrent
 `products.read` ou `categories.read`; les écritures requièrent respectivement `products.write` ou
@@ -40,6 +40,12 @@ Une catégorie expose ses métadonnées éditoriales (`imageUrl`, `seoTitle`, `s
 `showInNavigation`). Un attribut expose son ordre, son usage comme axe de variante, son statut
 système, ses options enrichies (`hex`, `family`, `isActive`) et les slugs des catégories auxquelles
 il est associé (`categorySlugs`). Une liste vide de catégories signifie « toutes les catégories ».
+
+Une fiche produit expose désormais `attributes`, indexé par clé technique. Les valeurs envoyées sur
+`POST/PATCH /api/v1/admin/products` sont validées par l'API contre le type, la catégorie, les options
+actives et les attributs obligatoires, puis persistées dans `catalog.product_attributes`. La publication
+refuse tout produit dont un attribut obligatoire applicable est absent. Les options retirées d'un
+attribut sont conservées comme inactives afin de ne pas invalider les valeurs historiques.
 
 L'archivage d'une catégorie ou d'un attribut utilisé par un produit, une catégorie enfant ou une
 association catalogue est refusé par l'API afin de préserver l'intégrité métier.
@@ -62,9 +68,10 @@ PATCH  /api/v1/admin/products/:id/variants/:variantId
 POST   /api/v1/admin/products/:id/variants/:variantId/archive
 ```
 
-Les produits et variantes utilisent des montants entiers en millimes et un champ JSON `payload`
-pour les attributs spécifiques non encore normalisés. Une suppression demandée depuis l'interface
-est traduite en archivage afin de préserver l'historique des commandes.
+Les produits et variantes utilisent des montants entiers en millimes. Le champ JSON `payload` reste
+une projection de compatibilité ; les attributs administrables sont désormais normalisés dans
+`catalog.product_attributes`. Une suppression demandée depuis l'interface est traduite en archivage
+afin de préserver l'historique des commandes.
 
 ### Médias catalogue (phase 3C.5)
 

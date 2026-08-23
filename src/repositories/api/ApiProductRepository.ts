@@ -131,6 +131,7 @@ interface ApiProduct {
   variants: ApiProductVariant[];
   colors: ApiProductColor[];
   details: Record<string, unknown>;
+  attributes: Record<string, unknown>;
   seo: { title: string; description: string };
   isThermal: boolean;
   isNew: boolean;
@@ -626,6 +627,7 @@ export function mapProduct(input: ApiProduct): Product {
     variants,
     colors,
     details: parseProductDetails(input.details),
+    attributes: input.attributes,
     seo: {
       title: asString(input.seo?.title, asString(input.name)),
       description: asString(input.seo?.description, asString(input.shortDescription)),

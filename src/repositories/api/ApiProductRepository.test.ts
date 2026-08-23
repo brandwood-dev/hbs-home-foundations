@@ -31,6 +31,7 @@ const apiProduct = {
   ],
   colors: [],
   details: {},
+  attributes: {},
   seo: { title: "Rideau lin", description: "Rideau en lin." },
   isThermal: false,
   isNew: false,
