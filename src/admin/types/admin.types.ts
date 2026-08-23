@@ -453,11 +453,22 @@ export interface AdminEditorialPage {
   id: string;
   title: string;
   slug: string;
-  status: "draft" | "published";
+  status: "draft" | "published" | "archived";
   body: string;
   seoTitle: string;
   seoDescription: string;
   updatedAt: string;
+  version?: number;
+  publishedAt?: string | null;
+  blocks?: AdminEditorialBlock[];
+}
+
+export interface AdminEditorialBlock {
+  id?: string;
+  sortOrder: number;
+  blockType: string;
+  payload: Record<string, unknown>;
+  media?: { id: string; publicUrl: string; alt: string } | null;
 }
 
 export interface AdminMedia {

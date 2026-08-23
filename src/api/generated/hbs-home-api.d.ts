@@ -892,6 +892,86 @@ export interface paths {
         patch: operations["adminUpdateMedia"];
         trace?: never;
     };
+    "/api/v1/admin/content/pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["adminListEditorialPages"];
+        put?: never;
+        post: operations["adminCreateEditorialPage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/content/pages/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["adminGetEditorialPage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["adminUpdateEditorialPage"];
+        trace?: never;
+    };
+    "/api/v1/admin/content/pages/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["adminPublishEditorialPage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/content/pages/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["adminArchiveEditorialPage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/content/pages/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPublishedEditorialPage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/cart": {
         parameters: {
             query?: never;
@@ -1970,6 +2050,108 @@ export interface components {
                 createdAt: string;
                 /** Format: date-time */
                 updatedAt: string;
+            }[];
+        };
+        AdminEditorialPage: {
+            /** Format: uuid */
+            id: string;
+            slug: string;
+            title: string;
+            body: string;
+            seoTitle: string | null;
+            seoDescription: string | null;
+            status: "draft" | "published" | "archived";
+            version: number;
+            publishedAt: string | null;
+            /** Format: date-time */
+            updatedAt: string;
+            blocks: {
+                /** Format: uuid */
+                id: string;
+                sortOrder: number;
+                blockType: string;
+                payload: {
+                    [key: string]: unknown;
+                };
+                media: null | {
+                    /** Format: uuid */
+                    id: string;
+                    /** Format: uri */
+                    publicUrl: string;
+                    alt: string;
+                };
+            }[];
+        };
+        AdminEditorialPageBlock: {
+            /** Format: uuid */
+            id: string;
+            sortOrder: number;
+            blockType: string;
+            payload: {
+                [key: string]: unknown;
+            };
+            media: null | {
+                /** Format: uuid */
+                id: string;
+                /** Format: uri */
+                publicUrl: string;
+                alt: string;
+            };
+        };
+        AdminEditorialPagesResponse: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                slug: string;
+                title: string;
+                body: string;
+                seoTitle: string | null;
+                seoDescription: string | null;
+                status: "draft" | "published" | "archived";
+                version: number;
+                publishedAt: string | null;
+                /** Format: date-time */
+                updatedAt: string;
+                blocks: {
+                    /** Format: uuid */
+                    id: string;
+                    sortOrder: number;
+                    blockType: string;
+                    payload: {
+                        [key: string]: unknown;
+                    };
+                    media: null | {
+                        /** Format: uuid */
+                        id: string;
+                        /** Format: uri */
+                        publicUrl: string;
+                        alt: string;
+                    };
+                }[];
+            }[];
+        };
+        PublicEditorialPage: {
+            slug: string;
+            title: string;
+            body: string;
+            seoTitle: string | null;
+            seoDescription: string | null;
+            version: number;
+            /** Format: date-time */
+            publishedAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            blocks: {
+                sortOrder: number;
+                blockType: string;
+                payload: {
+                    [key: string]: unknown;
+                };
+                media: null | {
+                    /** Format: uri */
+                    publicUrl: string;
+                    alt: string;
+                };
             }[];
         };
         CartLine: {
@@ -11945,6 +12127,862 @@ export interface operations {
                             path: string;
                             message: string;
                             keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminListEditorialPages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            /** Format: uuid */
+                            id: string;
+                            slug: string;
+                            title: string;
+                            body: string;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            publishedAt: string | null;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            blocks: {
+                                /** Format: uuid */
+                                id: string;
+                                sortOrder: number;
+                                blockType: string;
+                                payload: {
+                                    [key: string]: unknown;
+                                };
+                                media: null | {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uri */
+                                    publicUrl: string;
+                                    alt: string;
+                                };
+                            }[];
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminCreateEditorialPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    slug: string;
+                    title: string;
+                    body?: string;
+                    seoTitle?: string | null;
+                    seoDescription?: string | null;
+                    blocks?: {
+                        sortOrder: number;
+                        blockType: string;
+                        payload: {
+                            [key: string]: unknown;
+                        };
+                        mediaAssetId?: string | null;
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        slug: string;
+                        title: string;
+                        body: string;
+                        seoTitle: string | null;
+                        seoDescription: string | null;
+                        status: "draft" | "published" | "archived";
+                        version: number;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        blocks: {
+                            /** Format: uuid */
+                            id: string;
+                            sortOrder: number;
+                            blockType: string;
+                            payload: {
+                                [key: string]: unknown;
+                            };
+                            media: null | {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                            };
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminGetEditorialPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        slug: string;
+                        title: string;
+                        body: string;
+                        seoTitle: string | null;
+                        seoDescription: string | null;
+                        status: "draft" | "published" | "archived";
+                        version: number;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        blocks: {
+                            /** Format: uuid */
+                            id: string;
+                            sortOrder: number;
+                            blockType: string;
+                            payload: {
+                                [key: string]: unknown;
+                            };
+                            media: null | {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                            };
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminUpdateEditorialPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    slug?: string;
+                    title?: string;
+                    body?: string;
+                    seoTitle?: string | null;
+                    seoDescription?: string | null;
+                    blocks?: {
+                        sortOrder: number;
+                        blockType: string;
+                        payload: {
+                            [key: string]: unknown;
+                        };
+                        mediaAssetId?: string | null;
+                    }[];
+                    expectedVersion?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        slug: string;
+                        title: string;
+                        body: string;
+                        seoTitle: string | null;
+                        seoDescription: string | null;
+                        status: "draft" | "published" | "archived";
+                        version: number;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        blocks: {
+                            /** Format: uuid */
+                            id: string;
+                            sortOrder: number;
+                            blockType: string;
+                            payload: {
+                                [key: string]: unknown;
+                            };
+                            media: null | {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                            };
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminPublishEditorialPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        slug: string;
+                        title: string;
+                        body: string;
+                        seoTitle: string | null;
+                        seoDescription: string | null;
+                        status: "draft" | "published" | "archived";
+                        version: number;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        blocks: {
+                            /** Format: uuid */
+                            id: string;
+                            sortOrder: number;
+                            blockType: string;
+                            payload: {
+                                [key: string]: unknown;
+                            };
+                            media: null | {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                            };
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminArchiveEditorialPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        slug: string;
+                        title: string;
+                        body: string;
+                        seoTitle: string | null;
+                        seoDescription: string | null;
+                        status: "draft" | "published" | "archived";
+                        version: number;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        blocks: {
+                            /** Format: uuid */
+                            id: string;
+                            sortOrder: number;
+                            blockType: string;
+                            payload: {
+                                [key: string]: unknown;
+                            };
+                            media: null | {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                            };
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    getPublishedEditorialPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        slug: string;
+                        title: string;
+                        body: string;
+                        seoTitle: string | null;
+                        seoDescription: string | null;
+                        version: number;
+                        /** Format: date-time */
+                        publishedAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        blocks: {
+                            sortOrder: number;
+                            blockType: string;
+                            payload: {
+                                [key: string]: unknown;
+                            };
+                            media: null | {
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                            };
                         }[];
                     };
                 };

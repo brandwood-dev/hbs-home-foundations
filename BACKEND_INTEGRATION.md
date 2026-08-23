@@ -15,12 +15,28 @@ Les données métier du frontend sont encore mixtes :
   `MockOrderRepository` reste disponible uniquement pour le développement isolé.
 
 Le site public lit les produits publiés via les endpoints publics `/api/v1/products*`. Le
-back-office utilise `adminConfig.catalogDataProvider = "api"` pour le catalogue uniquement ; les
-commandes, clients, stock et contenu restent explicitement mockés jusqu'à leurs phases dédiées.
+back-office utilise `adminConfig.catalogDataProvider = "api"` pour le catalogue ; les commandes,
+clients et stock sont déjà branchés selon leurs phases. La médiathèque Admin et la gestion des pages
+éditoriales utilisent désormais l'API ; le contenu d'accueil et les pages publiques restent
+statiques jusqu'à l'incrément CMS dédié.
 
 Le provider public est sélectionné au build : `"api"` si `VITE_HBS_API_BASE_URL` est défini,
-sinon `"mock"` en développement local. Les données de contenu éditorial et les configurations de
-pages de catégories restent statiques jusqu'à l'intégration CMS dédiée.
+sinon `"mock"` en développement local. Les configurations de pages de catégories restent statiques
+jusqu'à l'intégration CMS dédiée. L'écran Admin `/admin/contenu/pages` est persisté via l'API et
+Supabase, avec brouillon, blocs JSON, liaison médiathèque et publication contrôlée.
+
+### Pages éditoriales Admin — phase 9C.2
+
+Le scénario de recette est :
+
+```text
+Admin crée un brouillon → ajoute des blocs et médias actifs → enregistre
+→ publie avec MFA → GET /api/v1/content/pages/:slug → page publique
+```
+
+Le backend reste la source de vérité : les pages archivées ou en brouillon ne sont jamais exposées
+par l'endpoint public. Les pages publiées sont protégées contre une modification en place dans cette
+première version ; le remplacement passe par archivage puis création d'un nouveau brouillon.
 
 ### Panier serveur (phase 5A)
 

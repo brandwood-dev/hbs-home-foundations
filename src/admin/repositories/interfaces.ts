@@ -5,6 +5,7 @@ import type {
   AdminContent,
   AdminCustomer,
   AdminCustomerAddress,
+  AdminEditorialPage,
   AdminMockDatabase,
   AdminMedia,
   AdminOrder,
@@ -282,6 +283,33 @@ export type AdminPromotionRepository = CrudRepository<
 export interface AdminContentRepository {
   get(): Promise<AdminContent>;
   update(input: Partial<AdminContent>): Promise<AdminContent>;
+}
+
+export interface AdminEditorialPageInput {
+  slug: string;
+  title: string;
+  body?: string;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  blocks?: Array<{
+    sortOrder: number;
+    blockType: string;
+    payload: Record<string, unknown>;
+    mediaAssetId?: string | null;
+  }>;
+}
+
+export type AdminEditorialPagePatch = Partial<AdminEditorialPageInput> & {
+  expectedVersion?: number;
+};
+
+export interface AdminEditorialPageRepository {
+  list(): Promise<AdminEditorialPage[]>;
+  get(id: string): Promise<AdminEditorialPage | null>;
+  create(input: AdminEditorialPageInput): Promise<AdminEditorialPage>;
+  update(id: string, input: AdminEditorialPagePatch): Promise<AdminEditorialPage>;
+  publish(id: string): Promise<AdminEditorialPage>;
+  archive(id: string): Promise<AdminEditorialPage>;
 }
 
 export type AdminMediaInput = Omit<AdminMedia, "id" | "createdAt">;

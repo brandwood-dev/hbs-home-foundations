@@ -94,6 +94,7 @@ import { Route as AdminClientsIndexRouteImport } from './routes/admin/clients.in
 import { Route as AdminClientsCustomerIdRouteImport } from './routes/admin/clients.$customerId'
 import { Route as AdminCommandesIndexRouteImport } from './routes/admin/commandes.index'
 import { Route as AdminCommandesOrderIdRouteImport } from './routes/admin/commandes.$orderId'
+import { Route as AdminContenuPagesRouteImport } from './routes/admin/contenu.pages'
 import { Route as AdminProduitsIndexRouteImport } from './routes/admin/produits.index'
 import { Route as AdminProduitsProductIdRouteImport } from './routes/admin/produits.$productId'
 import { Route as AdminProduitsNouveauRouteImport } from './routes/admin/produits.nouveau'
@@ -524,6 +525,11 @@ const AdminCommandesOrderIdRoute = AdminCommandesOrderIdRouteImport.update({
   path: '/commandes/$orderId',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminContenuPagesRoute = AdminContenuPagesRouteImport.update({
+  id: '/contenu/pages',
+  path: '/contenu/pages',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminProduitsIndexRoute = AdminProduitsIndexRouteImport.update({
   id: '/produits/',
   path: '/produits/',
@@ -624,6 +630,7 @@ export interface FileRoutesByFullPath {
   '/admin/auth/callback': typeof AdminAuthCallbackRoute
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
+  '/admin/contenu/pages': typeof AdminContenuPagesRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
   '/admin/clients/': typeof AdminClientsIndexRoute
@@ -713,6 +720,7 @@ export interface FileRoutesByTo {
   '/admin/auth/callback': typeof AdminAuthCallbackRoute
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
+  '/admin/contenu/pages': typeof AdminContenuPagesRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
   '/admin/clients': typeof AdminClientsIndexRoute
@@ -804,6 +812,7 @@ export interface FileRoutesById {
   '/admin/auth/callback': typeof AdminAuthCallbackRoute
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
+  '/admin/contenu/pages': typeof AdminContenuPagesRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
   '/admin/clients/': typeof AdminClientsIndexRoute
@@ -896,6 +905,7 @@ export interface FileRouteTypes {
     | '/admin/auth/callback'
     | '/admin/clients/$customerId'
     | '/admin/commandes/$orderId'
+    | '/admin/contenu/pages'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
     | '/admin/clients/'
@@ -985,6 +995,7 @@ export interface FileRouteTypes {
     | '/admin/auth/callback'
     | '/admin/clients/$customerId'
     | '/admin/commandes/$orderId'
+    | '/admin/contenu/pages'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
     | '/admin/clients'
@@ -1075,6 +1086,7 @@ export interface FileRouteTypes {
     | '/admin/auth/callback'
     | '/admin/clients/$customerId'
     | '/admin/commandes/$orderId'
+    | '/admin/contenu/pages'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
     | '/admin/clients/'
@@ -1755,6 +1767,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCommandesOrderIdRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/contenu/pages': {
+      id: '/admin/contenu/pages'
+      path: '/contenu/pages'
+      fullPath: '/admin/contenu/pages'
+      preLoaderRoute: typeof AdminContenuPagesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/produits/': {
       id: '/admin/produits/'
       path: '/produits'
@@ -1790,6 +1809,7 @@ interface AdminRouteRouteChildren {
   AdminAuthCallbackRoute: typeof AdminAuthCallbackRoute
   AdminClientsCustomerIdRoute: typeof AdminClientsCustomerIdRoute
   AdminCommandesOrderIdRoute: typeof AdminCommandesOrderIdRoute
+  AdminContenuPagesRoute: typeof AdminContenuPagesRoute
   AdminProduitsProductIdRoute: typeof AdminProduitsProductIdRoute
   AdminProduitsNouveauRoute: typeof AdminProduitsNouveauRoute
   AdminClientsIndexRoute: typeof AdminClientsIndexRoute
@@ -1808,6 +1828,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAuthCallbackRoute: AdminAuthCallbackRoute,
   AdminClientsCustomerIdRoute: AdminClientsCustomerIdRoute,
   AdminCommandesOrderIdRoute: AdminCommandesOrderIdRoute,
+  AdminContenuPagesRoute: AdminContenuPagesRoute,
   AdminProduitsProductIdRoute: AdminProduitsProductIdRoute,
   AdminProduitsNouveauRoute: AdminProduitsNouveauRoute,
   AdminClientsIndexRoute: AdminClientsIndexRoute,
