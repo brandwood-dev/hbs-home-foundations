@@ -1173,6 +1173,9 @@ export interface components {
             details: {
                 [key: string]: unknown;
             };
+            attributes: {
+                [key: string]: unknown;
+            };
             seo: {
                 title: string;
                 description: string;
@@ -1343,6 +1346,9 @@ export interface components {
             archivedAt: string | null;
             version: number;
             isDemo: boolean;
+            attributes: {
+                [key: string]: unknown;
+            };
             media: {
                 id: string;
                 productId: string;
@@ -1453,6 +1459,9 @@ export interface components {
                 archivedAt: string | null;
                 version: number;
                 isDemo: boolean;
+                attributes: {
+                    [key: string]: unknown;
+                };
                 media: {
                     id: string;
                     productId: string;
@@ -2434,6 +2443,9 @@ export interface operations {
                             details: {
                                 [key: string]: unknown;
                             };
+                            attributes: {
+                                [key: string]: unknown;
+                            };
                             seo: {
                                 title: string;
                                 description: string;
@@ -2605,6 +2617,9 @@ export interface operations {
                         details: {
                             [key: string]: unknown;
                         };
+                        attributes: {
+                            [key: string]: unknown;
+                        };
                         seo: {
                             title: string;
                             description: string;
@@ -2753,6 +2768,9 @@ export interface operations {
                             details: {
                                 [key: string]: unknown;
                             };
+                            attributes: {
+                                [key: string]: unknown;
+                            };
                             seo: {
                                 title: string;
                                 description: string;
@@ -2899,6 +2917,9 @@ export interface operations {
                             hex: string;
                         }[];
                         details: {
+                            [key: string]: unknown;
+                        };
+                        attributes: {
                             [key: string]: unknown;
                         };
                         seo: {
@@ -3070,6 +3091,9 @@ export interface operations {
                             hex: string;
                         }[];
                         details: {
+                            [key: string]: unknown;
+                        };
+                        attributes: {
                             [key: string]: unknown;
                         };
                         seo: {
@@ -4120,6 +4144,9 @@ export interface operations {
                             archivedAt: string | null;
                             version: number;
                             isDemo: boolean;
+                            attributes: {
+                                [key: string]: unknown;
+                            };
                             media: {
                                 id: string;
                                 productId: string;
@@ -4242,6 +4269,9 @@ export interface operations {
                     isFeatured?: boolean;
                     isThermal?: boolean;
                     recommendationScore?: number;
+                    attributes?: {
+                        [key: string]: unknown;
+                    };
                     payload?: {
                         [key: string]: unknown;
                     };
@@ -4273,6 +4303,9 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        attributes: {
+                            [key: string]: unknown;
+                        };
                         media: {
                             id: string;
                             productId: string;
@@ -4466,6 +4499,9 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        attributes: {
+                            [key: string]: unknown;
+                        };
                         media: {
                             id: string;
                             productId: string;
@@ -4608,6 +4644,9 @@ export interface operations {
                     isFeatured?: boolean;
                     isThermal?: boolean;
                     recommendationScore?: number;
+                    attributes?: {
+                        [key: string]: unknown;
+                    };
                     payload?: {
                         [key: string]: unknown;
                     };
@@ -4640,6 +4679,9 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        attributes: {
+                            [key: string]: unknown;
+                        };
                         media: {
                             id: string;
                             productId: string;
@@ -4837,6 +4879,9 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        attributes: {
+                            [key: string]: unknown;
+                        };
                         media: {
                             id: string;
                             productId: string;
@@ -5012,6 +5057,9 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        attributes: {
+                            [key: string]: unknown;
+                        };
                         media: {
                             id: string;
                             productId: string;
@@ -5179,6 +5227,9 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        attributes: {
+                            [key: string]: unknown;
+                        };
                         media: {
                             id: string;
                             productId: string;
@@ -5414,6 +5465,9 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        attributes: {
+                            [key: string]: unknown;
+                        };
                         media: {
                             id: string;
                             productId: string;
@@ -5634,6 +5688,9 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        attributes: {
+                            [key: string]: unknown;
+                        };
                         media: {
                             id: string;
                             productId: string;

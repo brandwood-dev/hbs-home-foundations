@@ -27,6 +27,7 @@ const product = {
   archivedAt: null,
   version: 2,
   isDemo: false,
+  attributes: {},
   media: [
     {
       id: "media-1",

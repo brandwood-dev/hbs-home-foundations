@@ -227,6 +227,7 @@
           "variants",
           "colors",
           "details",
+          "attributes",
           "seo",
           "isThermal",
           "isNew",
@@ -564,6 +565,10 @@
             }
           },
           "details": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "attributes": {
             "type": "object",
             "additionalProperties": {}
           },
@@ -1428,6 +1433,7 @@
           "archivedAt",
           "version",
           "isDemo",
+          "attributes",
           "media",
           "variants",
           "createdAt",
@@ -1546,6 +1552,10 @@
           },
           "isDemo": {
             "type": "boolean"
+          },
+          "attributes": {
+            "type": "object",
+            "additionalProperties": {}
           },
           "media": {
             "type": "array",
@@ -2086,6 +2096,7 @@
                 "archivedAt",
                 "version",
                 "isDemo",
+                "attributes",
                 "media",
                 "variants",
                 "createdAt",
@@ -2204,6 +2215,10 @@
                 },
                 "isDemo": {
                   "type": "boolean"
+                },
+                "attributes": {
+                  "type": "object",
+                  "additionalProperties": {}
                 },
                 "media": {
                   "type": "array",
@@ -6490,6 +6505,7 @@
                           "variants",
                           "colors",
                           "details",
+                          "attributes",
                           "seo",
                           "isThermal",
                           "isNew",
@@ -6830,6 +6846,10 @@
                             "type": "object",
                             "additionalProperties": {}
                           },
+                          "attributes": {
+                            "type": "object",
+                            "additionalProperties": {}
+                          },
                           "seo": {
                             "type": "object",
                             "required": ["title", "description"],
@@ -7140,6 +7160,7 @@
                       "variants",
                       "colors",
                       "details",
+                      "attributes",
                       "seo",
                       "isThermal",
                       "isNew",
@@ -7480,6 +7501,10 @@
                         "type": "object",
                         "additionalProperties": {}
                       },
+                      "attributes": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      },
                       "seo": {
                         "type": "object",
                         "required": ["title", "description"],
@@ -7631,6 +7656,7 @@
                           "variants",
                           "colors",
                           "details",
+                          "attributes",
                           "seo",
                           "isThermal",
                           "isNew",
@@ -7971,6 +7997,10 @@
                             "type": "object",
                             "additionalProperties": {}
                           },
+                          "attributes": {
+                            "type": "object",
+                            "additionalProperties": {}
+                          },
                           "seo": {
                             "type": "object",
                             "required": ["title", "description"],
@@ -8118,6 +8148,7 @@
                     "variants",
                     "colors",
                     "details",
+                    "attributes",
                     "seo",
                     "isThermal",
                     "isNew",
@@ -8458,6 +8489,10 @@
                       "type": "object",
                       "additionalProperties": {}
                     },
+                    "attributes": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    },
                     "seo": {
                       "type": "object",
                       "required": ["title", "description"],
@@ -8678,6 +8713,7 @@
                       "variants",
                       "colors",
                       "details",
+                      "attributes",
                       "seo",
                       "isThermal",
                       "isNew",
@@ -9015,6 +9051,10 @@
                         }
                       },
                       "details": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      },
+                      "attributes": {
                         "type": "object",
                         "additionalProperties": {}
                       },
@@ -12597,6 +12637,7 @@
                           "archivedAt",
                           "version",
                           "isDemo",
+                          "attributes",
                           "media",
                           "variants",
                           "createdAt",
@@ -12715,6 +12756,10 @@
                           },
                           "isDemo": {
                             "type": "boolean"
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "additionalProperties": {}
                           },
                           "media": {
                             "type": "array",
@@ -13175,6 +13220,10 @@
                   "recommendationScore": {
                     "type": "number"
                   },
+                  "attributes": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
                   "payload": {
                     "type": "object",
                     "additionalProperties": {}
@@ -13215,6 +13264,7 @@
                     "archivedAt",
                     "version",
                     "isDemo",
+                    "attributes",
                     "media",
                     "variants",
                     "createdAt",
@@ -13333,6 +13383,10 @@
                     },
                     "isDemo": {
                       "type": "boolean"
+                    },
+                    "attributes": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "media": {
                       "type": "array",
@@ -13927,6 +13981,7 @@
                     "archivedAt",
                     "version",
                     "isDemo",
+                    "attributes",
                     "media",
                     "variants",
                     "createdAt",
@@ -14045,6 +14100,10 @@
                     },
                     "isDemo": {
                       "type": "boolean"
+                    },
+                    "attributes": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "media": {
                       "type": "array",
@@ -14556,6 +14615,10 @@
                   "recommendationScore": {
                     "type": "number"
                   },
+                  "attributes": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
                   "payload": {
                     "type": "object",
                     "additionalProperties": {}
@@ -14612,6 +14675,7 @@
                     "archivedAt",
                     "version",
                     "isDemo",
+                    "attributes",
                     "media",
                     "variants",
                     "createdAt",
@@ -14730,6 +14794,10 @@
                     },
                     "isDemo": {
                       "type": "boolean"
+                    },
+                    "attributes": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "media": {
                       "type": "array",
@@ -15336,6 +15404,7 @@
                     "archivedAt",
                     "version",
                     "isDemo",
+                    "attributes",
                     "media",
                     "variants",
                     "createdAt",
@@ -15454,6 +15523,10 @@
                     },
                     "isDemo": {
                       "type": "boolean"
+                    },
+                    "attributes": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "media": {
                       "type": "array",
@@ -15996,6 +16069,7 @@
                     "archivedAt",
                     "version",
                     "isDemo",
+                    "attributes",
                     "media",
                     "variants",
                     "createdAt",
@@ -16114,6 +16188,10 @@
                     },
                     "isDemo": {
                       "type": "boolean"
+                    },
+                    "attributes": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "media": {
                       "type": "array",
@@ -16654,6 +16732,7 @@
                     "archivedAt",
                     "version",
                     "isDemo",
+                    "attributes",
                     "media",
                     "variants",
                     "createdAt",
@@ -16772,6 +16851,10 @@
                     },
                     "isDemo": {
                       "type": "boolean"
+                    },
+                    "attributes": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "media": {
                       "type": "array",
@@ -17517,6 +17600,7 @@
                     "archivedAt",
                     "version",
                     "isDemo",
+                    "attributes",
                     "media",
                     "variants",
                     "createdAt",
@@ -17635,6 +17719,10 @@
                     },
                     "isDemo": {
                       "type": "boolean"
+                    },
+                    "attributes": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "media": {
                       "type": "array",
@@ -18315,6 +18403,7 @@
                     "archivedAt",
                     "version",
                     "isDemo",
+                    "attributes",
                     "media",
                     "variants",
                     "createdAt",
@@ -18433,6 +18522,10 @@
                     },
                     "isDemo": {
                       "type": "boolean"
+                    },
+                    "attributes": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "media": {
                       "type": "array",
