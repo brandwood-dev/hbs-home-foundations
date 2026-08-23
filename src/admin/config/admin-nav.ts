@@ -111,7 +111,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         href: "/admin/contenu/accueil",
         icon: Home,
         requiredPermission: "content.read",
-        available: false,
+        available: true,
       },
       {
         label: "Navigation",

@@ -98,4 +98,26 @@ describe("HbsApiClient", () => {
       }),
     );
   });
+
+  it("serializes authenticated homepage draft updates as PUT", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(Response.json({ id: "revision-1", status: "draft", version: 2 }));
+    const client = new HbsApiClient({
+      baseUrl: "https://api.example.test",
+      fetch: fetchImplementation,
+    });
+
+    const body = { sections: [], expectedVersion: 1 };
+    await client.put("/api/v1/admin/content/home", body, "token");
+
+    expect(fetchImplementation).toHaveBeenCalledWith(
+      "https://api.example.test/api/v1/admin/content/home",
+      expect.objectContaining({
+        method: "PUT",
+        body: JSON.stringify(body),
+        headers: expect.objectContaining({ authorization: "Bearer token" }),
+      }),
+    );
+  });
 });

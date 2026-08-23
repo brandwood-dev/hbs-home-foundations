@@ -25,12 +25,14 @@ import { ApiAdminOrderRepository } from "@/admin/repositories/api/admin-order-ap
 import { ApiAdminCustomerRepository } from "@/admin/repositories/api/admin-customer-api-repository";
 import { ApiAdminMediaRepository } from "@/admin/repositories/api/admin-content-api-repository";
 import { ApiAdminEditorialPageRepository } from "@/admin/repositories/api/admin-editorial-page-api-repository";
+import { ApiAdminHomeContentRepository } from "@/admin/repositories/api/admin-home-content-api-repository";
 import { adminConfig } from "@/admin/config/admin.config";
 
 /**
  * Point d'entrée unique du back-office.
  * Le catalogue est maintenant branché sur l'API. Les autres modules restent
- * explicitement mockés jusqu'à leurs phases d'intégration respectives.
+ * explicitement mockés jusqu'à leurs phases d'intégration respectives. L'éditeur
+ * homepage est branché sur le repository API depuis la phase 9D.2.
  */
 export const adminRepositories = {
   dashboard: new MockAdminDashboardRepository(),
@@ -63,6 +65,7 @@ export const adminRepositories = {
       ? new ApiAdminPromotionRepository()
       : new MockAdminPromotionRepository(),
   content: new MockAdminContentRepository(),
+  homeContent: new ApiAdminHomeContentRepository(),
   pages:
     adminConfig.editorialDataProvider === "api"
       ? new ApiAdminEditorialPageRepository()
