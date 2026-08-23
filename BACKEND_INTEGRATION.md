@@ -200,3 +200,16 @@ Le mock frontend est une démonstration fonctionnelle : il n'apporte aucune séc
   `ApiSearchRepository` et `ApiFavoritesRepository` dès que `VITE_HBS_API_BASE_URL` est défini —
   aucun composant ne change.
 - Endpoints actifs : voir `API_CONTRACT.md` → sections Recherche globale et Favoris.
+
+## Page d'accueil administrable (phase 9D.1)
+
+Le socle backend introduit une révision versionnée pour le hero, la banderole promotionnelle et
+Shop the Look. L'Admin enregistre un brouillon avec contrôle optimiste `expectedVersion`, puis le
+publie explicitement. Une publication crée un snapshot public immuable; les anciennes révisions
+restent archivées pour audit et retour arrière. Les coordonnées des hotspots sont relatives à l'image
+(`xPercent`/`yPercent`) afin de rester stables sur mobile et desktop, et chaque hotspot pointe vers
+un produit catalogue contrôlé par l'API.
+
+L'éditeur visuel et le branchement de `ContentRepository` au frontend seront livrés dans les
+sous-phases 9D.2 et 9D.3. Jusqu'à cette intégration, le frontend conserve son fallback fixture et
+aucune donnée de brouillon n'est exposée publiquement.

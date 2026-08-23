@@ -126,6 +126,29 @@ La lecture publique est cacheable par Cloudflare : `s-maxage=60` et
 `stale-while-revalidate=300`. Les 404 de pages non publiées sont conservées au maximum 30 secondes.
 Une publication peut donc nécessiter jusqu'à une minute avant l'expiration du cache partagé.
 
+### Configuration de la page d'accueil (phase 9D.1)
+
+La configuration de la page d'accueil suit le même cycle `draft → published → archived`. Le premier
+incrément couvre les sections `hero`, `promo_banner` et `shop_the_look` ; les autres sections de la
+page restent servies par le contenu existant jusqu'à leur prochaine phase d'administration.
+
+```text
+GET  /api/v1/admin/content/home
+PUT  /api/v1/admin/content/home
+POST /api/v1/admin/content/home/publish
+POST /api/v1/admin/content/home/archive
+GET  /api/v1/content/home
+```
+
+La lecture Admin requiert `content.read`. L'enregistrement d'un brouillon requiert `content.write`
+et une session MFA `aal2`; publier ou archiver requiert `content.publish` et `aal2`. Le payload est
+versionné (`expectedVersion`) pour éviter qu'un éditeur écrase les modifications d'un autre. Les
+hotspots Shop the Look référencent un produit catalogue publié et utilisent des coordonnées en
+pourcentage (`xPercent`, `yPercent`, de 0 à 100). La réponse publique ne contient aucun identifiant
+interne de révision, section, média ou hotspot et ne renvoie que les médias actifs et les produits
+publiés. Elle est cacheable par Cloudflare avec `s-maxage=60` et
+`stale-while-revalidate=300`; l'absence de publication est cacheable 30 secondes.
+
 ## Suivi de commande sans compte
 
 ### `POST /api/v1/orders/track`
