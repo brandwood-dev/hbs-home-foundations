@@ -285,6 +285,79 @@ export interface AdminContentRepository {
   update(input: Partial<AdminContent>): Promise<AdminContent>;
 }
 
+export type AdminHomeSectionKey = "hero" | "promo_banner" | "shop_the_look";
+
+export interface AdminHomeMediaReference {
+  id: string;
+  publicUrl: string;
+  alt: string;
+}
+
+export interface AdminHomeHotspot {
+  id: string;
+  productId: string;
+  xPercent: number;
+  yPercent: number;
+  label: string | null;
+  sortOrder: number;
+  product: { id: string; slug: string; name: string } | null;
+}
+
+export interface AdminHomeSection {
+  id: string;
+  sectionKey: AdminHomeSectionKey;
+  sortOrder: number;
+  isEnabled: boolean;
+  payload: Record<string, unknown>;
+  media: AdminHomeMediaReference | null;
+  mobileMedia: AdminHomeMediaReference | null;
+  hotspots: AdminHomeHotspot[];
+}
+
+export interface AdminHomeRevision {
+  id: string;
+  status: "draft" | "published" | "archived";
+  version: number;
+  publishedAt: string | null;
+  updatedAt: string;
+  sections: AdminHomeSection[];
+}
+
+export interface AdminHomeContent {
+  draft: AdminHomeRevision | null;
+  published: AdminHomeRevision | null;
+}
+
+export interface AdminHomeHotspotInput {
+  productId: string;
+  xPercent: number;
+  yPercent: number;
+  label?: string | null;
+  sortOrder: number;
+}
+
+export interface AdminHomeSectionInput {
+  sectionKey: AdminHomeSectionKey;
+  sortOrder: number;
+  isEnabled?: boolean;
+  payload?: Record<string, unknown>;
+  mediaAssetId?: string | null;
+  mobileMediaAssetId?: string | null;
+  hotspots?: AdminHomeHotspotInput[];
+}
+
+export interface AdminHomeDraftInput {
+  sections: AdminHomeSectionInput[];
+  expectedVersion?: number;
+}
+
+export interface AdminHomeContentRepository {
+  get(): Promise<AdminHomeContent>;
+  update(input: AdminHomeDraftInput): Promise<AdminHomeRevision>;
+  publish(): Promise<AdminHomeRevision>;
+  archive(): Promise<AdminHomeRevision>;
+}
+
 export interface AdminEditorialPageInput {
   slug: string;
   title: string;

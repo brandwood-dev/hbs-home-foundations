@@ -81,7 +81,7 @@ export class HbsApiClient {
   }
 
   private async request<T>(
-    method: "GET" | "POST" | "PATCH" | "DELETE",
+    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
     path: string,
     options: {
       body?: unknown;
@@ -149,6 +149,21 @@ export class HbsApiClient {
     headers?: Record<string, string>,
   ): Promise<T> {
     return this.request<T>("POST", path, {
+      body,
+      ...(accessToken ? { accessToken } : {}),
+      ...(signal ? { signal } : {}),
+      ...(headers ? { headers } : {}),
+    });
+  }
+
+  public put<T>(
+    path: string,
+    body: unknown,
+    accessToken?: string,
+    signal?: AbortSignal,
+    headers?: Record<string, string>,
+  ): Promise<T> {
+    return this.request<T>("PUT", path, {
       body,
       ...(accessToken ? { accessToken } : {}),
       ...(signal ? { signal } : {}),

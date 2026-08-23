@@ -213,3 +213,14 @@ un produit catalogue contrôlé par l'API.
 L'éditeur visuel et le branchement de `ContentRepository` au frontend seront livrés dans les
 sous-phases 9D.2 et 9D.3. Jusqu'à cette intégration, le frontend conserve son fallback fixture et
 aucune donnée de brouillon n'est exposée publiquement.
+
+### Éditeur Admin homepage (phase 9D.2)
+
+La route `/admin/contenu/accueil` utilise désormais `ApiAdminHomeContentRepository`. Elle permet
+de modifier le brouillon du Hero, de la banderole promotionnelle et de Shop the Look. Les médias
+sont sélectionnés depuis la médiathèque API et les hotspots sont positionnés en pourcentage sur
+l’image, puis liés à un produit publié du catalogue.
+
+L’enregistrement envoie `expectedVersion` pour conserver le contrôle optimiste. La publication et
+l’archivage restent des actions séparées, protégées par `content.publish` et par la MFA exigée par
+l’API. La phase 9D.3 remplacera ensuite le fallback homepage public par `GET /api/v1/content/home`.
