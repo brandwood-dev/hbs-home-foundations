@@ -74,15 +74,32 @@ function hasProductAttributeValue(value: unknown): boolean {
 
 function validatePublicationWithAttributes(
   values: AdminProductFormValues,
-  dynamicAttributes: readonly AdminAttribute[],
+  catalogAttributes: readonly AdminAttribute[],
 ) {
   const issues = validateProductForPublication(formToProductDraft(values));
-  for (const attribute of dynamicAttributes) {
+  for (const attribute of catalogAttributes) {
     if (attribute.isRequired && !hasProductAttributeValue(values.fields[attribute.key])) {
       issues.push(`L'attribut « ${attribute.name} » est obligatoire.`);
     }
   }
   return issues;
+}
+
+function filterFieldsForCatalogCategory(
+  fields: AdminProductFormValues["fields"],
+  categorySlug: string | undefined,
+  attributes: readonly AdminAttribute[],
+): AdminProductFormValues["fields"] {
+  if (!categorySlug || attributes.length === 0) return fields;
+  const definitions = new Map(attributes.map((attribute) => [attribute.key, attribute]));
+  return Object.fromEntries(
+    Object.entries(fields).filter(([key]) => {
+      const definition = definitions.get(key);
+      if (!definition) return true;
+      if (definition.isActive === false) return false;
+      return !definition.categories?.length || definition.categories.includes(categorySlug);
+    }),
+  );
 }
 
 export function AdminProductForm({ product }: { product?: AdminProduct }) {
@@ -121,18 +138,23 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     () => categories.find((category) => category.id === values.categoryId)?.slug,
     [categories, values.categoryId],
   );
+  const catalogAttributes = useMemo(
+    () =>
+      attributes
+        .filter((attribute) => attribute.isActive !== false)
+        .filter(
+          (attribute) =>
+            !attribute.categories?.length ||
+            (selectedCatalogCategorySlug !== undefined &&
+              attribute.categories.includes(selectedCatalogCategorySlug)),
+        )
+        .sort((left, right) => left.order - right.order || left.name.localeCompare(right.name)),
+    [attributes, selectedCatalogCategorySlug],
+  );
   const dynamicAttributes = useMemo(() => {
     const staticKeys = new Set(Object.keys(ADMIN_PRODUCT_FIELDS));
-    return attributes
-      .filter((attribute) => attribute.isActive !== false && !staticKeys.has(attribute.key))
-      .filter(
-        (attribute) =>
-          !attribute.categories?.length ||
-          (selectedCatalogCategorySlug !== undefined &&
-            attribute.categories.includes(selectedCatalogCategorySlug)),
-      )
-      .sort((left, right) => left.order - right.order || left.name.localeCompare(right.name));
-  }, [attributes, selectedCatalogCategorySlug]);
+    return catalogAttributes.filter((attribute) => !staticKeys.has(attribute.key));
+  }, [catalogAttributes]);
   const others = useMemo(
     () => products.filter((item) => item.id !== values.id),
     [products, values.id],
@@ -145,8 +167,8 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
   const draft = useMemo(() => formToProductDraft(values), [values]);
   const identityErrors = useMemo(() => validateProductIdentity(draft, { others }), [draft, others]);
   const publicationIssues = useMemo(
-    () => validatePublicationWithAttributes(values, dynamicAttributes),
-    [values, dynamicAttributes],
+    () => validatePublicationWithAttributes(values, catalogAttributes),
+    [values, catalogAttributes],
   );
   const isCustomQuote = values.sellingMode === "custom_quote";
 
@@ -188,7 +210,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     if (Object.keys(identity).length > 0) return;
     if (
       status === "published" &&
-      validatePublicationWithAttributes(next, dynamicAttributes).length > 0
+      validatePublicationWithAttributes(next, catalogAttributes).length > 0
     )
       return;
 
@@ -242,7 +264,13 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
               value: category.id,
               label: category.name,
             }))}
-            onChange={(value) => patch({ categoryId: value })}
+            onChange={(value) => {
+              const categorySlug = categories.find((category) => category.id === value)?.slug;
+              patch({
+                categoryId: value,
+                fields: filterFieldsForCatalogCategory(values.fields, categorySlug, attributes),
+              });
+            }}
           />
           <AdminSelectField
             label="Unité de vente"
