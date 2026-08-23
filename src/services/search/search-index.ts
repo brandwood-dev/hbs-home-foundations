@@ -59,6 +59,25 @@ function pushLabel(target: string[], value: string | undefined) {
   if (normalized) target.push(normalized);
 }
 
+function pushDynamicAttribute(target: string[], value: unknown, depth = 0): void {
+  if (depth > 2 || value === null || value === undefined) return;
+  if (typeof value === "string") {
+    pushLabel(target, value);
+    return;
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    pushLabel(target, String(value));
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) pushDynamicAttribute(target, item, depth + 1);
+    return;
+  }
+  if (typeof value === "object") {
+    for (const item of Object.values(value)) pushDynamicAttribute(target, item, depth + 1);
+  }
+}
+
 /** Variantes exploitables : les déclinaisons épuisées n'alimentent pas les SKU suggérés. */
 function indexableVariants(product: Product) {
   const active = product.variants.filter((variant) => variant.availability !== "out_of_stock");
@@ -153,6 +172,10 @@ export function buildProductSearchDoc(product: Product): ProductSearchDoc {
   );
   if (product.petFriendly) attributeTerms.push("sans danger animaux");
   if (product.potIncluded) attributeTerms.push("pot inclus");
+  for (const [key, value] of Object.entries(product.attributes ?? {})) {
+    pushLabel(attributeTerms, key.replace(/_/g, " "));
+    pushDynamicAttribute(attributeTerms, value);
+  }
 
   const measurementTerms: string[] = [];
 

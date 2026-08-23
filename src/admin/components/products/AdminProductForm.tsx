@@ -20,11 +20,13 @@ import { AdminVariantsEditor } from "@/admin/components/products/AdminVariantsEd
 import { AdminProductImagesEditor } from "@/admin/components/products/AdminProductImagesEditor";
 import {
   ADMIN_PRODUCT_CATEGORY_LABELS,
+  type AdminAttribute,
   type AdminProduct,
   type AdminProductCategoryKey,
   type AdminSellingMode,
 } from "@/admin/types/admin.types";
 import {
+  ADMIN_PRODUCT_FIELDS,
   SELLING_MODE_HINTS,
   SELLING_MODE_LABELS,
   adminProductCategoryConfigs,
@@ -46,7 +48,11 @@ import {
   generateProductSlug,
   publicProductUrl,
 } from "@/admin/services/products/admin-product-slug";
-import { useAdminCategories, useAdminProducts } from "@/admin/hooks/admin.queries";
+import {
+  useAdminAttributes,
+  useAdminCategories,
+  useAdminProducts,
+} from "@/admin/hooks/admin.queries";
 import {
   useCreateAdminProduct,
   useUpdateAdminProduct,
@@ -57,10 +63,50 @@ const CATEGORY_OPTIONS = Object.entries(ADMIN_PRODUCT_CATEGORY_LABELS).map(([val
   label,
 }));
 
+function hasProductAttributeValue(value: unknown): boolean {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string") return value.trim().length > 0;
+  if (typeof value === "number") return Number.isFinite(value);
+  if (typeof value === "boolean") return true;
+  if (Array.isArray(value)) return value.length > 0;
+  return typeof value === "object" && Object.keys(value).length > 0;
+}
+
+function validatePublicationWithAttributes(
+  values: AdminProductFormValues,
+  catalogAttributes: readonly AdminAttribute[],
+) {
+  const issues = validateProductForPublication(formToProductDraft(values));
+  for (const attribute of catalogAttributes) {
+    if (attribute.isRequired && !hasProductAttributeValue(values.fields[attribute.key])) {
+      issues.push(`L'attribut « ${attribute.name} » est obligatoire.`);
+    }
+  }
+  return issues;
+}
+
+function filterFieldsForCatalogCategory(
+  fields: AdminProductFormValues["fields"],
+  categorySlug: string | undefined,
+  attributes: readonly AdminAttribute[],
+): AdminProductFormValues["fields"] {
+  if (!categorySlug || attributes.length === 0) return fields;
+  const definitions = new Map(attributes.map((attribute) => [attribute.key, attribute]));
+  return Object.fromEntries(
+    Object.entries(fields).filter(([key]) => {
+      const definition = definitions.get(key);
+      if (!definition) return true;
+      if (definition.isActive === false) return false;
+      return !definition.categories?.length || definition.categories.includes(categorySlug);
+    }),
+  );
+}
+
 export function AdminProductForm({ product }: { product?: AdminProduct }) {
   const navigate = useNavigate();
   const { data: products = [] } = useAdminProducts();
   const { data: categories = [] } = useAdminCategories();
+  const { data: attributes = [] } = useAdminAttributes();
   const createProduct = useCreateAdminProduct(() => navigate({ to: "/admin/produits" }));
   const updateProduct = useUpdateAdminProduct();
 
@@ -88,6 +134,27 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
   }, [categories, product, values.category, values.categoryId]);
 
   const config = adminProductCategoryConfigs[values.category];
+  const selectedCatalogCategorySlug = useMemo(
+    () => categories.find((category) => category.id === values.categoryId)?.slug,
+    [categories, values.categoryId],
+  );
+  const catalogAttributes = useMemo(
+    () =>
+      attributes
+        .filter((attribute) => attribute.isActive !== false)
+        .filter(
+          (attribute) =>
+            !attribute.categories?.length ||
+            (selectedCatalogCategorySlug !== undefined &&
+              attribute.categories.includes(selectedCatalogCategorySlug)),
+        )
+        .sort((left, right) => left.order - right.order || left.name.localeCompare(right.name)),
+    [attributes, selectedCatalogCategorySlug],
+  );
+  const dynamicAttributes = useMemo(() => {
+    const staticKeys = new Set(Object.keys(ADMIN_PRODUCT_FIELDS));
+    return catalogAttributes.filter((attribute) => !staticKeys.has(attribute.key));
+  }, [catalogAttributes]);
   const others = useMemo(
     () => products.filter((item) => item.id !== values.id),
     [products, values.id],
@@ -99,7 +166,10 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
 
   const draft = useMemo(() => formToProductDraft(values), [values]);
   const identityErrors = useMemo(() => validateProductIdentity(draft, { others }), [draft, others]);
-  const publicationIssues = useMemo(() => validateProductForPublication(draft), [draft]);
+  const publicationIssues = useMemo(
+    () => validatePublicationWithAttributes(values, catalogAttributes),
+    [values, catalogAttributes],
+  );
   const isCustomQuote = values.sellingMode === "custom_quote";
 
   function patch(next: Partial<AdminProductFormValues>) {
@@ -140,7 +210,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     if (Object.keys(identity).length > 0) return;
     if (
       status === "published" &&
-      validateProductForPublication(formToProductDraft(next)).length > 0
+      validatePublicationWithAttributes(next, catalogAttributes).length > 0
     )
       return;
 
@@ -194,7 +264,13 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
               value: category.id,
               label: category.name,
             }))}
-            onChange={(value) => patch({ categoryId: value })}
+            onChange={(value) => {
+              const categorySlug = categories.find((category) => category.id === value)?.slug;
+              patch({
+                categoryId: value,
+                fields: filterFieldsForCatalogCategory(values.fields, categorySlug, attributes),
+              });
+            }}
           />
           <AdminSelectField
             label="Unité de vente"
@@ -379,6 +455,19 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           );
         })}
       </div>
+      {dynamicAttributes.length > 0 ? (
+        <div className="mt-6 grid gap-4 border-t border-border pt-5">
+          <div>
+            <h3 className="text-sm font-medium">Attributs personnalisés</h3>
+            <p className="text-xs text-muted-foreground">
+              Ces valeurs sont gérées par le catalogue et alimentent les filtres publics.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {dynamicAttributes.map((attribute) => renderDynamicAttribute(attribute))}
+          </div>
+        </div>
+      ) : null}
     </AdminFormSection>
   );
 
@@ -420,6 +509,83 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
       </div>
     </AdminFormSection>
   );
+
+  function renderDynamicAttribute(attribute: AdminAttribute) {
+    const raw = values.fields[attribute.key];
+    const required = attribute.isRequired === true;
+    const options = attribute.values
+      .filter((value) => value.isActive !== false)
+      .map((value) => ({ value: value.slug, label: value.label }));
+
+    if (attribute.fieldType === "boolean") {
+      return (
+        <AdminSwitchField
+          key={attribute.id}
+          label={required ? `${attribute.name} *` : attribute.name}
+          checked={raw === true}
+          onChange={(checked) => patchField(attribute.key, checked)}
+        />
+      );
+    }
+    if (attribute.fieldType === "number" || attribute.fieldType === "measurement") {
+      return (
+        <AdminNumberField
+          key={attribute.id}
+          label={required ? `${attribute.name} *` : attribute.name}
+          value={typeof raw === "number" ? raw : 0}
+          onChange={(value) => patchField(attribute.key, value)}
+        />
+      );
+    }
+    if (
+      attribute.fieldType === "select" ||
+      attribute.fieldType === "single_select" ||
+      attribute.fieldType === "color"
+    ) {
+      return (
+        <AdminSelectField
+          key={attribute.id}
+          label={required ? `${attribute.name} *` : attribute.name}
+          required={required}
+          value={typeof raw === "string" ? raw : ""}
+          options={options}
+          {...(options.length === 0
+            ? { hint: "Ajoutez d'abord les options dans l'attribut." }
+            : {})}
+          onChange={(value) => patchField(attribute.key, value)}
+        />
+      );
+    }
+    if (attribute.fieldType === "multi_select" || attribute.fieldType === "multiselect") {
+      return (
+        <AdminField
+          key={attribute.id}
+          label={required ? `${attribute.name} *` : attribute.name}
+          required={required}
+          hint="Séparez les options par une virgule."
+          value={Array.isArray(raw) ? raw.join(", ") : ""}
+          onChange={(value) =>
+            patchField(
+              attribute.key,
+              value
+                .split(",")
+                .map((item) => item.trim())
+                .filter(Boolean),
+            )
+          }
+        />
+      );
+    }
+    return (
+      <AdminField
+        key={attribute.id}
+        label={required ? `${attribute.name} *` : attribute.name}
+        required={required}
+        value={typeof raw === "string" ? raw : ""}
+        onChange={(value) => patchField(attribute.key, value)}
+      />
+    );
+  }
 
   return (
     <div className="pb-24">
