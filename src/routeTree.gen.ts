@@ -32,6 +32,7 @@ import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as SuiviCommandeRouteImport } from './routes/suivi-commande'
 import { Route as SurMesureRouteImport } from './routes/sur-mesure'
 import { Route as TringlesRouteImport } from './routes/tringles'
+import { Route as CategoryProductSlugRouteImport } from './routes/$category.$productSlug'
 import { Route as AccessoiresIndexRouteImport } from './routes/accessoires.index'
 import { Route as AccessoiresEmbrassesRouteImport } from './routes/accessoires.embrasses'
 import { Route as AccessoiresPetitesPiecesRouteImport } from './routes/accessoires.petites-pieces'
@@ -91,6 +92,7 @@ import { Route as VoilagesGrandeLargeurRouteImport } from './routes/voilages.gra
 import { Route as VoilagesMotifsRouteImport } from './routes/voilages.motifs'
 import { Route as VoilagesRailRouteImport } from './routes/voilages.rail'
 import { Route as VoilagesUnisRouteImport } from './routes/voilages.unis'
+import { Route as CategorySubcategoryProductSlugRouteImport } from './routes/$category.$subcategory.$productSlug'
 import { Route as AdminAuthCallbackRouteImport } from './routes/admin/auth.callback'
 import { Route as AdminClientsIndexRouteImport } from './routes/admin/clients.index'
 import { Route as AdminClientsCustomerIdRouteImport } from './routes/admin/clients.$customerId'
@@ -216,6 +218,11 @@ const SurMesureRoute = SurMesureRouteImport.update({
 const TringlesRoute = TringlesRouteImport.update({
   id: '/tringles',
   path: '/tringles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoryProductSlugRoute = CategoryProductSlugRouteImport.update({
+  id: '/$category/$productSlug',
+  path: '/$category/$productSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccessoiresIndexRoute = AccessoiresIndexRouteImport.update({
@@ -514,6 +521,12 @@ const VoilagesUnisRoute = VoilagesUnisRouteImport.update({
   path: '/voilages/unis',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategorySubcategoryProductSlugRoute =
+  CategorySubcategoryProductSlugRouteImport.update({
+    id: '/$category/$subcategory/$productSlug',
+    path: '/$category/$subcategory/$productSlug',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminAuthCallbackRoute = AdminAuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
@@ -594,6 +607,7 @@ export interface FileRoutesByFullPath {
   '/suivi-commande': typeof SuiviCommandeRoute
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
+  '/$category/$productSlug': typeof CategoryProductSlugRoute
   '/accessoires/embrasses': typeof AccessoiresEmbrassesRoute
   '/accessoires/petites-pieces': typeof AccessoiresPetitesPiecesRoute
   '/accessoires/rails': typeof AccessoiresRailsRoute
@@ -653,6 +667,7 @@ export interface FileRoutesByFullPath {
   '/rideaux/': typeof RideauxIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/voilages/': typeof VoilagesIndexRoute
+  '/$category/$subcategory/$productSlug': typeof CategorySubcategoryProductSlugRoute
   '/admin/auth/callback': typeof AdminAuthCallbackRoute
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
@@ -688,6 +703,7 @@ export interface FileRoutesByTo {
   '/suivi-commande': typeof SuiviCommandeRoute
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
+  '/$category/$productSlug': typeof CategoryProductSlugRoute
   '/accessoires/embrasses': typeof AccessoiresEmbrassesRoute
   '/accessoires/petites-pieces': typeof AccessoiresPetitesPiecesRoute
   '/accessoires/rails': typeof AccessoiresRailsRoute
@@ -747,6 +763,7 @@ export interface FileRoutesByTo {
   '/rideaux': typeof RideauxIndexRoute
   '/stores': typeof StoresIndexRoute
   '/voilages': typeof VoilagesIndexRoute
+  '/$category/$subcategory/$productSlug': typeof CategorySubcategoryProductSlugRoute
   '/admin/auth/callback': typeof AdminAuthCallbackRoute
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
@@ -784,6 +801,7 @@ export interface FileRoutesById {
   '/suivi-commande': typeof SuiviCommandeRoute
   '/sur-mesure': typeof SurMesureRoute
   '/tringles': typeof TringlesRoute
+  '/$category/$productSlug': typeof CategoryProductSlugRoute
   '/accessoires/embrasses': typeof AccessoiresEmbrassesRoute
   '/accessoires/petites-pieces': typeof AccessoiresPetitesPiecesRoute
   '/accessoires/rails': typeof AccessoiresRailsRoute
@@ -843,6 +861,7 @@ export interface FileRoutesById {
   '/rideaux/': typeof RideauxIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/voilages/': typeof VoilagesIndexRoute
+  '/$category/$subcategory/$productSlug': typeof CategorySubcategoryProductSlugRoute
   '/admin/auth/callback': typeof AdminAuthCallbackRoute
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
@@ -881,6 +900,7 @@ export interface FileRouteTypes {
     | '/suivi-commande'
     | '/sur-mesure'
     | '/tringles'
+    | '/$category/$productSlug'
     | '/accessoires/embrasses'
     | '/accessoires/petites-pieces'
     | '/accessoires/rails'
@@ -940,6 +960,7 @@ export interface FileRouteTypes {
     | '/rideaux/'
     | '/stores/'
     | '/voilages/'
+    | '/$category/$subcategory/$productSlug'
     | '/admin/auth/callback'
     | '/admin/clients/$customerId'
     | '/admin/commandes/$orderId'
@@ -975,6 +996,7 @@ export interface FileRouteTypes {
     | '/suivi-commande'
     | '/sur-mesure'
     | '/tringles'
+    | '/$category/$productSlug'
     | '/accessoires/embrasses'
     | '/accessoires/petites-pieces'
     | '/accessoires/rails'
@@ -1034,6 +1056,7 @@ export interface FileRouteTypes {
     | '/rideaux'
     | '/stores'
     | '/voilages'
+    | '/$category/$subcategory/$productSlug'
     | '/admin/auth/callback'
     | '/admin/clients/$customerId'
     | '/admin/commandes/$orderId'
@@ -1070,6 +1093,7 @@ export interface FileRouteTypes {
     | '/suivi-commande'
     | '/sur-mesure'
     | '/tringles'
+    | '/$category/$productSlug'
     | '/accessoires/embrasses'
     | '/accessoires/petites-pieces'
     | '/accessoires/rails'
@@ -1129,6 +1153,7 @@ export interface FileRouteTypes {
     | '/rideaux/'
     | '/stores/'
     | '/voilages/'
+    | '/$category/$subcategory/$productSlug'
     | '/admin/auth/callback'
     | '/admin/clients/$customerId'
     | '/admin/commandes/$orderId'
@@ -1166,6 +1191,7 @@ export interface RootRouteChildren {
   SuiviCommandeRoute: typeof SuiviCommandeRoute
   SurMesureRoute: typeof SurMesureRoute
   TringlesRoute: typeof TringlesRoute
+  CategoryProductSlugRoute: typeof CategoryProductSlugRoute
   AccessoiresEmbrassesRoute: typeof AccessoiresEmbrassesRoute
   AccessoiresPetitesPiecesRoute: typeof AccessoiresPetitesPiecesRoute
   AccessoiresRailsRoute: typeof AccessoiresRailsRoute
@@ -1217,6 +1243,7 @@ export interface RootRouteChildren {
   RideauxIndexRoute: typeof RideauxIndexRoute
   StoresIndexRoute: typeof StoresIndexRoute
   VoilagesIndexRoute: typeof VoilagesIndexRoute
+  CategorySubcategoryProductSlugRoute: typeof CategorySubcategoryProductSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1380,6 +1407,13 @@ declare module '@tanstack/react-router' {
       path: '/tringles'
       fullPath: '/tringles'
       preLoaderRoute: typeof TringlesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$category/$productSlug': {
+      id: '/$category/$productSlug'
+      path: '/$category/$productSlug'
+      fullPath: '/$category/$productSlug'
+      preLoaderRoute: typeof CategoryProductSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/accessoires/': {
@@ -1795,6 +1829,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VoilagesUnisRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$category/$subcategory/$productSlug': {
+      id: '/$category/$subcategory/$productSlug'
+      path: '/$category/$subcategory/$productSlug'
+      fullPath: '/$category/$subcategory/$productSlug'
+      preLoaderRoute: typeof CategorySubcategoryProductSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/auth/callback': {
       id: '/admin/auth/callback'
       path: '/auth/callback'
@@ -1957,6 +1998,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuiviCommandeRoute: SuiviCommandeRoute,
   SurMesureRoute: SurMesureRoute,
   TringlesRoute: TringlesRoute,
+  CategoryProductSlugRoute: CategoryProductSlugRoute,
   AccessoiresEmbrassesRoute: AccessoiresEmbrassesRoute,
   AccessoiresPetitesPiecesRoute: AccessoiresPetitesPiecesRoute,
   AccessoiresRailsRoute: AccessoiresRailsRoute,
@@ -2008,6 +2050,7 @@ const rootRouteChildren: RootRouteChildren = {
   RideauxIndexRoute: RideauxIndexRoute,
   StoresIndexRoute: StoresIndexRoute,
   VoilagesIndexRoute: VoilagesIndexRoute,
+  CategorySubcategoryProductSlugRoute: CategorySubcategoryProductSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
