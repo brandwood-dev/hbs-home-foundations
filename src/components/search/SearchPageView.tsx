@@ -132,7 +132,7 @@ export function SearchPageView() {
               {results.articles.map((article) => (
                 <AppLink
                   key={article.id}
-                  href="/inspirations"
+                  href={`/inspirations/${article.slug}`}
                   className="rounded-full border border-border px-4 py-2 text-sm hover:border-accent hover:text-accent-dark"
                 >
                   {article.title}

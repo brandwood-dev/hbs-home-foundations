@@ -24,61 +24,69 @@ const page = {
 
 describe("ApiContentRepository", () => {
   it("loads and maps the published homepage sections", async () => {
-    const fetchImplementation = vi.fn<typeof fetch>().mockResolvedValue(
-      Response.json({
-        version: 3,
-        publishedAt: "2026-08-23T00:00:00.000Z",
-        sections: [
-          {
-            sectionKey: "hero",
-            sortOrder: 0,
-            isEnabled: true,
-            payload: {
-              eyebrow: "Édition été",
-              title: "Un intérieur lumineux",
-              description: "Une sélection pensée pour la saison.",
-              primaryCtaLabel: "Découvrir",
-              primaryCtaHref: "/nouveautes",
-              secondaryCtaLabel: "Nous contacter",
-              secondaryCtaHref: "/contact",
-            },
-            media: { publicUrl: "https://cdn.example.test/hero.webp", alt: "Salon lumineux" },
-            mobileMedia: {
-              publicUrl: "https://cdn.example.test/hero-mobile.webp",
-              alt: "Salon lumineux sur mobile",
-            },
-            hotspots: [],
-          },
-          {
-            sectionKey: "promo_banner",
-            sortOrder: 1,
-            isEnabled: true,
-            payload: { label: "Nouveauté", text: "Livraison offerte", href: "/promotions" },
-            media: null,
-            mobileMedia: null,
-            hotspots: [],
-          },
-          {
-            sectionKey: "shop_the_look",
-            sortOrder: 2,
-            isEnabled: true,
-            payload: { title: "La sélection du moment", description: "Associez vos pièces." },
-            media: { publicUrl: "https://cdn.example.test/look.webp", alt: "Ambiance HBS HOME" },
-            mobileMedia: null,
-            hotspots: [
-              {
-                productId: "product-1",
-                xPercent: 25,
-                yPercent: 40,
-                label: null,
-                sortOrder: 0,
-                product: { id: "product-1", slug: "rideau-lin", name: "Rideau lin" },
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(
+        Response.json({
+          version: 3,
+          publishedAt: "2026-08-23T00:00:00.000Z",
+          sections: [
+            {
+              sectionKey: "hero",
+              sortOrder: 0,
+              isEnabled: true,
+              payload: {
+                eyebrow: "Édition été",
+                title: "Un intérieur lumineux",
+                description: "Une sélection pensée pour la saison.",
+                primaryCtaLabel: "Découvrir",
+                primaryCtaHref: "/nouveautes",
+                secondaryCtaLabel: "Nous contacter",
+                secondaryCtaHref: "/contact",
               },
-            ],
-          },
-        ],
-      }),
-    );
+              media: { publicUrl: "https://cdn.example.test/hero.webp", alt: "Salon lumineux" },
+              mobileMedia: {
+                publicUrl: "https://cdn.example.test/hero-mobile.webp",
+                alt: "Salon lumineux sur mobile",
+              },
+              hotspots: [],
+            },
+            {
+              sectionKey: "promo_banner",
+              sortOrder: 1,
+              isEnabled: true,
+              payload: { label: "Nouveauté", text: "Livraison offerte", href: "/promotions" },
+              media: null,
+              mobileMedia: null,
+              hotspots: [],
+            },
+            {
+              sectionKey: "shop_the_look",
+              sortOrder: 2,
+              isEnabled: true,
+              payload: { title: "La sélection du moment", description: "Associez vos pièces." },
+              media: { publicUrl: "https://cdn.example.test/look.webp", alt: "Ambiance HBS HOME" },
+              mobileMedia: null,
+              hotspots: [
+                {
+                  productId: "product-1",
+                  xPercent: 25,
+                  yPercent: 40,
+                  label: null,
+                  sortOrder: 0,
+                  product: { id: "product-1", slug: "rideau-lin", name: "Rideau lin" },
+                },
+              ],
+            },
+          ],
+        }),
+      )
+      .mockResolvedValueOnce(
+        Response.json({ items: [], page: 1, pageSize: 3, total: 0, totalPages: 0 }),
+      )
+      .mockResolvedValueOnce(
+        Response.json({ items: [], page: 1, pageSize: 3, total: 0, totalPages: 0 }),
+      );
     const repository = new ApiContentRepository(
       new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
     );

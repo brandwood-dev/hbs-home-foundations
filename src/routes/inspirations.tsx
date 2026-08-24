@@ -1,41 +1,36 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import {
-  EditorialPageError,
-  EditorialPageNotFound,
-  EditorialPageView,
-} from "@/components/content/EditorialPageView";
-import { editorialPageQuery } from "@/hooks/content/useHomeContent";
+import { ArticleListView } from "@/components/content/ArticleListView";
+import { ArticleListError } from "@/components/content/ArticleListStates";
+import { articlesQuery } from "@/hooks/content/useHomeContent";
 
-const description = "Inspirations — HBS HOME, rideaux, voilages et décoration textile en Tunisie.";
+const title = "Inspirations — HBS HOME";
+const description =
+  "Conseils, guides et inspirations HBS HOME pour vos rideaux, voilages et textiles de maison.";
 
 export const Route = createFileRoute("/inspirations")({
   loader: async ({ context }) => {
-    const page = await context.queryClient.ensureQueryData(editorialPageQuery("inspirations"));
-    if (!page) throw notFound();
-    return {
-      seoTitle: page.seoTitle ?? `${page.title} — HBS HOME`,
-      seoDescription: page.seoDescription ?? description,
-    };
+    const articles = await context.queryClient.ensureQueryData(
+      articlesQuery({ page: 1, pageSize: 12 }),
+    );
+    return { total: articles.total };
   },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: loaderData.seoTitle },
-          { name: "description", content: loaderData.seoDescription },
-          { property: "og:title", content: loaderData.seoTitle },
-          { property: "og:description", content: loaderData.seoDescription },
-          { property: "og:type", content: "article" },
-        ]
-      : [{ title: "Page introuvable — HBS HOME" }, { name: "robots", content: "noindex" }],
+  head: () => ({
+    meta: [
+      { title },
+      { name: "description", content: description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
     links: [{ rel: "canonical", href: "https://hbs-home.com/inspirations" }],
   }),
-  notFoundComponent: EditorialPageNotFound,
-  errorComponent: EditorialPageError,
+  errorComponent: ArticleListError,
   component: InspirationsPage,
 });
 
 function InspirationsPage() {
-  const { data: page } = useSuspenseQuery(editorialPageQuery("inspirations"));
-  return page ? <EditorialPageView page={page} /> : <EditorialPageNotFound />;
+  const { data } = useSuspenseQuery(articlesQuery({ page: 1, pageSize: 12 }));
+  return <ArticleListView articles={data.items} total={data.total} />;
 }

@@ -25,6 +25,7 @@ import { ApiAdminOrderRepository } from "@/admin/repositories/api/admin-order-ap
 import { ApiAdminCustomerRepository } from "@/admin/repositories/api/admin-customer-api-repository";
 import { ApiAdminMediaRepository } from "@/admin/repositories/api/admin-content-api-repository";
 import { ApiAdminEditorialPageRepository } from "@/admin/repositories/api/admin-editorial-page-api-repository";
+import { ApiAdminArticleRepository } from "@/admin/repositories/api/admin-article-api-repository";
 import { ApiAdminHomeContentRepository } from "@/admin/repositories/api/admin-home-content-api-repository";
 import { adminConfig } from "@/admin/config/admin.config";
 
@@ -70,6 +71,7 @@ export const adminRepositories = {
     adminConfig.editorialDataProvider === "api"
       ? new ApiAdminEditorialPageRepository()
       : new MockAdminEditorialPageRepository(),
+  articles: new ApiAdminArticleRepository(),
   media:
     adminConfig.mediaDataProvider === "api"
       ? new ApiAdminMediaRepository()

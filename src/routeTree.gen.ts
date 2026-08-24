@@ -52,6 +52,7 @@ import { Route as CoussinsVeloursRouteImport } from './routes/coussins.velours'
 import { Route as GalettesDeChaiseIndexRouteImport } from './routes/galettes-de-chaise.index'
 import { Route as GalettesDeChaiseCarreesRouteImport } from './routes/galettes-de-chaise.carrees'
 import { Route as GalettesDeChaiseRondesRouteImport } from './routes/galettes-de-chaise.rondes'
+import { Route as InspirationsSlugRouteImport } from './routes/inspirations.$slug'
 import { Route as MobilierIndexRouteImport } from './routes/mobilier.index'
 import { Route as MobilierCanapesRouteImport } from './routes/mobilier.canapes'
 import { Route as MobilierChaisesRouteImport } from './routes/mobilier.chaises'
@@ -95,6 +96,7 @@ import { Route as AdminClientsCustomerIdRouteImport } from './routes/admin/clien
 import { Route as AdminCommandesIndexRouteImport } from './routes/admin/commandes.index'
 import { Route as AdminCommandesOrderIdRouteImport } from './routes/admin/commandes.$orderId'
 import { Route as AdminContenuAccueilRouteImport } from './routes/admin/contenu.accueil'
+import { Route as AdminContenuArticlesRouteImport } from './routes/admin/contenu.articles'
 import { Route as AdminContenuPagesRouteImport } from './routes/admin/contenu.pages'
 import { Route as AdminProduitsIndexRouteImport } from './routes/admin/produits.index'
 import { Route as AdminProduitsProductIdRouteImport } from './routes/admin/produits.$productId'
@@ -316,6 +318,11 @@ const GalettesDeChaiseRondesRoute = GalettesDeChaiseRondesRouteImport.update({
   path: '/galettes-de-chaise/rondes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InspirationsSlugRoute = InspirationsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => InspirationsRoute,
+} as any)
 const MobilierIndexRoute = MobilierIndexRouteImport.update({
   id: '/mobilier/',
   path: '/mobilier/',
@@ -531,6 +538,11 @@ const AdminContenuAccueilRoute = AdminContenuAccueilRouteImport.update({
   path: '/contenu/accueil',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminContenuArticlesRoute = AdminContenuArticlesRouteImport.update({
+  id: '/contenu/articles',
+  path: '/contenu/articles',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminContenuPagesRoute = AdminContenuPagesRouteImport.update({
   id: '/contenu/pages',
   path: '/contenu/pages',
@@ -564,7 +576,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/favoris': typeof FavorisRoute
   '/guide-des-mesures': typeof GuideDesMesuresRoute
-  '/inspirations': typeof InspirationsRoute
+  '/inspirations': typeof InspirationsRouteWithChildren
   '/livraison-et-retours': typeof LivraisonEtRetoursRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/nouveautes': typeof NouveautesRoute
@@ -591,6 +603,7 @@ export interface FileRoutesByFullPath {
   '/coussins/velours': typeof CoussinsVeloursRoute
   '/galettes-de-chaise/carrees': typeof GalettesDeChaiseCarreesRoute
   '/galettes-de-chaise/rondes': typeof GalettesDeChaiseRondesRoute
+  '/inspirations/$slug': typeof InspirationsSlugRoute
   '/mobilier/canapes': typeof MobilierCanapesRoute
   '/mobilier/chaises': typeof MobilierChaisesRoute
   '/mobilier/fauteuils': typeof MobilierFauteuilsRoute
@@ -637,6 +650,7 @@ export interface FileRoutesByFullPath {
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
   '/admin/contenu/accueil': typeof AdminContenuAccueilRoute
+  '/admin/contenu/articles': typeof AdminContenuArticlesRoute
   '/admin/contenu/pages': typeof AdminContenuPagesRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
@@ -655,7 +669,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/favoris': typeof FavorisRoute
   '/guide-des-mesures': typeof GuideDesMesuresRoute
-  '/inspirations': typeof InspirationsRoute
+  '/inspirations': typeof InspirationsRouteWithChildren
   '/livraison-et-retours': typeof LivraisonEtRetoursRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/nouveautes': typeof NouveautesRoute
@@ -682,6 +696,7 @@ export interface FileRoutesByTo {
   '/coussins/velours': typeof CoussinsVeloursRoute
   '/galettes-de-chaise/carrees': typeof GalettesDeChaiseCarreesRoute
   '/galettes-de-chaise/rondes': typeof GalettesDeChaiseRondesRoute
+  '/inspirations/$slug': typeof InspirationsSlugRoute
   '/mobilier/canapes': typeof MobilierCanapesRoute
   '/mobilier/chaises': typeof MobilierChaisesRoute
   '/mobilier/fauteuils': typeof MobilierFauteuilsRoute
@@ -728,6 +743,7 @@ export interface FileRoutesByTo {
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
   '/admin/contenu/accueil': typeof AdminContenuAccueilRoute
+  '/admin/contenu/articles': typeof AdminContenuArticlesRoute
   '/admin/contenu/pages': typeof AdminContenuPagesRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
@@ -748,7 +764,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/favoris': typeof FavorisRoute
   '/guide-des-mesures': typeof GuideDesMesuresRoute
-  '/inspirations': typeof InspirationsRoute
+  '/inspirations': typeof InspirationsRouteWithChildren
   '/livraison-et-retours': typeof LivraisonEtRetoursRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/nouveautes': typeof NouveautesRoute
@@ -775,6 +791,7 @@ export interface FileRoutesById {
   '/coussins/velours': typeof CoussinsVeloursRoute
   '/galettes-de-chaise/carrees': typeof GalettesDeChaiseCarreesRoute
   '/galettes-de-chaise/rondes': typeof GalettesDeChaiseRondesRoute
+  '/inspirations/$slug': typeof InspirationsSlugRoute
   '/mobilier/canapes': typeof MobilierCanapesRoute
   '/mobilier/chaises': typeof MobilierChaisesRoute
   '/mobilier/fauteuils': typeof MobilierFauteuilsRoute
@@ -821,6 +838,7 @@ export interface FileRoutesById {
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
   '/admin/contenu/accueil': typeof AdminContenuAccueilRoute
+  '/admin/contenu/articles': typeof AdminContenuArticlesRoute
   '/admin/contenu/pages': typeof AdminContenuPagesRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
@@ -869,6 +887,7 @@ export interface FileRouteTypes {
     | '/coussins/velours'
     | '/galettes-de-chaise/carrees'
     | '/galettes-de-chaise/rondes'
+    | '/inspirations/$slug'
     | '/mobilier/canapes'
     | '/mobilier/chaises'
     | '/mobilier/fauteuils'
@@ -915,6 +934,7 @@ export interface FileRouteTypes {
     | '/admin/clients/$customerId'
     | '/admin/commandes/$orderId'
     | '/admin/contenu/accueil'
+    | '/admin/contenu/articles'
     | '/admin/contenu/pages'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
@@ -960,6 +980,7 @@ export interface FileRouteTypes {
     | '/coussins/velours'
     | '/galettes-de-chaise/carrees'
     | '/galettes-de-chaise/rondes'
+    | '/inspirations/$slug'
     | '/mobilier/canapes'
     | '/mobilier/chaises'
     | '/mobilier/fauteuils'
@@ -1006,6 +1027,7 @@ export interface FileRouteTypes {
     | '/admin/clients/$customerId'
     | '/admin/commandes/$orderId'
     | '/admin/contenu/accueil'
+    | '/admin/contenu/articles'
     | '/admin/contenu/pages'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
@@ -1052,6 +1074,7 @@ export interface FileRouteTypes {
     | '/coussins/velours'
     | '/galettes-de-chaise/carrees'
     | '/galettes-de-chaise/rondes'
+    | '/inspirations/$slug'
     | '/mobilier/canapes'
     | '/mobilier/chaises'
     | '/mobilier/fauteuils'
@@ -1098,6 +1121,7 @@ export interface FileRouteTypes {
     | '/admin/clients/$customerId'
     | '/admin/commandes/$orderId'
     | '/admin/contenu/accueil'
+    | '/admin/contenu/articles'
     | '/admin/contenu/pages'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
@@ -1118,7 +1142,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   FavorisRoute: typeof FavorisRoute
   GuideDesMesuresRoute: typeof GuideDesMesuresRoute
-  InspirationsRoute: typeof InspirationsRoute
+  InspirationsRoute: typeof InspirationsRouteWithChildren
   LivraisonEtRetoursRoute: typeof LivraisonEtRetoursRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   NouveautesRoute: typeof NouveautesRoute
@@ -1485,6 +1509,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalettesDeChaiseRondesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inspirations/$slug': {
+      id: '/inspirations/$slug'
+      path: '/$slug'
+      fullPath: '/inspirations/$slug'
+      preLoaderRoute: typeof InspirationsSlugRouteImport
+      parentRoute: typeof InspirationsRoute
+    }
     '/mobilier/': {
       id: '/mobilier/'
       path: '/mobilier'
@@ -1786,6 +1817,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContenuAccueilRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/contenu/articles': {
+      id: '/admin/contenu/articles'
+      path: '/contenu/articles'
+      fullPath: '/admin/contenu/articles'
+      preLoaderRoute: typeof AdminContenuArticlesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/contenu/pages': {
       id: '/admin/contenu/pages'
       path: '/contenu/pages'
@@ -1829,6 +1867,7 @@ interface AdminRouteRouteChildren {
   AdminClientsCustomerIdRoute: typeof AdminClientsCustomerIdRoute
   AdminCommandesOrderIdRoute: typeof AdminCommandesOrderIdRoute
   AdminContenuAccueilRoute: typeof AdminContenuAccueilRoute
+  AdminContenuArticlesRoute: typeof AdminContenuArticlesRoute
   AdminContenuPagesRoute: typeof AdminContenuPagesRoute
   AdminProduitsProductIdRoute: typeof AdminProduitsProductIdRoute
   AdminProduitsNouveauRoute: typeof AdminProduitsNouveauRoute
@@ -1849,6 +1888,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminClientsCustomerIdRoute: AdminClientsCustomerIdRoute,
   AdminCommandesOrderIdRoute: AdminCommandesOrderIdRoute,
   AdminContenuAccueilRoute: AdminContenuAccueilRoute,
+  AdminContenuArticlesRoute: AdminContenuArticlesRoute,
   AdminContenuPagesRoute: AdminContenuPagesRoute,
   AdminProduitsProductIdRoute: AdminProduitsProductIdRoute,
   AdminProduitsNouveauRoute: AdminProduitsNouveauRoute,
@@ -1859,6 +1899,18 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
   AdminRouteRouteChildren,
+)
+
+interface InspirationsRouteChildren {
+  InspirationsSlugRoute: typeof InspirationsSlugRoute
+}
+
+const InspirationsRouteChildren: InspirationsRouteChildren = {
+  InspirationsSlugRoute: InspirationsSlugRoute,
+}
+
+const InspirationsRouteWithChildren = InspirationsRoute._addFileChildren(
+  InspirationsRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
@@ -1873,7 +1925,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   FavorisRoute: FavorisRoute,
   GuideDesMesuresRoute: GuideDesMesuresRoute,
-  InspirationsRoute: InspirationsRoute,
+  InspirationsRoute: InspirationsRouteWithChildren,
   LivraisonEtRetoursRoute: LivraisonEtRetoursRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   NouveautesRoute: NouveautesRoute,

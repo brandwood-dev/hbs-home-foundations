@@ -105,7 +105,7 @@ export function SearchSuggestionList({
             {articles.map((hit) => (
               <li key={hit.id} role="option" aria-selected="false">
                 <AppLink
-                  href="/inspirations"
+                  href={`/inspirations/${hit.slug}`}
                   onClick={() => onNavigate("article", hit.id)}
                   className="block rounded-md px-3 py-2 text-sm hover:bg-surface-muted"
                 >

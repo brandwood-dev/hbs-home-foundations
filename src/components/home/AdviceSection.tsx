@@ -18,7 +18,7 @@ export function AdviceSection({ articles }: { articles: AdviceArticlePreview[] }
       <div className="mt-10 grid gap-8 md:grid-cols-3">
         {articles.map((article) => (
           <article key={article.id} className="group flex flex-col">
-            <AppLink href={`/conseils/${article.slug}`} className="overflow-hidden rounded-sm">
+            <AppLink href={`/inspirations/${article.slug}`} className="overflow-hidden rounded-sm">
               <img
                 src={article.image.src}
                 alt={article.image.alt}
@@ -33,13 +33,13 @@ export function AdviceSection({ articles }: { articles: AdviceArticlePreview[] }
               {article.category} · {article.readingTimeMinutes} min de lecture
             </p>
             <h3 className="mt-2 text-xl leading-snug">
-              <AppLink href={`/conseils/${article.slug}`} className="hover:text-accent-dark">
+              <AppLink href={`/inspirations/${article.slug}`} className="hover:text-accent-dark">
                 {article.title}
               </AppLink>
             </h3>
             <p className="mt-2 flex-1 text-sm text-foreground-muted">{article.excerpt}</p>
             <AppLink
-              href={`/conseils/${article.slug}`}
+              href={`/inspirations/${article.slug}`}
               className="mt-3 inline-flex min-h-[44px] items-center gap-1.5 text-sm text-accent-dark"
             >
               Lire l'article

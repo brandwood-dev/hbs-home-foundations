@@ -6,6 +6,7 @@ import type {
   AdminCustomer,
   AdminCustomerAddress,
   AdminEditorialPage,
+  AdminArticle,
   AdminMockDatabase,
   AdminMedia,
   AdminOrder,
@@ -383,6 +384,40 @@ export interface AdminEditorialPageRepository {
   update(id: string, input: AdminEditorialPagePatch): Promise<AdminEditorialPage>;
   publish(id: string): Promise<AdminEditorialPage>;
   archive(id: string): Promise<AdminEditorialPage>;
+}
+
+export type AdminArticleInput = {
+  slug: string;
+  categoryId: string;
+  title: string;
+  excerpt: string;
+  bodyBlocks: Array<Record<string, unknown>>;
+  coverMediaAssetId: string | null;
+  readingTimeMinutes?: number;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  isFeatured?: boolean;
+  homeSortOrder?: number;
+  authorName?: string;
+};
+
+export type AdminArticlePatch = Partial<AdminArticleInput> & { expectedVersion?: number };
+
+export interface AdminArticleRepository {
+  listCategories(): Promise<
+    Array<{ id: string; slug: string; name: string; description: string; sortOrder: number }>
+  >;
+  list(params?: {
+    query?: string;
+    status?: AdminArticle["status"];
+    categoryId?: string;
+  }): Promise<AdminArticle[]>;
+  get(id: string): Promise<AdminArticle | null>;
+  create(input: AdminArticleInput): Promise<AdminArticle>;
+  update(id: string, input: AdminArticlePatch): Promise<AdminArticle>;
+  publish(id: string): Promise<AdminArticle>;
+  archive(id: string): Promise<AdminArticle>;
+  duplicate(id: string): Promise<AdminArticle>;
 }
 
 export type AdminMediaInput = Omit<AdminMedia, "id" | "createdAt">;

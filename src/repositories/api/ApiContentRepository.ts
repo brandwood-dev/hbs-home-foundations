@@ -1,8 +1,16 @@
 import type { EditorialPage } from "@/domain/content/editorial-page.types";
 import type {
+  Article,
+  ArticleBlock,
+  ArticleList,
+  ArticleListParams,
+  ArticleSummary,
+} from "@/domain/content/article.types";
+import type {
   HomePageContent,
   HomeSectionConfig,
   HomeImage,
+  AdviceArticlePreview,
 } from "@/domain/content/home-content.types";
 import { HbsApiClient, HbsApiError } from "@/api/client";
 import type { components } from "@/api/generated/hbs-home-api";
@@ -13,6 +21,9 @@ type ApiEditorialPage = EditorialPage;
 type ApiPublicHomeContent = components["schemas"]["PublicHomeContent"];
 type ApiPublicHomeSection = ApiPublicHomeContent["sections"][number];
 type ApiPublicHomeMedia = NonNullable<ApiPublicHomeSection["media"]>;
+type ApiArticleSummary = components["schemas"]["PublicArticleSummary"];
+type ApiArticle = components["schemas"]["PublicArticle"];
+type ApiArticleList = components["schemas"]["PublicArticleList"];
 
 function asRecord(value: unknown): Record<string, unknown> {
   return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
@@ -47,6 +58,38 @@ function setManagedSectionVisibility(
   );
 }
 
+function mapArticleSummary(article: ApiArticleSummary): ArticleSummary {
+  return {
+    id: article.id,
+    slug: article.slug,
+    title: article.title,
+    excerpt: article.excerpt,
+    category: article.category,
+    cover: article.cover
+      ? {
+          publicUrl: article.cover.publicUrl,
+          alt: article.cover.alt,
+          width: article.cover.width,
+          height: article.cover.height,
+        }
+      : null,
+    readingTimeMinutes: article.readingTimeMinutes,
+    authorName: article.authorName,
+    publishedAt: article.publishedAt,
+    updatedAt: article.updatedAt,
+    isFeatured: article.isFeatured,
+  };
+}
+
+function mapArticle(article: ApiArticle): Article {
+  return {
+    ...mapArticleSummary(article),
+    bodyBlocks: article.bodyBlocks as ArticleBlock[],
+    seoTitle: article.seoTitle,
+    seoDescription: article.seoDescription,
+  };
+}
+
 /**
  * Merge the public API snapshot into the still-fixture-backed homepage.
  *
@@ -57,6 +100,7 @@ function setManagedSectionVisibility(
 export function mapPublicHomeContent(
   apiContent: ApiPublicHomeContent,
   fallback: HomePageContent,
+  adviceArticles: AdviceArticlePreview[] = fallback.adviceArticles,
 ): HomePageContent {
   const heroSection = sectionFor(apiContent, "hero");
   const promoSection = sectionFor(apiContent, "promo_banner");
@@ -125,6 +169,7 @@ export function mapPublicHomeContent(
     hero,
     promoBanner,
     shopTheLook,
+    adviceArticles,
     sections: setManagedSectionVisibility(
       setManagedSectionVisibility(fallback.sections, "hero", heroSection !== undefined),
       "shop_the_look",
@@ -141,9 +186,9 @@ export class ApiContentRepository implements ContentRepository {
 
   async getHomePage(): Promise<HomePageContent> {
     const fallback = await this.fallback.getHomePage();
+    let content: ApiPublicHomeContent;
     try {
-      const content = await this.client.get<ApiPublicHomeContent>("/api/v1/content/home");
-      return mapPublicHomeContent(content, fallback);
+      content = await this.client.get<ApiPublicHomeContent>("/api/v1/content/home");
     } catch (error) {
       // Before the first Admin publication the public API deliberately returns
       // 404. Keep the existing public experience until content is published;
@@ -151,12 +196,77 @@ export class ApiContentRepository implements ContentRepository {
       if (error instanceof HbsApiError && error.status === 404) return fallback;
       throw error;
     }
+    let articles: ArticleList;
+    try {
+      articles = await this.listArticles({ featured: true, pageSize: 3 });
+    } catch (error) {
+      if (error instanceof HbsApiError && error.status === 404) {
+        articles = { items: [], page: 1, pageSize: 3, total: 0, totalPages: 0 };
+      } else {
+        throw error;
+      }
+    }
+    if (articles.items.length === 0) {
+      try {
+        // A newly published article should be eligible for the Magazine even
+        // before an Admin explicitly marks it as featured.
+        articles = await this.listArticles({ pageSize: 3 });
+      } catch (error) {
+        if (error instanceof HbsApiError && error.status === 404) {
+          articles = { items: [], page: 1, pageSize: 3, total: 0, totalPages: 0 };
+        } else {
+          throw error;
+        }
+      }
+    }
+    const adviceArticles = articles.items
+      .filter((article) => article.cover !== null)
+      .map((article) => ({
+        id: article.id,
+        slug: article.slug,
+        title: article.title,
+        excerpt: article.excerpt,
+        category: article.category.name,
+        readingTimeMinutes: article.readingTimeMinutes,
+        image: { src: article.cover!.publicUrl, alt: article.cover!.alt },
+      }));
+    return mapPublicHomeContent(content, fallback, adviceArticles);
   }
 
   async getEditorialPage(slug: string): Promise<EditorialPage | null> {
     try {
       return await this.client.get<ApiEditorialPage>(
         `/api/v1/content/pages/${encodeURIComponent(slug)}`,
+      );
+    } catch (error) {
+      if (error instanceof HbsApiError && error.status === 404) return null;
+      throw error;
+    }
+  }
+
+  async listArticles(params: ArticleListParams = {}): Promise<ArticleList> {
+    const query = new URLSearchParams();
+    query.set("page", String(params.page ?? 1));
+    query.set("pageSize", String(params.pageSize ?? 12));
+    if (params.category) query.set("category", params.category);
+    if (params.query) query.set("q", params.query);
+    if (params.featured !== undefined) query.set("featured", String(params.featured));
+    const response = await this.client.get<ApiArticleList>(
+      `/api/v1/content/articles?${query.toString()}`,
+    );
+    return {
+      items: response.items.map(mapArticleSummary),
+      page: response.page,
+      pageSize: response.pageSize,
+      total: response.total,
+      totalPages: response.totalPages,
+    };
+  }
+
+  async getArticle(slug: string): Promise<Article | null> {
+    try {
+      return mapArticle(
+        await this.client.get<ApiArticle>(`/api/v1/content/articles/${encodeURIComponent(slug)}`),
       );
     } catch (error) {
       if (error instanceof HbsApiError && error.status === 404) return null;

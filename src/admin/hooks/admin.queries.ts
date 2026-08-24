@@ -24,6 +24,8 @@ export const adminKeys = {
   content: () => ["admin", "content"] as const,
   homeContent: () => ["admin", "content", "home"] as const,
   pages: () => ["admin", "content", "pages"] as const,
+  articles: () => ["admin", "content", "articles"] as const,
+  articleCategories: () => ["admin", "content", "article-categories"] as const,
   media: () => ["admin", "media"] as const,
   settings: () => ["admin", "settings"] as const,
   users: () => ["admin", "users"] as const,
@@ -119,6 +121,31 @@ export function useAdminEditorialPage(id: string) {
     ...clientQuery([...adminKeys.pages(), id], () => adminRepositories.pages.get(id)),
     enabled: Boolean(id),
   });
+}
+
+export function useAdminArticles(params?: {
+  query?: string;
+  status?: "draft" | "published" | "archived";
+  categoryId?: string;
+}) {
+  return useQuery(
+    clientQuery([...adminKeys.articles(), params ?? {}], () =>
+      adminRepositories.articles.list(params),
+    ),
+  );
+}
+
+export function useAdminArticle(id: string) {
+  return useQuery({
+    ...clientQuery([...adminKeys.articles(), id], () => adminRepositories.articles.get(id)),
+    enabled: Boolean(id),
+  });
+}
+
+export function useAdminArticleCategories() {
+  return useQuery(
+    clientQuery(adminKeys.articleCategories(), () => adminRepositories.articles.listCategories()),
+  );
 }
 
 export function useAdminMedia() {
