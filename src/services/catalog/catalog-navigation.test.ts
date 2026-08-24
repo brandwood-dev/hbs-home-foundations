@@ -49,4 +49,10 @@ describe("dynamic catalog navigation", () => {
   it("keeps the fixture navigation during an API outage", () => {
     expect(mergeCatalogNavigation(fallback, undefined)).toEqual(fallback);
   });
+
+  it("removes unpublished catalog roots when the API returns an empty list", () => {
+    expect(mergeCatalogNavigation(fallback, [])).toEqual([
+      { id: "inspirations", label: "Inspirations", href: "/inspirations" },
+    ]);
+  });
 });

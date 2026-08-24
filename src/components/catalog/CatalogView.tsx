@@ -49,13 +49,13 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
   const navigationQuery = useQuery(catalogNavigationQuery());
   const dynamicCategory = categoryQuery.data ?? undefined;
   const dynamicGroup = navigationQuery.data?.find((item) => item.slug === config.group);
-  const subcategories = dynamicGroup?.children.length
+  const subcategories = dynamicGroup
     ? dynamicGroup.children.map((item) => ({
         routeId: item.slug,
         label: item.name,
         path: item.path,
       }))
-    : catalogGroups.some((item) => item.id === config.group)
+    : navigationQuery.data === undefined && catalogGroups.some((item) => item.id === config.group)
       ? getCatalogSubcategories(config.group)
       : [];
   const dynamicScope = useMemo(() => {

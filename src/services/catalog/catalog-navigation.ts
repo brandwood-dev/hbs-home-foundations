@@ -1,5 +1,6 @@
 import type { PublicCategory } from "@/repositories/interfaces/CategoryRepository";
 import type { NavItem } from "@/types/navigation.types";
+import { catalogGroups } from "@/fixtures/catalog-pages.fixture";
 
 function categoryMenu(category: PublicCategory): NavItem["megaMenu"] {
   if (category.children.length === 0) return undefined;
@@ -24,11 +25,18 @@ export function mergeCatalogNavigation(
   fallback: readonly NavItem[],
   categories: readonly PublicCategory[] | undefined,
 ): NavItem[] {
-  if (!categories?.length) return [...fallback];
+  // `undefined` means the request failed (or is still loading): keep the
+  // editorial fixture as a resilient fallback. An empty array is a valid API
+  // response and must hide catalog entries that are no longer published.
+  if (categories === undefined) return [...fallback];
   const bySlug = new Map(categories.map((category) => [category.slug, category]));
   const known = new Set<string>();
+  const catalogRootIds = new Set(
+    catalogGroups.flatMap((group) => [group.id, group.path.replace(/^\//, "")]),
+  );
 
-  const merged = fallback.map((item) => {
+  const merged = fallback.flatMap((item) => {
+    if (catalogRootIds.has(item.id) && !bySlug.has(item.id)) return [];
     const category = bySlug.get(item.id);
     if (!category) return item;
     known.add(category.slug);
