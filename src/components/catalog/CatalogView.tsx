@@ -14,8 +14,9 @@ import { AppLink } from "@/components/ui/app-link";
 import { DEFAULT_PAGE_SIZE } from "@/domain/product/product.constants";
 import type { CatalogSort } from "@/domain/product/product.types";
 import {
-  getCatalogGroup,
+  catalogGroups,
   getCatalogSubcategories,
+  type CatalogGroup,
   type CatalogPageConfig,
 } from "@/fixtures/catalog-pages.fixture";
 import { catalogFacetsQuery, catalogListQuery } from "@/services/catalog/catalog.queries";
@@ -34,12 +35,16 @@ interface CatalogViewProps {
   config: CatalogPageConfig;
   search: CatalogSearch;
   onSearchChange: (next: CatalogSearch) => void;
+  groupOverride?: CatalogGroup;
 }
 
-export function CatalogView({ config, search, onSearchChange }: CatalogViewProps) {
+export function CatalogView({ config, search, onSearchChange, groupOverride }: CatalogViewProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const group = getCatalogGroup(config.group);
+  const group =
+    groupOverride ??
+    catalogGroups.find((item) => item.id === config.group) ??
+    ({ id: config.group, label: config.title, path: config.path } as CatalogGroup);
   const categoryQuery = useQuery(catalogCategoryQuery(config.routeId));
   const navigationQuery = useQuery(catalogNavigationQuery());
   const dynamicCategory = categoryQuery.data ?? undefined;
@@ -50,7 +55,9 @@ export function CatalogView({ config, search, onSearchChange }: CatalogViewProps
         label: item.name,
         path: item.path,
       }))
-    : getCatalogSubcategories(config.group);
+    : catalogGroups.some((item) => item.id === config.group)
+      ? getCatalogSubcategories(config.group)
+      : [];
   const dynamicScope = useMemo(() => {
     if (!dynamicCategory) return config.scope;
     const slugs: string[] = [];
