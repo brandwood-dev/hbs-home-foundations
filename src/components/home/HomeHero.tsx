@@ -30,16 +30,21 @@ export function HomeHero({ content }: { content: HomeHeroContent }) {
         </div>
 
         <div className="order-1 lg:order-2">
-          <img
-            src={image.src}
-            alt={image.alt}
-            width={1200}
-            height={1400}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            className="h-[280px] w-full rounded-sm object-cover sm:h-[380px] lg:h-[560px]"
-          />
+          <picture>
+            {content.mobileImage ? (
+              <source media="(max-width: 639px)" srcSet={content.mobileImage.src} />
+            ) : null}
+            <img
+              src={image.src}
+              alt={image.alt}
+              width={1200}
+              height={1400}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="h-[280px] w-full rounded-sm object-cover sm:h-[380px] lg:h-[560px]"
+            />
+          </picture>
         </div>
       </div>
     </section>

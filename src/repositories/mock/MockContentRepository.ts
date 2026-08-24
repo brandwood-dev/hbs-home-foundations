@@ -13,6 +13,7 @@ import {
   measurementGuide,
   newsletterContent,
   productSelection,
+  promoBanner,
   shopByNeed,
   shopTheLook,
   socialContent,
@@ -26,6 +27,7 @@ export class MockContentRepository implements ContentRepository {
     return {
       sections: homeSections,
       hero: homeHero,
+      promoBanner,
       trustItems,
       collections: featuredCollections,
       productSelection,

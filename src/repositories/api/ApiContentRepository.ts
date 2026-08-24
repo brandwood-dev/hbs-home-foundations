@@ -1,10 +1,137 @@
 import type { EditorialPage } from "@/domain/content/editorial-page.types";
-import type { HomePageContent } from "@/domain/content/home-content.types";
+import type {
+  HomePageContent,
+  HomeSectionConfig,
+  HomeImage,
+} from "@/domain/content/home-content.types";
 import { HbsApiClient, HbsApiError } from "@/api/client";
+import type { components } from "@/api/generated/hbs-home-api";
 import type { ContentRepository } from "@/repositories/interfaces/ContentRepository";
 import { MockContentRepository } from "@/repositories/mock/MockContentRepository";
 
 type ApiEditorialPage = EditorialPage;
+type ApiPublicHomeContent = components["schemas"]["PublicHomeContent"];
+type ApiPublicHomeSection = ApiPublicHomeContent["sections"][number];
+type ApiPublicHomeMedia = NonNullable<ApiPublicHomeSection["media"]>;
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
+}
+
+function asString(value: unknown, fallback: string): string {
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : fallback;
+}
+
+function mediaImage(media: ApiPublicHomeMedia | null, fallback: HomeImage): HomeImage {
+  if (!media) return fallback;
+  return {
+    src: asString(media.publicUrl, fallback.src),
+    alt: asString(media.alt, fallback.alt),
+  };
+}
+
+function sectionFor(
+  content: ApiPublicHomeContent,
+  key: ApiPublicHomeSection["sectionKey"],
+): ApiPublicHomeSection | undefined {
+  return content.sections.find((section) => section.sectionKey === key);
+}
+
+function setManagedSectionVisibility(
+  sections: HomeSectionConfig[],
+  key: "hero" | "shop_the_look",
+  enabled: boolean,
+): HomeSectionConfig[] {
+  return sections.map((section) =>
+    section.key === key ? { ...section, isEnabled: enabled } : section,
+  );
+}
+
+/**
+ * Merge the public API snapshot into the still-fixture-backed homepage.
+ *
+ * The API intentionally owns only hero, promo_banner and shop_the_look in this
+ * increment. Keeping the merge here makes that boundary explicit and prevents
+ * internal revision/media identifiers from leaking into the public domain model.
+ */
+export function mapPublicHomeContent(
+  apiContent: ApiPublicHomeContent,
+  fallback: HomePageContent,
+): HomePageContent {
+  const heroSection = sectionFor(apiContent, "hero");
+  const promoSection = sectionFor(apiContent, "promo_banner");
+  const shopTheLookSection = sectionFor(apiContent, "shop_the_look");
+
+  const heroPayload = asRecord(heroSection?.payload);
+  const promoPayload = asRecord(promoSection?.payload);
+  const shopPayload = asRecord(shopTheLookSection?.payload);
+
+  const heroImage = mediaImage(heroSection?.media ?? null, fallback.hero.image);
+  const mobileImage = heroSection?.mobileMedia
+    ? mediaImage(heroSection.mobileMedia, fallback.hero.mobileImage ?? fallback.hero.image)
+    : fallback.hero.mobileImage;
+
+  const hero = {
+    ...fallback.hero,
+    tagline: asString(heroPayload["eyebrow"], fallback.hero.tagline),
+    title: asString(heroPayload["title"], fallback.hero.title),
+    text: asString(heroPayload["description"], fallback.hero.text),
+    primaryCta: {
+      label: asString(heroPayload["primaryCtaLabel"], fallback.hero.primaryCta.label),
+      href: asString(heroPayload["primaryCtaHref"], fallback.hero.primaryCta.href),
+    },
+    secondaryCta: {
+      label: asString(heroPayload["secondaryCtaLabel"], fallback.hero.secondaryCta.label),
+      href: asString(heroPayload["secondaryCtaHref"], fallback.hero.secondaryCta.href),
+    },
+    image: heroImage,
+    ...(mobileImage ? { mobileImage } : {}),
+  };
+
+  const promoBanner = {
+    ...fallback.promoBanner,
+    isEnabled: promoSection !== undefined,
+    label: asString(promoPayload["label"], fallback.promoBanner.label ?? ""),
+    text: asString(promoPayload["text"], fallback.promoBanner.text),
+    href: asString(promoPayload["href"], fallback.promoBanner.href ?? ""),
+  };
+
+  const shopTheLook = {
+    ...fallback.shopTheLook,
+    title: asString(shopPayload["title"], fallback.shopTheLook.title),
+    subtitle: asString(shopPayload["description"], fallback.shopTheLook.subtitle),
+    image: mediaImage(shopTheLookSection?.media ?? null, fallback.shopTheLook.image),
+    hotspots:
+      shopTheLookSection?.hotspots
+        .slice()
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((hotspot, index) => {
+          const title = hotspot.label ?? hotspot.product?.name;
+          return {
+            id: `${hotspot.productId}-${hotspot.sortOrder}-${index}`,
+            xPercent: hotspot.xPercent,
+            yPercent: hotspot.yPercent,
+            productId: hotspot.productId,
+            ...(title ? { title } : {}),
+            ...(hotspot.product?.slug
+              ? { href: `/produit/${encodeURIComponent(hotspot.product.slug)}` }
+              : {}),
+          };
+        }) ?? [],
+  };
+
+  return {
+    ...fallback,
+    hero,
+    promoBanner,
+    shopTheLook,
+    sections: setManagedSectionVisibility(
+      setManagedSectionVisibility(fallback.sections, "hero", heroSection !== undefined),
+      "shop_the_look",
+      shopTheLookSection !== undefined,
+    ),
+  };
+}
 
 /** Public content reads. Drafts, archived pages and internal identifiers stay server-side. */
 export class ApiContentRepository implements ContentRepository {
@@ -12,8 +139,18 @@ export class ApiContentRepository implements ContentRepository {
 
   constructor(private readonly client = new HbsApiClient()) {}
 
-  getHomePage(): Promise<HomePageContent> {
-    return this.fallback.getHomePage();
+  async getHomePage(): Promise<HomePageContent> {
+    const fallback = await this.fallback.getHomePage();
+    try {
+      const content = await this.client.get<ApiPublicHomeContent>("/api/v1/content/home");
+      return mapPublicHomeContent(content, fallback);
+    } catch (error) {
+      // Before the first Admin publication the public API deliberately returns
+      // 404. Keep the existing public experience until content is published;
+      // real API failures remain visible instead of silently masking incidents.
+      if (error instanceof HbsApiError && error.status === 404) return fallback;
+      throw error;
+    }
   }
 
   async getEditorialPage(slug: string): Promise<EditorialPage | null> {

@@ -223,4 +223,19 @@ l’image, puis liés à un produit publié du catalogue.
 
 L’enregistrement envoie `expectedVersion` pour conserver le contrôle optimiste. La publication et
 l’archivage restent des actions séparées, protégées par `content.publish` et par la MFA exigée par
-l’API. La phase 9D.3 remplacera ensuite le fallback homepage public par `GET /api/v1/content/home`.
+l’API.
+
+### Homepage publique connectée (phase 9D.3)
+
+`ApiContentRepository.getHomePage()` consomme désormais `GET /api/v1/content/home` lorsque l’URL
+API est configurée. Le snapshot public est mappé vers le contrat frontend sans exposer les
+identifiants internes :
+
+- `hero` remplace les textes, CTA, média desktop et média mobile ;
+- `promo_banner` alimente la banderole affichée en haut de la homepage ;
+- `shop_the_look` remplace le titre, l’image et les hotspots liés aux produits publiés.
+
+Les autres sections restent provisoirement servies par les fixtures, conformément au périmètre
+9D.1. Tant qu’aucune publication homepage n’existe, un 404 public conserve le fallback existant
+afin que le site reste navigable pendant la préparation du premier contenu. Les erreurs API autres
+qu’un 404 sont propagées pour être visibles dans l’observabilité et l’interface d’erreur.
