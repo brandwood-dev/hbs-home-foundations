@@ -75,6 +75,32 @@ describe("HbsApiClient", () => {
     });
   });
 
+  it("includes validation paths in contract errors", async () => {
+    const fetchImplementation = vi.fn<typeof fetch>().mockResolvedValue(
+      Response.json(
+        {
+          type: "https://api.hbs-home.com/problems/validation-error",
+          title: "Validation failed",
+          status: 400,
+          code: "VALIDATION_ERROR",
+          detail: "The request does not match the expected contract.",
+          instance: "/api/v1/admin/content/articles",
+          requestId: "req-validation",
+          errors: [{ path: "/slug", message: "must match pattern", keyword: "pattern" }],
+        },
+        { status: 400, headers: { "content-type": "application/problem+json" } },
+      ),
+    );
+    const client = new HbsApiClient({
+      baseUrl: "https://api.example.test",
+      fetch: fetchImplementation,
+    });
+
+    await expect(client.post("/api/v1/admin/content/articles", {}, "token")).rejects.toThrow(
+      "The request does not match the expected contract. /slug: must match pattern",
+    );
+  });
+
   it("serializes authenticated catalog mutations without losing the bearer token", async () => {
     const fetchImplementation = vi
       .fn<typeof fetch>()

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArticleListView } from "@/components/content/ArticleListView";
 import { ArticleListError } from "@/components/content/ArticleListStates";
@@ -31,6 +31,11 @@ export const Route = createFileRoute("/inspirations")({
 });
 
 function InspirationsPage() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { data } = useSuspenseQuery(articlesQuery({ page: 1, pageSize: 12 }));
+  if (pathname.startsWith("/inspirations/") && pathname !== "/inspirations/") {
+    return <Outlet />;
+  }
+
   return <ArticleListView articles={data.items} total={data.total} />;
 }

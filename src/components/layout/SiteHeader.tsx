@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Heart, Menu, Package, Search, ShoppingBag } from "lucide-react";
 import { AppLink } from "@/components/ui/app-link";
@@ -10,12 +11,19 @@ import { useCartCount } from "@/components/cart/CartCountBadge";
 import { openCartDrawer } from "@/hooks/cart/useCartDrawer";
 import { openSearchPanel } from "@/hooks/search/useSearchPanel";
 import { useFavoritesCount } from "@/hooks/favorites/useFavorites";
+import { catalogNavigationQuery } from "@/services/catalog/catalog-category.queries";
+import { mergeCatalogNavigation } from "@/services/catalog/catalog-navigation";
 
 export function SiteHeader() {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { count: cartCount, label: cartLabel } = useCartCount();
   const favoritesCount = useFavoritesCount();
+  const navigationQuery = useQuery(catalogNavigationQuery());
+  const navigation = useMemo(
+    () => mergeCatalogNavigation(mainNavigation, navigationQuery.data),
+    [navigationQuery.data],
+  );
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur">
@@ -139,7 +147,7 @@ export function SiteHeader() {
 
         <nav aria-label="Navigation principale" className="relative border-t border-border">
           <ul className="mx-auto flex max-w-7xl items-center gap-1 px-6">
-            {mainNavigation.map((item) => (
+            {navigation.map((item) => (
               <li key={item.id} onMouseEnter={() => setOpenMenuId(item.megaMenu ? item.id : null)}>
                 <AppLink
                   href={item.href}
@@ -155,7 +163,7 @@ export function SiteHeader() {
             ))}
           </ul>
 
-          {mainNavigation.map((item) =>
+          {navigation.map((item) =>
             item.megaMenu && openMenuId === item.id ? (
               <DesktopMegaMenu
                 key={item.id}
@@ -167,7 +175,7 @@ export function SiteHeader() {
         </nav>
       </div>
 
-      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} navigation={navigation} />
     </header>
   );
 }

@@ -33,6 +33,8 @@ export interface ProductListParams {
   query?: string | undefined;
 
   categories?: ProductCategory[] | undefined;
+  /** Normalized taxonomy slugs selected by a dynamic category page. */
+  categorySlugs?: string[] | undefined;
 
   materials?: ProductMaterial[] | undefined;
   colors?: string[] | undefined;
@@ -84,6 +86,7 @@ export interface ProductListParams {
 export type CatalogScope = Pick<
   ProductListParams,
   | "categories"
+  | "categorySlugs"
   | "materials"
   | "opacityLevels"
   | "curtainHeaders"

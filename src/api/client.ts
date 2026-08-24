@@ -117,9 +117,14 @@ export class HbsApiClient {
 
     if (!response.ok) {
       const problem = await readProblem(response);
+      const validationDetails = problem?.errors?.length
+        ? ` ${problem.errors.map((item) => `${item.path}: ${item.message}`).join("; ")}`
+        : "";
       throw new HbsApiError(
         response.status,
-        problem?.detail ?? `HBS HOME API request failed with status ${response.status}.`,
+        problem
+          ? `${problem.detail}${validationDetails}`
+          : `HBS HOME API request failed with status ${response.status}.`,
         problem,
       );
     }
