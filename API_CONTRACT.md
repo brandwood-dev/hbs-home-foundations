@@ -211,53 +211,43 @@ pas :
 Téléphone complet, adresse complète, point de repère, note au livreur, e-mail, notes internes,
 informations administratives.
 
-## Recherche globale (phase 10)
+## Recherche catalogue (phase 8A — contrat actuellement déployé)
 
-### `GET /api/v1/search`
+La recherche actuellement déployée réutilise l'endpoint catalogue paginé. Le frontend envoie la
+requête et les filtres au serveur ; les catégories de suggestion restent un index de navigation
+frontend et les articles ne sont pas encore renvoyés par l'API.
+
+### `GET /api/v1/products`
 
 ```
-GET /api/v1/search?q=fauteuil%20boucle&category=mobilier_interieur&sort=relevance&page=1&limit=12
+GET /api/v1/products?q=fauteuil%20boucle&categories=mobilier_interieur&sort=recommended&page=1&pageSize=12
 ```
 
-`sort` : `relevance` | `newest` | `price_asc` | `price_desc`.
-`category` : une des huit catégories publiques (`rideaux`, `voilages`, `stores`, `coussins`,
-`galettes_de_chaise`, `accessoires`, `mobilier_interieur`, `plantes_decoration`) ou absente.
-Les paramètres inconnus sont ignorés.
+`sort` : `recommended` | `newest` | `best_sellers` | `price_asc` | `price_desc` | `discount`.
+`categories` accepte une liste séparée par des virgules. Les paramètres de filtres catalogue
+(`materials`, `colors`, `availability`, prix, attributs métier, etc.) sont définis par le schéma
+OpenAPI généré et sont validés par l'API.
 
 ```json
 {
-  "success": true,
-  "data": {
-    "query": "fauteuil boucle",
-    "products": ["ProductDto"],
-    "categories": [{ "id": "string", "label": "string", "href": "string" }],
-    "articles": [
-      {
-        "id": "string",
-        "title": "string",
-        "slug": "string",
-        "excerpt": "string",
-        "imageUrl": "string",
-        "readingTime": "string"
-      }
-    ],
-    "page": 1,
-    "limit": 12,
-    "totalProducts": 12,
-    "totalPages": 1,
-    "categoryCounts": { "mobilier_interieur": 5, "plantes_decoration": 3 }
-  }
+  "items": ["ProductDto"],
+  "page": 1,
+  "pageSize": 12,
+  "total": 12,
+  "totalPages": 1,
+  "categoryCounts": { "mobilier_interieur": 5, "plantes_decoration": 3 }
 }
 ```
 
-### `GET /api/v1/search/suggestions`
+### Suggestions
 
-```
-GET /api/v1/search/suggestions?q=plante
-```
+Les suggestions de produits utilisent le même endpoint `/api/v1/products` avec `page=1` et une
+taille limitée. Les suggestions de catégories sont calculées depuis l'index de navigation du
+frontend. Une future route dédiée `/api/v1/search/suggestions` pourra être ajoutée sans modifier le
+contrat `SearchRepository`.
 
-Réponse : `{ products: ProductDto[6], categories: […5], articles: […3] }`.
-Requête minimale : 2 caractères après normalisation.
+Réponse frontend : `{ products, categories, articles }`, avec `articles: []` tant que la recherche
+éditoriale n'est pas persistée côté API.
 
 ### Attentes du moteur backend
 
@@ -269,7 +259,8 @@ Requête minimale : 2 caractères après normalisation.
   type de mobilier, style, pièce, nature de plante, entretien, exposition, pot inclus…) ;
 - dimensions reconnues (`45x45`, `150 cm`, `120-210 cm`) en bonus de pertinence ;
 - pagination serveur, tri stable, barème de pertinence documenté ;
-- suggestions limitées et mises en cache court, rate limiting par IP ;
+- suggestions limitées côté frontend et mises en cache court ; le rate limiting API reste à
+  implémenter avant l'exposition publique de fonctions de recherche dédiées ;
 - analytics agrégés uniquement : requête normalisée, nombre de résultats, catégorie — jamais de
   donnée personnelle.
 

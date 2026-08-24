@@ -5,8 +5,8 @@ import type {
 } from "@/domain/search/search.types";
 
 export interface SearchRepository {
-  /** Suggestions courtes du panneau de recherche — futur `GET /api/v1/search/suggestions`. */
+  /** Suggestions courtes : produits via `/api/v1/products`, catégories via l'index de navigation. */
   suggest(query: string, limit?: number): Promise<SearchSuggestionResults>;
-  /** Résultats complets paginés — futur `GET /api/v1/search`. */
+  /** Résultats paginés via `/api/v1/products` avec `q`, filtres et tri serveur. */
   search(params: GlobalSearchParams): Promise<GlobalSearchResults>;
 }

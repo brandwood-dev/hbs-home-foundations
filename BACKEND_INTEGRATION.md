@@ -16,9 +16,10 @@ Les données métier du frontend sont encore mixtes :
 
 Le site public lit les produits publiés via les endpoints publics `/api/v1/products*`. Le
 back-office utilise `adminConfig.catalogDataProvider = "api"` pour le catalogue ; les commandes,
-clients et stock sont déjà branchés selon leurs phases. La médiathèque Admin et la gestion des pages
-éditoriales utilisent désormais l'API ; le contenu d'accueil et les pages publiques restent
-statiques jusqu'à l'incrément CMS dédié.
+clients, stock, promotions et favoris sont déjà branchés selon leurs phases. La médiathèque Admin,
+les pages éditoriales et les trois sections administrables de l'accueil utilisent désormais l'API.
+Les autres sections de la homepage et certaines fonctions de contact restent explicitement en
+fallback fixture jusqu'à leurs phases d'intégration.
 
 Le provider public est sélectionné au build : `"api"` si `VITE_HBS_API_BASE_URL` est défini,
 sinon `"mock"` en développement local. Les configurations de pages de catégories restent statiques
@@ -181,8 +182,10 @@ Le mock frontend est une démonstration fonctionnelle : il n'apporte aucune séc
 
 ## Recherche et favoris (phase 8A/8B)
 
-- `SearchRepository` (`suggest`, `search`) — implémentation actuelle `MockSearchRepository`,
-  index mémoire construit une seule fois par cycle de données à partir du `ProductRepository`.
+- `SearchRepository` (`suggest`, `search`) — implémentation actuelle `ApiSearchRepository` dès que
+  `VITE_HBS_API_BASE_URL` est défini. Les produits, filtres, tris, pagination et compteurs sont
+  résolus par `GET /api/v1/products`; les catégories restent un index de navigation frontend et
+  les articles ne sont pas encore fournis par l'API.
 - `SearchHistoryRepository` — `LocalSearchHistoryRepository`, historique local, 8 entrées max,
   jamais envoyé au serveur, même après branchement de l'API.
 - `FavoritesRepository` — `ApiFavoritesRepository` en preview/staging et production : les
@@ -199,7 +202,9 @@ Le mock frontend est une démonstration fonctionnelle : il n'apporte aucune séc
 - Bascule backend : `src/repositories/repositoryFactory.ts` sélectionne désormais
   `ApiSearchRepository` et `ApiFavoritesRepository` dès que `VITE_HBS_API_BASE_URL` est défini —
   aucun composant ne change.
-- Endpoints actifs : voir `API_CONTRACT.md` → sections Recherche globale et Favoris.
+- Endpoints actifs : voir `API_CONTRACT.md` → sections Catalogue/recherche et Favoris. Les routes
+  dédiées `/api/v1/search` et `/api/v1/search/suggestions` restent contractuelles pour une phase
+  ultérieure et ne doivent pas être considérées comme disponibles en staging.
 
 ## Page d'accueil administrable (phase 9D.1)
 
@@ -210,9 +215,9 @@ restent archivées pour audit et retour arrière. Les coordonnées des hotspots 
 (`xPercent`/`yPercent`) afin de rester stables sur mobile et desktop, et chaque hotspot pointe vers
 un produit catalogue contrôlé par l'API.
 
-L'éditeur visuel et le branchement de `ContentRepository` au frontend seront livrés dans les
-sous-phases 9D.2 et 9D.3. Jusqu'à cette intégration, le frontend conserve son fallback fixture et
-aucune donnée de brouillon n'est exposée publiquement.
+L'éditeur visuel et le branchement de `ContentRepository` au frontend sont livrés dans les
+sous-phases 9D.2 et 9D.3. Le frontend conserve néanmoins un fallback fixture pour les sections non
+encore administrables ; aucune donnée de brouillon n'est exposée publiquement.
 
 ### Éditeur Admin homepage (phase 9D.2)
 

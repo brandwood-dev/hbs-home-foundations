@@ -4,9 +4,9 @@ export const features = {
   cartRecommendations: true,
   /** Suivi de commande sans compte (phase 6). */
   orderTracking: true,
-  /** Recherche globale (phase 10). */
+  /** Recherche catalogue API-backed en staging/production ; mock uniquement en développement isolé. */
   search: true,
-  /** Favoris locaux (phase 10). */
+  /** Favoris invités API-backed en staging/production (phase 8B). */
   wishlist: true,
 
   customerAccount: false,
