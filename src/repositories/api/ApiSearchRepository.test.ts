@@ -30,16 +30,21 @@ const product = {
 
 describe("API-backed catalogue search", () => {
   it("returns API products and does not fall back to fixture products", async () => {
-    const fetchImplementation = vi.fn<typeof fetch>().mockResolvedValue(
-      Response.json({
-        items: [product],
-        page: 1,
-        pageSize: 12,
-        total: 1,
-        totalPages: 1,
-        categoryCounts: { rideaux: 1 },
-      }),
-    );
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(
+        Response.json({
+          items: [product],
+          page: 1,
+          pageSize: 12,
+          total: 1,
+          totalPages: 1,
+          categoryCounts: { rideaux: 1 },
+        }),
+      )
+      .mockResolvedValueOnce(
+        Response.json({ items: [], page: 1, pageSize: 4, total: 0, totalPages: 0 }),
+      );
     const repository = new ApiSearchRepository(
       new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
     );

@@ -471,6 +471,42 @@ export interface AdminEditorialBlock {
   media?: { id: string; publicUrl: string; alt: string } | null;
 }
 
+export interface AdminArticleRevision {
+  id: string;
+  status: "draft" | "published" | "archived";
+  version: number;
+  title: string;
+  excerpt: string;
+  bodyBlocks: Array<Record<string, unknown>>;
+  cover: {
+    id?: string;
+    publicUrl: string;
+    alt: string;
+    width: number | null;
+    height: number | null;
+  } | null;
+  readingTimeMinutes: number;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminArticle {
+  id: string;
+  slug: string;
+  status: "draft" | "published" | "archived";
+  category: { id: string; slug: string; name: string; description: string; sortOrder: number };
+  isFeatured: boolean;
+  homeSortOrder: number;
+  authorName: string;
+  publishedAt: string | null;
+  updatedAt: string;
+  version: number;
+  draft: AdminArticleRevision | null;
+  published: AdminArticleRevision | null;
+}
+
 export interface AdminMedia {
   id: string;
   name: string;

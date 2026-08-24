@@ -972,6 +972,153 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/content/articles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List published inspiration articles */
+        get: operations["listPublishedArticles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/content/articles/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one published inspiration article */
+        get: operations["getPublishedArticle"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/content/article-categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List active article categories */
+        get: operations["listArticleCategories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/content/articles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["adminListArticles"];
+        put?: never;
+        post: operations["adminCreateArticle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/content/articles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["adminGetArticle"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["adminUpdateArticle"];
+        trace?: never;
+    };
+    "/api/v1/admin/content/article-categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["adminListArticleCategories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/content/articles/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["adminPublishArticle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/content/articles/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["adminArchiveArticle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/content/articles/{id}/duplicate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["adminDuplicateArticle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/cart": {
         parameters: {
             query?: never;
@@ -2217,6 +2364,271 @@ export interface components {
                     alt: string;
                 };
             }[];
+        };
+        ArticleCategory: {
+            /** Format: uuid */
+            id: string;
+            slug: string;
+            name: string;
+            description: string;
+            sortOrder: number;
+        };
+        PublicArticleSummary: {
+            /** Format: uuid */
+            id: string;
+            slug: string;
+            title: string;
+            excerpt: string;
+            category: {
+                /** Format: uuid */
+                id: string;
+                slug: string;
+                name: string;
+                description: string;
+                sortOrder: number;
+            };
+            cover: {
+                /** Format: uuid */
+                id?: string;
+                /** Format: uri */
+                publicUrl: string;
+                alt: string;
+                width: number | null;
+                height: number | null;
+            } | null;
+            readingTimeMinutes: number;
+            authorName: string;
+            /** Format: date-time */
+            publishedAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            isFeatured: boolean;
+        };
+        PublicArticle: {
+            /** Format: uuid */
+            id: string;
+            slug: string;
+            title: string;
+            excerpt: string;
+            category: {
+                /** Format: uuid */
+                id: string;
+                slug: string;
+                name: string;
+                description: string;
+                sortOrder: number;
+            };
+            cover: {
+                /** Format: uuid */
+                id?: string;
+                /** Format: uri */
+                publicUrl: string;
+                alt: string;
+                width: number | null;
+                height: number | null;
+            } | null;
+            readingTimeMinutes: number;
+            authorName: string;
+            /** Format: date-time */
+            publishedAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            isFeatured: boolean;
+            bodyBlocks: {
+                [key: string]: unknown;
+            }[];
+            seoTitle: string | null;
+            seoDescription: string | null;
+        };
+        PublicArticleList: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                slug: string;
+                title: string;
+                excerpt: string;
+                category: {
+                    /** Format: uuid */
+                    id: string;
+                    slug: string;
+                    name: string;
+                    description: string;
+                    sortOrder: number;
+                };
+                cover: {
+                    /** Format: uuid */
+                    id?: string;
+                    /** Format: uri */
+                    publicUrl: string;
+                    alt: string;
+                    width: number | null;
+                    height: number | null;
+                } | null;
+                readingTimeMinutes: number;
+                authorName: string;
+                /** Format: date-time */
+                publishedAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                isFeatured: boolean;
+            }[];
+            page: number;
+            pageSize: number;
+            total: number;
+            totalPages: number;
+        };
+        AdminArticle: {
+            /** Format: uuid */
+            id: string;
+            slug: string;
+            status: "draft" | "published" | "archived";
+            category: {
+                /** Format: uuid */
+                id: string;
+                slug: string;
+                name: string;
+                description: string;
+                sortOrder: number;
+            };
+            isFeatured: boolean;
+            homeSortOrder: number;
+            authorName: string;
+            publishedAt: string | null;
+            /** Format: date-time */
+            updatedAt: string;
+            version: number;
+            draft: {
+                /** Format: uuid */
+                id: string;
+                status: "draft" | "published" | "archived";
+                version: number;
+                title: string;
+                excerpt: string;
+                bodyBlocks: {
+                    [key: string]: unknown;
+                }[];
+                cover: {
+                    /** Format: uuid */
+                    id?: string;
+                    /** Format: uri */
+                    publicUrl: string;
+                    alt: string;
+                    width: number | null;
+                    height: number | null;
+                } | null;
+                readingTimeMinutes: number;
+                seoTitle: string | null;
+                seoDescription: string | null;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+            } | null;
+            published: {
+                /** Format: uuid */
+                id: string;
+                status: "draft" | "published" | "archived";
+                version: number;
+                title: string;
+                excerpt: string;
+                bodyBlocks: {
+                    [key: string]: unknown;
+                }[];
+                cover: {
+                    /** Format: uuid */
+                    id?: string;
+                    /** Format: uri */
+                    publicUrl: string;
+                    alt: string;
+                    width: number | null;
+                    height: number | null;
+                } | null;
+                readingTimeMinutes: number;
+                seoTitle: string | null;
+                seoDescription: string | null;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+            } | null;
+        };
+        AdminArticleList: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                slug: string;
+                status: "draft" | "published" | "archived";
+                category: {
+                    /** Format: uuid */
+                    id: string;
+                    slug: string;
+                    name: string;
+                    description: string;
+                    sortOrder: number;
+                };
+                isFeatured: boolean;
+                homeSortOrder: number;
+                authorName: string;
+                publishedAt: string | null;
+                /** Format: date-time */
+                updatedAt: string;
+                version: number;
+                draft: {
+                    /** Format: uuid */
+                    id: string;
+                    status: "draft" | "published" | "archived";
+                    version: number;
+                    title: string;
+                    excerpt: string;
+                    bodyBlocks: {
+                        [key: string]: unknown;
+                    }[];
+                    cover: {
+                        /** Format: uuid */
+                        id?: string;
+                        /** Format: uri */
+                        publicUrl: string;
+                        alt: string;
+                        width: number | null;
+                        height: number | null;
+                    } | null;
+                    readingTimeMinutes: number;
+                    seoTitle: string | null;
+                    seoDescription: string | null;
+                    /** Format: date-time */
+                    createdAt: string;
+                    /** Format: date-time */
+                    updatedAt: string;
+                } | null;
+                published: {
+                    /** Format: uuid */
+                    id: string;
+                    status: "draft" | "published" | "archived";
+                    version: number;
+                    title: string;
+                    excerpt: string;
+                    bodyBlocks: {
+                        [key: string]: unknown;
+                    }[];
+                    cover: {
+                        /** Format: uuid */
+                        id?: string;
+                        /** Format: uri */
+                        publicUrl: string;
+                        alt: string;
+                        width: number | null;
+                        height: number | null;
+                    } | null;
+                    readingTimeMinutes: number;
+                    seoTitle: string | null;
+                    seoDescription: string | null;
+                    /** Format: date-time */
+                    createdAt: string;
+                    /** Format: date-time */
+                    updatedAt: string;
+                } | null;
+            }[];
+            total: number;
         };
         CartLine: {
             lineId: string;
@@ -13198,6 +13610,1507 @@ export interface operations {
                                 publicUrl: string;
                                 alt: string;
                             };
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    listPublishedArticles: {
+        parameters: {
+            query?: {
+                q?: string;
+                category?: string;
+                featured?: boolean;
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            /** Format: uuid */
+                            id: string;
+                            slug: string;
+                            title: string;
+                            excerpt: string;
+                            category: {
+                                /** Format: uuid */
+                                id: string;
+                                slug: string;
+                                name: string;
+                                description: string;
+                                sortOrder: number;
+                            };
+                            cover: {
+                                /** Format: uuid */
+                                id?: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                                width: number | null;
+                                height: number | null;
+                            } | null;
+                            readingTimeMinutes: number;
+                            authorName: string;
+                            /** Format: date-time */
+                            publishedAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            isFeatured: boolean;
+                        }[];
+                        page: number;
+                        pageSize: number;
+                        total: number;
+                        totalPages: number;
+                    };
+                };
+            };
+        };
+    };
+    getPublishedArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        slug: string;
+                        title: string;
+                        excerpt: string;
+                        category: {
+                            /** Format: uuid */
+                            id: string;
+                            slug: string;
+                            name: string;
+                            description: string;
+                            sortOrder: number;
+                        };
+                        cover: {
+                            /** Format: uuid */
+                            id?: string;
+                            /** Format: uri */
+                            publicUrl: string;
+                            alt: string;
+                            width: number | null;
+                            height: number | null;
+                        } | null;
+                        readingTimeMinutes: number;
+                        authorName: string;
+                        /** Format: date-time */
+                        publishedAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        isFeatured: boolean;
+                        bodyBlocks: {
+                            [key: string]: unknown;
+                        }[];
+                        seoTitle: string | null;
+                        seoDescription: string | null;
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    listArticleCategories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            /** Format: uuid */
+                            id: string;
+                            slug: string;
+                            name: string;
+                            description: string;
+                            sortOrder: number;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminListArticles: {
+        parameters: {
+            query?: {
+                q?: string;
+                status?: "draft" | "published" | "archived";
+                categoryId?: string;
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            /** Format: uuid */
+                            id: string;
+                            slug: string;
+                            status: "draft" | "published" | "archived";
+                            category: {
+                                /** Format: uuid */
+                                id: string;
+                                slug: string;
+                                name: string;
+                                description: string;
+                                sortOrder: number;
+                            };
+                            isFeatured: boolean;
+                            homeSortOrder: number;
+                            authorName: string;
+                            publishedAt: string | null;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            version: number;
+                            draft: {
+                                /** Format: uuid */
+                                id: string;
+                                status: "draft" | "published" | "archived";
+                                version: number;
+                                title: string;
+                                excerpt: string;
+                                bodyBlocks: {
+                                    [key: string]: unknown;
+                                }[];
+                                cover: {
+                                    /** Format: uuid */
+                                    id?: string;
+                                    /** Format: uri */
+                                    publicUrl: string;
+                                    alt: string;
+                                    width: number | null;
+                                    height: number | null;
+                                } | null;
+                                readingTimeMinutes: number;
+                                seoTitle: string | null;
+                                seoDescription: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            } | null;
+                            published: {
+                                /** Format: uuid */
+                                id: string;
+                                status: "draft" | "published" | "archived";
+                                version: number;
+                                title: string;
+                                excerpt: string;
+                                bodyBlocks: {
+                                    [key: string]: unknown;
+                                }[];
+                                cover: {
+                                    /** Format: uuid */
+                                    id?: string;
+                                    /** Format: uri */
+                                    publicUrl: string;
+                                    alt: string;
+                                    width: number | null;
+                                    height: number | null;
+                                } | null;
+                                readingTimeMinutes: number;
+                                seoTitle: string | null;
+                                seoDescription: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                            } | null;
+                        }[];
+                        total: number;
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminCreateArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    slug: string;
+                    /** Format: uuid */
+                    categoryId: string;
+                    title: string;
+                    excerpt: string;
+                    bodyBlocks: {
+                        [key: string]: unknown;
+                    }[];
+                    coverMediaAssetId: string | null;
+                    readingTimeMinutes?: number;
+                    seoTitle?: string | null;
+                    seoDescription?: string | null;
+                    isFeatured?: boolean;
+                    homeSortOrder?: number;
+                    authorName?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        slug: string;
+                        status: "draft" | "published" | "archived";
+                        category: {
+                            /** Format: uuid */
+                            id: string;
+                            slug: string;
+                            name: string;
+                            description: string;
+                            sortOrder: number;
+                        };
+                        isFeatured: boolean;
+                        homeSortOrder: number;
+                        authorName: string;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        version: number;
+                        draft: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            title: string;
+                            excerpt: string;
+                            bodyBlocks: {
+                                [key: string]: unknown;
+                            }[];
+                            cover: {
+                                /** Format: uuid */
+                                id?: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                                width: number | null;
+                                height: number | null;
+                            } | null;
+                            readingTimeMinutes: number;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        } | null;
+                        published: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            title: string;
+                            excerpt: string;
+                            bodyBlocks: {
+                                [key: string]: unknown;
+                            }[];
+                            cover: {
+                                /** Format: uuid */
+                                id?: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                                width: number | null;
+                                height: number | null;
+                            } | null;
+                            readingTimeMinutes: number;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminGetArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        slug: string;
+                        status: "draft" | "published" | "archived";
+                        category: {
+                            /** Format: uuid */
+                            id: string;
+                            slug: string;
+                            name: string;
+                            description: string;
+                            sortOrder: number;
+                        };
+                        isFeatured: boolean;
+                        homeSortOrder: number;
+                        authorName: string;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        version: number;
+                        draft: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            title: string;
+                            excerpt: string;
+                            bodyBlocks: {
+                                [key: string]: unknown;
+                            }[];
+                            cover: {
+                                /** Format: uuid */
+                                id?: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                                width: number | null;
+                                height: number | null;
+                            } | null;
+                            readingTimeMinutes: number;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        } | null;
+                        published: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            title: string;
+                            excerpt: string;
+                            bodyBlocks: {
+                                [key: string]: unknown;
+                            }[];
+                            cover: {
+                                /** Format: uuid */
+                                id?: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                                width: number | null;
+                                height: number | null;
+                            } | null;
+                            readingTimeMinutes: number;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminUpdateArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    slug?: string;
+                    /** Format: uuid */
+                    categoryId?: string;
+                    title?: string;
+                    excerpt?: string;
+                    bodyBlocks?: {
+                        [key: string]: unknown;
+                    }[];
+                    coverMediaAssetId?: string | null;
+                    readingTimeMinutes?: number;
+                    seoTitle?: string | null;
+                    seoDescription?: string | null;
+                    isFeatured?: boolean;
+                    homeSortOrder?: number;
+                    authorName?: string;
+                    expectedVersion?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        slug: string;
+                        status: "draft" | "published" | "archived";
+                        category: {
+                            /** Format: uuid */
+                            id: string;
+                            slug: string;
+                            name: string;
+                            description: string;
+                            sortOrder: number;
+                        };
+                        isFeatured: boolean;
+                        homeSortOrder: number;
+                        authorName: string;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        version: number;
+                        draft: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            title: string;
+                            excerpt: string;
+                            bodyBlocks: {
+                                [key: string]: unknown;
+                            }[];
+                            cover: {
+                                /** Format: uuid */
+                                id?: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                                width: number | null;
+                                height: number | null;
+                            } | null;
+                            readingTimeMinutes: number;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        } | null;
+                        published: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            title: string;
+                            excerpt: string;
+                            bodyBlocks: {
+                                [key: string]: unknown;
+                            }[];
+                            cover: {
+                                /** Format: uuid */
+                                id?: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                                width: number | null;
+                                height: number | null;
+                            } | null;
+                            readingTimeMinutes: number;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminListArticleCategories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            /** Format: uuid */
+                            id: string;
+                            slug: string;
+                            name: string;
+                            description: string;
+                            sortOrder: number;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminPublishArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        slug: string;
+                        status: "draft" | "published" | "archived";
+                        category: {
+                            /** Format: uuid */
+                            id: string;
+                            slug: string;
+                            name: string;
+                            description: string;
+                            sortOrder: number;
+                        };
+                        isFeatured: boolean;
+                        homeSortOrder: number;
+                        authorName: string;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        version: number;
+                        draft: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            title: string;
+                            excerpt: string;
+                            bodyBlocks: {
+                                [key: string]: unknown;
+                            }[];
+                            cover: {
+                                /** Format: uuid */
+                                id?: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                                width: number | null;
+                                height: number | null;
+                            } | null;
+                            readingTimeMinutes: number;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        } | null;
+                        published: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            title: string;
+                            excerpt: string;
+                            bodyBlocks: {
+                                [key: string]: unknown;
+                            }[];
+                            cover: {
+                                /** Format: uuid */
+                                id?: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                                width: number | null;
+                                height: number | null;
+                            } | null;
+                            readingTimeMinutes: number;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminArchiveArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        slug: string;
+                        status: "draft" | "published" | "archived";
+                        category: {
+                            /** Format: uuid */
+                            id: string;
+                            slug: string;
+                            name: string;
+                            description: string;
+                            sortOrder: number;
+                        };
+                        isFeatured: boolean;
+                        homeSortOrder: number;
+                        authorName: string;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        version: number;
+                        draft: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            title: string;
+                            excerpt: string;
+                            bodyBlocks: {
+                                [key: string]: unknown;
+                            }[];
+                            cover: {
+                                /** Format: uuid */
+                                id?: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                                width: number | null;
+                                height: number | null;
+                            } | null;
+                            readingTimeMinutes: number;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        } | null;
+                        published: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            title: string;
+                            excerpt: string;
+                            bodyBlocks: {
+                                [key: string]: unknown;
+                            }[];
+                            cover: {
+                                /** Format: uuid */
+                                id?: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                                width: number | null;
+                                height: number | null;
+                            } | null;
+                            readingTimeMinutes: number;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminDuplicateArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        slug: string;
+                        status: "draft" | "published" | "archived";
+                        category: {
+                            /** Format: uuid */
+                            id: string;
+                            slug: string;
+                            name: string;
+                            description: string;
+                            sortOrder: number;
+                        };
+                        isFeatured: boolean;
+                        homeSortOrder: number;
+                        authorName: string;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        version: number;
+                        draft: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            title: string;
+                            excerpt: string;
+                            bodyBlocks: {
+                                [key: string]: unknown;
+                            }[];
+                            cover: {
+                                /** Format: uuid */
+                                id?: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                                width: number | null;
+                                height: number | null;
+                            } | null;
+                            readingTimeMinutes: number;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        } | null;
+                        published: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            title: string;
+                            excerpt: string;
+                            bodyBlocks: {
+                                [key: string]: unknown;
+                            }[];
+                            cover: {
+                                /** Format: uuid */
+                                id?: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                                width: number | null;
+                                height: number | null;
+                            } | null;
+                            readingTimeMinutes: number;
+                            seoTitle: string | null;
+                            seoDescription: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
                         }[];
                     };
                 };

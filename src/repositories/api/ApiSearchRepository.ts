@@ -13,6 +13,7 @@ import type { ProductListParams } from "@/repositories/interfaces/ProductReposit
 import { buildCategoryIndex, searchCategories } from "@/services/search/search-catalog-index";
 import { buildProductSearchDoc, type ProductSearchDoc } from "@/services/search/search-index";
 import { calculateSearchScore } from "@/services/search/search-ranking";
+import { ApiContentRepository } from "@/repositories/api/ApiContentRepository";
 
 /**
  * Search adapter backed by the public catalogue API.
@@ -24,25 +25,40 @@ import { calculateSearchScore } from "@/services/search/search-ranking";
 export class ApiSearchRepository implements SearchRepository {
   private readonly products: ApiProductRepository;
   private readonly categoryIndex = buildCategoryIndex();
+  private readonly content: ApiContentRepository;
 
   constructor(apiClient: HbsApiClient = new HbsApiClient()) {
     this.products = new ApiProductRepository(apiClient);
+    this.content = new ApiContentRepository(apiClient);
   }
 
   async suggest(
     query: string,
     limit = SEARCH_SUGGESTION_LIMITS.products,
   ): Promise<SearchSuggestionResults> {
-    const response = await this.products.list({
-      query,
-      page: 1,
-      pageSize: Math.max(1, Math.min(SEARCH_SUGGESTION_LIMITS.products, limit)),
-      sort: "recommended",
-    });
+    const [response, articles] = await Promise.all([
+      this.products.list({
+        query,
+        page: 1,
+        pageSize: Math.max(1, Math.min(SEARCH_SUGGESTION_LIMITS.products, limit)),
+        sort: "recommended",
+      }),
+      this.content.listArticles({ query, page: 1, pageSize: SEARCH_SUGGESTION_LIMITS.articles }),
+    ]);
     return {
       products: response.items.map((product) => this.toHit(product, query)),
       categories: searchCategories(this.categoryIndex, query, SEARCH_SUGGESTION_LIMITS.categories),
-      articles: [],
+      articles: articles.items.map((article) => ({
+        id: article.id,
+        title: article.title,
+        slug: article.slug,
+        excerpt: article.excerpt,
+        score: article.title.toLocaleLowerCase("fr").includes(query.toLocaleLowerCase("fr"))
+          ? 60
+          : 30,
+        readingTime: `${article.readingTimeMinutes} min`,
+        ...(article.cover?.publicUrl ? { imageUrl: article.cover.publicUrl } : {}),
+      })),
     };
   }
 
@@ -54,12 +70,29 @@ export class ApiSearchRepository implements SearchRepository {
       sort: params.sort === "relevance" ? "recommended" : params.sort,
       ...(params.category ? { categories: [params.category] } : {}),
     };
-    const response = await this.products.list(listParams);
+    const [response, articles] = await Promise.all([
+      this.products.list(listParams),
+      this.content.listArticles({
+        query: params.query,
+        page: 1,
+        pageSize: SEARCH_SUGGESTION_LIMITS.articles,
+      }),
+    ]);
     return {
       query: params.query,
       products: response.items.map((product) => this.toHit(product, params.query)),
       categories: searchCategories(this.categoryIndex, params.query, 4),
-      articles: [],
+      articles: articles.items.map((article) => ({
+        id: article.id,
+        title: article.title,
+        slug: article.slug,
+        excerpt: article.excerpt,
+        score: article.title.toLocaleLowerCase("fr").includes(params.query.toLocaleLowerCase("fr"))
+          ? 60
+          : 30,
+        readingTime: `${article.readingTimeMinutes} min`,
+        ...(article.cover?.publicUrl ? { imageUrl: article.cover.publicUrl } : {}),
+      })),
       page: response.page,
       pageSize: response.pageSize,
       totalProducts: response.total,

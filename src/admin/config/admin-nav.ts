@@ -128,6 +128,13 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         available: true,
       },
       {
+        label: "Articles",
+        href: "/admin/contenu/articles",
+        icon: FileText,
+        requiredPermission: "content.read",
+        available: true,
+      },
+      {
         label: "Médias",
         href: "/admin/medias",
         icon: Image,
