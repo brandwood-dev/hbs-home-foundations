@@ -68,7 +68,10 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
       slugs.push(category.slug);
       pending.push(...category.children);
     }
-    return { ...config.scope, categorySlugs: slugs };
+    // A published API category is authoritative, even when its slug also has
+    // a legacy file-based route (for example `/rideaux/lin`). This prevents
+    // fixture filters from narrowing or changing the Admin-managed category.
+    return { categorySlugs: slugs };
   }, [config.scope, dynamicCategory]);
   const params = toListParams(search, dynamicScope, DEFAULT_PAGE_SIZE);
   const listQuery = useQuery({ ...catalogListQuery(params), placeholderData: keepPreviousData });
@@ -103,7 +106,9 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
     <CatalogFilters
       facets={facetsQuery.data}
       search={search}
-      {...(config.lockedFilterLabel ? { lockedFilterLabel: config.lockedFilterLabel } : {})}
+      {...(!dynamicCategory && config.lockedFilterLabel
+        ? { lockedFilterLabel: config.lockedFilterLabel }
+        : {})}
       onToggle={toggleValue}
       onPriceChange={changePrice}
     />
@@ -207,7 +212,7 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
             {dynamicCategory?.name ?? config.title} — nos conseils
           </h2>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-foreground-muted">
-            {config.seoBlock}
+            {dynamicCategory?.description ?? config.seoBlock}
           </p>
         </section>
       </div>
