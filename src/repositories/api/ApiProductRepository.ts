@@ -100,6 +100,7 @@ interface ApiProduct {
   slug: string;
   name: string;
   reference: string;
+  canonicalPath?: string;
   category: string;
   material: string;
   opacityLevel?: string;
@@ -617,6 +618,7 @@ export function mapProduct(input: ApiProduct): Product {
     slug: asString(input.slug),
     name: asString(input.name),
     reference: asString(input.reference, "N/A"),
+    ...(input.canonicalPath?.trim() ? { canonicalPath: input.canonicalPath.trim() } : {}),
     category: asEnumOrDefault(input.category, PRODUCT_CATEGORIES, "mobilier_interieur"),
     material: asEnumOrDefault(input.material, PRODUCT_MATERIALS, "textile"),
     sellingMode: asEnumOrDefault(input.sellingMode, CURTAINS_SELLING_MODE, "ready_made"),

@@ -8,6 +8,7 @@ import type {
   ProductSearchHit,
 } from "@/domain/search/search.types";
 import { formatMoney, getProductStartingPrice, hasMultiplePrices } from "@/lib/money/money";
+import { getProductPath } from "@/services/product/product-url";
 
 interface SuggestionListProps {
   query: string;
@@ -43,7 +44,7 @@ export function SearchSuggestionList({
               return (
                 <li key={hit.product.id} role="option" aria-selected="false">
                   <AppLink
-                    href={`/produit/${hit.product.slug}`}
+                    href={getProductPath(hit.product)}
                     onClick={() => onNavigate("product", hit.product.id)}
                     className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-surface-muted"
                   >

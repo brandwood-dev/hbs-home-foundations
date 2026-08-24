@@ -293,6 +293,8 @@ export interface Product {
   slug: string;
   name: string;
   reference: string;
+  /** Chemin public canonique, fourni par l'API quand le produit est rattaché à une catégorie active. */
+  canonicalPath?: string;
 
   category: ProductCategory;
   material: ProductMaterial;

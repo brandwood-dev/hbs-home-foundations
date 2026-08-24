@@ -5,6 +5,7 @@ import { CartQuantitySelector } from "@/components/cart/CartQuantitySelector";
 import { CartStatusNotice } from "@/components/cart/CartStatusNotice";
 import type { ResolvedCartItem } from "@/domain/cart/cart.types";
 import { formatMoney } from "@/lib/money/money";
+import { getProductPath } from "@/services/product/product-url";
 
 interface CartItemProps {
   item: ResolvedCartItem;
@@ -41,7 +42,7 @@ export function CartItem({
           <div className="min-w-0">
             {item.productSlug ? (
               <AppLink
-                href={`/produit/${item.productSlug}`}
+                href={getProductPath({ slug: item.productSlug })}
                 className="text-sm font-medium hover:text-accent-dark"
               >
                 {item.productName}

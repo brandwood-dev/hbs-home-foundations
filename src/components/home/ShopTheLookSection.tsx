@@ -11,6 +11,7 @@ import type {
 import type { Product } from "@/domain/product/product.types";
 import { formatMoney, getProductStartingPrice } from "@/lib/money/money";
 import { homeProductsByIdsQuery } from "@/services/home/home-products.queries";
+import { getProductPath } from "@/services/product/product-url";
 
 export interface ResolvedHotspot {
   hotspot: Hotspot;
@@ -33,7 +34,7 @@ export function resolveHotspots(hotspots: Hotspot[], products: Product[]): Resol
         return {
           hotspot,
           label: product.name,
-          href: `/produit/${product.slug}`,
+          href: getProductPath(product),
           ...(imageSrc ? { imageSrc } : {}),
           priceLabel: formatMoney(getProductStartingPrice(product)),
         } satisfies ResolvedHotspot;

@@ -250,6 +250,9 @@
           "reference": {
             "type": "string"
           },
+          "canonicalPath": {
+            "type": "string"
+          },
           "category": {
             "type": "string"
           },

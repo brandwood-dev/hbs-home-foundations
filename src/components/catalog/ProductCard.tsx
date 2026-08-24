@@ -10,6 +10,7 @@ import {
 } from "@/domain/product/product.constants";
 import type { Product } from "@/domain/product/product.types";
 import { getProductCardImage } from "@/components/catalog/product-card-image";
+import { getProductPath } from "@/services/product/product-url";
 import {
   formatMoney,
   getDiscountPercentage,
@@ -63,7 +64,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
       onMouseLeave={() => setHovered(false)}
     >
       <AppLink
-        href={`/produit/${product.slug}`}
+        href={getProductPath(product)}
         className="relative block overflow-hidden rounded-md bg-surface-muted"
       >
         <div className="aspect-[3/4] w-full">
@@ -106,7 +107,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         </p>
 
         <h3 className="mt-1 text-base leading-snug sm:text-lg">
-          <AppLink href={`/produit/${product.slug}`} className="hover:text-accent-dark">
+          <AppLink href={getProductPath(product)} className="hover:text-accent-dark">
             {product.name}
           </AppLink>
         </h3>
