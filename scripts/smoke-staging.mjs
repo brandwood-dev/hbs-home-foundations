@@ -50,5 +50,5 @@ for (let attempt = 1; attempt <= Math.max(1, maxAttempts); attempt += 1) {
 if (successResult) {
   console.log(JSON.stringify(successResult));
 } else {
-throw new Error(`Expected release ${expectedSha}, received ${lastRelease ?? "none"}.`);
+  throw new Error(`Expected release ${expectedSha}, received ${lastRelease ?? "none"}.`);
 }
