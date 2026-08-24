@@ -6,6 +6,8 @@ if (!baseUrl) {
 }
 
 const headers = { accept: "text/html" };
+headers["cache-control"] = "no-cache, no-store";
+headers.pragma = "no-cache";
 const accessClientId = process.env.CF_ACCESS_CLIENT_ID?.trim();
 const accessClientSecret = process.env.CF_ACCESS_CLIENT_SECRET?.trim();
 if (accessClientId && accessClientSecret) {
@@ -13,7 +15,12 @@ if (accessClientId && accessClientSecret) {
   headers["CF-Access-Client-Secret"] = accessClientSecret;
 }
 
-const response = await fetch(new URL("/", baseUrl), { headers, redirect: "follow" });
+// Cloudflare may briefly serve the previous SSR document while a Worker
+// version propagates. A release-specific query key makes this verification
+// observe the exact deployment rather than an edge-cached HTML response.
+const smokeUrl = new URL("/", baseUrl);
+smokeUrl.searchParams.set("_release", expectedSha || String(Date.now()));
+const response = await fetch(smokeUrl, { headers, redirect: "follow", cache: "no-store" });
 const release = response.headers.get("x-hbs-release");
 const robots = response.headers.get("x-robots-tag");
 
