@@ -1,6 +1,7 @@
 import type { Order } from "@/domain/order/order.types";
 import { formatMoney } from "@/lib/money/money";
 import { AppLink } from "@/components/ui/app-link";
+import { getProductPath } from "@/services/product/product-url";
 
 export function OrderItemsRecap({ order }: { order: Order }) {
   return (
@@ -24,7 +25,7 @@ export function OrderItemsRecap({ order }: { order: Order }) {
             </div>
             <div className="min-w-0 flex-1 text-sm">
               <AppLink
-                href={`/produit/${item.productSlug}`}
+                href={getProductPath({ slug: item.productSlug })}
                 className="font-medium hover:text-accent-dark"
               >
                 {item.productName}

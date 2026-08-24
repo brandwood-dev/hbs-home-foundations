@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ProductDetailView } from "@/components/product/ProductDetailView";
 import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
@@ -8,6 +8,9 @@ export const Route = createFileRoute("/produit/$slug")({
   loader: async ({ context, params }) => {
     const product = await context.queryClient.ensureQueryData(productBySlugQuery(params.slug));
     if (!product) throw notFound();
+    if (product.canonicalPath) {
+      throw redirect({ href: product.canonicalPath, statusCode: 308 });
+    }
     return { seo: product.seo };
   },
   head: ({ loaderData }) => {

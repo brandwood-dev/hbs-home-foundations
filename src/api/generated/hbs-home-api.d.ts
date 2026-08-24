@@ -1443,6 +1443,7 @@ export interface components {
             slug: string;
             name: string;
             reference: string;
+            canonicalPath?: string;
             category: string;
             material: string;
             opacityLevel?: string;

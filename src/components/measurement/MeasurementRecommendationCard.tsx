@@ -6,6 +6,7 @@ import type {
 } from "@/domain/measurement/measurement.types";
 import { formatMoney } from "@/lib/money/money";
 import { sellingUnitLabel } from "@/services/measurement/measurement-recommendations";
+import { getProductPath } from "@/services/product/product-url";
 
 function LevelBadge({ level }: { level: MeasurementProductRecommendation["recommendationLevel"] }) {
   const tone =
@@ -34,7 +35,7 @@ export function MeasurementRecommendationCard({
   return (
     <article className="flex gap-4 rounded-md border border-border p-3">
       <AppLink
-        href={`/produit/${product.slug}`}
+        href={getProductPath(product)}
         className="block h-28 w-20 shrink-0 overflow-hidden rounded-sm bg-surface-muted"
       >
         <img
@@ -57,7 +58,7 @@ export function MeasurementRecommendationCard({
         </div>
 
         <h3 className="mt-1.5 text-base leading-snug">
-          <AppLink href={`/produit/${product.slug}`} className="hover:text-accent-dark">
+          <AppLink href={getProductPath(product)} className="hover:text-accent-dark">
             {product.name}
           </AppLink>
         </h3>
@@ -87,7 +88,7 @@ export function MeasurementAccessoryCard({
   return (
     <article className="rounded-md border border-border p-3">
       <h3 className="text-sm font-medium">
-        <AppLink href={`/produit/${product.slug}`} className="hover:text-accent-dark">
+        <AppLink href={getProductPath(product)} className="hover:text-accent-dark">
           {product.name}
         </AppLink>
       </h3>
