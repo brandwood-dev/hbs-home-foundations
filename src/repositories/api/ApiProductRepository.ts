@@ -158,6 +158,7 @@ interface ApiProductsByIdsResponse {
 type ApiCatalogScope = Pick<
   ProductListParams,
   | "categories"
+  | "categorySlugs"
   | "materials"
   | "opacityLevels"
   | "curtainHeaders"
@@ -729,6 +730,7 @@ function mapScope(scope?: CatalogScope): ApiCatalogScope | undefined {
   if (!scope) return undefined;
   return {
     categories: scope.categories,
+    categorySlugs: scope.categorySlugs,
     materials: scope.materials,
     opacityLevels: scope.opacityLevels,
     curtainHeaders: scope.curtainHeaders,
@@ -758,6 +760,7 @@ export class ApiProductRepository implements ProductRepository {
       pageSize: params.pageSize,
       sort: params.sort,
       categories: params.categories,
+      categorySlugs: params.categorySlugs,
       materials: params.materials,
       colors: params.colors,
       opacityLevels: params.opacityLevels,

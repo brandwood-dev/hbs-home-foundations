@@ -13,7 +13,7 @@ export function catalogListQuery(params: ProductListParams) {
 
 export function catalogFacetsQuery(routeId: string, scope?: CatalogScope) {
   return queryOptions({
-    queryKey: ["catalog", "facets", routeId],
+    queryKey: ["catalog", "facets", routeId, scope],
     queryFn: async () => computeFacets(await getProductRepository().listScope(scope)),
     staleTime: 5 * 60_000,
   });

@@ -191,6 +191,7 @@ export function toListParams(
     page: search["page"],
     pageSize,
     categories: scope?.categories,
+    categorySlugs: scope?.categorySlugs,
     materials: mergeUnique(scope?.materials, search["materials"] as never[]),
     opacityLevels: mergeUnique(scope?.opacityLevels, search["opacity"] as never[]),
     curtainHeaders: mergeUnique(scope?.curtainHeaders, search["headers"] as never[]),

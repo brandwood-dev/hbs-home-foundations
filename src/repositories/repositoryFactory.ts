@@ -13,10 +13,13 @@ import { MockMeasurementRulesRepository } from "@/repositories/mock/MockMeasurem
 import { MockCustomQuoteRepository } from "@/repositories/mock/MockCustomQuoteRepository";
 import { MockProfessionalLeadRepository } from "@/repositories/mock/MockProfessionalLeadRepository";
 import { ApiProductRepository } from "@/repositories/api/ApiProductRepository";
+import { ApiCategoryRepository } from "@/repositories/api/ApiCategoryRepository";
+import { MockCategoryRepository } from "@/repositories/mock/MockCategoryRepository";
 import { ApiCartRepository } from "@/repositories/api/ApiCartRepository";
 import { ApiFavoritesRepository } from "@/repositories/api/ApiFavoritesRepository";
 import { dataProvider } from "@/config/features.config";
 import type { ProductRepository } from "@/repositories/interfaces/ProductRepository";
+import type { CategoryRepository } from "@/repositories/interfaces/CategoryRepository";
 import type { CartRepository } from "@/repositories/interfaces/CartRepository";
 import type { OrderRepository } from "@/repositories/interfaces/OrderRepository";
 import type { ContentRepository } from "@/repositories/interfaces/ContentRepository";
@@ -29,6 +32,7 @@ import type { CustomQuoteRepository } from "@/repositories/interfaces/CustomQuot
 import type { ProfessionalLeadRepository } from "@/repositories/interfaces/ProfessionalLeadRepository";
 
 let productRepository: ProductRepository | null = null;
+let categoryRepository: CategoryRepository | null = null;
 let cartRepository: CartRepository | null = null;
 let orderRepository: OrderRepository | null = null;
 let contentRepository: ContentRepository | null = null;
@@ -50,6 +54,15 @@ export function getProductRepository(): ProductRepository {
       dataProvider === "api" ? new ApiProductRepository() : new MockProductRepository();
   }
   return productRepository;
+}
+
+/** Taxonomie publique : API en staging/production, fixture isolée en développement. */
+export function getCategoryRepository(): CategoryRepository {
+  if (!categoryRepository) {
+    categoryRepository =
+      dataProvider === "api" ? new ApiCategoryRepository() : new MockCategoryRepository();
+  }
+  return categoryRepository;
 }
 
 /** Panier serveur dès que l'URL API est configurée, local uniquement en développement isolé. */

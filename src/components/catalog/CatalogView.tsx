@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { ActiveFilterChips } from "@/components/catalog/ActiveFilterChips";
 import { CatalogBreadcrumbs } from "@/components/catalog/CatalogBreadcrumbs";
@@ -20,6 +20,10 @@ import {
 } from "@/fixtures/catalog-pages.fixture";
 import { catalogFacetsQuery, catalogListQuery } from "@/services/catalog/catalog.queries";
 import {
+  catalogCategoryQuery,
+  catalogNavigationQuery,
+} from "@/services/catalog/catalog-category.queries";
+import {
   EMPTY_SEARCH,
   countActiveFilters,
   toListParams,
@@ -36,10 +40,32 @@ export function CatalogView({ config, search, onSearchChange }: CatalogViewProps
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const group = getCatalogGroup(config.group);
-  const subcategories = getCatalogSubcategories(config.group);
-  const params = toListParams(search, config.scope, DEFAULT_PAGE_SIZE);
+  const categoryQuery = useQuery(catalogCategoryQuery(config.routeId));
+  const navigationQuery = useQuery(catalogNavigationQuery());
+  const dynamicCategory = categoryQuery.data ?? undefined;
+  const dynamicGroup = navigationQuery.data?.find((item) => item.slug === config.group);
+  const subcategories = dynamicGroup?.children.length
+    ? dynamicGroup.children.map((item) => ({
+        routeId: item.slug,
+        label: item.name,
+        path: item.path,
+      }))
+    : getCatalogSubcategories(config.group);
+  const dynamicScope = useMemo(() => {
+    if (!dynamicCategory) return config.scope;
+    const slugs: string[] = [];
+    const pending = [dynamicCategory];
+    while (pending.length > 0) {
+      const category = pending.shift();
+      if (!category) continue;
+      slugs.push(category.slug);
+      pending.push(...category.children);
+    }
+    return { ...config.scope, categorySlugs: slugs };
+  }, [config.scope, dynamicCategory]);
+  const params = toListParams(search, dynamicScope, DEFAULT_PAGE_SIZE);
   const listQuery = useQuery({ ...catalogListQuery(params), placeholderData: keepPreviousData });
-  const facetsQuery = useQuery(catalogFacetsQuery(config.routeId, config.scope));
+  const facetsQuery = useQuery(catalogFacetsQuery(config.routeId, dynamicScope));
 
   const products = listQuery.data?.items ?? [];
   const total = listQuery.data?.total ?? 0;
@@ -83,15 +109,23 @@ export function CatalogView({ config, search, onSearchChange }: CatalogViewProps
           items={[
             { label: "Accueil", href: "/" },
             ...(config.routeId === config.group
-              ? [{ label: group.label }]
-              : [{ label: group.label, href: group.path }, { label: config.title }]),
+              ? [{ label: dynamicCategory?.name ?? group.label }]
+              : [
+                  {
+                    label: dynamicGroup?.name ?? group.label,
+                    href: dynamicGroup?.path ?? group.path,
+                  },
+                  { label: dynamicCategory?.name ?? config.title },
+                ]),
           ]}
         />
 
         <header className="mt-4 max-w-3xl">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl">{config.title}</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl">
+            {dynamicCategory?.name ?? config.title}
+          </h1>
           <p className="mt-3 text-sm leading-relaxed text-foreground-muted sm:text-base">
-            {config.description}
+            {dynamicCategory?.description ?? config.description}
           </p>
         </header>
 
@@ -162,7 +196,9 @@ export function CatalogView({ config, search, onSearchChange }: CatalogViewProps
         </div>
 
         <section className="mt-16 border-t border-border pt-8">
-          <h2 className="text-2xl sm:text-3xl">{config.title} — nos conseils</h2>
+          <h2 className="text-2xl sm:text-3xl">
+            {dynamicCategory?.name ?? config.title} — nos conseils
+          </h2>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-foreground-muted">
             {config.seoBlock}
           </p>

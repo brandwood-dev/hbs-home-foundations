@@ -2,16 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, Package, Phone, X } from "lucide-react";
 import { AppLink } from "@/components/ui/app-link";
-import { mainNavigation } from "@/fixtures/navigation.fixture";
 import { storeConfig } from "@/config/store.config";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
+import type { NavItem } from "@/types/navigation.types";
 
 interface MobileMenuProps {
   open: boolean;
   onClose: () => void;
+  navigation: readonly NavItem[];
 }
 
-export function MobileMenu({ open, onClose }: MobileMenuProps) {
+export function MobileMenu({ open, onClose, navigation }: MobileMenuProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const hydrated = useIsHydrated();
@@ -67,7 +68,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           className="flex-1 overflow-y-auto overscroll-contain bg-surface px-2 py-2"
         >
           <ul>
-            {mainNavigation.map((item) => {
+            {navigation.map((item) => {
               const hasChildren = Boolean(item.megaMenu?.length);
               const isOpen = expanded === item.id;
               return (

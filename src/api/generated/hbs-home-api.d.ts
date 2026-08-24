@@ -140,6 +140,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/catalog/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List active catalog categories and their public taxonomy */
+        get: operations["listPublicCatalogCategories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/catalog/categories/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one active catalog category by slug */
+        get: operations["getPublicCatalogCategory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/session": {
         parameters: {
             query?: never;
@@ -1510,6 +1544,31 @@ export interface components {
             createdAt: string;
             recommendationScore: number;
             isDemo: boolean;
+        };
+        PublicCategory: {
+            slug: string;
+            name: string;
+            description: string | null;
+            parentSlug: string | null;
+            path: string;
+            imageUrl: string | null;
+            seoTitle: string | null;
+            seoDescription: string | null;
+            attributes: {
+                key: string;
+                name: string;
+                valueType: string;
+                isRequired: boolean;
+                sortOrder: number;
+                options: {
+                    value: string;
+                    label: string;
+                    sortOrder: number;
+                    hex: string | null;
+                    family: string | null;
+                }[];
+            }[];
+            children: components["schemas"]["PublicCategory"][];
         };
         AdminSession: {
             user: {
@@ -3181,6 +3240,7 @@ export interface operations {
                 pageSize?: number;
                 sort?: "recommended" | "newest" | "best_sellers" | "price_asc" | "price_desc" | "discount";
                 categories?: string;
+                categorySlugs?: string;
                 materials?: string;
                 colors?: string;
                 opacityLevels?: string;
@@ -3373,6 +3433,7 @@ export interface operations {
         parameters: {
             query?: {
                 categories?: string;
+                categorySlugs?: string;
                 materials?: string;
                 opacityLevels?: string;
                 curtainHeaders?: string;
@@ -3989,6 +4050,120 @@ export interface operations {
             };
             /** @description Default Response */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    listPublicCatalogCategories: {
+        parameters: {
+            query?: {
+                navigation?: "true" | "false";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        slug: string;
+                        name: string;
+                        description: string | null;
+                        parentSlug: string | null;
+                        path: string;
+                        imageUrl: string | null;
+                        seoTitle: string | null;
+                        seoDescription: string | null;
+                        attributes: {
+                            key: string;
+                            name: string;
+                            valueType: string;
+                            isRequired: boolean;
+                            sortOrder: number;
+                            options: {
+                                value: string;
+                                label: string;
+                                sortOrder: number;
+                                hex: string | null;
+                                family: string | null;
+                            }[];
+                        }[];
+                        children: components["schemas"]["PublicCategory"][];
+                    }[];
+                };
+            };
+        };
+    };
+    getPublicCatalogCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        slug: string;
+                        name: string;
+                        description: string | null;
+                        parentSlug: string | null;
+                        path: string;
+                        imageUrl: string | null;
+                        seoTitle: string | null;
+                        seoDescription: string | null;
+                        attributes: {
+                            key: string;
+                            name: string;
+                            valueType: string;
+                            isRequired: boolean;
+                            sortOrder: number;
+                            options: {
+                                value: string;
+                                label: string;
+                                sortOrder: number;
+                                hex: string | null;
+                                family: string | null;
+                            }[];
+                        }[];
+                        children: components["schemas"]["PublicCategory"][];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
