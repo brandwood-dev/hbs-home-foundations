@@ -18,6 +18,7 @@ import type {
   CustomProfessionalContent,
   HomeCollection,
   HomeHeroContent,
+  HomePromoBannerContent,
   HomeSectionConfig,
   HomeTrustItem,
   MaterialFocusContent,
@@ -59,6 +60,13 @@ export const homeHero: HomeHeroContent = {
     src: heroImage,
     alt: "Salon lumineux habillé de rideaux en lin devant une grande fenêtre",
   },
+};
+
+export const promoBanner: HomePromoBannerContent = {
+  isEnabled: true,
+  label: "HBS HOME",
+  text: "Livraison partout en Tunisie",
+  href: "/promotions",
 };
 
 export const trustItems: HomeTrustItem[] = [

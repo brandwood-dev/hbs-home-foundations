@@ -44,6 +44,14 @@ export interface HomeHeroContent {
   primaryCta: HomeCta;
   secondaryCta: HomeCta;
   image: HomeImage;
+  mobileImage?: HomeImage;
+}
+
+export interface HomePromoBannerContent {
+  isEnabled: boolean;
+  label?: string;
+  text: string;
+  href?: string;
 }
 
 export type HomeTrustIcon = "truck" | "banknote" | "package-check" | "message-circle";
@@ -213,6 +221,7 @@ export interface HomePageContent {
   sections: HomeSectionConfig[];
 
   hero: HomeHeroContent;
+  promoBanner: HomePromoBannerContent;
   trustItems: HomeTrustItem[];
   collections: HomeCollection[];
 
