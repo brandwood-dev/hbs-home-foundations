@@ -25,6 +25,7 @@ import {
 } from "@/admin/hooks/admin-article.mutations";
 import type { AdminArticle } from "@/admin/types/admin.types";
 import type { AdminArticleInput } from "@/admin/repositories/interfaces";
+import { prepareArticleInput } from "./article-form";
 
 type ArticleDraft = {
   id?: string;
@@ -169,41 +170,25 @@ export function AdminArticlesPage() {
   function submit() {
     if (!draft) return;
     setFormError(null);
-    if (
-      !draft.title.trim() ||
-      !draft.slug.trim() ||
-      !draft.excerpt.trim() ||
-      !draft.categoryId ||
-      !draft.body.trim()
-    ) {
-      setFormError("Le titre, le slug, l'extrait, la catégorie et le contenu sont obligatoires.");
+    const prepared = prepareArticleInput(draft);
+    if ("error" in prepared) {
+      setFormError(prepared.error);
       return;
     }
-    const input: AdminArticleInput = {
-      slug: draft.slug.trim(),
-      categoryId: draft.categoryId,
-      title: draft.title.trim(),
-      excerpt: draft.excerpt.trim(),
-      bodyBlocks: [{ type: "paragraph", text: draft.body.trim() }],
-      coverMediaAssetId: draft.coverMediaAssetId || null,
-      ...(draft.readingTimeMinutes.trim()
-        ? { readingTimeMinutes: Number(draft.readingTimeMinutes) }
-        : {}),
-      seoTitle: draft.seoTitle.trim() || null,
-      seoDescription: draft.seoDescription.trim() || null,
-      isFeatured: draft.isFeatured,
-      homeSortOrder: Number(draft.homeSortOrder || "0"),
-      authorName: draft.authorName.trim() || "HBS HOME",
-    };
+    const input: AdminArticleInput = prepared.input;
+    const onError = (error: unknown) =>
+      setFormError(
+        error instanceof Error ? error.message : "L'article n'a pas pu être enregistré.",
+      );
     if (draft.id)
       updateArticle.mutate(
         {
           id: draft.id,
           input: { ...input, ...(draft.version ? { expectedVersion: draft.version } : {}) },
         },
-        { onSuccess: () => setDraft(null) },
+        { onSuccess: () => setDraft(null), onError },
       );
-    else createArticle.mutate(input, { onSuccess: () => setDraft(null) });
+    else createArticle.mutate(input, { onSuccess: () => setDraft(null), onError });
   }
 
   const mediaOptions = [
