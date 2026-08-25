@@ -159,9 +159,7 @@ Utiliser comme palette initiale :
 
 Utiliser :
 
-Cormorant Garamond pour les grands titres ;
-
-Manrope pour les textes et l’interface.
+Plus Jakarta Sans pour les titres, les textes et l’interface publique/Admin.
 
 Le design doit être clair, aéré et élégant.
 
