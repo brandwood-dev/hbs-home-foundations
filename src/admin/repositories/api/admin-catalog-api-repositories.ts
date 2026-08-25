@@ -917,4 +917,4 @@ export class ApiAdminInventoryRepository implements AdminInventoryRepository {
   }
 }
 
-export { mapAttribute, mapCategory, mapProduct, mapVariant };
+export { mapAttribute, mapCategory, mapInventoryRow, mapProduct, mapVariant };

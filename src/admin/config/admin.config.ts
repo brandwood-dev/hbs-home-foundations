@@ -6,6 +6,8 @@ export type AdminDataProvider = "mock" | "api";
 
 export const adminConfig = {
   dataProvider: "mock" as AdminDataProvider,
+  /** Les KPI du tableau de bord sont agrégés et autorisés côté API. */
+  dashboardDataProvider: "api" as AdminDataProvider,
   /** Le catalogue est la première surface Admin migrée vers l'API. */
   catalogDataProvider: "api" as AdminDataProvider,
   promotionDataProvider: "api" as AdminDataProvider,
