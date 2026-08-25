@@ -8,11 +8,8 @@ import { CheckoutField, checkoutInputClass } from "@/components/checkout/Checkou
 import {
   BLIND_MOUNTING_POSITION_LABELS,
   CURTAIN_FLOOR_FINISH_LABELS,
-  CURTAIN_FULLNESS_HINTS,
-  CURTAIN_FULLNESS_LABELS,
   CURTAIN_LENGTH_TARGET_LABELS,
   CURTAIN_SUPPORT_LABELS,
-  FULLNESS_RATIOS,
   MEASUREMENT_DISCLAIMER,
   MEASUREMENT_PROJECT_LABELS,
   OPENING_TYPE_LABELS,
@@ -31,6 +28,7 @@ import type {
   MeasurementResult,
   OpeningType,
 } from "@/domain/measurement/measurement.types";
+import type { CurtainMaterial } from "@/domain/product/product.types";
 import { useMeasurementRules } from "@/hooks/measurement/useMeasurementRules";
 import {
   measurementAccessoriesQuery,
@@ -63,6 +61,7 @@ interface CurtainDraft {
   floorFinish: CurtainFloorFinish;
   fullnessRatio: CurtainFullnessRatio;
   panelCount: CurtainPanelCount;
+  material: CurtainMaterial | undefined;
 }
 
 interface BlindDraft {
@@ -83,6 +82,7 @@ const INITIAL_CURTAIN: CurtainDraft = {
   floorFinish: "ras_du_sol",
   fullnessRatio: 2,
   panelCount: 2,
+  material: undefined,
 };
 
 const INITIAL_BLIND: BlindDraft = {
@@ -118,10 +118,7 @@ export function MeasurementGuideView() {
           : curtain.supportWidth.trim().length > 0
             ? validateWidthField(curtain.supportWidth, rules)
             : null,
-      openingWidth:
-        curtain.supportWidth.trim().length > 0
-          ? null
-          : validateWidthField(curtain.openingWidth, rules),
+      openingWidth: validateWidthField(curtain.openingWidth, rules),
       leftExtension: validateExtensionField(curtain.leftExtension),
       rightExtension: validateExtensionField(curtain.rightExtension),
       measuredHeight: validateHeightField(curtain.measuredHeight, rules),
@@ -171,6 +168,7 @@ export function MeasurementGuideView() {
       lengthTarget: curtain.lengthTarget,
       fullnessRatio: curtain.fullnessRatio,
       panelCount: curtain.panelCount,
+      ...(curtain.material ? { material: curtain.material } : {}),
       ...(supportWidth !== null ? { supportWidthCm: supportWidth } : {}),
       ...(openingWidth !== null ? { openingWidthCm: openingWidth } : {}),
       ...(parseCmInput(curtain.leftExtension) !== null
@@ -214,6 +212,7 @@ export function MeasurementGuideView() {
         lengthTarget: curtain.lengthTarget,
         fullnessRatio: curtain.fullnessRatio,
         panelCount: curtain.panelCount,
+        ...(curtain.material ? { material: curtain.material } : {}),
         ...(curtain.lengthTarget === "sol" ? { floorFinish: curtain.floorFinish } : {}),
       },
       result as never,
@@ -228,6 +227,7 @@ export function MeasurementGuideView() {
         projectType,
         supportType: isBlindProject ? undefined : curtain.supportType,
         panelCount: isBlindProject ? undefined : curtain.panelCount,
+        material: isBlindProject ? undefined : curtain.material,
         mountingPosition: isBlindProject ? blind.mountingPosition : undefined,
       },
       productsQuery.data,
@@ -366,7 +366,7 @@ export function MeasurementGuideView() {
                   id="support-width"
                   label="Largeur de tringle ou de rail"
                   optional
-                  hint="Si vous connaissez déjà cette largeur, les autres champs deviennent inutiles."
+                  hint="Facultatif : sert uniquement à recommander une tringle ou un rail. La largeur du rideau se calcule sur la fenêtre."
                   error={showErrors ? (curtainErrors["supportWidth"] ?? undefined) : undefined}
                 >
                   <input
@@ -401,7 +401,7 @@ export function MeasurementGuideView() {
                   id="left-extension"
                   label="Débord à gauche"
                   optional
-                  hint="Par défaut 15 cm de chaque côté."
+                  hint="Facultatif pour dimensionner la tringle (15 cm par défaut)."
                   error={showErrors ? (curtainErrors["leftExtension"] ?? undefined) : undefined}
                 >
                   <input
@@ -536,24 +536,36 @@ export function MeasurementGuideView() {
                 />
               )}
 
+              <div className="rounded-md border border-border bg-surface-muted p-4">
+                <p className="text-sm font-medium">Ampleur du drapé</p>
+                <p className="mt-1 text-sm text-foreground-muted">
+                  ×2 — règle fixe HBS HOME appliquée aux rideaux et aux voilages : deux fois la
+                  largeur de la fenêtre.
+                </p>
+              </div>
+
               <MeasurementOptionGroup
-                legend="Ampleur du drapé"
-                name="ampleur"
-                value={String(curtain.fullnessRatio)}
+                legend="Matière du rideau"
+                name="matiere"
+                value={curtain.material ?? "autre"}
                 onChange={(value) =>
                   setCurtain((c) => ({
                     ...c,
-                    fullnessRatio: Number(value) as CurtainFullnessRatio,
+                    material: value === "velours" ? "velours" : undefined,
                   }))
                 }
-                options={FULLNESS_RATIOS.map((ratio) => {
-                  const key = String(ratio);
-                  return {
-                    value: key,
-                    label: CURTAIN_FULLNESS_LABELS[key] ?? key,
-                    ...(CURTAIN_FULLNESS_HINTS[key] ? { hint: CURTAIN_FULLNESS_HINTS[key] } : {}),
-                  };
-                })}
+                options={[
+                  {
+                    value: "autre",
+                    label: "Autre matière",
+                    hint: "Largeur calculée avec l'ampleur ×2.",
+                  },
+                  {
+                    value: "velours",
+                    label: "Velours",
+                    hint: "Panneaux fabriqués en 1,5 m ou 3 m.",
+                  },
+                ]}
               />
 
               <MeasurementOptionGroup
@@ -567,6 +579,11 @@ export function MeasurementGuideView() {
                 options={[
                   { value: "1", label: "1 pan", hint: "Ouverture d'un seul côté." },
                   { value: "2", label: "2 pans", hint: "Ouverture centrale, le plus courant." },
+                  {
+                    value: "3",
+                    label: "3 pans",
+                    hint: "Composition velours de 4,5 m : 3 × 1,5 m.",
+                  },
                 ]}
               />
             </section>

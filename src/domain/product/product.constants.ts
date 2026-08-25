@@ -64,6 +64,7 @@ export const MATERIAL_LABELS: Record<ProductMaterial, string> = {
   mousse: "Mousse",
   metal: "Métal",
   acier: "Acier",
+  acier_inoxydable: "Acier inoxydable",
   aluminium: "Aluminium",
   bois: "Bois",
   textile: "Textile",

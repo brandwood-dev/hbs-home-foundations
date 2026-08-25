@@ -206,6 +206,7 @@ const PRODUCT_MATERIALS: readonly ProductMaterial[] = [
   "mousse",
   "metal",
   "acier",
+  "acier_inoxydable",
   "aluminium",
   "bois",
   "textile",
@@ -295,6 +296,7 @@ const ACCESSORY_TYPES: readonly AccessoryType[] = [
 const ACCESSORY_MATERIALS: readonly AccessoryMaterial[] = [
   "metal",
   "acier",
+  "acier_inoxydable",
   "aluminium",
   "bois",
   "textile",

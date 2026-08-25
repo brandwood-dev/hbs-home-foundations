@@ -34,6 +34,7 @@ export type ProductMaterial =
   | "mousse"
   | "metal"
   | "acier"
+  | "acier_inoxydable"
   | "aluminium"
   | "bois"
   | "textile"
@@ -92,7 +93,7 @@ export type AccessoryType =
 
 export type AccessoryMaterial = Extract<
   ProductMaterial,
-  "metal" | "acier" | "aluminium" | "bois" | "textile" | "corde" | "magnetique"
+  "metal" | "acier" | "acier_inoxydable" | "aluminium" | "bois" | "textile" | "corde" | "magnetique"
 >;
 
 export type AccessoryFinish =

@@ -85,6 +85,13 @@ function curtainCandidates(
         if (variant.curtainHeader !== context.preferredHeader) continue;
       }
       if (context.supportType === "rail" && variant.curtainHeader === "oeillets") continue;
+      if (
+        context.material === "velours" &&
+        rules.curtain.velvetPanelWidthOptionsCm.length > 0 &&
+        !rules.curtain.velvetPanelWidthOptionsCm.includes(variant.widthCm)
+      ) {
+        continue;
+      }
 
       const reasons: string[] = [];
       const level: MeasurementProductRecommendation["recommendationLevel"] =
@@ -103,6 +110,9 @@ function curtainCandidates(
           : `Hauteur ${formatCm(variant.heightCm)}, légèrement plus courte que la hauteur visée.`,
       );
       if (variant.curtainHeader) reasons.push("Finition de tête compatible avec votre support.");
+      if (context.material === "velours") {
+        reasons.push("Largeur de pan velours conforme aux formats fabriqués (1,5 m ou 3 m).");
+      }
 
       const candidate: MeasurementProductRecommendation = {
         product,
