@@ -10,6 +10,7 @@ const accessory = (overrides: Partial<Product>): Product => ({
   category: "accessoires",
   material: "acier_inoxydable",
   sellingMode: "ready_made",
+  isLargeWidth: false,
   shortDescription: "",
   longDescription: "",
   imageAlt: "",
