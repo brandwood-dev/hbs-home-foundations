@@ -1,5 +1,6 @@
 import { mainNavigation } from "@/fixtures/navigation.fixture";
 import type { CategorySearchHit } from "@/domain/search/search.types";
+import type { PublicCategory } from "@/repositories/interfaces/CategoryRepository";
 import {
   normalizeSearchQuery,
   tokenizeSearchQuery,
@@ -13,8 +14,7 @@ export interface CategoryIndexEntry {
   terms: string;
 }
 
-/** Aplatit la navigation principale en entrées catégories/sous-catégories recherchables. */
-export function buildCategoryIndex(): CategoryIndexEntry[] {
+function buildFixtureCategoryIndex(): CategoryIndexEntry[] {
   const entries: CategoryIndexEntry[] = [];
   const seen = new Set<string>();
 
@@ -36,6 +36,39 @@ export function buildCategoryIndex(): CategoryIndexEntry[] {
       for (const link of column.links) push(link.label, link.href, item.label);
     }
   }
+  return entries;
+}
+
+/**
+ * Aplatit la taxonomie publiée par l'API en entrées recherchables.
+ *
+ * Sans argument, le dépôt mock conserve l'index éditorial historique pour le
+ * développement local. Une réponse API, y compris une liste vide, est en
+ * revanche toujours considérée comme la source de vérité publique.
+ */
+export function buildCategoryIndex(categories?: readonly PublicCategory[]): CategoryIndexEntry[] {
+  if (categories === undefined) return buildFixtureCategoryIndex();
+
+  const entries: CategoryIndexEntry[] = [];
+  const seen = new Set<string>();
+
+  const visit = (category: PublicCategory, parent?: string) => {
+    if (!seen.has(category.path)) {
+      seen.add(category.path);
+      entries.push({
+        id: category.path,
+        label: category.name,
+        href: category.path,
+        ...(parent ? { description: parent } : {}),
+        terms: normalizeSearchQuery(
+          `${parent ?? ""} ${category.name} ${category.slug} ${category.path} ${category.description ?? ""}`,
+        ),
+      });
+    }
+    category.children.forEach((child) => visit(child, category.name));
+  };
+
+  categories.forEach((category) => visit(category));
   return entries;
 }
 

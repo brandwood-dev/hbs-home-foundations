@@ -44,6 +44,35 @@ describe("API-backed catalogue search", () => {
       )
       .mockResolvedValueOnce(
         Response.json({ items: [], page: 1, pageSize: 4, total: 0, totalPages: 0 }),
+      )
+      .mockResolvedValueOnce(
+        Response.json([
+          {
+            slug: "rideaux",
+            name: "Rideaux",
+            description: null,
+            parentSlug: null,
+            path: "/rideaux",
+            imageUrl: null,
+            seoTitle: null,
+            seoDescription: null,
+            attributes: [],
+            children: [
+              {
+                slug: "lin",
+                name: "Lin",
+                description: "Rideaux en lin",
+                parentSlug: "rideaux",
+                path: "/rideaux/lin",
+                imageUrl: null,
+                seoTitle: null,
+                seoDescription: null,
+                attributes: [],
+                children: [],
+              },
+            ],
+          },
+        ]),
       );
     const repository = new ApiSearchRepository(
       new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
@@ -59,6 +88,7 @@ describe("API-backed catalogue search", () => {
     expect(results.products).toHaveLength(1);
     expect(results.products[0]?.product.name).toBe("Rideau lin");
     expect(results.categoryCounts).toEqual({ rideaux: 1 });
+    expect(results.categories[0]?.href).toBe("/rideaux/lin");
     expect(fetchImplementation).toHaveBeenCalledWith(
       "https://api.example.test/api/v1/products?q=lin&page=1&pageSize=12&sort=recommended",
       expect.anything(),

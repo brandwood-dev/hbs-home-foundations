@@ -4,6 +4,7 @@ import { ActiveFilterChips } from "@/components/catalog/ActiveFilterChips";
 import { CatalogBreadcrumbs } from "@/components/catalog/CatalogBreadcrumbs";
 import { CatalogErrorState } from "@/components/catalog/CatalogErrorState";
 import { CatalogEmptyState } from "@/components/catalog/CatalogEmptyState";
+import { CatalogUnavailableState } from "@/components/catalog/CatalogUnavailableState";
 import { CatalogFilters } from "@/components/catalog/CatalogFilters";
 import { CatalogMobileFilters } from "@/components/catalog/CatalogMobileFilters";
 import { CatalogPagination } from "@/components/catalog/CatalogPagination";
@@ -13,6 +14,7 @@ import { SiteLayout } from "@/components/layout/SiteLayout";
 import { AppLink } from "@/components/ui/app-link";
 import { DEFAULT_PAGE_SIZE } from "@/domain/product/product.constants";
 import type { CatalogSort } from "@/domain/product/product.types";
+import { dataProvider } from "@/config/features.config";
 import {
   catalogGroups,
   getCatalogSubcategories,
@@ -40,6 +42,7 @@ interface CatalogViewProps {
 
 export function CatalogView({ config, search, onSearchChange, groupOverride }: CatalogViewProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const apiCatalog = dataProvider === "api";
 
   const group =
     groupOverride ??
@@ -74,8 +77,19 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
     return { categorySlugs: slugs };
   }, [config.scope, dynamicCategory]);
   const params = toListParams(search, dynamicScope, DEFAULT_PAGE_SIZE);
-  const listQuery = useQuery({ ...catalogListQuery(params), placeholderData: keepPreviousData });
-  const facetsQuery = useQuery(catalogFacetsQuery(config.routeId, dynamicScope));
+  // Once the API is configured, an unpublished/missing category must not
+  // silently fall back to the legacy fixture scope. Wait for the category
+  // query first, then fetch products and facets using only the API taxonomy.
+  const categoryReady = !apiCatalog || (categoryQuery.isSuccess && dynamicCategory !== undefined);
+  const listQuery = useQuery({
+    ...catalogListQuery(params),
+    enabled: categoryReady,
+    placeholderData: keepPreviousData,
+  });
+  const facetsQuery = useQuery({
+    ...catalogFacetsQuery(config.routeId, dynamicScope),
+    enabled: categoryReady,
+  });
 
   const products = listQuery.data?.items ?? [];
   const total = listQuery.data?.total ?? 0;
@@ -101,6 +115,36 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
     } as Partial<CatalogSearch>);
 
   const resetFilters = () => onSearchChange({ ...EMPTY_SEARCH, sort: search.sort });
+
+  if (apiCatalog && categoryQuery.isPending) {
+    return (
+      <SiteLayout>
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-10" aria-busy="true">
+          <ProductGrid products={[]} loading skeletonCount={DEFAULT_PAGE_SIZE} />
+        </div>
+      </SiteLayout>
+    );
+  }
+
+  if (apiCatalog && categoryQuery.isError) {
+    return (
+      <SiteLayout>
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-10">
+          <CatalogErrorState onRetry={() => void categoryQuery.refetch()} />
+        </div>
+      </SiteLayout>
+    );
+  }
+
+  if (apiCatalog && categoryQuery.isSuccess && dynamicCategory === undefined) {
+    return (
+      <SiteLayout>
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-10">
+          <CatalogUnavailableState categoryName={config.title} />
+        </div>
+      </SiteLayout>
+    );
+  }
 
   const filtersNode = facetsQuery.data ? (
     <CatalogFilters
