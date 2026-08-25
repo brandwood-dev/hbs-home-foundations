@@ -117,7 +117,7 @@ function mapNote(note: ApiOrder["notes"][number]): AdminOrderNote {
   };
 }
 
-function mapOrder(order: ApiOrder): AdminOrder {
+export function mapOrder(order: ApiOrder): AdminOrder {
   return {
     id: order.id,
     orderNumber: order.orderNumber,

@@ -30,7 +30,7 @@ function AdminDashboardPage() {
     <>
       <AdminPageHeader
         title="Tableau de bord"
-        description="Activité commerciale sur les données de démonstration."
+        description="Activité commerciale calculée à partir des commandes et du stock réels."
       />
 
       {error ? (

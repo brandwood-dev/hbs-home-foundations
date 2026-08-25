@@ -208,6 +208,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read aggregated Admin dashboard metrics */
+        get: operations["getAdminDashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/categories": {
         parameters: {
             query?: never;
@@ -1432,7 +1449,7 @@ export interface components {
             /** @enum {string} */
             apiVersion: "v1";
             /** @enum {string} */
-            contractVersion: "1.4.0";
+            contractVersion: "1.5.0";
             releaseVersion: string;
             gitSha: string;
             builtAt: string;
@@ -1618,6 +1635,34 @@ export interface components {
                 metadata: {
                     [key: string]: unknown;
                 };
+            }[];
+        };
+        AdminDashboard: {
+            revenueMinor: number;
+            deliveredCount: number;
+            averageOrderValueMinor: number;
+            totalOrders: number;
+            pendingConfirmationCount: number;
+            preparingCount: number;
+            shippedCount: number;
+            cancelledCount: number;
+            lowStockCount: number;
+            statusBreakdown: {
+                status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                count: number;
+            }[];
+            recentOrders: components["schemas"]["AdminOrder"][];
+            topProducts: {
+                productId: string;
+                name: string;
+                quantity: number;
+                revenueMinor: number;
+            }[];
+            lowStockRows: components["schemas"]["AdminInventoryRow"][];
+            salesByDay: {
+                /** Format: date */
+                date: string;
+                revenueMinor: number;
             }[];
         };
         AdminCategory: {
@@ -3223,7 +3268,7 @@ export interface operations {
                         /** @enum {string} */
                         apiVersion: "v1";
                         /** @enum {string} */
-                        contractVersion: "1.4.0";
+                        contractVersion: "1.5.0";
                         releaseVersion: string;
                         gitSha: string;
                         builtAt: string;
@@ -3294,6 +3339,7 @@ export interface operations {
                             slug: string;
                             name: string;
                             reference: string;
+                            canonicalPath?: string;
                             category: string;
                             material: string;
                             opacityLevel?: string;
@@ -3469,6 +3515,7 @@ export interface operations {
                         slug: string;
                         name: string;
                         reference: string;
+                        canonicalPath?: string;
                         category: string;
                         material: string;
                         opacityLevel?: string;
@@ -3620,6 +3667,7 @@ export interface operations {
                             slug: string;
                             name: string;
                             reference: string;
+                            canonicalPath?: string;
                             category: string;
                             material: string;
                             opacityLevel?: string;
@@ -3771,6 +3819,7 @@ export interface operations {
                         slug: string;
                         name: string;
                         reference: string;
+                        canonicalPath?: string;
                         category: string;
                         material: string;
                         opacityLevel?: string;
@@ -3945,6 +3994,7 @@ export interface operations {
                         slug: string;
                         name: string;
                         reference: string;
+                        canonicalPath?: string;
                         category: string;
                         material: string;
                         opacityLevel?: string;
@@ -4297,6 +4347,97 @@ export interface operations {
                             metadata: {
                                 [key: string]: unknown;
                             };
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    getAdminDashboard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        revenueMinor: number;
+                        deliveredCount: number;
+                        averageOrderValueMinor: number;
+                        totalOrders: number;
+                        pendingConfirmationCount: number;
+                        preparingCount: number;
+                        shippedCount: number;
+                        cancelledCount: number;
+                        lowStockCount: number;
+                        statusBreakdown: {
+                            status: "pending_confirmation" | "confirmed" | "preparing" | "shipped" | "delivered" | "cancelled";
+                            count: number;
+                        }[];
+                        recentOrders: components["schemas"]["AdminOrder"][];
+                        topProducts: {
+                            productId: string;
+                            name: string;
+                            quantity: number;
+                            revenueMinor: number;
+                        }[];
+                        lowStockRows: components["schemas"]["AdminInventoryRow"][];
+                        salesByDay: {
+                            /** Format: date */
+                            date: string;
+                            revenueMinor: number;
                         }[];
                     };
                 };

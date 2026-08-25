@@ -20,6 +20,7 @@ import {
   ApiAdminInventoryRepository,
   ApiAdminProductRepository,
 } from "@/admin/repositories/api/admin-catalog-api-repositories";
+import { ApiAdminDashboardRepository } from "@/admin/repositories/api/admin-dashboard-api-repository";
 import { ApiAdminPromotionRepository } from "@/admin/repositories/api/admin-promotion-api-repository";
 import { ApiAdminOrderRepository } from "@/admin/repositories/api/admin-order-api-repository";
 import { ApiAdminCustomerRepository } from "@/admin/repositories/api/admin-customer-api-repository";
@@ -36,7 +37,10 @@ import { adminConfig } from "@/admin/config/admin.config";
  * homepage est branché sur le repository API depuis la phase 9D.2.
  */
 export const adminRepositories = {
-  dashboard: new MockAdminDashboardRepository(),
+  dashboard:
+    adminConfig.dashboardDataProvider === "api"
+      ? new ApiAdminDashboardRepository()
+      : new MockAdminDashboardRepository(),
   products:
     adminConfig.catalogDataProvider === "api"
       ? new ApiAdminProductRepository()
