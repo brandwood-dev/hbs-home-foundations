@@ -14,29 +14,44 @@ import { buildCategoryIndex, searchCategories } from "@/services/search/search-c
 import { buildProductSearchDoc, type ProductSearchDoc } from "@/services/search/search-index";
 import { calculateSearchScore } from "@/services/search/search-ranking";
 import { ApiContentRepository } from "@/repositories/api/ApiContentRepository";
+import { ApiCategoryRepository } from "@/repositories/api/ApiCategoryRepository";
 
 /**
  * Search adapter backed by the public catalogue API.
  *
- * Categories remain navigation metadata owned by the frontend. Product hits,
- * counts, filters and pagination are always resolved by the API; no catalogue
- * fixture is used in this repository.
+ * Product hits, categories, counts, filters and pagination are resolved from
+ * the API. The fixture category index is used only by the mock repository.
  */
 export class ApiSearchRepository implements SearchRepository {
   private readonly products: ApiProductRepository;
-  private readonly categoryIndex = buildCategoryIndex();
+  private readonly categories: ApiCategoryRepository;
+  private categoryIndexPromise: Promise<ReturnType<typeof buildCategoryIndex>> | null = null;
   private readonly content: ApiContentRepository;
 
   constructor(apiClient: HbsApiClient = new HbsApiClient()) {
     this.products = new ApiProductRepository(apiClient);
+    this.categories = new ApiCategoryRepository(apiClient);
     this.content = new ApiContentRepository(apiClient);
+  }
+
+  private getCategoryIndex(): Promise<ReturnType<typeof buildCategoryIndex>> {
+    if (!this.categoryIndexPromise) {
+      this.categoryIndexPromise = this.categories
+        .list()
+        .then((categories) => buildCategoryIndex(categories))
+        // Category suggestions are supplementary: a taxonomy outage must not
+        // make product/article search unavailable, and must not reintroduce
+        // stale fixture categories in API mode.
+        .catch(() => []);
+    }
+    return this.categoryIndexPromise;
   }
 
   async suggest(
     query: string,
     limit = SEARCH_SUGGESTION_LIMITS.products,
   ): Promise<SearchSuggestionResults> {
-    const [response, articles] = await Promise.all([
+    const [response, articles, categoryIndex] = await Promise.all([
       this.products.list({
         query,
         page: 1,
@@ -44,10 +59,11 @@ export class ApiSearchRepository implements SearchRepository {
         sort: "recommended",
       }),
       this.content.listArticles({ query, page: 1, pageSize: SEARCH_SUGGESTION_LIMITS.articles }),
+      this.getCategoryIndex(),
     ]);
     return {
       products: response.items.map((product) => this.toHit(product, query)),
-      categories: searchCategories(this.categoryIndex, query, SEARCH_SUGGESTION_LIMITS.categories),
+      categories: searchCategories(categoryIndex, query, SEARCH_SUGGESTION_LIMITS.categories),
       articles: articles.items.map((article) => ({
         id: article.id,
         title: article.title,
@@ -70,18 +86,19 @@ export class ApiSearchRepository implements SearchRepository {
       sort: params.sort === "relevance" ? "recommended" : params.sort,
       ...(params.category ? { categories: [params.category] } : {}),
     };
-    const [response, articles] = await Promise.all([
+    const [response, articles, categoryIndex] = await Promise.all([
       this.products.list(listParams),
       this.content.listArticles({
         query: params.query,
         page: 1,
         pageSize: SEARCH_SUGGESTION_LIMITS.articles,
       }),
+      this.getCategoryIndex(),
     ]);
     return {
       query: params.query,
       products: response.items.map((product) => this.toHit(product, params.query)),
-      categories: searchCategories(this.categoryIndex, params.query, 4),
+      categories: searchCategories(categoryIndex, params.query, 4),
       articles: articles.items.map((article) => ({
         id: article.id,
         title: article.title,
