@@ -139,7 +139,9 @@ export function AdminDashboardView({ data }: { data: DashboardMetrics }) {
   const revenueConfig = {
     revenue: { label: "Chiffre d'affaires (milliers)", color: "var(--accent)" },
   } satisfies ChartConfig;
-  const countConfig = { count: { label: "Commandes", color: "var(--accent)" } } satisfies ChartConfig;
+  const countConfig = {
+    count: { label: "Commandes", color: "var(--accent)" },
+  } satisfies ChartConfig;
   const quantityConfig = {
     quantity: { label: "Quantité vendue", color: "var(--accent-dark)" },
   } satisfies ChartConfig;
@@ -240,7 +242,7 @@ export function AdminDashboardView({ data }: { data: DashboardMetrics }) {
                     innerRadius={48}
                     outerRadius={72}
                     paddingAngle={2}
-                cornerRadius={3}
+                    cornerRadius={3}
                   >
                     {statusSeries.map((entry) => (
                       <Cell key={entry.status} fill={entry.fill} stroke="var(--card)" />
