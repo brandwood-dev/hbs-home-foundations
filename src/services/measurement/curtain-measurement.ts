@@ -37,6 +37,19 @@ export function calculateWidthPerPanel(totalWidthCm: number, panelCount: number)
   return Math.max(0, totalWidthCm / panels);
 }
 
+/** Arrondit un panneau de velours au prochain format fabriqué par l'atelier. */
+export function roundVelvetPanelWidth(widthCm: number, rules: MeasurementRules): number {
+  const options = rules.curtain.velvetPanelWidthOptionsCm
+    .filter((option) => Number.isFinite(option) && option > 0)
+    .sort((a, b) => a - b);
+  const matchingOption = options.find((option) => option >= widthCm);
+  if (matchingOption) return matchingOption;
+
+  const step = rules.curtain.velvetPanelWidthStepCm;
+  if (!Number.isFinite(step) || step <= 0) return widthCm;
+  return Math.ceil(widthCm / step) * step;
+}
+
 /** Hauteur finie selon le point d'arrivée souhaité. */
 export function calculateFinishedHeight(
   input: CurtainMeasurementInput,
@@ -64,14 +77,17 @@ export function calculateCurtainMeasurements(
   rules: MeasurementRules,
 ): CurtainMeasurementResult {
   const supportWidthCm = calculateSupportWidth(input, rules);
-  const requiredTotalFabricWidthCm = calculateRequiredFabricWidth(
-    supportWidthCm,
-    input.fullnessRatio,
-  );
-  const recommendedWidthPerPanelCm = calculateWidthPerPanel(
-    requiredTotalFabricWidthCm,
-    input.panelCount,
-  );
+  const panelCount = Math.max(1, Math.floor(input.panelCount || 1));
+  const openingWidthCm = input.openingWidthCm ?? supportWidthCm;
+  // Règle HBS HOME : rideaux et voilages sont toujours confectionnés en ×2.
+  const fullnessRatio = rules.curtain.defaultFullnessRatio;
+  const requiredTotalFabricWidthCm = calculateRequiredFabricWidth(openingWidthCm, fullnessRatio);
+  const rawWidthPerPanelCm = calculateWidthPerPanel(requiredTotalFabricWidthCm, panelCount);
+  const recommendedWidthPerPanelCm =
+    input.material === "velours"
+      ? roundVelvetPanelWidth(rawWidthPerPanelCm, rules)
+      : rawWidthPerPanelCm;
+  const recommendedTotalCurtainWidthCm = recommendedWidthPerPanelCm * panelCount;
   const recommendedFinishedHeightCm = calculateFinishedHeight(input, rules);
 
   const notes: string[] = [];
@@ -85,11 +101,16 @@ export function calculateCurtainMeasurements(
     );
   }
   notes.push(
-    `Ampleur ×${input.fullnessRatio.toLocaleString("fr-FR")} : ${formatCm(supportWidthCm)} × ${input.fullnessRatio.toLocaleString("fr-FR")} = ${formatCm(requiredTotalFabricWidthCm)} de tissu au total.`,
+    `Ampleur ×${fullnessRatio.toLocaleString("fr-FR")} : ${formatCm(openingWidthCm)} de fenêtre × ${fullnessRatio.toLocaleString("fr-FR")} = ${formatCm(requiredTotalFabricWidthCm)} au total.`,
   );
   notes.push(
-    `Réparti sur ${input.panelCount} pan${input.panelCount > 1 ? "s" : ""} : ${formatCm(recommendedWidthPerPanelCm)} de largeur par pan.`,
+    `Réparti sur ${panelCount} pan${panelCount > 1 ? "s" : ""} : ${formatCm(recommendedWidthPerPanelCm)} de largeur par pan.`,
   );
+  if (input.material === "velours" && recommendedTotalCurtainWidthCm > requiredTotalFabricWidthCm) {
+    notes.push(
+      `Velours : largeur arrondie au format fabriqué supérieur, soit ${formatCm(recommendedTotalCurtainWidthCm)} au total.`,
+    );
+  }
 
   if (input.lengthTarget === "sous_rebord") {
     notes.push(
@@ -108,15 +129,17 @@ export function calculateCurtainMeasurements(
 
   const outOfRange =
     supportWidthCm > rules.limits.maxWidthCm ||
-    recommendedFinishedHeightCm > rules.limits.maxHeightCm;
+    recommendedFinishedHeightCm > rules.limits.maxHeightCm ||
+    recommendedTotalCurtainWidthCm > rules.limits.maxWidthCm;
 
   return {
     supportWidthCm,
     requiredTotalFabricWidthCm,
     recommendedWidthPerPanelCm,
+    recommendedTotalCurtainWidthCm,
     recommendedFinishedHeightCm,
-    panelCount: input.panelCount,
-    fullnessRatio: input.fullnessRatio,
+    panelCount,
+    fullnessRatio,
     calculationNotes: notes,
     recommendationLevel: outOfRange ? "custom_required" : "compatible",
   };

@@ -59,7 +59,7 @@ export function MeasurementResultPanel({
           Votre recommandation
         </h2>
 
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {blind ? (
             <>
               <KeyFigure
@@ -80,6 +80,10 @@ export function MeasurementResultPanel({
               <KeyFigure
                 label="Largeur par pan"
                 value={formatCm(result.recommendedWidthPerPanelCm)}
+              />
+              <KeyFigure
+                label="Largeur totale"
+                value={formatCm(result.recommendedTotalCurtainWidthCm)}
               />
               <KeyFigure
                 label="Hauteur finie"

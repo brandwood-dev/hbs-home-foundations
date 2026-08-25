@@ -2,6 +2,7 @@ import type {
   BlindMountingType,
   BlindType,
   CurtainHeader,
+  CurtainMaterial,
   Product,
   ProductVariant,
 } from "@/domain/product/product.types";
@@ -16,9 +17,11 @@ export type CurtainLengthTarget = "rebord_fenetre" | "sous_rebord" | "sol";
 
 export type CurtainFloorFinish = "au_dessus_du_sol" | "ras_du_sol" | "tombe_cassant";
 
-export type CurtainFullnessRatio = 1.5 | 2 | 2.5;
+/** HBS HOME confection standard : deux fois la largeur de l'ouverture. */
+export type CurtainFullnessRatio = 2;
 
-export type CurtainPanelCount = 1 | 2;
+/** Le velours peut nécessiter trois panneaux de 150 cm. */
+export type CurtainPanelCount = number;
 
 export type BlindMountingPosition = "dans_encadrement" | "hors_encadrement";
 
@@ -39,6 +42,11 @@ export interface MeasurementRules {
   curtain: {
     allowedFullnessRatios: CurtainFullnessRatio[];
     defaultFullnessRatio: CurtainFullnessRatio;
+
+    /** Pas de fabrication des panneaux en velours. */
+    velvetPanelWidthStepCm: number;
+    /** Largeurs de panneaux fabriquées par l'atelier. */
+    velvetPanelWidthOptionsCm: number[];
 
     floorAdjustmentsCm: {
       aboveFloor: number;
@@ -85,6 +93,9 @@ export interface CurtainMeasurementInput {
   fullnessRatio: CurtainFullnessRatio;
   panelCount: CurtainPanelCount;
 
+  /** Matière choisie, lorsqu'elle est déjà connue (notamment le velours). */
+  material?: CurtainMaterial;
+
   preferredHeader?: CurtainHeader;
 }
 
@@ -93,6 +104,9 @@ export interface CurtainMeasurementResult {
 
   requiredTotalFabricWidthCm: number;
   recommendedWidthPerPanelCm: number;
+
+  /** Largeur totale livrée après application des contraintes de fabrication. */
+  recommendedTotalCurtainWidthCm: number;
 
   recommendedFinishedHeightCm: number;
 
@@ -141,6 +155,7 @@ export interface MeasurementRecommendationContext {
   preferredBlindType?: BlindType | undefined;
   preferredMountingType?: BlindMountingType | undefined;
   panelCount?: CurtainPanelCount | undefined;
+  material?: CurtainMaterial | undefined;
 }
 
 export interface MeasurementProductRecommendation {

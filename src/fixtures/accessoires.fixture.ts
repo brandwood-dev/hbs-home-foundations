@@ -28,13 +28,14 @@ const seeds: HomeGoodSeed[] = [
     name: "Tringle Extensible Medina",
     reference: "HBS-ACC-MED",
     category: "accessoires",
-    material: "acier",
-    accessoryMaterial: "acier",
+    material: "acier_inoxydable",
+    accessoryMaterial: "acier_inoxydable",
     accessoryType: "tringle_extensible",
     accessoryMountings: ["mur", "plafond"],
     accessoryCompatibilities: ["rideaux_oeillets", "tringle_20_25_mm", "montage_mural"],
     sellingMode: "ready_made",
-    shortDescription: "Tringle en acier Ø 25 mm extensible, supports muraux ou plafond inclus.",
+    shortDescription:
+      "Tringle en acier inoxydable Ø 25 mm extensible, supports muraux ou plafond inclus.",
     longDescription:
       "La tringle Medina s'ajuste à la largeur de la fenêtre sans découpe : le tube intérieur coulisse puis se bloque par vis. Livrée avec deux supports réglables, ses embouts se vissent aux extrémités et retiennent les rideaux à œillets.",
     imageAlt: "Tringle à rideaux en métal noir installée au-dessus d'une fenêtre",
@@ -42,7 +43,7 @@ const seeds: HomeGoodSeed[] = [
     secondaryImage: petitesPieces,
     detailImage: petitesPieces,
     details: hardwareDetails(
-      "Tube acier Ø 25 mm, supports acier, embouts métal",
+      "Tube acier inoxydable Ø 25 mm, supports acier, embouts métal",
       [
         "Extensible sans découpe",
         "Deux supports réglables inclus",
@@ -63,10 +64,10 @@ const seeds: HomeGoodSeed[] = [
     variants: [
       {
         color: COLORS.noir,
-        widthCm: 120,
+        widthCm: 150,
         heightCm: 210,
-        sizeLabel: "120 – 210 cm",
-        minLengthCm: 120,
+        sizeLabel: "150 – 210 cm",
+        minLengthCm: 150,
         maxLengthCm: 210,
         diameterMm: 25,
         priceMinor: 69000,
@@ -87,10 +88,10 @@ const seeds: HomeGoodSeed[] = [
       },
       {
         color: COLORS.argent,
-        widthCm: 120,
+        widthCm: 150,
         heightCm: 210,
-        sizeLabel: "120 – 210 cm",
-        minLengthCm: 120,
+        sizeLabel: "150 – 210 cm",
+        minLengthCm: 150,
         maxLengthCm: 210,
         diameterMm: 25,
         priceMinor: 69000,

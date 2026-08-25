@@ -23,8 +23,9 @@ export function buildCurtainSummary(
     `Projet : ${MEASUREMENT_PROJECT_LABELS[input.projectType]}`,
     `Ouverture : ${OPENING_TYPE_LABELS[input.openingType]}`,
     `Support : ${CURTAIN_SUPPORT_LABELS[input.supportType]} de ${formatCm(result.supportWidthCm)}`,
-    `Ampleur : ×${input.fullnessRatio.toLocaleString("fr-FR")}`,
+    `Ampleur : ×${result.fullnessRatio.toLocaleString("fr-FR")} (règle fixe rideaux et voilages)`,
     `Résultat : ${result.panelCount} pan${result.panelCount > 1 ? "s" : ""} de ${formatCm(result.recommendedWidthPerPanelCm)} minimum`,
+    `Largeur totale recommandée : ${formatCm(result.recommendedTotalCurtainWidthCm)}`,
     `Hauteur recommandée : ${formatCm(result.recommendedFinishedHeightCm)} (${CURTAIN_LENGTH_TARGET_LABELS[input.lengthTarget]}${
       input.lengthTarget === "sol" && input.floorFinish
         ? `, ${CURTAIN_FLOOR_FINISH_LABELS[input.floorFinish].toLowerCase()}`

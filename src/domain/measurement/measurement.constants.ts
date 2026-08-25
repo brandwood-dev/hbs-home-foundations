@@ -20,11 +20,13 @@ export const DEFAULT_MEASUREMENT_RULES: MeasurementRules = {
     minWidthCm: 20,
     maxWidthCm: 1000,
     minHeightCm: 20,
-    maxHeightCm: 500,
+    maxHeightCm: 315,
   },
   curtain: {
-    allowedFullnessRatios: [1.5, 2, 2.5],
+    allowedFullnessRatios: [2],
     defaultFullnessRatio: 2,
+    velvetPanelWidthStepCm: 150,
+    velvetPanelWidthOptionsCm: [150, 300],
     floorAdjustmentsCm: {
       aboveFloor: -2,
       kissFloor: 0,
@@ -85,15 +87,11 @@ export const CURTAIN_FLOOR_FINISH_LABELS: Record<CurtainFloorFinish, string> = {
 };
 
 export const CURTAIN_FULLNESS_LABELS: Record<string, string> = {
-  "1.5": "Légère ×1,5",
-  "2": "Équilibrée ×2",
-  "2.5": "Généreuse ×2,5",
+  "2": "Ampleur standard ×2",
 };
 
 export const CURTAIN_FULLNESS_HINTS: Record<string, string> = {
-  "1.5": "Plis discrets, idéal pour les voilages et les petites fenêtres.",
-  "2": "Le meilleur compromis : des plis réguliers et une bonne tenue.",
-  "2.5": "Drapé très dense, recommandé pour le velours et les grandes baies.",
+  "2": "Deux fois la largeur de la fenêtre pour des plis réguliers.",
 };
 
 export const BLIND_MOUNTING_POSITION_LABELS: Record<BlindMountingPosition, string> = {
@@ -108,4 +106,4 @@ export const RECOMMENDATION_LEVEL_LABELS: Record<MeasurementRecommendationLevel,
   custom_required: "Sur mesure recommandé",
 };
 
-export const FULLNESS_RATIOS: CurtainFullnessRatio[] = [1.5, 2, 2.5];
+export const FULLNESS_RATIOS: CurtainFullnessRatio[] = [2];

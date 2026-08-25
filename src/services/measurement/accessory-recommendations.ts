@@ -18,7 +18,7 @@ export function fitsRodLengthRange(variant: ProductVariant, supportWidthCm: numb
 }
 
 function isRod(product: Product): boolean {
-  return product.accessoryType === "tringle_extensible" || product.accessoryType === "tringle_fixe";
+  return product.accessoryType === "tringle_extensible";
 }
 
 function isRail(product: Product): boolean {
@@ -63,12 +63,15 @@ export function findCompatibleAccessoryRecommendations(options: {
     if (!structural && !(isCompanion && declaredCompatible)) continue;
     if (structural && !declaredCompatible && !wantsRail) continue;
     if (header === "rail" && !wantsRail && structural) continue;
+    if (structural && !wantsRail && product.accessoryMaterial !== "acier_inoxydable") continue;
 
     const variant = structural
       ? product.variants.find(
           (candidate) =>
             candidate.availability !== "out_of_stock" &&
-            fitsRodLengthRange(candidate, supportWidthCm),
+            fitsRodLengthRange(candidate, supportWidthCm) &&
+            (candidate.minLengthCm ?? candidate.widthCm) >= 150 &&
+            (candidate.maxLengthCm ?? candidate.widthCm) <= 300,
         )
       : product.variants.find((candidate) => candidate.availability !== "out_of_stock");
 
