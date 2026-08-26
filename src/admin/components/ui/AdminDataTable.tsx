@@ -43,7 +43,7 @@ export function AdminSearchInput({
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         aria-label={placeholder}
-        className="h-9 pl-8"
+        className="h-10 bg-background pl-8"
       />
     </div>
   );
@@ -69,7 +69,7 @@ export function AdminSelectFilter({
     <div className="flex flex-col gap-1">
       <Label className="text-[11px] text-muted-foreground">{label}</Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="h-9 w-full min-w-[150px]" aria-label={label}>
+        <SelectTrigger className="h-10 w-full min-w-[150px] bg-background" aria-label={label}>
           <SelectValue placeholder={label} />
         </SelectTrigger>
         <SelectContent>
@@ -102,7 +102,7 @@ export function AdminSortSelect({
     <div className="flex flex-col gap-1">
       <Label className="text-[11px] text-muted-foreground">Tri</Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="h-9 min-w-[170px]" aria-label="Trier">
+        <SelectTrigger className="h-10 min-w-[170px] bg-background" aria-label="Trier">
           <ArrowUpDown className="size-3.5" aria-hidden />
           <SelectValue />
         </SelectTrigger>
@@ -120,7 +120,7 @@ export function AdminSortSelect({
 
 export function AdminTableToolbar({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-col gap-3 border-b border-border p-3 sm:flex-row sm:flex-wrap sm:items-end">
+    <div className="flex flex-col gap-3 border-b border-border bg-card p-3 sm:flex-row sm:flex-wrap sm:items-end sm:p-4">
       {children}
     </div>
   );
@@ -129,7 +129,7 @@ export function AdminTableToolbar({ children }: { children: ReactNode }) {
 export function AdminBulkActions({ count, children }: { count: number; children: ReactNode }) {
   if (count === 0) return null;
   return (
-    <div className="flex flex-wrap items-center gap-2 border-b border-border bg-muted/60 px-3 py-2 text-sm">
+    <div className="flex flex-wrap items-center gap-2 border-b border-border bg-muted/70 px-3 py-2 text-sm">
       <span className="font-medium">{count} sélectionné(s)</span>
       {children}
     </div>
@@ -229,7 +229,7 @@ export function AdminDataTable<T>({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-card">
+    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-soft">
       {toolbar ? <AdminTableToolbar>{toolbar}</AdminTableToolbar> : null}
       {bulkActions ? (
         <AdminBulkActions count={selected.length}>
@@ -253,7 +253,7 @@ export function AdminDataTable<T>({
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/50 text-left">
+              <tr className="border-b border-border bg-muted/30 text-left">
                 {bulkActions ? (
                   <th scope="col" className="w-10 px-3 py-2">
                     <Checkbox
@@ -291,7 +291,7 @@ export function AdminDataTable<T>({
               {pageRows.map((row) => {
                 const key = rowKey(row);
                 return (
-                  <tr key={key} className="border-b border-border last:border-0 hover:bg-muted/40">
+                  <tr key={key} className="border-b border-border last:border-0 hover:bg-muted/50">
                     {bulkActions ? (
                       <td className="px-3 py-2">
                         <Checkbox

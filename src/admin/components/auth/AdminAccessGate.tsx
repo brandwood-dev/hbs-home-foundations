@@ -145,7 +145,7 @@ function permissionForPath(pathname: string): string | null {
 
 function AdminGateLoading() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-muted/40">
+    <main className="admin-theme flex min-h-screen items-center justify-center bg-background">
       <p className="flex items-center gap-2 text-sm text-muted-foreground">
         <LoaderCircle className="size-4 animate-spin" /> Vérification de l’accès Admin…
       </p>

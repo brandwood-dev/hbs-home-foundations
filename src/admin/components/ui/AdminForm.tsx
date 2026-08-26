@@ -26,10 +26,13 @@ export function AdminFormSection({
 }) {
   return (
     <section
-      className={cn("min-w-0 rounded-lg border border-border bg-card p-3 sm:p-4", className)}
+      className={cn(
+        "min-w-0 rounded-xl border border-border bg-card p-4 shadow-soft sm:p-5",
+        className,
+      )}
     >
-      <header className="mb-3">
-        <h2 className="text-sm font-semibold">{title}</h2>
+      <header className="mb-4">
+        <h2 className="text-base font-semibold tracking-[-0.01em]">{title}</h2>
         {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
       </header>
       <div className="grid gap-4">{children}</div>
@@ -56,18 +59,18 @@ function FieldWrapper({
 }: BaseFieldProps & { id: string; children: ReactNode }) {
   return (
     <div className={cn("grid min-w-0 gap-1.5", className)}>
-      <Label htmlFor={id} className="text-xs font-medium">
+      <Label htmlFor={id} className="text-sm font-medium">
         {label}
         {required ? <span className="text-red-600"> *</span> : null}
       </Label>
       {children}
       <div className="min-h-4">
         {error ? (
-          <p id={`${id}-error`} role="alert" className="text-[11px] font-medium text-red-600">
+          <p id={`${id}-error`} role="alert" className="text-xs font-medium text-red-600">
             {error}
           </p>
         ) : hint ? (
-          <p id={`${id}-hint`} className="text-[11px] text-muted-foreground">
+          <p id={`${id}-hint`} className="text-xs text-muted-foreground">
             {hint}
           </p>
         ) : (
@@ -108,6 +111,7 @@ export function AdminField({
           placeholder={placeholder ?? ""}
           aria-invalid={Boolean(base.error)}
           aria-describedby={base.error ? `${id}-error` : base.hint ? `${id}-hint` : undefined}
+          className="min-h-24 bg-background"
           onChange={(event) => onChange(event.target.value)}
         />
       ) : (
@@ -119,6 +123,7 @@ export function AdminField({
           placeholder={placeholder ?? ""}
           aria-invalid={Boolean(base.error)}
           aria-describedby={base.error ? `${id}-error` : base.hint ? `${id}-hint` : undefined}
+          className="h-10 bg-background"
           onChange={(event) => onChange(event.target.value)}
         />
       )}
@@ -146,6 +151,7 @@ export function AdminSelectField({
       <Select value={value} onValueChange={onChange} disabled={disabled ?? false}>
         <SelectTrigger
           id={id}
+          className="h-10 bg-background"
           aria-label={base.label}
           aria-invalid={Boolean(base.error)}
           aria-describedby={base.error ? `${id}-error` : hint ? `${id}-hint` : undefined}
@@ -179,12 +185,12 @@ export function AdminSwitchField({
 }) {
   const id = useId();
   return (
-    <div className="flex min-h-12 items-start justify-between gap-4 rounded-md border border-border px-3 py-2.5">
+    <div className="flex min-h-12 items-start justify-between gap-4 rounded-lg border border-border bg-background px-3 py-2.5">
       <div>
-        <Label htmlFor={id} className="text-xs font-medium">
+        <Label htmlFor={id} className="text-sm font-medium">
           {label}
         </Label>
-        {description ? <p className="text-[11px] text-muted-foreground">{description}</p> : null}
+        {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
       </div>
       <Switch id={id} checked={checked} onCheckedChange={onChange} disabled={disabled} />
     </div>
@@ -223,6 +229,7 @@ export function AdminMoneyField({
         inputMode="decimal"
         disabled={disabled}
         value={display}
+        className="h-10 bg-background"
         aria-invalid={Boolean(base.error)}
         onChange={(event) => {
           const raw = event.target.value;
@@ -254,6 +261,7 @@ export function AdminNumberField({
         min={min}
         value={Number.isFinite(value) ? value : 0}
         disabled={disabled}
+        className="h-10 bg-background"
         onChange={(event) => onChange(Number(event.target.value))}
       />
     </FieldWrapper>
@@ -268,7 +276,13 @@ export function AdminDateField({
   const id = useId();
   return (
     <FieldWrapper {...base} id={id}>
-      <Input id={id} type="date" value={value} onChange={(event) => onChange(event.target.value)} />
+      <Input
+        id={id}
+        type="date"
+        value={value}
+        className="h-10 bg-background"
+        onChange={(event) => onChange(event.target.value)}
+      />
     </FieldWrapper>
   );
 }
@@ -287,6 +301,7 @@ export function AdminImageField({
           id={id}
           value={value}
           placeholder="https://…"
+          className="h-10 bg-background"
           onChange={(event) => onChange(event.target.value)}
         />
         {value ? (
