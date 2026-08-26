@@ -27,6 +27,7 @@
   --color-foreground-muted: var(--foreground-muted);
   --color-surface: var(--surface);
   --color-surface-muted: var(--surface-muted);
+  --color-section-tint: var(--section-tint);
   --color-sand: var(--sand);
   --color-taupe: var(--taupe);
   --color-card: var(--card);
@@ -92,6 +93,32 @@
   --shadow-soft: 0 1px 2px oklch(0.234 0.004 95.5 / 4%), 0 12px 32px oklch(0.234 0.004 95.5 / 6%);
 }
 
+/*
+ * Public storefront theme. Keep the Admin theme on the root tokens so this
+ * visual refresh cannot change back-office contrast or status surfaces.
+ */
+.site-theme {
+  --background: oklch(1 0 0);
+  --surface: oklch(1 0 0);
+  /* Near-white for controls, placeholders and image fallbacks. */
+  --surface-muted: oklch(0.99 0.004 78);
+  /* The single warm tint reserved for promotional/editorial surfaces. */
+  --section-tint: oklch(0.975 0.008 78);
+  --sand: oklch(0.947 0.012 78);
+  --foreground-muted: oklch(0.44 0.006 67.4);
+  --border: oklch(0.9 0.008 74.6);
+
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --secondary: var(--surface-muted);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--surface-muted);
+  --muted-foreground: var(--foreground-muted);
+  --input: var(--border);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
@@ -124,6 +151,30 @@
   text-transform: uppercase;
   font-weight: 600;
   color: var(--color-accent-dark);
+}
+
+@utility hero-title {
+  font-size: clamp(2rem, 4.4vw, 3.5rem);
+  line-height: 1.1;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+@utility section-title {
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  line-height: 1.15;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+@utility card-title {
+  font-size: clamp(1.125rem, 1.5vw, 1.375rem);
+  line-height: 1.25;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
 }
 
 @utility marquee-track {

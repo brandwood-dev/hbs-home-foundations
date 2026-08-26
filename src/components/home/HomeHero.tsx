@@ -10,7 +10,7 @@ export function HomeHero({ content }: { content: HomeHeroContent }) {
       <div className="mx-auto grid max-w-7xl items-center gap-8 px-6 py-10 lg:grid-cols-2 lg:gap-16 lg:py-20">
         <div className="order-2 lg:order-1">
           <p className="eyebrow">{tagline}</p>
-          <h1 className="mt-4 text-4xl leading-[1.1] sm:text-5xl lg:text-6xl">{title}</h1>
+          <h1 className="hero-title mt-4">{title}</h1>
           <p className="mt-5 max-w-lg text-base leading-relaxed text-foreground-muted">{text}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <AppLink

@@ -18,7 +18,7 @@ export function CustomAndProfessionalSection({ content }: { content: CustomProfe
             className="flex flex-col rounded-sm border border-border bg-surface p-6 sm:p-10"
           >
             <p className="eyebrow">{column.tagline}</p>
-            <h2 className="mt-3 text-2xl sm:text-3xl">{column.title}</h2>
+            <h2 className="section-title mt-3">{column.title}</h2>
             <p className="mt-4 flex-1 text-base leading-relaxed text-foreground-muted">
               {column.text}
             </p>

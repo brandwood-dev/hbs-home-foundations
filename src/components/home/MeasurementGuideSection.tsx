@@ -57,7 +57,7 @@ export function MeasurementGuideSection({ content }: { content: MeasurementGuide
       <div className="grid items-center gap-10 rounded-sm border border-border bg-surface p-6 sm:p-10 lg:grid-cols-2">
         <div>
           <p className="eyebrow">Guide</p>
-          <h2 id="home-measurement-guide" className="mt-3 text-3xl sm:text-4xl">
+          <h2 id="home-measurement-guide" className="section-title mt-3">
             {content.title}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-foreground-muted">{content.text}</p>

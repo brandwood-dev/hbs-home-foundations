@@ -8,7 +8,7 @@ export function SiteFooter() {
   const socials = Object.entries(socialLinks).filter(([, url]) => url !== "");
 
   return (
-    <footer className="mt-20 border-t border-border bg-surface-muted">
+    <footer className="mt-20 border-t border-border bg-section-tint">
       <div className="mx-auto max-w-7xl px-6 py-14">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {footerColumns.map((column) => (
