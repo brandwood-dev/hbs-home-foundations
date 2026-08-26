@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { GlobalSearchPanel } from "@/components/search/GlobalSearchPanel";
+import { WhatsAppFloatingButton } from "@/components/WhatsAppFloatingButton";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   return (
@@ -14,6 +15,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <SiteFooter />
       <CartDrawer />
       <GlobalSearchPanel />
+      <WhatsAppFloatingButton />
     </div>
   );
 }
