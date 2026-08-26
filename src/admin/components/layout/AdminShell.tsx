@@ -40,7 +40,7 @@ export function AdminSidebar({
     <nav
       aria-label="Navigation du back-office"
       className={cn(
-        "flex h-full flex-col gap-3 overflow-hidden p-3",
+        "flex h-full flex-col gap-3 overflow-hidden p-3 lg:gap-2 lg:p-2.5",
         collapsed ? "items-center" : "",
       )}
     >
@@ -48,7 +48,7 @@ export function AdminSidebar({
         href="/admin"
         onClick={onNavigate}
         className={cn(
-          "flex min-h-10 items-center gap-2 px-2 py-1 text-sm font-semibold tracking-widest text-foreground uppercase",
+          "flex min-h-10 items-center gap-2 px-2 py-1 text-sm font-semibold tracking-widest text-foreground uppercase lg:min-h-9",
           collapsed ? "justify-center" : "",
         )}
         title={collapsed ? "HBS HOME Admin" : undefined}
@@ -61,15 +61,15 @@ export function AdminSidebar({
         ) : null}
       </AppLink>
 
-      <div className={cn("flex-1 space-y-3", collapsed ? "w-full" : "")}>
+      <div className={cn("min-h-0 flex-1 space-y-3 lg:space-y-2", collapsed ? "w-full" : "")}>
         {visibleGroups.map((group) => (
           <div key={group.title}>
             {!collapsed ? (
-              <p className="px-2 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
+              <p className="px-2 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase lg:pb-0.5">
                 {group.title}
               </p>
             ) : null}
-            <ul className="space-y-0.5">
+            <ul className="space-y-0.5 lg:space-y-0">
               {group.items.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(pathname, item.href);
@@ -81,7 +81,7 @@ export function AdminSidebar({
                       aria-current={active ? "page" : undefined}
                       title={collapsed ? item.label : undefined}
                       className={cn(
-                        "flex min-h-10 items-center gap-2.5 rounded-md px-2.5 text-sm transition-colors",
+                        "flex min-h-10 items-center gap-2.5 rounded-md px-2.5 text-sm transition-colors lg:min-h-9",
                         collapsed ? "justify-center px-0" : "",
                         active
                           ? "bg-primary/10 font-medium text-primary"
@@ -102,7 +102,7 @@ export function AdminSidebar({
       <AppLink
         href="/"
         className={cn(
-          "flex min-h-10 items-center gap-2 rounded-md px-2.5 text-sm text-muted-foreground hover:bg-muted",
+          "flex min-h-10 items-center gap-2 rounded-md px-2.5 text-sm text-muted-foreground hover:bg-muted lg:min-h-9",
           collapsed ? "justify-center px-0" : "",
         )}
         title={collapsed ? "Voir le site public" : undefined}
