@@ -450,6 +450,13 @@ export interface AdminAuditRepository {
   list(): Promise<AdminAuditLog[]>;
 }
 
+export interface AdminDashboardPeriod {
+  /** Inclusive ISO calendar date in the Admin timezone. */
+  dateFrom?: string;
+  /** Inclusive ISO calendar date in the Admin timezone. */
+  dateTo?: string;
+}
+
 export interface DashboardMetrics {
   revenueMinor: number;
   deliveredCount: number;
@@ -468,5 +475,5 @@ export interface DashboardMetrics {
 }
 
 export interface AdminDashboardRepository {
-  metrics(): Promise<DashboardMetrics>;
+  metrics(period?: AdminDashboardPeriod): Promise<DashboardMetrics>;
 }

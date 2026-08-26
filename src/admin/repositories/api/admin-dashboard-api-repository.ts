@@ -6,7 +6,11 @@ import {
   type AdminAccessTokenProvider,
 } from "@/admin/repositories/api/admin-catalog-api-repositories";
 import { mapOrder } from "@/admin/repositories/api/admin-order-api-repository";
-import type { AdminDashboardRepository, DashboardMetrics } from "@/admin/repositories/interfaces";
+import type {
+  AdminDashboardPeriod,
+  AdminDashboardRepository,
+  DashboardMetrics,
+} from "@/admin/repositories/interfaces";
 import type { AdminOrderStatus } from "@/admin/types/admin.types";
 
 type ApiDashboard = components["schemas"]["AdminDashboard"];
@@ -34,13 +38,15 @@ export class ApiAdminDashboardRepository implements AdminDashboardRepository {
     private readonly accessToken: AdminAccessTokenProvider = defaultAccessToken,
   ) {}
 
-  async metrics(): Promise<DashboardMetrics> {
+  async metrics(period: AdminDashboardPeriod = {}): Promise<DashboardMetrics> {
     const token = await this.accessToken();
-    const response = await this.client.get<ApiDashboard>(
-      "/api/v1/admin/dashboard",
-      undefined,
-      token,
-    );
+    const query = new URLSearchParams();
+    if (period.dateFrom) query.set("dateFrom", period.dateFrom);
+    if (period.dateTo) query.set("dateTo", period.dateTo);
+    const path = query.size
+      ? `/api/v1/admin/dashboard?${query.toString()}`
+      : "/api/v1/admin/dashboard";
+    const response = await this.client.get<ApiDashboard>(path, undefined, token);
     return {
       revenueMinor: response.revenueMinor,
       deliveredCount: response.deliveredCount,

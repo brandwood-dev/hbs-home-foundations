@@ -141,7 +141,7 @@ export function AdminTabs({
   const [value, setValue] = useState(defaultValue ?? tabs[0]?.value ?? "");
   return (
     <Tabs value={value} onValueChange={setValue}>
-      <TabsList className="mb-4 flex h-auto flex-wrap justify-start gap-1">
+      <TabsList className="mb-4 flex h-auto w-full flex-nowrap justify-start gap-1 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
         {tabs.map((tab) => (
           <TabsTrigger key={tab.value} value={tab.value} className="min-h-9">
             {tab.label}

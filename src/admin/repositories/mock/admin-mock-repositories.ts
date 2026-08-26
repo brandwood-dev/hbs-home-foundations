@@ -47,6 +47,7 @@ import type {
   AdminCustomerListParams,
   AdminCustomerRepository,
   AdminCustomerRow,
+  AdminDashboardPeriod,
   AdminDashboardRepository,
   AdminInventoryRepository,
   AdminOrderCounters,
@@ -1614,9 +1615,14 @@ export class MockAdminAuditRepository implements AdminAuditRepository {
 }
 
 export class MockAdminDashboardRepository implements AdminDashboardRepository {
-  async metrics(): Promise<DashboardMetrics> {
+  async metrics(period: AdminDashboardPeriod = {}): Promise<DashboardMetrics> {
     const db = getDb();
-    const orders = db.orders;
+    const orders = db.orders.filter((order) => {
+      const date = order.createdAt.slice(0, 10);
+      return (
+        (!period.dateFrom || date >= period.dateFrom) && (!period.dateTo || date <= period.dateTo)
+      );
+    });
     const delivered = orders.filter((order) => order.status === "delivered");
 
     // Chiffre d'affaires = somme des sous-totaux produits des commandes livrées.

@@ -91,10 +91,10 @@ describe("ApiAdminDashboardRepository", () => {
       async () => "admin-token",
     );
 
-    const metrics = await repository.metrics();
+    const metrics = await repository.metrics({ dateFrom: "2026-08-01", dateTo: "2026-08-25" });
 
     expect(fetchImplementation).toHaveBeenCalledWith(
-      "https://api.example.test/api/v1/admin/dashboard",
+      "https://api.example.test/api/v1/admin/dashboard?dateFrom=2026-08-01&dateTo=2026-08-25",
       expect.objectContaining({
         method: "GET",
         headers: expect.objectContaining({ authorization: "Bearer admin-token" }),

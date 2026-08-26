@@ -4399,7 +4399,10 @@ export interface operations {
     };
     getAdminDashboard: {
         parameters: {
-            query?: never;
+            query?: {
+                dateFrom?: string;
+                dateTo?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4438,6 +4441,28 @@ export interface operations {
                             /** Format: date */
                             date: string;
                             revenueMinor: number;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
                         }[];
                     };
                 };

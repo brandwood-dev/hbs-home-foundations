@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient, type QueryKey } from "@tanstack/
 import { toast } from "sonner";
 import { adminRepositories } from "@/admin/repositories/adminRepositoryFactory";
 import type {
+  AdminDashboardPeriod,
   AdminCustomerListParams,
   AdminOrderListParams,
 } from "@/admin/repositories/interfaces";
@@ -9,7 +10,7 @@ import type {
 /** Clés de cache du back-office. */
 export const adminKeys = {
   all: ["admin"] as const,
-  dashboard: () => ["admin", "dashboard"] as const,
+  dashboard: (period: AdminDashboardPeriod = {}) => ["admin", "dashboard", period] as const,
   products: () => ["admin", "products"] as const,
   product: (id: string) => ["admin", "products", id] as const,
   categories: () => ["admin", "categories"] as const,
@@ -37,8 +38,10 @@ function clientQuery<T>(key: QueryKey, fn: () => Promise<T>) {
   return { queryKey: key, queryFn: fn, staleTime: 0, retry: false };
 }
 
-export function useAdminDashboard() {
-  return useQuery(clientQuery(adminKeys.dashboard(), () => adminRepositories.dashboard.metrics()));
+export function useAdminDashboard(period: AdminDashboardPeriod = {}) {
+  return useQuery(
+    clientQuery(adminKeys.dashboard(period), () => adminRepositories.dashboard.metrics(period)),
+  );
 }
 
 export function useAdminProducts() {
