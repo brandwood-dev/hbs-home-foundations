@@ -6,6 +6,7 @@ export type ApiReadiness = components["schemas"]["ReadinessResponse"];
 export type ApiVersion = components["schemas"]["VersionResponse"];
 export type ApiAdminSession = components["schemas"]["AdminSession"];
 export type ApiAuditList = components["schemas"]["AuditListResponse"];
+export type ApiAdminCategoryImageUpload = components["schemas"]["AdminCategoryImageUpload"];
 
 export class HbsApiError extends Error {
   readonly status: number;
@@ -159,6 +160,54 @@ export class HbsApiClient {
       ...(signal ? { signal } : {}),
       ...(headers ? { headers } : {}),
     });
+  }
+
+  public async postFile<T>(
+    path: string,
+    file: Blob,
+    accessToken?: string,
+    headers: Record<string, string> = {},
+    signal?: AbortSignal,
+  ): Promise<T> {
+    if (!this.baseUrl) {
+      throw new HbsApiError(0, API_BASE_URL_MISSING_ERROR);
+    }
+
+    const requestHeaders: Record<string, string> = {
+      accept: "application/json, application/problem+json",
+      ...headers,
+    };
+    if (accessToken) requestHeaders["authorization"] = `Bearer ${accessToken}`;
+
+    let response: Response;
+    try {
+      response = await this.fetchImplementation(`${this.baseUrl}${path}`, {
+        method: "POST",
+        credentials: "include",
+        headers: requestHeaders,
+        body: file,
+        ...(signal ? { signal } : {}),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Fetch API failed.";
+      throw new HbsApiError(0, message);
+    }
+
+    if (!response.ok) {
+      const problem = await readProblem(response);
+      const validationDetails = problem?.errors?.length
+        ? ` ${problem.errors.map((item) => `${item.path}: ${item.message}`).join("; ")}`
+        : "";
+      throw new HbsApiError(
+        response.status,
+        problem
+          ? `${problem.detail}${validationDetails}`
+          : `HBS HOME API request failed with status ${response.status}.`,
+        problem,
+      );
+    }
+
+    return (await response.json()) as T;
   }
 
   public put<T>(

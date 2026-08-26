@@ -1,6 +1,7 @@
 export {
   HbsApiClient,
   HbsApiError,
+  type ApiAdminCategoryImageUpload,
   type ApiAdminSession,
   type ApiAuditList,
   type ApiHealth,

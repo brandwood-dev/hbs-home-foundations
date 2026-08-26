@@ -36,8 +36,8 @@ Le back-office consomme les routes catalogue avec le même bearer Supabase. Les 
 `categories.write`, et la publication/archivage produit requiert `products.publish`. Les mutations
 sont protégées par `aal2` et écrivent un événement d'audit.
 
-Une catégorie expose ses métadonnées éditoriales (`imageUrl`, `seoTitle`, `seoDescription` et
-`showInNavigation`). Un attribut expose son ordre, son usage comme axe de variante, son statut
+Une catégorie expose ses métadonnées éditoriales (`imageUrl`, `imageMediaAssetId`, `seoTitle`,
+`seoDescription` et `showInNavigation`). Un attribut expose son ordre, son usage comme axe de variante, son statut
 système, ses options enrichies (`hex`, `family`, `isActive`) et les slugs des catégories auxquelles
 il est associé (`categorySlugs`). Une liste vide de catégories signifie « toutes les catégories ».
 
@@ -53,6 +53,7 @@ association catalogue est refusé par l'API afin de préserver l'intégrité mé
 ```text
 GET    /api/v1/admin/categories
 POST   /api/v1/admin/categories
+POST   /api/v1/admin/categories/image
 PATCH  /api/v1/admin/categories/:id
 GET    /api/v1/admin/attributes
 POST   /api/v1/admin/attributes
@@ -67,6 +68,20 @@ POST   /api/v1/admin/products/:id/variants
 PATCH  /api/v1/admin/products/:id/variants/:variantId
 POST   /api/v1/admin/products/:id/variants/:variantId/archive
 ```
+
+### Upload des images de catégories (phase 10D)
+
+L’interface Admin peut envoyer directement un fichier JPEG, PNG ou WebP à
+`POST /api/v1/admin/categories/image` avec la session MFA courante. L’API limite le payload à
+8 MiB, valide le contenu réel, redimensionne sans agrandissement au maximum à 2400 px, convertit
+le fichier en WebP (qualité 82), puis le stocke dans le bucket public `catalog-media`. La réponse
+contient l’URL publique et l’identifiant de l’asset ; cet identifiant doit être transmis dans
+`imageMediaAssetId` lors de la création ou modification de la catégorie. Une URL externe reste
+possible en secours en laissant cet identifiant nul.
+
+Le secret Storage reste exclusivement côté API (`SUPABASE_STORAGE_SECRET_KEY`). Si cette variable
+manque, l’endpoint répond `503 MEDIA_STORAGE_NOT_CONFIGURED` et aucune donnée n’est inventée côté
+frontend.
 
 Les produits et variantes utilisent des montants entiers en millimes. Le champ JSON `payload` reste
 une projection de compatibilité ; les attributs administrables sont désormais normalisés dans

@@ -106,6 +106,12 @@ de couleur/statut) sont persistées dans les tables normalisées. Les associatio
 exprimées par les slugs de catégories API ; une liste vide signifie toutes les catégories.
 L'archivage d'une ressource utilisée est refusé par l'API afin de préserver l'intégrité du catalogue.
 
+Les images de catégories et sous-catégories utilisent `POST /api/v1/admin/categories/image` : le
+navigateur envoie un JPEG, PNG ou WebP (8 MiB maximum), puis l'API convertit et stocke toujours un
+WebP dans `catalog-media`. Le formulaire conserve l'`imageMediaAssetId` renvoyé par l'API lors de
+la création ou modification de la catégorie. Le secret Supabase Storage n'est jamais exposé au
+navigateur ; si le stockage n'est pas configuré, l'interface affiche l'erreur explicite de l'API.
+
 Les valeurs dynamiques de la fiche produit sont maintenant chargées depuis `GET /admin/attributes`
 et affichées dans l'onglet « Caractéristiques ». Lors d'un enregistrement, elles sont envoyées dans
 `attributes`, validées par l'API selon le type, la catégorie et les options actives, puis persistées

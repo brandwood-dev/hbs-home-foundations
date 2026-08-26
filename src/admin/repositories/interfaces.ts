@@ -49,11 +49,20 @@ export interface AdminProductRepository extends CrudRepository<
 }
 
 export type AdminCategoryInput = Omit<AdminCategory, "id">;
+export interface AdminCategoryImageUpload {
+  mediaAssetId: string;
+  storagePath: string;
+  publicUrl: string;
+  mimeType: "image/webp";
+  width: number;
+  height: number;
+}
 export interface AdminCategoryRepository extends CrudRepository<
   AdminCategory,
   AdminCategoryInput,
   Partial<AdminCategoryInput>
 > {
+  uploadImage(file: File, name: string, alt: string): Promise<AdminCategoryImageUpload>;
   move(id: string, direction: "up" | "down"): Promise<void>;
 }
 

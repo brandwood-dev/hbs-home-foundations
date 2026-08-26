@@ -125,6 +125,42 @@ describe("HbsApiClient", () => {
     );
   });
 
+  it("sends category image uploads as authenticated binary payloads", async () => {
+    const fetchImplementation = vi.fn<typeof fetch>().mockResolvedValue(
+      Response.json({
+        mediaAssetId: "44444444-4444-4444-8444-444444444444",
+        storagePath: "catalog/categories/test.webp",
+        publicUrl: "https://cdn.example.test/catalog/categories/test.webp",
+        mimeType: "image/webp",
+        width: 120,
+        height: 80,
+      }),
+    );
+    const client = new HbsApiClient({
+      baseUrl: "https://api.example.test",
+      fetch: fetchImplementation,
+    });
+    const file = new Blob(["fake-image"], { type: "image/png" });
+
+    await client.postFile("/api/v1/admin/categories/image", file, "token", {
+      "content-type": file.type,
+      "x-image-name": "Rideaux",
+    });
+
+    expect(fetchImplementation).toHaveBeenCalledWith(
+      "https://api.example.test/api/v1/admin/categories/image",
+      expect.objectContaining({
+        method: "POST",
+        body: file,
+        headers: expect.objectContaining({
+          authorization: "Bearer token",
+          "content-type": "image/png",
+          "x-image-name": "Rideaux",
+        }),
+      }),
+    );
+  });
+
   it("serializes authenticated homepage draft updates as PUT", async () => {
     const fetchImplementation = vi
       .fn<typeof fetch>()

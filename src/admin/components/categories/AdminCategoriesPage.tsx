@@ -32,6 +32,7 @@ import {
 } from "@/admin/components/ui/AdminForm";
 import { AdminSearchInput } from "@/admin/components/ui/AdminDataTable";
 import { useAdminCategories, useAdminProducts } from "@/admin/hooks/admin.queries";
+import { adminRepositories } from "@/admin/repositories/adminRepositoryFactory";
 import {
   useDeleteAdminCategory,
   useMoveAdminCategory,
@@ -51,6 +52,7 @@ interface CategoryDraft {
   showInNavigation: boolean;
   description: string;
   imageUrl: string;
+  imageMediaAssetId: string;
   seoTitle: string;
   seoDescription: string;
 }
@@ -60,6 +62,9 @@ interface CategoryNode extends AdminCategory {
 }
 
 type FormErrors = Partial<Record<"name" | "slug" | "parentId", string>>;
+
+const CATEGORY_IMAGE_MAX_BYTES = 8 * 1024 * 1024;
+const CATEGORY_IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 function toDraft(category?: AdminCategory, parentId = "", order = 0): CategoryDraft {
   return {
@@ -72,6 +77,7 @@ function toDraft(category?: AdminCategory, parentId = "", order = 0): CategoryDr
     showInNavigation: category?.showInNavigation ?? true,
     description: category?.description ?? "",
     imageUrl: category?.imageUrl ?? "",
+    imageMediaAssetId: category?.imageMediaAssetId ?? "",
     seoTitle: category?.seoTitle ?? "",
     seoDescription: category?.seoDescription ?? "",
   };
@@ -156,6 +162,8 @@ export function AdminCategoriesPage() {
   const [draft, setDraft] = useState<CategoryDraft | null>(null);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [pendingDelete, setPendingDelete] = useState<AdminCategory | null>(null);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
   const productCount = useMemo(() => {
     const counts = new Map<string, number>();
@@ -184,12 +192,48 @@ export function AdminCategoriesPage() {
     const order = siblings.reduce((max, category) => Math.max(max, category.order), -1) + 1;
     if (parentId) setExpanded(parentId, true);
     setFormErrors({});
+    setImageUploadError(null);
     setDraft(toDraft(undefined, parentId, order));
   }
 
   function openEdit(category: AdminCategory) {
     setFormErrors({});
+    setImageUploadError(null);
     setDraft(toDraft(category));
+  }
+
+  async function uploadCategoryImage(file: File): Promise<void> {
+    if (!draft) return;
+    setImageUploadError(null);
+    if (!CATEGORY_IMAGE_MIME_TYPES.includes(file.type)) {
+      setImageUploadError("Format non accepté. Utilisez JPG, PNG ou WebP.");
+      return;
+    }
+    if (file.size > CATEGORY_IMAGE_MAX_BYTES) {
+      setImageUploadError("L’image ne doit pas dépasser 8 Mo.");
+      return;
+    }
+    setImageUploading(true);
+    try {
+      const uploaded = await adminRepositories.categories.uploadImage(
+        file,
+        draft.name || file.name,
+        draft.name || "Image de catégorie",
+      );
+      setDraft((current) =>
+        current
+          ? {
+              ...current,
+              imageUrl: uploaded.publicUrl,
+              imageMediaAssetId: uploaded.mediaAssetId,
+            }
+          : current,
+      );
+    } catch (reason) {
+      setImageUploadError(reason instanceof Error ? reason.message : "Téléversement impossible.");
+    } finally {
+      setImageUploading(false);
+    }
   }
 
   function validateDraft(value: CategoryDraft): FormErrors {
@@ -218,7 +262,7 @@ export function AdminCategoriesPage() {
   }
 
   async function submit() {
-    if (!draft || saveCategory.isPending) return;
+    if (!draft || saveCategory.isPending || imageUploading) return;
     const errors = validateDraft(draft);
     setFormErrors(errors);
     if (Object.keys(errors).length > 0) return;
@@ -234,7 +278,8 @@ export function AdminCategoriesPage() {
           isActive: draft.isActive,
           showInNavigation: draft.showInNavigation,
           description: draft.description.trim(),
-          ...(draft.imageUrl.trim() ? { imageUrl: draft.imageUrl.trim() } : {}),
+          imageUrl: draft.imageUrl.trim(),
+          imageMediaAssetId: draft.imageMediaAssetId || "",
           seoTitle: draft.seoTitle.trim(),
           seoDescription: draft.seoDescription.trim(),
         },
@@ -431,13 +476,20 @@ export function AdminCategoriesPage() {
           <>
             <Button
               variant="outline"
-              disabled={saveCategory.isPending}
+              disabled={saveCategory.isPending || imageUploading}
               onClick={() => setDraft(null)}
             >
               Annuler
             </Button>
-            <Button disabled={saveCategory.isPending} onClick={() => void submit()}>
-              {saveCategory.isPending ? "Enregistrement…" : "Enregistrer"}
+            <Button
+              disabled={saveCategory.isPending || imageUploading}
+              onClick={() => void submit()}
+            >
+              {imageUploading
+                ? "Téléversement…"
+                : saveCategory.isPending
+                  ? "Enregistrement…"
+                  : "Enregistrer"}
             </Button>
           </>
         }
@@ -501,7 +553,11 @@ export function AdminCategoriesPage() {
               <AdminImageField
                 label="Image de catégorie"
                 value={draft.imageUrl}
-                onChange={(value) => setDraft({ ...draft, imageUrl: value })}
+                hint="JPG, PNG ou WebP, 8 Mo maximum. L’upload est converti en WebP côté API."
+                onChange={(value) => setDraft({ ...draft, imageUrl: value, imageMediaAssetId: "" })}
+                onUpload={uploadCategoryImage}
+                isUploading={imageUploading}
+                uploadError={imageUploadError}
               />
             </AdminFormSection>
 
