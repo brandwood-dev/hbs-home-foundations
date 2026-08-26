@@ -215,6 +215,7 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
               total={total}
               sort={search.sort}
               activeFilterCount={activeFilterCount}
+              filtersOpen={filtersOpen}
               onSortChange={(sort: CatalogSort) => update({ sort })}
               onOpenFilters={() => setFiltersOpen(true)}
             />

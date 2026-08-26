@@ -9,6 +9,7 @@ import { SEARCH_MIN_QUERY_LENGTH } from "@/domain/search/search.constants";
 import { useSearchHistory } from "@/hooks/search/useSearchHistory";
 import { useSearchPanel } from "@/hooks/search/useSearchPanel";
 import { useSearchSuggestions } from "@/hooks/search/useSearchSuggestions";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { trackEvent } from "@/lib/analytics/analytics";
 import { isSearchableQuery } from "@/services/search/normalize-search-query";
 
@@ -19,6 +20,7 @@ export function GlobalSearchPanel() {
   const { isOpen, close } = useSearchPanel();
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
+  const panelRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { recentSearches, addSearch, removeSearch, clearHistory } = useSearchHistory();
   const { suggestions, isFetching, isTyping, debouncedQuery, isEmpty } = useSearchSuggestions(
@@ -26,21 +28,21 @@ export function GlobalSearchPanel() {
     isOpen,
   );
 
+  useFocusTrap({
+    active: isOpen,
+    containerRef: panelRef,
+    initialFocusRef: inputRef,
+    onEscape: close,
+  });
+
   useEffect(() => {
     if (!isOpen) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
-    };
-    document.addEventListener("keydown", onKeyDown);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const focusTimeout = setTimeout(() => inputRef.current?.focus(), 30);
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
-      clearTimeout(focusTimeout);
     };
-  }, [isOpen, close]);
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) setQuery("");
@@ -74,9 +76,11 @@ export function GlobalSearchPanel() {
         className="absolute inset-0 h-full w-full cursor-default bg-foreground/40"
       />
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="Recherche"
+        tabIndex={-1}
         className="relative mx-auto max-h-[85vh] w-full overflow-y-auto bg-surface shadow-lg sm:max-w-2xl sm:rounded-b-lg"
       >
         <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-border bg-surface p-3">

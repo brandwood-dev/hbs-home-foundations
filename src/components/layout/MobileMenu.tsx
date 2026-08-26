@@ -4,6 +4,7 @@ import { ChevronDown, Package, Phone, X } from "lucide-react";
 import { AppLink } from "@/components/ui/app-link";
 import { storeConfig } from "@/config/store.config";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 import type { NavItem } from "@/types/navigation.types";
 
 interface MobileMenuProps {
@@ -15,22 +16,24 @@ interface MobileMenuProps {
 export function MobileMenu({ open, onClose, navigation }: MobileMenuProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const hydrated = useIsHydrated();
 
+  useFocusTrap({
+    active: open && hydrated,
+    containerRef: panelRef,
+    initialFocusRef: closeButtonRef,
+    onEscape: onClose,
+  });
+
   useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKeyDown);
+    if (!open || !hydrated) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    panelRef.current?.focus();
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
     };
-  }, [open, onClose]);
+  }, [open, hydrated]);
 
   if (!open || !hydrated) return null;
 
@@ -44,17 +47,21 @@ export function MobileMenu({ open, onClose, navigation }: MobileMenuProps) {
       />
       <div
         ref={panelRef}
+        id="mobile-navigation-dialog"
         role="dialog"
         aria-modal="true"
-        aria-label="Menu principal"
+        aria-labelledby="mobile-navigation-title"
         tabIndex={-1}
         className="absolute inset-y-0 left-0 flex h-full w-[88%] max-w-sm flex-col bg-surface opacity-100 shadow-2xl outline-none"
         style={{ backgroundColor: "var(--surface)" }}
       >
         <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3">
-          <span className="font-display text-xl tracking-wide">{storeConfig.brandName}</span>
+          <span id="mobile-navigation-title" className="font-display text-xl tracking-wide">
+            {storeConfig.brandName}
+          </span>
           <button
             type="button"
+            ref={closeButtonRef}
             onClick={onClose}
             aria-label="Fermer le menu"
             className="flex h-11 w-11 items-center justify-center rounded-md text-foreground hover:bg-surface-muted"
