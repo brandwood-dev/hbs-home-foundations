@@ -33,6 +33,8 @@ export function SiteHeader() {
           type="button"
           onClick={() => setMobileOpen(true)}
           aria-label="Ouvrir le menu"
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-navigation-dialog"
           className="flex h-11 w-11 items-center justify-center rounded-md hover:bg-surface-muted"
         >
           <Menu className="h-5 w-5" aria-hidden="true" />
@@ -152,6 +154,8 @@ export function SiteHeader() {
                 <AppLink
                   href={item.href}
                   onFocus={() => setOpenMenuId(item.megaMenu ? item.id : null)}
+                  aria-haspopup={item.megaMenu ? "true" : undefined}
+                  aria-expanded={item.megaMenu ? openMenuId === item.id : undefined}
                   activeProps={{ className: "text-accent-dark" }}
                   className={`inline-flex items-center px-3 py-3 text-sm tracking-wide transition-colors hover:text-accent-dark ${
                     item.highlight ? "text-accent-dark" : "text-foreground"

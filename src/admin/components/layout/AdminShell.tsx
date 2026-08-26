@@ -88,7 +88,7 @@ export function AdminSidebar({
                           : "text-foreground/80 hover:bg-muted",
                       )}
                     >
-                      <Icon className="size-4 shrink-0" />
+                      <Icon className="size-4 shrink-0" aria-hidden="true" />
                       {!collapsed ? <span className="truncate">{item.label}</span> : null}
                     </AppLink>
                   </li>
@@ -107,7 +107,7 @@ export function AdminSidebar({
         )}
         title={collapsed ? "Voir le site public" : undefined}
       >
-        <ExternalLink className="size-4" />
+        <ExternalLink className="size-4" aria-hidden="true" />
         {!collapsed ? "Voir le site public" : null}
       </AppLink>
     </nav>
@@ -159,7 +159,7 @@ export function AdminTopbar({
         onClick={onOpenMenu}
         aria-label="Ouvrir la navigation"
       >
-        <MenuIcon className="size-5" />
+        <MenuIcon className="size-5" aria-hidden="true" />
       </Button>
       <Button
         variant="ghost"
@@ -170,9 +170,9 @@ export function AdminTopbar({
         title={sidebarCollapsed ? "Étendre la navigation" : "Réduire la navigation"}
       >
         {sidebarCollapsed ? (
-          <PanelLeftOpen className="size-5" />
+          <PanelLeftOpen className="size-5" aria-hidden="true" />
         ) : (
-          <PanelLeftClose className="size-5" />
+          <PanelLeftClose className="size-5" aria-hidden="true" />
         )}
       </Button>
 
@@ -183,7 +183,7 @@ export function AdminTopbar({
       <div className="ml-auto flex items-center gap-3">
         {adminConfig.demoMode ? (
           <span className="hidden items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800 sm:inline-flex">
-            <ShieldAlert className="size-3.5" /> Mode démo
+            <ShieldAlert className="size-3.5" aria-hidden="true" /> Mode démo
           </span>
         ) : null}
         <div className="flex items-center gap-2 text-sm">
@@ -201,7 +201,7 @@ export function AdminTopbar({
             aria-label="Se déconnecter"
             onClick={() => void auth.signOut()}
           >
-            <LogOut className="size-4" />
+            <LogOut className="size-4" aria-hidden="true" />
           </Button>
         </div>
       </div>
@@ -234,6 +234,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
         } as CSSProperties
       }
     >
+      <a
+        href="#admin-main-content"
+        className="fixed left-4 top-4 z-[200] -translate-y-[200%] rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-lg transition-transform focus-visible:translate-y-0"
+      >
+        Aller au contenu principal
+      </a>
       <div className="flex min-h-screen">
         <aside
           className={cn(
@@ -252,7 +258,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
             sidebarCollapsed={sidebarCollapsed}
             onToggleSidebar={toggleSidebar}
           />
-          <main className="min-w-0 flex-1 p-4 lg:p-6">{children}</main>
+          <main
+            id="admin-main-content"
+            tabIndex={-1}
+            className="min-w-0 flex-1 p-4 outline-none lg:p-6"
+          >
+            {children}
+          </main>
           <footer className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
             Authentification et permissions connectées. Les modules intégrés utilisent l’API HBS
             HOME.

@@ -6,6 +6,7 @@ interface CatalogToolbarProps {
   total: number;
   sort: CatalogSort;
   activeFilterCount: number;
+  filtersOpen?: boolean;
   onSortChange: (sort: CatalogSort) => void;
   onOpenFilters: () => void;
 }
@@ -14,6 +15,7 @@ export function CatalogToolbar({
   total,
   sort,
   activeFilterCount,
+  filtersOpen = false,
   onSortChange,
   onOpenFilters,
 }: CatalogToolbarProps) {
@@ -27,6 +29,8 @@ export function CatalogToolbar({
         <button
           type="button"
           onClick={onOpenFilters}
+          aria-expanded={filtersOpen}
+          aria-controls="catalog-mobile-filters-dialog"
           className="inline-flex min-h-11 items-center gap-2 rounded-md border border-border px-3 text-sm lg:hidden"
         >
           <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />

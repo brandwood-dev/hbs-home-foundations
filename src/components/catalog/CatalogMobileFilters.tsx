@@ -1,5 +1,6 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 interface CatalogMobileFiltersProps {
   open: boolean;
@@ -16,19 +17,24 @@ export function CatalogMobileFilters({
   onReset,
   children,
 }: CatalogMobileFiltersProps) {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useFocusTrap({
+    active: open,
+    containerRef: panelRef,
+    initialFocusRef: closeButtonRef,
+    onEscape: onClose,
+  });
+
   useEffect(() => {
     if (!open) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKeyDown);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 
@@ -41,15 +47,21 @@ export function CatalogMobileFilters({
         className="absolute inset-0 bg-foreground/30"
       />
       <div
+        ref={panelRef}
+        id="catalog-mobile-filters-dialog"
         role="dialog"
         aria-modal="true"
-        aria-label="Filtres"
-        className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-surface"
+        aria-labelledby="catalog-mobile-filters-title"
+        tabIndex={-1}
+        className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-surface outline-none"
       >
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <h2 className="text-lg">Filtres</h2>
+          <h2 id="catalog-mobile-filters-title" className="text-lg">
+            Filtres
+          </h2>
           <button
             type="button"
+            ref={closeButtonRef}
             onClick={onClose}
             aria-label="Fermer les filtres"
             className="flex h-11 w-11 items-center justify-center rounded-md hover:bg-surface-muted"
