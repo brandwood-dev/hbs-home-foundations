@@ -97,7 +97,13 @@
  * Public storefront theme. Keep the Admin theme on the root tokens so this
  * visual refresh cannot change back-office contrast or status surfaces.
  */
-.site-theme {
+/*
+ * Include the document body while a public layout is mounted. Radix portals
+ * (cart drawer, dialogs and search) are attached under body rather than the
+ * layout node, so this keeps their surfaces on the same public palette.
+ */
+.site-theme,
+body:has(.site-theme) {
   --background: oklch(1 0 0);
   --surface: oklch(1 0 0);
   /* Near-white for controls, placeholders and image fallbacks. */
