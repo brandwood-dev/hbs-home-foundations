@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, Package, Phone, X } from "lucide-react";
 import { AppLink } from "@/components/ui/app-link";
-import { storeConfig } from "@/config/store.config";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 import type { NavItem } from "@/types/navigation.types";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 interface MobileMenuProps {
   open: boolean;
@@ -56,8 +56,8 @@ export function MobileMenu({ open, onClose, navigation }: MobileMenuProps) {
         style={{ backgroundColor: "var(--surface)" }}
       >
         <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3">
-          <span id="mobile-navigation-title" className="font-display text-xl tracking-wide">
-            {storeConfig.brandName}
+          <span id="mobile-navigation-title">
+            <BrandLogo className="h-10 w-[4.3rem]" />
           </span>
           <button
             type="button"

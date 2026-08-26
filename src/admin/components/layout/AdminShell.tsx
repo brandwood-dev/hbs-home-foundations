@@ -16,6 +16,7 @@ import { AppLink } from "@/components/ui/app-link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/admin") return pathname === "/admin" || pathname === "/admin/";
@@ -53,7 +54,10 @@ export function AdminSidebar({
         )}
         title={collapsed ? "HBS HOME Admin" : undefined}
       >
-        <span aria-hidden={collapsed}>{collapsed ? "HB" : "HBS HOME"}</span>
+        <BrandLogo
+          alt="HBS HOME Admin"
+          className={cn(collapsed ? "h-8 w-14" : "h-9 w-16", "max-w-full")}
+        />
         {!collapsed ? (
           <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium tracking-normal text-primary">
             Admin
