@@ -138,6 +138,26 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     () => categories.find((category) => category.id === values.categoryId)?.slug,
     [categories, values.categoryId],
   );
+  const catalogCategoryOptions = useMemo(() => {
+    const byParent = new Map<string | null, typeof categories>();
+    for (const category of categories) {
+      const parentKey = category.parentId ?? null;
+      const siblings = byParent.get(parentKey) ?? [];
+      siblings.push(category);
+      byParent.set(parentKey, siblings);
+    }
+    const options: Array<{ value: string; label: string }> = [];
+    const append = (items: typeof categories, prefix = "") => {
+      for (const category of [...items].sort(
+        (left, right) => left.order - right.order || left.name.localeCompare(right.name),
+      )) {
+        options.push({ value: category.id, label: `${prefix}${category.name}` });
+        append(byParent.get(category.id) ?? [], `${prefix}${category.name} › `);
+      }
+    };
+    append(byParent.get(null) ?? []);
+    return options;
+  }, [categories]);
   const catalogAttributes = useMemo(
     () =>
       attributes
@@ -240,11 +260,11 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
             onChange={(value) => patch({ reference: value.toUpperCase() })}
           />
           <AdminSelectField
-            label="Catégorie"
+            label="Famille produit"
             required
             value={values.category}
             options={CATEGORY_OPTIONS}
-            hint="Change les champs spécifiques et les axes de variantes disponibles."
+            hint="Détermine les champs métier et les axes de variantes disponibles."
             onChange={(value) => {
               const category = value as AdminProductCategoryKey;
               const nextConfig = adminProductCategoryConfigs[category];
@@ -260,10 +280,8 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           <AdminSelectField
             label="Catégorie du catalogue"
             value={values.categoryId}
-            options={categories.map((category) => ({
-              value: category.id,
-              label: category.name,
-            }))}
+            hint="Choisissez la catégorie racine ou la sous-catégorie de publication."
+            options={catalogCategoryOptions}
             onChange={(value) => {
               const categorySlug = categories.find((category) => category.id === value)?.slug;
               patch({
