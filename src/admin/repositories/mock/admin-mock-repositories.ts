@@ -352,15 +352,20 @@ export class MockAdminCategoryRepository implements AdminCategoryRepository {
 
   async move(id: string, direction: "up" | "down"): Promise<void> {
     mutateDb((db) => {
-      const sorted = [...db.categories].sort((a, b) => a.order - b.order);
+      const current = db.categories.find((item) => item.id === id);
+      if (!current) return;
+      const sorted = db.categories
+        .filter((item) => item.parentId === current.parentId)
+        .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
       const index = sorted.findIndex((item) => item.id === id);
       const target = direction === "up" ? index - 1 : index + 1;
       if (index === -1 || target < 0 || target >= sorted.length) return;
-      const current = sorted[index] as AdminCategory;
-      const swap = sorted[target] as AdminCategory;
-      const order = current.order;
-      current.order = swap.order;
-      swap.order = order;
+      const moved = sorted.splice(index, 1)[0];
+      if (!moved) return;
+      sorted.splice(target, 0, moved);
+      sorted.forEach((category, order) => {
+        category.order = order;
+      });
     });
     await delay(null);
   }

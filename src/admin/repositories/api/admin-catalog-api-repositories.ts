@@ -506,6 +506,16 @@ export class AdminCatalogApi {
     );
   }
 
+  reorderCategory(id: string, direction: "up" | "down"): Promise<ApiCategory> {
+    return this.token().then((token) =>
+      this.client.post<ApiCategory>(
+        `/api/v1/admin/categories/${encodeURIComponent(id)}/reorder`,
+        { direction },
+        token,
+      ),
+    );
+  }
+
   listAttributes(): Promise<{ items: ApiAttribute[] }> {
     return this.token().then((token) =>
       this.client.get<{ items: ApiAttribute[] }>("/api/v1/admin/attributes", undefined, token),
@@ -687,17 +697,7 @@ export class ApiAdminCategoryRepository implements AdminCategoryRepository {
   }
 
   async move(id: string, direction: "up" | "down"): Promise<void> {
-    const categories = await this.list();
-    const index = categories.findIndex((category) => category.id === id);
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
-    if (index < 0 || targetIndex < 0 || targetIndex >= categories.length) return;
-    const current = categories[index];
-    const target = categories[targetIndex];
-    if (!current || !target) return;
-    await Promise.all([
-      this.update(current.id, { order: target.order }),
-      this.update(target.id, { order: current.order }),
-    ]);
+    await this.api.reorderCategory(id, direction);
   }
 }
 
