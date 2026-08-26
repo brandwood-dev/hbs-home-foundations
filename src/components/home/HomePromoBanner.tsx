@@ -14,7 +14,7 @@ export function HomePromoBanner({ content }: { content: HomePromoBannerContent }
   );
 
   return (
-    <div className="border-b border-border bg-surface-muted" role="region" aria-label="Promotion">
+    <div className="border-b border-border bg-section-tint" role="region" aria-label="Promotion">
       <div className="mx-auto flex min-h-11 max-w-7xl items-center justify-center px-6 py-2 text-center text-sm">
         {content.href ? (
           <AppLink

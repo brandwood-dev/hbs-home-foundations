@@ -28,7 +28,7 @@ function EditorialBlock({ block }: { block: EditorialPageBlock }) {
 
   if (block.blockType === "hero") {
     return (
-      <section className="grid gap-8 rounded-sm bg-surface-muted p-8 sm:grid-cols-[1fr_0.8fr] sm:p-12">
+      <section className="grid gap-8 rounded-sm bg-section-tint p-8 sm:grid-cols-[1fr_0.8fr] sm:p-12">
         <div className="flex flex-col justify-center">
           {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
           {heading ? <h2 className="mt-3 text-3xl sm:text-4xl">{heading}</h2> : null}

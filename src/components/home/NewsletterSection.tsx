@@ -44,7 +44,7 @@ export function NewsletterSection({ content }: { content: NewsletterContent }) {
     <section className="border-t border-border bg-surface" aria-labelledby="home-newsletter">
       <div className="mx-auto max-w-3xl px-6 py-16 text-center lg:py-24">
         <p className="eyebrow">Newsletter</p>
-        <h2 id="home-newsletter" className="mt-3 text-3xl sm:text-4xl">
+        <h2 id="home-newsletter" className="section-title mt-3">
           {content.title}
         </h2>
         <p className="mt-4 text-base text-foreground-muted">{content.text}</p>

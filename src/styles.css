@@ -100,7 +100,9 @@
 .site-theme {
   --background: oklch(1 0 0);
   --surface: oklch(1 0 0);
-  --surface-muted: oklch(0.975 0.008 78);
+  /* Near-white for controls, placeholders and image fallbacks. */
+  --surface-muted: oklch(0.99 0.004 78);
+  /* The single warm tint reserved for promotional/editorial surfaces. */
   --section-tint: oklch(0.975 0.008 78);
   --sand: oklch(0.947 0.012 78);
   --foreground-muted: oklch(0.44 0.006 67.4);

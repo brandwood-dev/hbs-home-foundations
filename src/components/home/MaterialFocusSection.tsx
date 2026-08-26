@@ -23,7 +23,7 @@ export function MaterialFocusSection({ content }: { content: MaterialFocusConten
 
         <div className="lg:col-span-5">
           <p className="eyebrow">{content.tagline}</p>
-          <h2 id="home-material-focus" className="mt-3 text-3xl sm:text-4xl">
+          <h2 id="home-material-focus" className="section-title mt-3">
             {content.title}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-foreground-muted">{content.text}</p>
