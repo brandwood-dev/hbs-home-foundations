@@ -1,5 +1,5 @@
 import type { components, operations } from "@/api/generated/hbs-home-api";
-import { HbsApiClient, HbsApiError } from "@/api";
+import { HbsApiClient, HbsApiError, type ApiAdminCategoryImageUpload } from "@/api";
 import { getSupabaseBrowserClient } from "@/auth/supabase-browser";
 import type {
   AdminAttribute,
@@ -115,6 +115,7 @@ function mapCategory(category: ApiCategory): AdminCategory {
     isActive: category.status === "active",
     description: category.description ?? "",
     ...(category.imageUrl ? { imageUrl: category.imageUrl } : {}),
+    ...(category.imageMediaAssetId ? { imageMediaAssetId: category.imageMediaAssetId } : {}),
     seoTitle: category.seoTitle ?? "",
     seoDescription: category.seoDescription ?? "",
     showInNavigation: category.showInNavigation,
@@ -130,6 +131,7 @@ function categoryBody(input: AdminCategoryInput): CategoryCreateBody {
     status: input.isActive ? "active" : "draft",
     sortOrder: input.order,
     imageUrl: input.imageUrl || null,
+    imageMediaAssetId: input.imageMediaAssetId || null,
     seoTitle: input.seoTitle.trim() || null,
     seoDescription: input.seoDescription.trim() || null,
     showInNavigation: input.showInNavigation !== false,
@@ -145,6 +147,9 @@ function categoryPatch(input: Partial<AdminCategoryInput>): CategoryPatchBody {
     ...(input.isActive === undefined ? {} : { status: input.isActive ? "active" : "draft" }),
     ...(input.order === undefined ? {} : { sortOrder: input.order }),
     ...(input.imageUrl === undefined ? {} : { imageUrl: input.imageUrl || null }),
+    ...(input.imageMediaAssetId === undefined
+      ? {}
+      : { imageMediaAssetId: input.imageMediaAssetId || null }),
     ...(input.seoTitle === undefined ? {} : { seoTitle: input.seoTitle.trim() || null }),
     ...(input.seoDescription === undefined
       ? {}
@@ -506,6 +511,21 @@ export class AdminCatalogApi {
     );
   }
 
+  uploadCategoryImage(file: File, name: string, alt: string): Promise<ApiAdminCategoryImageUpload> {
+    return this.token().then((token) =>
+      this.client.postFile<ApiAdminCategoryImageUpload>(
+        "/api/v1/admin/categories/image",
+        file,
+        token,
+        {
+          "content-type": file.type,
+          "x-image-name": encodeURIComponent(name.trim().slice(0, 240)),
+          "x-image-alt": encodeURIComponent(alt.trim().slice(0, 240)),
+        },
+      ),
+    );
+  }
+
   reorderCategory(id: string, direction: "up" | "down"): Promise<ApiCategory> {
     return this.token().then((token) =>
       this.client.post<ApiCategory>(
@@ -690,6 +710,14 @@ export class ApiAdminCategoryRepository implements AdminCategoryRepository {
 
   async update(id: string, input: Partial<AdminCategoryInput>): Promise<AdminCategory> {
     return mapCategory(await this.api.updateCategory(id, categoryPatch(input)));
+  }
+
+  async uploadImage(
+    file: File,
+    name: string,
+    alt: string,
+  ): Promise<Awaited<ReturnType<AdminCatalogApi["uploadCategoryImage"]>>> {
+    return this.api.uploadCategoryImage(file, name, alt);
   }
 
   async delete(id: string): Promise<void> {

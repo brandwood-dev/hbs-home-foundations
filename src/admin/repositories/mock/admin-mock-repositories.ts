@@ -34,6 +34,7 @@ import type {
   AdminAttributeRepository,
   AdminAuditRepository,
   AdminCategoryInput,
+  AdminCategoryImageUpload,
   AdminCategoryRepository,
   AdminContentRepository,
   AdminEditorialPageInput,
@@ -289,6 +290,19 @@ export class MockAdminCategoryRepository implements AdminCategoryRepository {
 
   async getById(id: string): Promise<AdminCategory | null> {
     return delay(clone(getDb().categories.find((item) => item.id === id) ?? null));
+  }
+
+  async uploadImage(file: File, name: string, alt: string): Promise<AdminCategoryImageUpload> {
+    void name;
+    void alt;
+    return delay({
+      mediaAssetId: adminId("media"),
+      storagePath: `mock/categories/${file.name}`,
+      publicUrl: URL.createObjectURL(file),
+      mimeType: "image/webp",
+      width: 1,
+      height: 1,
+    });
   }
 
   async create(input: AdminCategoryInput): Promise<AdminCategory> {

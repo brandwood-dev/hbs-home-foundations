@@ -1,4 +1,6 @@
-import { useId, type ReactNode } from "react";
+import { useId, useRef, type ChangeEvent, type ReactNode } from "react";
+import { Upload, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -289,16 +291,53 @@ export function AdminDateField({
   );
 }
 
-/** Référence média par URL — le stockage réel sera connecté au backend. */
+/** Référence média par URL, avec téléversement optionnel via l’API Admin. */
 export function AdminImageField({
   value,
   onChange,
+  onUpload,
+  isUploading = false,
+  uploadError,
   ...base
-}: BaseFieldProps & { value: string; onChange: (value: string) => void }) {
+}: BaseFieldProps & {
+  value: string;
+  onChange: (value: string) => void;
+  onUpload?: (file: File) => void | Promise<void>;
+  isUploading?: boolean;
+  uploadError?: string | null;
+}) {
   const id = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const getSafeImageSrc = (rawValue: string): string | null => {
+    const trimmed = rawValue.trim();
+    if (!trimmed) return null;
+    if (trimmed.startsWith("/") || trimmed.startsWith("./") || trimmed.startsWith("../")) {
+      return trimmed;
+    }
+    try {
+      const parsed = new URL(trimmed);
+      if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+        return parsed.toString();
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  };
+  const safeImageSrc = getSafeImageSrc(value);
+  const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (file && onUpload) void onUpload(file);
+  };
   return (
-    <FieldWrapper {...base} id={id} hint={base.hint ?? "URL d'image ou chemin d'asset local."}>
-      <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center">
+    <FieldWrapper
+      {...base}
+      id={id}
+      error={uploadError ?? base.error}
+      hint={base.hint ?? "Téléversez une image ou indiquez une URL externe."}
+    >
+      <div className="grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
         <Input
           id={id}
           value={value}
@@ -306,13 +345,39 @@ export function AdminImageField({
           className="h-10 bg-background"
           onChange={(event) => onChange(event.target.value)}
         />
-        {value ? (
-          <img
-            src={value}
-            alt=""
-            className="size-12 shrink-0 rounded border border-border object-cover"
+        <div className="flex items-center gap-2">
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="sr-only"
+            onChange={handleUpload}
           />
-        ) : null}
+          {onUpload ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={isUploading}
+              onClick={() => inputRef.current?.click()}
+            >
+              <Upload className="mr-1.5 size-4" />
+              {isUploading ? "Téléversement…" : "Téléverser"}
+            </Button>
+          ) : null}
+          {value ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label="Supprimer l’image"
+              onClick={() => onChange("")}
+            >
+              <X className="size-4" />
+            </Button>
+          ) : null}
+          {safeImageSrc ? <span className="text-xs text-muted-foreground">Image prête</span> : null}
+        </div>
       </div>
     </FieldWrapper>
   );

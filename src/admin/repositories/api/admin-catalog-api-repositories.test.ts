@@ -100,6 +100,7 @@ describe("Admin catalog API adapters", () => {
         status: "active",
         sortOrder: 1,
         imageUrl: "https://cdn.example.test/category.jpg",
+        imageMediaAssetId: null,
         seoTitle: "Rideaux",
         seoDescription: "Rideaux HBS HOME",
         showInNavigation: true,

@@ -241,6 +241,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/categories/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload and convert a category image
+         * @description Accepts a JPEG, PNG or WebP binary payload. The API converts it to WebP before storing it.
+         */
+        post: operations["adminUploadCategoryImage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/categories/{id}": {
         parameters: {
             query?: never;
@@ -1690,6 +1710,7 @@ export interface components {
             status: "draft" | "active" | "archived";
             sortOrder: number;
             imageUrl: string | null;
+            imageMediaAssetId: string | null;
             seoTitle: string | null;
             seoDescription: string | null;
             showInNavigation: boolean;
@@ -1847,6 +1868,7 @@ export interface components {
                 status: "draft" | "active" | "archived";
                 sortOrder: number;
                 imageUrl: string | null;
+                imageMediaAssetId: string | null;
                 seoTitle: string | null;
                 seoDescription: string | null;
                 showInNavigation: boolean;
@@ -1953,6 +1975,17 @@ export interface components {
             total: number;
             limit: number;
             offset: number;
+        };
+        AdminCategoryImageUpload: {
+            /** Format: uuid */
+            mediaAssetId: string;
+            storagePath: string;
+            /** Format: uri */
+            publicUrl: string;
+            /** @enum {string} */
+            mimeType: "image/webp";
+            width: number;
+            height: number;
         };
         AdminPromotion: {
             /** Format: uuid */
@@ -4554,6 +4587,7 @@ export interface operations {
                             status: "draft" | "active" | "archived";
                             sortOrder: number;
                             imageUrl: string | null;
+                            imageMediaAssetId: string | null;
                             seoTitle: string | null;
                             seoDescription: string | null;
                             showInNavigation: boolean;
@@ -4628,6 +4662,7 @@ export interface operations {
                     status?: "draft" | "active" | "archived";
                     sortOrder?: number;
                     imageUrl?: string | null;
+                    imageMediaAssetId?: string | null;
                     seoTitle?: string | null;
                     seoDescription?: string | null;
                     showInNavigation?: boolean;
@@ -4650,6 +4685,7 @@ export interface operations {
                         status: "draft" | "active" | "archived";
                         sortOrder: number;
                         imageUrl: string | null;
+                        imageMediaAssetId: string | null;
                         seoTitle: string | null;
                         seoDescription: string | null;
                         showInNavigation: boolean;
@@ -4750,6 +4786,152 @@ export interface operations {
             };
         };
     };
+    adminUploadCategoryImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "image/jpeg": unknown;
+                "image/png": unknown;
+                "image/webp": unknown;
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        mediaAssetId: string;
+                        storagePath: string;
+                        /** Format: uri */
+                        publicUrl: string;
+                        /** @enum {string} */
+                        mimeType: "image/webp";
+                        width: number;
+                        height: number;
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
     adminUpdateCategory: {
         parameters: {
             query?: never;
@@ -4769,6 +4951,7 @@ export interface operations {
                     status?: "draft" | "active" | "archived";
                     sortOrder?: number;
                     imageUrl?: string | null;
+                    imageMediaAssetId?: string | null;
                     seoTitle?: string | null;
                     seoDescription?: string | null;
                     showInNavigation?: boolean;
@@ -4791,6 +4974,7 @@ export interface operations {
                         status: "draft" | "active" | "archived";
                         sortOrder: number;
                         imageUrl: string | null;
+                        imageMediaAssetId: string | null;
                         seoTitle: string | null;
                         seoDescription: string | null;
                         showInNavigation: boolean;
@@ -4936,52 +5120,134 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AdminCategory"];
+                    "application/json": {
+                        id: string;
+                        slug: string;
+                        name: string;
+                        description: string | null;
+                        parentId: string | null;
+                        status: "draft" | "active" | "archived";
+                        sortOrder: number;
+                        imageUrl: string | null;
+                        imageMediaAssetId: string | null;
+                        seoTitle: string | null;
+                        seoDescription: string | null;
+                        showInNavigation: boolean;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                    };
                 };
             };
-            /** @description Problem detail */
+            /** @description Default Response */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProblemDetail"];
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
                 };
             };
-            /** @description Problem detail */
+            /** @description Default Response */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProblemDetail"];
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
                 };
             };
-            /** @description Problem detail */
+            /** @description Default Response */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProblemDetail"];
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
                 };
             };
-            /** @description Problem detail */
+            /** @description Default Response */
             404: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProblemDetail"];
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
                 };
             };
-            /** @description Problem detail */
+            /** @description Default Response */
             409: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProblemDetail"];
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
                 };
             };
         };

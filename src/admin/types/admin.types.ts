@@ -129,6 +129,7 @@ export interface AdminCategory {
   isActive: boolean;
   description: string;
   imageUrl?: string;
+  imageMediaAssetId?: string;
   seoTitle: string;
   seoDescription: string;
   showInNavigation?: boolean;
