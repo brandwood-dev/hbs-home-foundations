@@ -8,7 +8,7 @@ import { WhatsAppFloatingButton } from "@/components/WhatsAppFloatingButton";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-background">
+    <div className="site-theme flex min-h-screen flex-col overflow-x-hidden bg-background">
       <AnnouncementBar />
       <SiteHeader />
       <main className="flex-1">{children}</main>

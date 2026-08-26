@@ -60,7 +60,7 @@ export function HomeSectionHeading({
   return (
     <div className="max-w-2xl">
       {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-      <h2 id={id} className="mt-3 text-3xl sm:text-4xl lg:text-5xl">
+      <h2 id={id} className="section-title mt-3">
         {title}
       </h2>
       {subtitle && <p className="mt-3 text-base text-foreground-muted">{subtitle}</p>}
