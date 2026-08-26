@@ -308,6 +308,23 @@ export function AdminImageField({
 }) {
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+  const getSafeImageSrc = (rawValue: string): string | null => {
+    const trimmed = rawValue.trim();
+    if (!trimmed) return null;
+    if (trimmed.startsWith("/") || trimmed.startsWith("./") || trimmed.startsWith("../")) {
+      return trimmed;
+    }
+    try {
+      const parsed = new URL(trimmed);
+      if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+        return parsed.toString();
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  };
+  const safeImageSrc = getSafeImageSrc(value);
   const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -359,9 +376,9 @@ export function AdminImageField({
               <X className="size-4" />
             </Button>
           ) : null}
-          {value ? (
+          {safeImageSrc ? (
             <img
-              src={value}
+              src={safeImageSrc}
               alt=""
               className="size-12 shrink-0 rounded border border-border object-cover"
             />

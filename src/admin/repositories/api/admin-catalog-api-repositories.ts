@@ -519,8 +519,8 @@ export class AdminCatalogApi {
         token,
         {
           "content-type": file.type,
-          "x-image-name": name.trim().slice(0, 240),
-          "x-image-alt": alt.trim().slice(0, 240),
+          "x-image-name": encodeURIComponent(name.trim().slice(0, 240)),
+          "x-image-alt": encodeURIComponent(alt.trim().slice(0, 240)),
         },
       ),
     );

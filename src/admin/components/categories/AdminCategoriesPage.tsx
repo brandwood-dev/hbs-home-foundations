@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -164,6 +164,8 @@ export function AdminCategoriesPage() {
   const [pendingDelete, setPendingDelete] = useState<AdminCategory | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+  const draftInstanceRef = useRef(0);
+  const uploadRequestRef = useRef(0);
 
   const productCount = useMemo(() => {
     const counts = new Map<string, number>();
@@ -193,17 +195,24 @@ export function AdminCategoriesPage() {
     if (parentId) setExpanded(parentId, true);
     setFormErrors({});
     setImageUploadError(null);
+    draftInstanceRef.current += 1;
+    uploadRequestRef.current += 1;
     setDraft(toDraft(undefined, parentId, order));
   }
 
   function openEdit(category: AdminCategory) {
     setFormErrors({});
     setImageUploadError(null);
+    draftInstanceRef.current += 1;
+    uploadRequestRef.current += 1;
     setDraft(toDraft(category));
   }
 
   async function uploadCategoryImage(file: File): Promise<void> {
     if (!draft) return;
+    const draftInstance = draftInstanceRef.current;
+    const uploadRequest = uploadRequestRef.current + 1;
+    uploadRequestRef.current = uploadRequest;
     setImageUploadError(null);
     if (!CATEGORY_IMAGE_MIME_TYPES.includes(file.type)) {
       setImageUploadError("Format non accepté. Utilisez JPG, PNG ou WebP.");
@@ -220,19 +229,29 @@ export function AdminCategoriesPage() {
         draft.name || file.name,
         draft.name || "Image de catégorie",
       );
-      setDraft((current) =>
-        current
-          ? {
-              ...current,
-              imageUrl: uploaded.publicUrl,
-              imageMediaAssetId: uploaded.mediaAssetId,
-            }
-          : current,
-      );
+      if (
+        draftInstanceRef.current === draftInstance &&
+        uploadRequestRef.current === uploadRequest
+      ) {
+        setDraft((current) =>
+          current
+            ? {
+                ...current,
+                imageUrl: uploaded.publicUrl,
+                imageMediaAssetId: uploaded.mediaAssetId,
+              }
+            : current,
+        );
+      }
     } catch (reason) {
-      setImageUploadError(reason instanceof Error ? reason.message : "Téléversement impossible.");
+      if (
+        draftInstanceRef.current === draftInstance &&
+        uploadRequestRef.current === uploadRequest
+      ) {
+        setImageUploadError(reason instanceof Error ? reason.message : "Téléversement impossible.");
+      }
     } finally {
-      setImageUploading(false);
+      if (uploadRequestRef.current === uploadRequest) setImageUploading(false);
     }
   }
 
@@ -284,6 +303,8 @@ export function AdminCategoriesPage() {
           seoDescription: draft.seoDescription.trim(),
         },
       });
+      draftInstanceRef.current += 1;
+      uploadRequestRef.current += 1;
       setDraft(null);
     } catch {
       // useAdminMutation already exposes the API error through a toast. Keep
@@ -458,7 +479,11 @@ export function AdminCategoriesPage() {
       <AdminFormDrawer
         open={draft !== null}
         onOpenChange={(open) => {
-          if (!open && !saveCategory.isPending) setDraft(null);
+          if (!open && !saveCategory.isPending && !imageUploading) {
+            draftInstanceRef.current += 1;
+            uploadRequestRef.current += 1;
+            setDraft(null);
+          }
         }}
         title={
           draft?.id
