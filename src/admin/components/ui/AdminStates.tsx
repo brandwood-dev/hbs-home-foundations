@@ -7,7 +7,7 @@ import type { StatusTone } from "@/admin/services/order-status";
 
 export function AdminCard({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <section className={cn("rounded-lg border border-border bg-card p-4", className)}>
+    <section className={cn("rounded-xl border border-border bg-card p-4 shadow-soft", className)}>
       {children}
     </section>
   );
@@ -32,7 +32,7 @@ export function AdminKpiCard({
     danger: "text-red-700",
   };
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-xl border border-border bg-card p-4 shadow-soft">
       <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</p>
       <p className={cn("mt-1 text-2xl font-semibold tabular-nums", toneClass[tone])}>{value}</p>
       {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
@@ -77,7 +77,7 @@ export function AdminEmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-card px-6 py-12 text-center">
+    <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center shadow-soft">
       <Inbox className="size-6 text-muted-foreground" aria-hidden />
       <p className="text-sm font-medium">{title}</p>
       {description ? <p className="max-w-md text-sm text-muted-foreground">{description}</p> : null}
@@ -90,7 +90,7 @@ export function AdminErrorState({ message, onRetry }: { message: string; onRetry
   return (
     <div
       role="alert"
-      className="flex flex-col items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-6 py-10 text-center"
+      className="flex flex-col items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-6 py-10 text-center shadow-sm"
     >
       <AlertTriangle className="size-6 text-red-600" aria-hidden />
       <p className="text-sm font-medium text-red-800">{message}</p>

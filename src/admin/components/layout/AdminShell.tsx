@@ -155,7 +155,7 @@ export function AdminTopbar({
     .join("");
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-card px-4">
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <Button
         variant="ghost"
         size="icon"
@@ -231,7 +231,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   return (
     <div
-      className="min-h-screen bg-muted/40 text-foreground"
+      className="admin-theme min-h-screen bg-background text-foreground"
       style={
         {
           "--admin-sidebar-width": sidebarCollapsed ? "72px" : "260px",
@@ -247,7 +247,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen">
         <aside
           className={cn(
-            "hidden shrink-0 border-r border-border bg-card transition-[width] duration-200 lg:block",
+            "hidden shrink-0 border-r border-border bg-background transition-[width] duration-200 lg:block",
             sidebarCollapsed ? "w-[72px]" : "w-[260px]",
           )}
         >
@@ -265,11 +265,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <main
             id="admin-main-content"
             tabIndex={-1}
-            className="min-w-0 flex-1 p-4 outline-none lg:p-6"
+            className="min-w-0 flex-1 p-4 outline-none sm:p-5 lg:p-7"
           >
             {children}
           </main>
-          <footer className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
+          <footer className="border-t border-border bg-background px-4 py-3 text-xs text-muted-foreground">
             Authentification et permissions connectées. Les modules intégrés utilisent l’API HBS
             HOME.
           </footer>

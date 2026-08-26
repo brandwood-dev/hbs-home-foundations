@@ -125,6 +125,32 @@ body:has(.site-theme) {
   --input: var(--border);
 }
 
+/*
+ * Back-office theme. It shares the public palette while keeping a denser,
+ * near-white canvas for operational screens. The body-scoped selector covers
+ * Radix portals (dialogs, selects and popovers) rendered outside AdminShell.
+ */
+.admin-theme,
+body:has(.admin-theme) {
+  --background: oklch(0.987 0.004 78);
+  --surface: oklch(1 0 0);
+  --surface-muted: oklch(0.972 0.006 78);
+  --section-tint: oklch(0.978 0.008 78);
+  --sand: oklch(0.944 0.012 78);
+  --foreground-muted: oklch(0.445 0.006 67.4);
+  --border: oklch(0.89 0.008 74.6);
+
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --secondary: var(--surface-muted);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--surface-muted);
+  --muted-foreground: var(--foreground-muted);
+  --input: var(--border);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

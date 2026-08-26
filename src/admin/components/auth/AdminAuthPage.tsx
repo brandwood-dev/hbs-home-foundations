@@ -13,8 +13,8 @@ export function AdminAuthPage({
   children: ReactNode;
 }) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-10">
-      <Card className="w-full max-w-md shadow-sm">
+    <main className="admin-theme flex min-h-screen items-center justify-center bg-background px-4 py-10">
+      <Card className="w-full max-w-md rounded-2xl border-border shadow-soft">
         <CardHeader>
           <AppLink href="/" aria-label="HBS HOME — Accueil" className="mb-5 inline-flex">
             <BrandLogo className="h-12 w-[5.1rem]" />
