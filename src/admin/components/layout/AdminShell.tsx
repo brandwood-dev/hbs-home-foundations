@@ -1,6 +1,13 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
-import { ExternalLink, LogOut, Menu as MenuIcon, ShieldAlert, X } from "lucide-react";
+import {
+  ExternalLink,
+  LogOut,
+  Menu as MenuIcon,
+  PanelLeftClose,
+  PanelLeftOpen,
+  ShieldAlert,
+} from "lucide-react";
 import { useAdminAuth } from "@/admin/auth/AdminAuthProvider";
 import { useAdminAuthorization } from "@/admin/auth/AdminAuthorizationContext";
 import { ADMIN_NAV } from "@/admin/config/admin-nav";
@@ -15,7 +22,13 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
+export function AdminSidebar({
+  onNavigate,
+  collapsed = false,
+}: {
+  onNavigate?: () => void;
+  collapsed?: boolean;
+}) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { hasPermission } = useAdminAuthorization();
   const visibleGroups = ADMIN_NAV.map((group) => ({
@@ -24,24 +37,38 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
   })).filter((group) => group.items.length > 0);
 
   return (
-    <nav aria-label="Navigation du back-office" className="flex h-full flex-col gap-6 p-4">
+    <nav
+      aria-label="Navigation du back-office"
+      className={cn(
+        "flex h-full flex-col gap-3 overflow-hidden p-3",
+        collapsed ? "items-center" : "",
+      )}
+    >
       <AppLink
         href="/admin"
         onClick={onNavigate}
-        className="flex items-center gap-2 px-2 py-1 text-sm font-semibold tracking-widest text-foreground uppercase"
+        className={cn(
+          "flex min-h-10 items-center gap-2 px-2 py-1 text-sm font-semibold tracking-widest text-foreground uppercase",
+          collapsed ? "justify-center" : "",
+        )}
+        title={collapsed ? "HBS HOME Admin" : undefined}
       >
-        HBS HOME
-        <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium tracking-normal text-primary">
-          Admin
-        </span>
+        <span aria-hidden={collapsed}>{collapsed ? "HB" : "HBS HOME"}</span>
+        {!collapsed ? (
+          <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium tracking-normal text-primary">
+            Admin
+          </span>
+        ) : null}
       </AppLink>
 
-      <div className="flex-1 space-y-6 overflow-y-auto">
+      <div className={cn("flex-1 space-y-3", collapsed ? "w-full" : "")}>
         {visibleGroups.map((group) => (
           <div key={group.title}>
-            <p className="px-2 pb-1 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
-              {group.title}
-            </p>
+            {!collapsed ? (
+              <p className="px-2 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
+                {group.title}
+              </p>
+            ) : null}
             <ul className="space-y-0.5">
               {group.items.map((item) => {
                 const Icon = item.icon;
@@ -52,15 +79,17 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
                       href={item.href}
                       onClick={onNavigate}
                       aria-current={active ? "page" : undefined}
+                      title={collapsed ? item.label : undefined}
                       className={cn(
-                        "flex min-h-11 items-center gap-2.5 rounded-md px-2.5 text-sm transition-colors",
+                        "flex min-h-10 items-center gap-2.5 rounded-md px-2.5 text-sm transition-colors",
+                        collapsed ? "justify-center px-0" : "",
                         active
                           ? "bg-primary/10 font-medium text-primary"
                           : "text-foreground/80 hover:bg-muted",
                       )}
                     >
                       <Icon className="size-4 shrink-0" />
-                      <span className="truncate">{item.label}</span>
+                      {!collapsed ? <span className="truncate">{item.label}</span> : null}
                     </AppLink>
                   </li>
                 );
@@ -72,9 +101,14 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 
       <AppLink
         href="/"
-        className="flex min-h-11 items-center gap-2 rounded-md px-2.5 text-sm text-muted-foreground hover:bg-muted"
+        className={cn(
+          "flex min-h-10 items-center gap-2 rounded-md px-2.5 text-sm text-muted-foreground hover:bg-muted",
+          collapsed ? "justify-center px-0" : "",
+        )}
+        title={collapsed ? "Voir le site public" : undefined}
       >
-        <ExternalLink className="size-4" /> Voir le site public
+        <ExternalLink className="size-4" />
+        {!collapsed ? "Voir le site public" : null}
       </AppLink>
     </nav>
   );
@@ -97,7 +131,15 @@ export function AdminMobileSidebar({
   );
 }
 
-export function AdminTopbar({ onOpenMenu }: { onOpenMenu: () => void }) {
+export function AdminTopbar({
+  onOpenMenu,
+  sidebarCollapsed,
+  onToggleSidebar,
+}: {
+  onOpenMenu: () => void;
+  sidebarCollapsed: boolean;
+  onToggleSidebar: () => void;
+}) {
   const auth = useAdminAuth();
   const { session } = useAdminAuthorization();
   const label = session.user.displayName ?? session.user.email;
@@ -118,6 +160,20 @@ export function AdminTopbar({ onOpenMenu }: { onOpenMenu: () => void }) {
         aria-label="Ouvrir la navigation"
       >
         <MenuIcon className="size-5" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="hidden lg:inline-flex"
+        onClick={onToggleSidebar}
+        aria-label={sidebarCollapsed ? "Étendre la navigation" : "Réduire la navigation"}
+        title={sidebarCollapsed ? "Étendre la navigation" : "Réduire la navigation"}
+      >
+        {sidebarCollapsed ? (
+          <PanelLeftOpen className="size-5" />
+        ) : (
+          <PanelLeftClose className="size-5" />
+        )}
       </Button>
 
       <AppLink href="/admin" className="text-sm font-medium">
@@ -155,18 +211,47 @@ export function AdminTopbar({ onOpenMenu }: { onOpenMenu: () => void }) {
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    setSidebarCollapsed(window.localStorage.getItem("hbs-admin-sidebar-collapsed") === "true");
+  }, []);
+
+  function toggleSidebar() {
+    setSidebarCollapsed((current) => {
+      const next = !current;
+      window.localStorage.setItem("hbs-admin-sidebar-collapsed", String(next));
+      return next;
+    });
+  }
 
   return (
-    <div className="min-h-screen bg-muted/40 text-foreground">
+    <div
+      className="min-h-screen bg-muted/40 text-foreground"
+      style={
+        {
+          "--admin-sidebar-width": sidebarCollapsed ? "72px" : "260px",
+        } as CSSProperties
+      }
+    >
       <div className="flex min-h-screen">
-        <aside className="hidden w-[260px] shrink-0 border-r border-border bg-card lg:block">
-          <div className="sticky top-0 h-screen overflow-y-auto">
-            <AdminSidebar />
+        <aside
+          className={cn(
+            "hidden shrink-0 border-r border-border bg-card transition-[width] duration-200 lg:block",
+            sidebarCollapsed ? "w-[72px]" : "w-[260px]",
+          )}
+        >
+          <div className="sticky top-0 h-screen">
+            <AdminSidebar collapsed={sidebarCollapsed} />
           </div>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <AdminTopbar onOpenMenu={() => setMenuOpen(true)} />
+          <AdminTopbar
+            onOpenMenu={() => setMenuOpen(true)}
+            sidebarCollapsed={sidebarCollapsed}
+            onToggleSidebar={toggleSidebar}
+          />
           <main className="min-w-0 flex-1 p-4 lg:p-6">{children}</main>
           <footer className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
             Authentification et permissions connectées. Les modules intégrés utilisent l’API HBS
@@ -176,9 +261,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
       </div>
 
       <AdminMobileSidebar open={menuOpen} onOpenChange={setMenuOpen} />
-      <span className="sr-only">
-        <X aria-hidden />
-      </span>
     </div>
   );
 }

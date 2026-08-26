@@ -224,7 +224,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
   const generalTab = (
     <div className="grid gap-4">
       <AdminFormSection title="Informations générales">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid items-start gap-4 md:grid-cols-2">
           <AdminField
             label="Nom du produit"
             required
@@ -322,7 +322,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
 
       {values.sellingMode === "pack" ? (
         <AdminFormSection title="Configuration du lot">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid items-start gap-4 md:grid-cols-2">
             <AdminField
               label="Contenu du lot"
               value={values.packContent}
@@ -340,7 +340,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
 
       {values.sellingMode === "per_meter" ? (
         <AdminFormSection title="Vente au mètre">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
             <AdminMoneyField
               label="Prix au mètre"
               valueMinor={values.perMeterPriceMinor}
@@ -384,7 +384,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
       title={`Caractéristiques — ${ADMIN_PRODUCT_CATEGORY_LABELS[values.category]}`}
       description="Ces champs alimentent les filtres et la fiche produit publique."
     >
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid items-start gap-4 md:grid-cols-2">
         {visibleProductFields(values.category, values.fields).map((field) => {
           const raw = values.fields[field.key];
           const required = config.requiredFields.includes(field.key);
@@ -463,7 +463,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
               Ces valeurs sont gérées par le catalogue et alimentent les filtres publics.
             </p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid items-start gap-4 md:grid-cols-2">
             {dynamicAttributes.map((attribute) => renderDynamicAttribute(attribute))}
           </div>
         </div>
@@ -686,17 +686,18 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
         ]}
       />
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 p-3 backdrop-blur lg:pl-64">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-end gap-2">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 p-3 backdrop-blur lg:pl-[var(--admin-sidebar-width)]">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-stretch justify-end gap-2 sm:items-center">
           {dirty ? (
             <span className="mr-auto text-xs text-muted-foreground">
               Modifications non enregistrées
             </span>
           ) : null}
-          <Button variant="outline" onClick={() => save("draft")}>
+          <Button className="w-full sm:w-auto" variant="outline" onClick={() => save("draft")}>
             <Save className="mr-1 size-4" /> Enregistrer le brouillon
           </Button>
           <Button
+            className="w-full sm:w-auto"
             onClick={() => save("published")}
             disabled={publicationIssues.length > 0}
             title={
