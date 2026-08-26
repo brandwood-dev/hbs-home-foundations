@@ -185,15 +185,17 @@ export function AdminSwitchField({
 }) {
   const id = useId();
   return (
-    <div className="flex min-h-12 items-start justify-between gap-4 rounded-lg border border-border bg-background px-3 py-2.5">
-      <div>
-        <Label htmlFor={id} className="text-sm font-medium">
-          {label}
-        </Label>
-        {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
+    <FieldWrapper {...(description ? { hint: description } : {})} label={label} id={id}>
+      <div className="flex h-10 items-center justify-end rounded-md border border-input bg-background px-3">
+        <Switch
+          id={id}
+          checked={checked}
+          onCheckedChange={onChange}
+          disabled={disabled}
+          {...(description ? { "aria-describedby": `${id}-hint` } : {})}
+        />
       </div>
-      <Switch id={id} checked={checked} onCheckedChange={onChange} disabled={disabled} />
-    </div>
+    </FieldWrapper>
   );
 }
 
