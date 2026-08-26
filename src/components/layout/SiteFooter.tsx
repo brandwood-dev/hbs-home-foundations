@@ -2,6 +2,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { AppLink } from "@/components/ui/app-link";
 import { footerColumns } from "@/fixtures/navigation.fixture";
 import { storeConfig } from "@/config/store.config";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 export function SiteFooter() {
   const { customerServiceEmail, customerServicePhone, storeAddress, socialLinks } = storeConfig;
@@ -32,9 +33,7 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col gap-4 border-t border-border pt-8 text-sm text-foreground-muted md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="font-display text-xl tracking-[0.2em] text-foreground">
-              {storeConfig.brandName}
-            </p>
+            <BrandLogo className="h-14 w-24" />
             <ul className="mt-3 space-y-1.5">
               {storeAddress && (
                 <li className="flex items-center gap-2">

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { AppLink } from "@/components/ui/app-link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 export function AdminAuthPage({
   title,
@@ -15,8 +16,8 @@ export function AdminAuthPage({
     <main className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-10">
       <Card className="w-full max-w-md shadow-sm">
         <CardHeader>
-          <AppLink href="/" className="mb-5 text-sm font-semibold tracking-[0.2em] uppercase">
-            HBS HOME
+          <AppLink href="/" aria-label="HBS HOME — Accueil" className="mb-5 inline-flex">
+            <BrandLogo className="h-12 w-[5.1rem]" />
           </AppLink>
           <CardTitle>{title}</CardTitle>
           <CardDescription>{description}</CardDescription>

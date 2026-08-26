@@ -13,6 +13,7 @@ import { openSearchPanel } from "@/hooks/search/useSearchPanel";
 import { useFavoritesCount } from "@/hooks/favorites/useFavorites";
 import { catalogNavigationQuery } from "@/services/catalog/catalog-category.queries";
 import { mergeCatalogNavigation } from "@/services/catalog/catalog-navigation";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 export function SiteHeader() {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -39,8 +40,8 @@ export function SiteHeader() {
         >
           <Menu className="h-5 w-5" aria-hidden="true" />
         </button>
-        <Link to="/" className="font-display text-xl tracking-[0.18em]">
-          {storeConfig.brandName}
+        <Link to="/" aria-label={`${storeConfig.brandName} — Accueil`}>
+          <BrandLogo className="h-11 w-[4.6rem]" />
         </Link>
         <div className="flex items-center">
           <button
@@ -90,8 +91,8 @@ export function SiteHeader() {
       {/* Desktop */}
       <div className="hidden lg:block" onMouseLeave={() => setOpenMenuId(null)}>
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-8 px-6 py-4">
-          <Link to="/" className="font-display text-2xl tracking-[0.22em]">
-            {storeConfig.brandName}
+          <Link to="/" aria-label={`${storeConfig.brandName} — Accueil`}>
+            <BrandLogo className="h-12 w-[5.1rem]" />
           </Link>
 
           <div className="flex items-center gap-1 text-sm">
