@@ -377,10 +377,11 @@ export function AdminImageField({
             </Button>
           ) : null}
           {safeImageSrc ? (
-            <img
-              src={safeImageSrc}
-              alt=""
-              className="size-12 shrink-0 rounded border border-border object-cover"
+            <div
+              role="img"
+              aria-label="Aperçu de l’image"
+              className="size-12 shrink-0 rounded border border-border bg-cover bg-center bg-no-repeat"
+              style={{ backgroundImage: `url(${JSON.stringify(safeImageSrc)})` }}
             />
           ) : null}
         </div>
