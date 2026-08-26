@@ -376,14 +376,7 @@ export function AdminImageField({
               <X className="size-4" />
             </Button>
           ) : null}
-          {safeImageSrc ? (
-            <div
-              role="img"
-              aria-label="Aperçu de l’image"
-              className="size-12 shrink-0 rounded border border-border bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: `url(${JSON.stringify(safeImageSrc)})` }}
-            />
-          ) : null}
+          {safeImageSrc ? <span className="text-xs text-muted-foreground">Image prête</span> : null}
         </div>
       </div>
     </FieldWrapper>
