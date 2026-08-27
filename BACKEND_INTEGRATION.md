@@ -245,8 +245,14 @@ identifiants internes :
 - `hero` remplace les textes, CTA, média desktop et média mobile ;
 - `promo_banner` alimente la banderole affichée en haut de la homepage ;
 - `shop_the_look` remplace le titre, l’image et les hotspots liés aux produits publiés.
+- `collections` est désormais alimenté par `GET /api/v1/catalog/categories?navigation=true` :
+  seules les catégories racines actives, visibles dans la navigation et dotées d'une image sont
+  affichées. Leur nom, description, chemin et image viennent de l'API ; les sous-catégories restent
+  consommées par les pages catalogue correspondantes.
 
 Les autres sections restent provisoirement servies par les fixtures, conformément au périmètre
 9D.1. Tant qu’aucune publication homepage n’existe, un 404 public conserve le fallback existant
 afin que le site reste navigable pendant la préparation du premier contenu. Les erreurs API autres
-qu’un 404 sont propagées pour être visibles dans l’observabilité et l’interface d’erreur.
+qu’un 404 sont propagées pour être visibles dans l’observabilité et l’interface d’erreur. Le cache
+React Query de la homepage est limité à 60 secondes pour suivre les changements de catalogue ; le
+cache partagé de l'API conserve `s-maxage=60` et `stale-while-revalidate=300`.
