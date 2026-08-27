@@ -9,13 +9,23 @@ import { WhatsAppFloatingButton } from "@/components/WhatsAppFloatingButton";
 import { dataProvider } from "@/config/features.config";
 import { promoBanner as fallbackPromoBanner } from "@/fixtures/home.fixture";
 import { homeContentQuery } from "@/hooks/content/useHomeContent";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
+import type { HomePromoBannerContent } from "@/domain/content/home-content.types";
+
+const EMPTY_PROMO_BANNER: HomePromoBannerContent = { isEnabled: false, messages: [] };
 
 export function SiteLayout({ children }: { children: ReactNode }) {
+  const hydrated = useIsHydrated();
   const { data: homeContent } = useQuery({
     ...homeContentQuery(),
-    enabled: dataProvider === "api",
+    // Do not let an API response replace the SSR fixture during the first
+    // client render: the shell must hydrate from identical markup first.
+    enabled: dataProvider === "api" && hydrated,
   });
-  const promoBanner = homeContent?.promoBanner ?? fallbackPromoBanner;
+  const promoBanner =
+    dataProvider === "api" && !hydrated
+      ? EMPTY_PROMO_BANNER
+      : (homeContent?.promoBanner ?? fallbackPromoBanner);
 
   return (
     <div className="site-theme flex min-h-screen flex-col overflow-x-hidden bg-background">
