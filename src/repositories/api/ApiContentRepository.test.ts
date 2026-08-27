@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import { HbsApiClient } from "@/api/client";
-import { ApiContentRepository, mapPublicHomeContent } from "./ApiContentRepository";
+import {
+  ApiContentRepository,
+  mapPublicCategoryCollections,
+  mapPublicHomeContent,
+} from "./ApiContentRepository";
 import { MockContentRepository } from "@/repositories/mock/MockContentRepository";
 
 const page = {
@@ -82,10 +86,61 @@ describe("ApiContentRepository", () => {
         }),
       )
       .mockResolvedValueOnce(
-        Response.json({ items: [], page: 1, pageSize: 3, total: 0, totalPages: 0 }),
+        Response.json({
+          items: [
+            {
+              id: "article-1",
+              slug: "conseil-1",
+              title: "Conseil",
+              excerpt: "Conseil maison",
+              category: {
+                id: "category-1",
+                slug: "conseils",
+                name: "Conseils",
+                description: "",
+                sortOrder: 0,
+              },
+              cover: null,
+              readingTimeMinutes: 3,
+              authorName: "HBS HOME",
+              publishedAt: "2026-08-23T00:00:00.000Z",
+              updatedAt: "2026-08-23T00:00:00.000Z",
+              isFeatured: false,
+            },
+          ],
+          page: 1,
+          pageSize: 3,
+          total: 1,
+          totalPages: 1,
+        }),
       )
       .mockResolvedValueOnce(
-        Response.json({ items: [], page: 1, pageSize: 3, total: 0, totalPages: 0 }),
+        Response.json([
+          {
+            slug: "rideaux",
+            name: "Rideaux",
+            description: "Rideaux en velours, satin et lin.",
+            parentSlug: null,
+            path: "/rideaux",
+            imageUrl: "https://cdn.example.test/rideaux.webp",
+            seoTitle: null,
+            seoDescription: null,
+            attributes: [],
+            children: [],
+          },
+          {
+            slug: "sans-image",
+            name: "Sans image",
+            description: null,
+            parentSlug: null,
+            path: "/sans-image",
+            imageUrl: null,
+            seoTitle: null,
+            seoDescription: null,
+            attributes: [],
+            children: [],
+          },
+        ]),
       );
     const repository = new ApiContentRepository(
       new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
@@ -95,6 +150,10 @@ describe("ApiContentRepository", () => {
 
     expect(fetchImplementation).toHaveBeenCalledWith(
       "https://api.example.test/api/v1/content/home",
+      expect.objectContaining({ method: "GET" }),
+    );
+    expect(fetchImplementation).toHaveBeenCalledWith(
+      "https://api.example.test/api/v1/catalog/categories?navigation=true",
       expect.objectContaining({ method: "GET" }),
     );
     expect(content.hero.title).toBe("Un intérieur lumineux");
@@ -110,7 +169,74 @@ describe("ApiContentRepository", () => {
       title: "Rideau lin",
       href: "/produit/rideau-lin",
     });
+    expect(content.collections).toEqual([
+      {
+        id: "rideaux",
+        title: "Rideaux",
+        description: "Rideaux en velours, satin et lin.",
+        href: "/rideaux",
+        image: {
+          src: "https://cdn.example.test/rideaux.webp",
+          alt: "Rideaux",
+        },
+      },
+    ]);
     expect(content.sections.find((section) => section.key === "hero")?.isEnabled).toBe(true);
+  });
+
+  it("maps only image-backed root categories to homepage collections", async () => {
+    const mapped = mapPublicCategoryCollections([
+      {
+        slug: "rideaux",
+        name: "Rideaux",
+        description: "  Une description  ",
+        parentSlug: null,
+        path: "/rideaux",
+        imageUrl: "https://cdn.example.test/rideaux.webp",
+        seoTitle: null,
+        seoDescription: null,
+        attributes: [],
+        children: [
+          {
+            slug: "velours",
+            name: "Velours",
+            description: null,
+            parentSlug: "rideaux",
+            path: "/rideaux/velours",
+            imageUrl: "https://cdn.example.test/velours.webp",
+            seoTitle: null,
+            seoDescription: null,
+            attributes: [],
+            children: [],
+          },
+        ],
+      },
+      {
+        slug: "sans-image",
+        name: "Sans image",
+        description: null,
+        parentSlug: null,
+        path: "/sans-image",
+        imageUrl: null,
+        seoTitle: null,
+        seoDescription: null,
+        attributes: [],
+        children: [],
+      },
+    ]);
+
+    expect(mapped).toEqual([
+      {
+        id: "rideaux",
+        title: "Rideaux",
+        description: "Une description",
+        href: "/rideaux",
+        image: {
+          src: "https://cdn.example.test/rideaux.webp",
+          alt: "Rideaux",
+        },
+      },
+    ]);
   });
 
   it("keeps the fixture homepage until the first publication", async () => {
@@ -123,6 +249,47 @@ describe("ApiContentRepository", () => {
     const fallback = await new MockContentRepository().getHomePage();
 
     await expect(repository.getHomePage()).resolves.toEqual(fallback);
+  });
+
+  it("keeps managed fixtures but loads collections before the first homepage publication", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(
+        Response.json([
+          {
+            slug: "rideaux",
+            name: "Rideaux",
+            description: "Catégorie publiée",
+            parentSlug: null,
+            path: "/rideaux",
+            imageUrl: "https://cdn.example.test/rideaux.webp",
+            seoTitle: null,
+            seoDescription: null,
+            attributes: [],
+            children: [],
+          },
+        ]),
+      );
+    const repository = new ApiContentRepository(
+      new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
+    );
+
+    const content = await repository.getHomePage();
+
+    expect(content.hero.title).toBe("Des rideaux qui transforment votre intérieur");
+    expect(content.collections).toEqual([
+      {
+        id: "rideaux",
+        title: "Rideaux",
+        description: "Catégorie publiée",
+        href: "/rideaux",
+        image: {
+          src: "https://cdn.example.test/rideaux.webp",
+          alt: "Rideaux",
+        },
+      },
+    ]);
   });
 
   it("disables managed sections omitted from a published snapshot", async () => {

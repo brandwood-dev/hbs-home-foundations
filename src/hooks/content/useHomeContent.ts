@@ -7,7 +7,10 @@ export function homeContentQuery() {
   return queryOptions({
     queryKey: contentQueryKeys.home(),
     queryFn: () => getContentRepository().getHomePage(),
-    staleTime: 10 * 60_000,
+    // The homepage now includes catalogue-backed collections. Keep the cache
+    // aligned with the public category endpoint so Admin changes become
+    // visible without waiting ten minutes for a hard reload.
+    staleTime: 60_000,
   });
 }
 

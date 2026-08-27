@@ -164,6 +164,14 @@ interne de révision, section, média ou hotspot et ne renvoie que les médias a
 publiés. Elle est cacheable par Cloudflare avec `s-maxage=60` et
 `stale-while-revalidate=300`; l'absence de publication est cacheable 30 secondes.
 
+La section `collections` de la homepage est alimentée par le catalogue public :
+`GET /api/v1/catalog/categories?navigation=true` renvoie les catégories racines actives et visibles
+dans la navigation, avec leur image publique lorsqu'elle existe. Le frontend utilise ces données
+pour les cartes de collections et n'affiche pas une catégorie sans image. Les sous-catégories sont
+exposées dans la réponse catalogue et utilisées par les pages de catégorie, pas comme cartes racines
+de la homepage. Cette route est cacheable avec `s-maxage=60` et
+`stale-while-revalidate=300`.
+
 ## Suivi de commande sans compte
 
 ### `POST /api/v1/orders/track`
