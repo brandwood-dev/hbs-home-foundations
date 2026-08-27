@@ -10,15 +10,14 @@ import type {
   HomePageContent,
   HomeSectionConfig,
   HomeImage,
-  HomeCollection,
   AdviceArticlePreview,
 } from "@/domain/content/home-content.types";
+import { normalizePromoBannerMessages } from "@/domain/content/promo-banner";
 import { HbsApiClient, HbsApiError } from "@/api/client";
 import type { components } from "@/api/generated/hbs-home-api";
 import type { ContentRepository } from "@/repositories/interfaces/ContentRepository";
 import { MockContentRepository } from "@/repositories/mock/MockContentRepository";
 import type { PublicCategory } from "@/repositories/interfaces/CategoryRepository";
-import { ApiCategoryRepository } from "@/repositories/api/ApiCategoryRepository";
 
 type ApiEditorialPage = EditorialPage;
 type ApiPublicHomeContent = components["schemas"]["PublicHomeContent"];
@@ -102,7 +101,7 @@ function mapArticle(article: ApiArticle): Article {
  */
 export function mapPublicCategoryCollections(
   categories: readonly PublicCategory[],
-): HomeCollection[] {
+): HomePageContent["collections"] {
   return categories
     .filter((category) => category.parentSlug === null && category.imageUrl)
     .map((category) => ({
@@ -118,12 +117,12 @@ export function mapPublicCategoryCollections(
 }
 
 /**
- * Merge the public API snapshot and catalogue-backed collections into the homepage.
+ * Merge the public API snapshot into the homepage-managed content.
  *
- * The API owns the managed homepage sections and the catalogue-backed
- * collections. Keeping the merge here makes that boundary explicit and
- * prevents internal revision/media identifiers from leaking into the public
- * domain model.
+ * Catalogue-backed collections are overlaid by HomePage from the shared
+ * navigation query. Keeping this merge focused on managed content prevents
+ * internal revision/media identifiers from leaking into the public domain
+ * model and avoids a second catalogue request here.
  */
 export function mapPublicHomeContent(
   apiContent: ApiPublicHomeContent,
@@ -161,11 +160,8 @@ export function mapPublicHomeContent(
   };
 
   const promoBanner = {
-    ...fallback.promoBanner,
     isEnabled: promoSection !== undefined,
-    label: asString(promoPayload["label"], fallback.promoBanner.label ?? ""),
-    text: asString(promoPayload["text"], fallback.promoBanner.text),
-    href: asString(promoPayload["href"], fallback.promoBanner.href ?? ""),
+    messages: normalizePromoBannerMessages(promoPayload, fallback.promoBanner.messages),
   };
 
   const shopTheLook = {
@@ -209,11 +205,8 @@ export function mapPublicHomeContent(
 /** Public content reads. Drafts, archived pages and internal identifiers stay server-side. */
 export class ApiContentRepository implements ContentRepository {
   private readonly fallback = new MockContentRepository();
-  private readonly categories: ApiCategoryRepository;
 
-  constructor(private readonly client = new HbsApiClient()) {
-    this.categories = new ApiCategoryRepository(client);
-  }
+  constructor(private readonly client = new HbsApiClient()) {}
 
   async getHomePage(): Promise<HomePageContent> {
     const fallback = await this.fallback.getHomePage();
@@ -223,15 +216,13 @@ export class ApiContentRepository implements ContentRepository {
     } catch (error) {
       // Before the first Admin publication the public API deliberately returns
       // 404. Keep the managed sections on fixtures until content is published;
-      // catalogue-backed collections are still loaded below. Real API failures
-      // remain visible instead of silently masking incidents.
+      // the homepage overlays catalogue-backed collections from its shared
+      // navigation query. Real API failures remain visible instead of silently
+      // masking incidents.
       if (!(error instanceof HbsApiError && error.status === 404)) throw error;
     }
     if (content === null) {
-      return {
-        ...fallback,
-        collections: await this.loadCollections(fallback.collections),
-      };
+      return fallback;
     }
 
     let articles: ArticleList;
@@ -268,25 +259,7 @@ export class ApiContentRepository implements ContentRepository {
         readingTimeMinutes: article.readingTimeMinutes,
         image: { src: article.cover!.publicUrl, alt: article.cover!.alt },
       }));
-    const collections = await this.loadCollections(fallback.collections);
-    return {
-      ...mapPublicHomeContent(content, fallback, adviceArticles),
-      collections,
-    };
-  }
-
-  private async loadCollections(fallback: HomeCollection[]): Promise<HomeCollection[]> {
-    try {
-      const categories = await this.categories.list({ navigationOnly: true });
-      return mapPublicCategoryCollections(categories);
-    } catch (error) {
-      // Keep the pre-existing public experience only when the category route is
-      // not available yet. Operational failures remain visible to observability.
-      if (error instanceof HbsApiError && error.status === 404) {
-        return fallback;
-      }
-      throw error;
-    }
+    return mapPublicHomeContent(content, fallback, adviceArticles);
   }
 
   async getEditorialPage(slug: string): Promise<EditorialPage | null> {

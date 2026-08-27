@@ -64,9 +64,26 @@ export const homeHero: HomeHeroContent = {
 
 export const promoBanner: HomePromoBannerContent = {
   isEnabled: true,
-  label: "HBS HOME",
-  text: "Livraison partout en Tunisie",
-  href: "/promotions",
+  messages: [
+    {
+      id: "free-shipping",
+      text: "Livraison gratuite dès 200 DT",
+      isEnabled: true,
+      sortOrder: 0,
+    },
+    {
+      id: "nationwide",
+      text: "Livraison partout en Tunisie",
+      isEnabled: true,
+      sortOrder: 1,
+    },
+    {
+      id: "cash-on-delivery",
+      text: "Paiement à la livraison",
+      isEnabled: true,
+      sortOrder: 2,
+    },
+  ],
 };
 
 export const trustItems: HomeTrustItem[] = [

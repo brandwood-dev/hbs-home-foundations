@@ -164,6 +164,29 @@ interne de révision, section, média ou hotspot et ne renvoie que les médias a
 publiés. Elle est cacheable par Cloudflare avec `s-maxage=60` et
 `stale-while-revalidate=300`; l'absence de publication est cacheable 30 secondes.
 
+La section `promo_banner` utilise le payload suivant :
+
+```json
+{
+  "messages": [
+    {
+      "id": "shipping-200",
+      "label": "HBS HOME",
+      "text": "Livraison gratuite dès 200 DT",
+      "href": "/promotions",
+      "isEnabled": true,
+      "sortOrder": 0
+    }
+  ]
+}
+```
+
+Le backend accepte encore l'ancien format `{ "label", "text", "href" }` et le normalise en un
+message. Les messages sont limités à 20 éléments, triés par `sortOrder`, contrôlés côté serveur et
+les liens doivent être des chemins relatifs ou des URLs HTTP(S). Le frontend n'affiche que les
+messages actifs ; zéro message actif masque la banderole et plusieurs messages sont animés en boucle
+au-dessus du header global.
+
 La section `collections` de la homepage est alimentée par le catalogue public :
 `GET /api/v1/catalog/categories?navigation=true` renvoie les catégories racines actives et visibles
 dans la navigation, avec leur image publique lorsqu'elle existe. Le frontend utilise ces données

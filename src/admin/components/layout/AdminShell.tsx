@@ -49,7 +49,7 @@ export function AdminSidebar({
         href="/admin"
         onClick={onNavigate}
         className={cn(
-          "flex min-h-10 items-center gap-2 px-2 py-1 text-sm font-semibold tracking-widest text-foreground uppercase lg:min-h-9",
+          "flex min-h-10 items-center gap-2 px-2 py-1 text-sm font-semibold tracking-widest text-foreground uppercase mb-5 lg:min-h-9",
           collapsed ? "justify-center" : "",
         )}
         title={collapsed ? "HBS HOME Admin" : undefined}

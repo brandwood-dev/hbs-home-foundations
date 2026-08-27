@@ -1485,7 +1485,7 @@ export interface components {
             /** @enum {string} */
             apiVersion: "v1";
             /** @enum {string} */
-            contractVersion: "1.5.0";
+            contractVersion: "1.6.0";
             releaseVersion: string;
             gitSha: string;
             builtAt: string;
@@ -3062,6 +3062,15 @@ export interface components {
                 sortOrder: number;
                 isEnabled?: boolean;
                 payload?: {
+                    messages: {
+                        id: string;
+                        label?: string;
+                        text: string;
+                        href?: string;
+                        isEnabled: boolean;
+                        sortOrder: number;
+                    }[];
+                } | {
                     [key: string]: unknown;
                 };
                 mediaAssetId?: string | null;
@@ -3092,6 +3101,15 @@ export interface components {
                     sortOrder: number;
                     isEnabled: boolean;
                     payload: {
+                        messages: {
+                            id: string;
+                            label?: string;
+                            text: string;
+                            href?: string;
+                            isEnabled: boolean;
+                            sortOrder: number;
+                        }[];
+                    } | {
                         [key: string]: unknown;
                     };
                     media: {
@@ -3139,6 +3157,15 @@ export interface components {
                     sortOrder: number;
                     isEnabled: boolean;
                     payload: {
+                        messages: {
+                            id: string;
+                            label?: string;
+                            text: string;
+                            href?: string;
+                            isEnabled: boolean;
+                            sortOrder: number;
+                        }[];
+                    } | {
                         [key: string]: unknown;
                     };
                     media: {
@@ -3181,6 +3208,15 @@ export interface components {
                 sortOrder: number;
                 isEnabled: boolean;
                 payload: {
+                    messages: {
+                        id: string;
+                        label?: string;
+                        text: string;
+                        href?: string;
+                        isEnabled: boolean;
+                        sortOrder: number;
+                    }[];
+                } | {
                     [key: string]: unknown;
                 };
                 media: {
@@ -3317,7 +3353,7 @@ export interface operations {
                         /** @enum {string} */
                         apiVersion: "v1";
                         /** @enum {string} */
-                        contractVersion: "1.5.0";
+                        contractVersion: "1.6.0";
                         releaseVersion: string;
                         gitSha: string;
                         builtAt: string;
@@ -17173,6 +17209,15 @@ export interface operations {
                                 sortOrder: number;
                                 isEnabled: boolean;
                                 payload: {
+                                    messages: {
+                                        id: string;
+                                        label?: string;
+                                        text: string;
+                                        href?: string;
+                                        isEnabled: boolean;
+                                        sortOrder: number;
+                                    }[];
+                                } | {
                                     [key: string]: unknown;
                                 };
                                 media: {
@@ -17220,6 +17265,15 @@ export interface operations {
                                 sortOrder: number;
                                 isEnabled: boolean;
                                 payload: {
+                                    messages: {
+                                        id: string;
+                                        label?: string;
+                                        text: string;
+                                        href?: string;
+                                        isEnabled: boolean;
+                                        sortOrder: number;
+                                    }[];
+                                } | {
                                     [key: string]: unknown;
                                 };
                                 media: {
@@ -17316,6 +17370,15 @@ export interface operations {
                         sortOrder: number;
                         isEnabled?: boolean;
                         payload?: {
+                            messages: {
+                                id: string;
+                                label?: string;
+                                text: string;
+                                href?: string;
+                                isEnabled: boolean;
+                                sortOrder: number;
+                            }[];
+                        } | {
                             [key: string]: unknown;
                         };
                         mediaAssetId?: string | null;
@@ -17354,6 +17417,15 @@ export interface operations {
                             sortOrder: number;
                             isEnabled: boolean;
                             payload: {
+                                messages: {
+                                    id: string;
+                                    label?: string;
+                                    text: string;
+                                    href?: string;
+                                    isEnabled: boolean;
+                                    sortOrder: number;
+                                }[];
+                            } | {
                                 [key: string]: unknown;
                             };
                             media: {
@@ -17512,6 +17584,15 @@ export interface operations {
                             sortOrder: number;
                             isEnabled: boolean;
                             payload: {
+                                messages: {
+                                    id: string;
+                                    label?: string;
+                                    text: string;
+                                    href?: string;
+                                    isEnabled: boolean;
+                                    sortOrder: number;
+                                }[];
+                            } | {
                                 [key: string]: unknown;
                             };
                             media: {
@@ -17648,6 +17729,15 @@ export interface operations {
                             sortOrder: number;
                             isEnabled: boolean;
                             payload: {
+                                messages: {
+                                    id: string;
+                                    label?: string;
+                                    text: string;
+                                    href?: string;
+                                    isEnabled: boolean;
+                                    sortOrder: number;
+                                }[];
+                            } | {
                                 [key: string]: unknown;
                             };
                             media: {
@@ -17774,6 +17864,15 @@ export interface operations {
                             sortOrder: number;
                             isEnabled: boolean;
                             payload: {
+                                messages: {
+                                    id: string;
+                                    label?: string;
+                                    text: string;
+                                    href?: string;
+                                    isEnabled: boolean;
+                                    sortOrder: number;
+                                }[];
+                            } | {
                                 [key: string]: unknown;
                             };
                             media: {

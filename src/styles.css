@@ -211,6 +211,12 @@ body:has(.admin-theme) {
 
 @utility marquee-track {
   animation: hbs-marquee 28s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track:hover,
+.marquee-track:focus-within {
+  animation-play-state: paused;
 }
 
 @keyframes hbs-marquee {

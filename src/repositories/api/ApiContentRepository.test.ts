@@ -113,34 +113,6 @@ describe("ApiContentRepository", () => {
           total: 1,
           totalPages: 1,
         }),
-      )
-      .mockResolvedValueOnce(
-        Response.json([
-          {
-            slug: "rideaux",
-            name: "Rideaux",
-            description: "Rideaux en velours, satin et lin.",
-            parentSlug: null,
-            path: "/rideaux",
-            imageUrl: "https://cdn.example.test/rideaux.webp",
-            seoTitle: null,
-            seoDescription: null,
-            attributes: [],
-            children: [],
-          },
-          {
-            slug: "sans-image",
-            name: "Sans image",
-            description: null,
-            parentSlug: null,
-            path: "/sans-image",
-            imageUrl: null,
-            seoTitle: null,
-            seoDescription: null,
-            attributes: [],
-            children: [],
-          },
-        ]),
       );
     const repository = new ApiContentRepository(
       new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
@@ -152,35 +124,30 @@ describe("ApiContentRepository", () => {
       "https://api.example.test/api/v1/content/home",
       expect.objectContaining({ method: "GET" }),
     );
-    expect(fetchImplementation).toHaveBeenCalledWith(
-      "https://api.example.test/api/v1/catalog/categories?navigation=true",
-      expect.objectContaining({ method: "GET" }),
-    );
+    expect(fetchImplementation).toHaveBeenCalledTimes(2);
     expect(content.hero.title).toBe("Un intérieur lumineux");
     expect(content.hero.image.src).toBe("https://cdn.example.test/hero.webp");
     expect(content.hero.mobileImage?.src).toBe("https://cdn.example.test/hero-mobile.webp");
     expect(content.promoBanner).toMatchObject({
       isEnabled: true,
-      label: "Nouveauté",
-      text: "Livraison offerte",
+      messages: [
+        {
+          label: "Nouveauté",
+          text: "Livraison offerte",
+          href: "/promotions",
+          isEnabled: true,
+          sortOrder: 0,
+        },
+      ],
     });
     expect(content.shopTheLook.hotspots[0]).toMatchObject({
       productId: "product-1",
       title: "Rideau lin",
       href: "/produit/rideau-lin",
     });
-    expect(content.collections).toEqual([
-      {
-        id: "rideaux",
-        title: "Rideaux",
-        description: "Rideaux en velours, satin et lin.",
-        href: "/rideaux",
-        image: {
-          src: "https://cdn.example.test/rideaux.webp",
-          alt: "Rideaux",
-        },
-      },
-    ]);
+    expect(content.collections).toEqual(
+      (await new MockContentRepository().getHomePage()).collections,
+    );
     expect(content.sections.find((section) => section.key === "hero")?.isEnabled).toBe(true);
   });
 
@@ -251,26 +218,10 @@ describe("ApiContentRepository", () => {
     await expect(repository.getHomePage()).resolves.toEqual(fallback);
   });
 
-  it("keeps managed fixtures but loads collections before the first homepage publication", async () => {
+  it("keeps managed fixtures before the first homepage publication", async () => {
     const fetchImplementation = vi
       .fn<typeof fetch>()
-      .mockResolvedValueOnce(new Response(null, { status: 404 }))
-      .mockResolvedValueOnce(
-        Response.json([
-          {
-            slug: "rideaux",
-            name: "Rideaux",
-            description: "Catégorie publiée",
-            parentSlug: null,
-            path: "/rideaux",
-            imageUrl: "https://cdn.example.test/rideaux.webp",
-            seoTitle: null,
-            seoDescription: null,
-            attributes: [],
-            children: [],
-          },
-        ]),
-      );
+      .mockResolvedValueOnce(new Response(null, { status: 404 }));
     const repository = new ApiContentRepository(
       new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
     );
@@ -278,18 +229,9 @@ describe("ApiContentRepository", () => {
     const content = await repository.getHomePage();
 
     expect(content.hero.title).toBe("Des rideaux qui transforment votre intérieur");
-    expect(content.collections).toEqual([
-      {
-        id: "rideaux",
-        title: "Rideaux",
-        description: "Catégorie publiée",
-        href: "/rideaux",
-        image: {
-          src: "https://cdn.example.test/rideaux.webp",
-          alt: "Rideaux",
-        },
-      },
-    ]);
+    expect(content.collections).toEqual(
+      (await new MockContentRepository().getHomePage()).collections,
+    );
   });
 
   it("disables managed sections omitted from a published snapshot", async () => {
@@ -318,6 +260,48 @@ describe("ApiContentRepository", () => {
     expect(mapped.sections.find((section) => section.key === "shop_the_look")?.isEnabled).toBe(
       false,
     );
+  });
+
+  it("maps active multi-message banners in their published order", () => {
+    const fallback = new MockContentRepository();
+    return fallback.getHomePage().then((fallbackPage) => {
+      const mapped = mapPublicHomeContent(
+        {
+          version: 2,
+          publishedAt: "2026-08-23T00:00:00.000Z",
+          sections: [
+            {
+              sectionKey: "promo_banner",
+              sortOrder: 0,
+              isEnabled: true,
+              payload: {
+                messages: [
+                  { id: "second", text: "Deuxième", isEnabled: true, sortOrder: 2 },
+                  { id: "hidden", text: "Masqué", isEnabled: false, sortOrder: 1 },
+                  { id: "first", text: "Premier", isEnabled: true, sortOrder: 0 },
+                ],
+              },
+              media: null,
+              mobileMedia: null,
+              hotspots: [],
+            },
+          ],
+        },
+        fallbackPage,
+      );
+
+      expect(mapped.promoBanner.messages.map((message) => message.text)).toEqual([
+        "Premier",
+        "Masqué",
+        "Deuxième",
+      ]);
+      expect(
+        mapped.promoBanner.messages
+          .filter((message) => message.isEnabled)
+          .map((message) => message.text),
+      ).toEqual(["Premier", "Deuxième"]);
+      expect(mapped.promoBanner.messages[1]?.sortOrder).toBe(1);
+    });
   });
 
   it("loads a published page without adding a frontend fixture", async () => {

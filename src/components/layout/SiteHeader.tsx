@@ -20,7 +20,12 @@ export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { count: cartCount, label: cartLabel } = useCartCount();
   const favoritesCount = useFavoritesCount();
-  const navigationQuery = useQuery(catalogNavigationQuery());
+  const navigationQuery = useQuery({
+    ...catalogNavigationQuery(),
+    // The query cache is not serialized by the current shell. Fetch the live
+    // navigation after hydration so SSR and the first browser render match.
+    enabled: typeof window !== "undefined",
+  });
   const navigation = useMemo(
     () => mergeCatalogNavigation(mainNavigation, navigationQuery.data),
     [navigationQuery.data],

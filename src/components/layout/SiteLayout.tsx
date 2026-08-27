@@ -1,12 +1,22 @@
 import type { ReactNode } from "react";
-import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
+import { useQuery } from "@tanstack/react-query";
+import { HomePromoBanner } from "@/components/home/HomePromoBanner";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { GlobalSearchPanel } from "@/components/search/GlobalSearchPanel";
 import { WhatsAppFloatingButton } from "@/components/WhatsAppFloatingButton";
+import { dataProvider } from "@/config/features.config";
+import { promoBanner as fallbackPromoBanner } from "@/fixtures/home.fixture";
+import { homeContentQuery } from "@/hooks/content/useHomeContent";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
+  const { data: homeContent } = useQuery({
+    ...homeContentQuery(),
+    enabled: dataProvider === "api",
+  });
+  const promoBanner = homeContent?.promoBanner ?? fallbackPromoBanner;
+
   return (
     <div className="site-theme flex min-h-screen flex-col overflow-x-hidden bg-background">
       <a
@@ -15,7 +25,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       >
         Aller au contenu principal
       </a>
-      <AnnouncementBar />
+      <HomePromoBanner content={promoBanner} />
       <SiteHeader />
       <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
         {children}

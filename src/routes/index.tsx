@@ -9,6 +9,10 @@ const description =
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
+    // Catalogue navigation is intentionally fetched by the shared client query
+    // after hydration. Query data populated only in this server-side client is
+    // not serialized by the current TanStack Start shell, so preloading it here
+    // would make the server markup differ from the first browser render.
     await context.queryClient.ensureQueryData(homeContentQuery());
   },
   head: () => ({
