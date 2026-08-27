@@ -245,7 +245,8 @@ la navigation utilisent la même `catalogNavigationQuery()` React Query afin de 
 snapshot cohérent et d’éviter les requêtes concurrentes :
 
 - `hero` remplace les textes, CTA, média desktop et média mobile ;
-- `promo_banner` alimente la banderole affichée en haut de la homepage ;
+- `promo_banner` alimente la banderole multi-message affichée tout en haut du shell public, avant le
+  logo et la navigation ;
 - `shop_the_look` remplace le titre, l’image et les hotspots liés aux produits publiés.
 - `collections` est alimenté par `GET /api/v1/catalog/categories?navigation=true` via la requête
   catalogue partagée :
@@ -259,3 +260,8 @@ afin que le site reste navigable pendant la préparation du premier contenu. Les
 qu’un 404 sont propagées pour être visibles dans l’observabilité et l’interface d’erreur. Le cache
 React Query de la homepage est limité à 60 secondes pour suivre les changements de catalogue ; le
 cache partagé de l'API conserve `s-maxage=60` et `stale-while-revalidate=300`.
+
+La banderole n'est plus alimentée par `navigation.fixture.ts`. L'éditeur Admin gère plusieurs
+messages (activation, ordre, lien et suppression) dans le payload `promo_banner.messages`. Un seul
+message est affiché sans animation ; plusieurs messages défilent en boucle avec pause au survol/focus
+et respect de `prefers-reduced-motion`.

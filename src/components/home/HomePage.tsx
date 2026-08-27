@@ -1,6 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { HomeSectionRenderer } from "@/components/home/HomeSectionRenderer";
-import { HomePromoBanner } from "@/components/home/HomePromoBanner";
 import { dataProvider } from "@/config/features.config";
 import { useHomeContent } from "@/hooks/content/useHomeContent";
 import { mapPublicCategoryCollections } from "@/repositories/api/ApiContentRepository";
@@ -31,7 +30,6 @@ export function HomePage() {
 
   return (
     <>
-      <HomePromoBanner content={pageContent.promoBanner} />
       {sections.map((section) => (
         <HomeSectionRenderer key={section.key} sectionKey={section.key} content={pageContent} />
       ))}

@@ -4,6 +4,8 @@
  * (voir API_CONTRACT.md → GET /api/v1/content/home).
  */
 
+import type { HomePromoBannerContent, HomePromoBannerMessage } from "@/domain/content/promo-banner";
+
 export type HomeSectionKey =
   | "hero"
   | "trust"
@@ -47,12 +49,7 @@ export interface HomeHeroContent {
   mobileImage?: HomeImage;
 }
 
-export interface HomePromoBannerContent {
-  isEnabled: boolean;
-  label?: string;
-  text: string;
-  href?: string;
-}
+export type { HomePromoBannerContent, HomePromoBannerMessage } from "@/domain/content/promo-banner";
 
 export type HomeTrustIcon = "truck" | "banknote" | "package-check" | "message-circle";
 

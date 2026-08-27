@@ -130,8 +130,15 @@ describe("ApiContentRepository", () => {
     expect(content.hero.mobileImage?.src).toBe("https://cdn.example.test/hero-mobile.webp");
     expect(content.promoBanner).toMatchObject({
       isEnabled: true,
-      label: "Nouveauté",
-      text: "Livraison offerte",
+      messages: [
+        {
+          label: "Nouveauté",
+          text: "Livraison offerte",
+          href: "/promotions",
+          isEnabled: true,
+          sortOrder: 0,
+        },
+      ],
     });
     expect(content.shopTheLook.hotspots[0]).toMatchObject({
       productId: "product-1",
@@ -253,6 +260,48 @@ describe("ApiContentRepository", () => {
     expect(mapped.sections.find((section) => section.key === "shop_the_look")?.isEnabled).toBe(
       false,
     );
+  });
+
+  it("maps active multi-message banners in their published order", () => {
+    const fallback = new MockContentRepository();
+    return fallback.getHomePage().then((fallbackPage) => {
+      const mapped = mapPublicHomeContent(
+        {
+          version: 2,
+          publishedAt: "2026-08-23T00:00:00.000Z",
+          sections: [
+            {
+              sectionKey: "promo_banner",
+              sortOrder: 0,
+              isEnabled: true,
+              payload: {
+                messages: [
+                  { id: "second", text: "Deuxième", isEnabled: true, sortOrder: 2 },
+                  { id: "hidden", text: "Masqué", isEnabled: false, sortOrder: 1 },
+                  { id: "first", text: "Premier", isEnabled: true, sortOrder: 0 },
+                ],
+              },
+              media: null,
+              mobileMedia: null,
+              hotspots: [],
+            },
+          ],
+        },
+        fallbackPage,
+      );
+
+      expect(mapped.promoBanner.messages.map((message) => message.text)).toEqual([
+        "Premier",
+        "Masqué",
+        "Deuxième",
+      ]);
+      expect(
+        mapped.promoBanner.messages
+          .filter((message) => message.isEnabled)
+          .map((message) => message.text),
+      ).toEqual(["Premier", "Deuxième"]);
+      expect(mapped.promoBanner.messages[1]?.sortOrder).toBe(1);
+    });
   });
 
   it("loads a published page without adding a frontend fixture", async () => {

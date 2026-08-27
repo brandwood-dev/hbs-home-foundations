@@ -12,6 +12,7 @@ import type {
   HomeImage,
   AdviceArticlePreview,
 } from "@/domain/content/home-content.types";
+import { normalizePromoBannerMessages } from "@/domain/content/promo-banner";
 import { HbsApiClient, HbsApiError } from "@/api/client";
 import type { components } from "@/api/generated/hbs-home-api";
 import type { ContentRepository } from "@/repositories/interfaces/ContentRepository";
@@ -159,11 +160,8 @@ export function mapPublicHomeContent(
   };
 
   const promoBanner = {
-    ...fallback.promoBanner,
     isEnabled: promoSection !== undefined,
-    label: asString(promoPayload["label"], fallback.promoBanner.label ?? ""),
-    text: asString(promoPayload["text"], fallback.promoBanner.text),
-    href: asString(promoPayload["href"], fallback.promoBanner.href ?? ""),
+    messages: normalizePromoBannerMessages(promoPayload, fallback.promoBanner.messages),
   };
 
   const shopTheLook = {
