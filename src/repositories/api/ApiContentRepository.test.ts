@@ -113,34 +113,6 @@ describe("ApiContentRepository", () => {
           total: 1,
           totalPages: 1,
         }),
-      )
-      .mockResolvedValueOnce(
-        Response.json([
-          {
-            slug: "rideaux",
-            name: "Rideaux",
-            description: "Rideaux en velours, satin et lin.",
-            parentSlug: null,
-            path: "/rideaux",
-            imageUrl: "https://cdn.example.test/rideaux.webp",
-            seoTitle: null,
-            seoDescription: null,
-            attributes: [],
-            children: [],
-          },
-          {
-            slug: "sans-image",
-            name: "Sans image",
-            description: null,
-            parentSlug: null,
-            path: "/sans-image",
-            imageUrl: null,
-            seoTitle: null,
-            seoDescription: null,
-            attributes: [],
-            children: [],
-          },
-        ]),
       );
     const repository = new ApiContentRepository(
       new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
@@ -152,10 +124,7 @@ describe("ApiContentRepository", () => {
       "https://api.example.test/api/v1/content/home",
       expect.objectContaining({ method: "GET" }),
     );
-    expect(fetchImplementation).toHaveBeenCalledWith(
-      "https://api.example.test/api/v1/catalog/categories?navigation=true",
-      expect.objectContaining({ method: "GET" }),
-    );
+    expect(fetchImplementation).toHaveBeenCalledTimes(2);
     expect(content.hero.title).toBe("Un intérieur lumineux");
     expect(content.hero.image.src).toBe("https://cdn.example.test/hero.webp");
     expect(content.hero.mobileImage?.src).toBe("https://cdn.example.test/hero-mobile.webp");
@@ -169,18 +138,9 @@ describe("ApiContentRepository", () => {
       title: "Rideau lin",
       href: "/produit/rideau-lin",
     });
-    expect(content.collections).toEqual([
-      {
-        id: "rideaux",
-        title: "Rideaux",
-        description: "Rideaux en velours, satin et lin.",
-        href: "/rideaux",
-        image: {
-          src: "https://cdn.example.test/rideaux.webp",
-          alt: "Rideaux",
-        },
-      },
-    ]);
+    expect(content.collections).toEqual(
+      (await new MockContentRepository().getHomePage()).collections,
+    );
     expect(content.sections.find((section) => section.key === "hero")?.isEnabled).toBe(true);
   });
 
@@ -251,26 +211,10 @@ describe("ApiContentRepository", () => {
     await expect(repository.getHomePage()).resolves.toEqual(fallback);
   });
 
-  it("keeps managed fixtures but loads collections before the first homepage publication", async () => {
+  it("keeps managed fixtures before the first homepage publication", async () => {
     const fetchImplementation = vi
       .fn<typeof fetch>()
-      .mockResolvedValueOnce(new Response(null, { status: 404 }))
-      .mockResolvedValueOnce(
-        Response.json([
-          {
-            slug: "rideaux",
-            name: "Rideaux",
-            description: "Catégorie publiée",
-            parentSlug: null,
-            path: "/rideaux",
-            imageUrl: "https://cdn.example.test/rideaux.webp",
-            seoTitle: null,
-            seoDescription: null,
-            attributes: [],
-            children: [],
-          },
-        ]),
-      );
+      .mockResolvedValueOnce(new Response(null, { status: 404 }));
     const repository = new ApiContentRepository(
       new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
     );
@@ -278,18 +222,9 @@ describe("ApiContentRepository", () => {
     const content = await repository.getHomePage();
 
     expect(content.hero.title).toBe("Des rideaux qui transforment votre intérieur");
-    expect(content.collections).toEqual([
-      {
-        id: "rideaux",
-        title: "Rideaux",
-        description: "Catégorie publiée",
-        href: "/rideaux",
-        image: {
-          src: "https://cdn.example.test/rideaux.webp",
-          alt: "Rideaux",
-        },
-      },
-    ]);
+    expect(content.collections).toEqual(
+      (await new MockContentRepository().getHomePage()).collections,
+    );
   });
 
   it("disables managed sections omitted from a published snapshot", async () => {

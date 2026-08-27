@@ -240,12 +240,15 @@ l’API.
 
 `ApiContentRepository.getHomePage()` consomme désormais `GET /api/v1/content/home` lorsque l’URL
 API est configurée. Le snapshot public est mappé vers le contrat frontend sans exposer les
-identifiants internes :
+identifiants internes. Les collections ne sont pas chargées par ce repository : la homepage et
+la navigation utilisent la même `catalogNavigationQuery()` React Query afin de garantir un
+snapshot cohérent et d’éviter les requêtes concurrentes :
 
 - `hero` remplace les textes, CTA, média desktop et média mobile ;
 - `promo_banner` alimente la banderole affichée en haut de la homepage ;
 - `shop_the_look` remplace le titre, l’image et les hotspots liés aux produits publiés.
-- `collections` est désormais alimenté par `GET /api/v1/catalog/categories?navigation=true` :
+- `collections` est alimenté par `GET /api/v1/catalog/categories?navigation=true` via la requête
+  catalogue partagée :
   seules les catégories racines actives, visibles dans la navigation et dotées d'une image sont
   affichées. Leur nom, description, chemin et image viennent de l'API ; les sous-catégories restent
   consommées par les pages catalogue correspondantes.
