@@ -104,6 +104,7 @@ import { Route as AdminContenuPagesRouteImport } from './routes/admin/contenu.pa
 import { Route as AdminProduitsIndexRouteImport } from './routes/admin/produits.index'
 import { Route as AdminProduitsProductIdRouteImport } from './routes/admin/produits.$productId'
 import { Route as AdminProduitsNouveauRouteImport } from './routes/admin/produits.nouveau'
+import { Route as AdminContenuAccueilIndexRouteImport } from './routes/admin/contenu.accueil.index'
 import { Route as AdminContenuAccueilBanderoleRouteImport } from './routes/admin/contenu.accueil.banderole'
 import { Route as AdminContenuAccueilHeroRouteImport } from './routes/admin/contenu.accueil.hero'
 import { Route as AdminContenuAccueilShopTheLookRouteImport } from './routes/admin/contenu.accueil.shop-the-look'
@@ -585,6 +586,12 @@ const AdminProduitsNouveauRoute = AdminProduitsNouveauRouteImport.update({
   path: '/produits/nouveau',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminContenuAccueilIndexRoute =
+  AdminContenuAccueilIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AdminContenuAccueilRoute,
+  } as any)
 const AdminContenuAccueilBanderoleRoute =
   AdminContenuAccueilBanderoleRouteImport.update({
     id: '/banderole',
@@ -702,6 +709,7 @@ export interface FileRoutesByFullPath {
   '/admin/contenu/accueil/banderole': typeof AdminContenuAccueilBanderoleRoute
   '/admin/contenu/accueil/hero': typeof AdminContenuAccueilHeroRoute
   '/admin/contenu/accueil/shop-the-look': typeof AdminContenuAccueilShopTheLookRoute
+  '/admin/contenu/accueil/': typeof AdminContenuAccueilIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -790,7 +798,6 @@ export interface FileRoutesByTo {
   '/admin/auth/callback': typeof AdminAuthCallbackRoute
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
-  '/admin/contenu/accueil': typeof AdminContenuAccueilRouteWithChildren
   '/admin/contenu/articles': typeof AdminContenuArticlesRoute
   '/admin/contenu/pages': typeof AdminContenuPagesRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
@@ -801,6 +808,7 @@ export interface FileRoutesByTo {
   '/admin/contenu/accueil/banderole': typeof AdminContenuAccueilBanderoleRoute
   '/admin/contenu/accueil/hero': typeof AdminContenuAccueilHeroRoute
   '/admin/contenu/accueil/shop-the-look': typeof AdminContenuAccueilShopTheLookRoute
+  '/admin/contenu/accueil': typeof AdminContenuAccueilIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -902,6 +910,7 @@ export interface FileRoutesById {
   '/admin/contenu/accueil/banderole': typeof AdminContenuAccueilBanderoleRoute
   '/admin/contenu/accueil/hero': typeof AdminContenuAccueilHeroRoute
   '/admin/contenu/accueil/shop-the-look': typeof AdminContenuAccueilShopTheLookRoute
+  '/admin/contenu/accueil/': typeof AdminContenuAccueilIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1004,6 +1013,7 @@ export interface FileRouteTypes {
     | '/admin/contenu/accueil/banderole'
     | '/admin/contenu/accueil/hero'
     | '/admin/contenu/accueil/shop-the-look'
+    | '/admin/contenu/accueil/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1092,7 +1102,6 @@ export interface FileRouteTypes {
     | '/admin/auth/callback'
     | '/admin/clients/$customerId'
     | '/admin/commandes/$orderId'
-    | '/admin/contenu/accueil'
     | '/admin/contenu/articles'
     | '/admin/contenu/pages'
     | '/admin/produits/$productId'
@@ -1103,6 +1112,7 @@ export interface FileRouteTypes {
     | '/admin/contenu/accueil/banderole'
     | '/admin/contenu/accueil/hero'
     | '/admin/contenu/accueil/shop-the-look'
+    | '/admin/contenu/accueil'
   id:
     | '__root__'
     | '/'
@@ -1203,6 +1213,7 @@ export interface FileRouteTypes {
     | '/admin/contenu/accueil/banderole'
     | '/admin/contenu/accueil/hero'
     | '/admin/contenu/accueil/shop-the-look'
+    | '/admin/contenu/accueil/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1951,6 +1962,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProduitsNouveauRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/contenu/accueil/': {
+      id: '/admin/contenu/accueil/'
+      path: '/'
+      fullPath: '/admin/contenu/accueil/'
+      preLoaderRoute: typeof AdminContenuAccueilIndexRouteImport
+      parentRoute: typeof AdminContenuAccueilRoute
+    }
     '/admin/contenu/accueil/banderole': {
       id: '/admin/contenu/accueil/banderole'
       path: '/banderole'
@@ -1979,12 +1997,14 @@ interface AdminContenuAccueilRouteChildren {
   AdminContenuAccueilBanderoleRoute: typeof AdminContenuAccueilBanderoleRoute
   AdminContenuAccueilHeroRoute: typeof AdminContenuAccueilHeroRoute
   AdminContenuAccueilShopTheLookRoute: typeof AdminContenuAccueilShopTheLookRoute
+  AdminContenuAccueilIndexRoute: typeof AdminContenuAccueilIndexRoute
 }
 
 const AdminContenuAccueilRouteChildren: AdminContenuAccueilRouteChildren = {
   AdminContenuAccueilBanderoleRoute: AdminContenuAccueilBanderoleRoute,
   AdminContenuAccueilHeroRoute: AdminContenuAccueilHeroRoute,
   AdminContenuAccueilShopTheLookRoute: AdminContenuAccueilShopTheLookRoute,
+  AdminContenuAccueilIndexRoute: AdminContenuAccueilIndexRoute,
 }
 
 const AdminContenuAccueilRouteWithChildren =
