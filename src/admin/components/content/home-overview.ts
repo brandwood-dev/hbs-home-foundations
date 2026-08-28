@@ -20,25 +20,37 @@ export type HomeSectionConfig = {
   icon: LucideIcon;
 };
 
+export const HOME_SECTION_LABELS: Record<AdminHomeSectionKey, string> = {
+  hero: "Hero principal",
+  promo_banner: "Banderole promotionnelle",
+  shop_the_look: "Shop the Look",
+};
+
+export const HOME_SECTION_DESCRIPTIONS: Record<AdminHomeSectionKey, string> = {
+  hero: "Le visuel et le message principal affichés en haut de la page d’accueil.",
+  promo_banner: "Des messages affichés tout en haut du site, avant le logo et la navigation.",
+  shop_the_look: "Une image éditoriale avec des points qui renvoient vers les produits.",
+};
+
 export const HOME_SECTION_CONFIG: readonly HomeSectionConfig[] = [
   {
     key: "hero",
-    label: "Hero principal",
-    description: "Le visuel, le message et les appels à l’action de la page d’accueil.",
+    label: HOME_SECTION_LABELS.hero,
+    description: HOME_SECTION_DESCRIPTIONS.hero,
     href: "/admin/contenu/accueil/hero",
     icon: LayoutTemplate,
   },
   {
     key: "promo_banner",
-    label: "Banderole promotionnelle",
-    description: "Les messages défilants affichés avant le logo et la navigation publiques.",
+    label: HOME_SECTION_LABELS.promo_banner,
+    description: HOME_SECTION_DESCRIPTIONS.promo_banner,
     href: "/admin/contenu/accueil/banderole",
     icon: Megaphone,
   },
   {
     key: "shop_the_look",
-    label: "Shop the Look",
-    description: "L’image éditoriale et les points qui renvoient vers le catalogue.",
+    label: HOME_SECTION_LABELS.shop_the_look,
+    description: HOME_SECTION_DESCRIPTIONS.shop_the_look,
     href: "/admin/contenu/accueil/shop-the-look",
     icon: MousePointer2,
   },
