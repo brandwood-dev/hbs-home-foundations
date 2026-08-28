@@ -11,6 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Outlet, useRouterState } from "@tanstack/react-router";
 import { HomePromoBanner } from "@/components/home/HomePromoBanner";
 import { promoBanner as fallbackPromoBanner } from "@/fixtures/home.fixture";
 import {
@@ -265,6 +266,14 @@ function linkedProductNotice(products: AdminProduct[], productId: string): strin
 }
 
 export function AdminHomeContentPage({ sectionKey }: { sectionKey?: AdminHomeSectionKey }) {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  if (!sectionKey && pathname.startsWith("/admin/contenu/accueil/")) {
+    return <Outlet />;
+  }
+  return <AdminHomeContentEditor {...(sectionKey ? { sectionKey } : {})} />;
+}
+
+function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionKey }) {
   const { hasPermission } = useAdminAuthorization();
   const { data, isLoading, error, refetch } = useAdminHomeContent(sectionKey);
   const { data: media = [] } = useAdminMedia();
