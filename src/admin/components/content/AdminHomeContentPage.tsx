@@ -37,8 +37,11 @@ import { useAdminAuthorization } from "@/admin/auth/AdminAuthorizationContext";
 import { useAdminHomeContent, useAdminMedia, useAdminProducts } from "@/admin/hooks/admin.queries";
 import {
   useArchiveAdminHomeContent,
+  useArchiveAdminHomeSection,
   usePublishAdminHomeContent,
+  usePublishAdminHomeSection,
   useUpdateAdminHomeContent,
+  useUpdateAdminHomeSection,
 } from "@/admin/hooks/admin-home-content.mutations";
 import type {
   AdminHomeContent,
@@ -261,14 +264,17 @@ function linkedProductNotice(products: AdminProduct[], productId: string): strin
   return null;
 }
 
-export function AdminHomeContentPage() {
+export function AdminHomeContentPage({ sectionKey }: { sectionKey?: AdminHomeSectionKey }) {
   const { hasPermission } = useAdminAuthorization();
-  const { data, isLoading, error, refetch } = useAdminHomeContent();
+  const { data, isLoading, error, refetch } = useAdminHomeContent(sectionKey);
   const { data: media = [] } = useAdminMedia();
   const { data: products = [] } = useAdminProducts();
   const updateHome = useUpdateAdminHomeContent();
+  const updateHomeSection = useUpdateAdminHomeSection();
   const publishHome = usePublishAdminHomeContent();
+  const publishHomeSection = usePublishAdminHomeSection();
   const archiveHome = useArchiveAdminHomeContent();
+  const archiveHomeSection = useArchiveAdminHomeSection();
   const [draft, setDraft] = useState<HomeDraft | null>(null);
   const [dirty, setDirty] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -288,6 +294,9 @@ export function AdminHomeContentPage() {
     () => [...(draft?.sections ?? [])].sort((a, b) => a.sortOrder - b.sortOrder),
     [draft],
   );
+  const visibleSections = sectionKey
+    ? orderedSections.filter((section) => section.sectionKey === sectionKey)
+    : orderedSections;
 
   function updateSection(
     sectionKey: AdminHomeSectionKey,
@@ -446,29 +455,47 @@ export function AdminHomeContentPage() {
   function save() {
     if (!draft) return;
     setFormError(null);
-    const promo = draft.sections.find((section) => section.sectionKey === "promo_banner");
-    const promoDraftMessages = promo
-      ? readPromoBannerDraftMessages(promo.payload, fallbackPromoBanner.messages)
-      : [];
-    if (promoDraftMessages.some((message) => !message.text.trim())) {
-      setFormError("Chaque message doit contenir un texte valide avant l’enregistrement.");
-      return;
+    const targetKey = sectionKey;
+    if (!targetKey || targetKey === "promo_banner") {
+      const promo = draft.sections.find((section) => section.sectionKey === "promo_banner");
+      const promoDraftMessages = promo
+        ? readPromoBannerDraftMessages(promo.payload, fallbackPromoBanner.messages)
+        : [];
+      if (promoDraftMessages.some((message) => !message.text.trim())) {
+        setFormError("Chaque message doit contenir un texte valide avant l’enregistrement.");
+        return;
+      }
     }
-    const shop = draft.sections.find((section) => section.sectionKey === "shop_the_look");
-    if (shop?.hotspots.some((hotspot) => !hotspot.productId)) {
-      setFormError("Chaque point Shop the Look doit être lié à un produit.");
+    if (!targetKey || targetKey === "shop_the_look") {
+      const shop = draft.sections.find((section) => section.sectionKey === "shop_the_look");
+      if (shop?.hotspots.some((hotspot) => !hotspot.productId)) {
+        setFormError("Chaque point Shop the Look doit être lié à un produit.");
+        return;
+      }
+    }
+    if (targetKey) {
+      const sectionInput = toInput(draft).sections.find((item) => item.sectionKey === targetKey);
+      if (!sectionInput) return;
+      updateHomeSection.mutate(
+        {
+          sectionKey: targetKey,
+          section: {
+            ...sectionInput,
+            ...(draft.version === undefined ? {} : { expectedVersion: draft.version }),
+          },
+        },
+        {
+          onSuccess: (revision) => {
+            setDraft((current) => (current ? { ...current, version: revision.version } : current));
+            setDirty(false);
+          },
+        },
+      );
       return;
     }
     updateHome.mutate(toInput(draft), {
       onSuccess: (revision) => {
-        setDraft((current) =>
-          current
-            ? {
-                ...current,
-                version: revision.version,
-              }
-            : current,
-        );
+        setDraft((current) => (current ? { ...current, version: revision.version } : current));
         setDirty(false);
       },
     });
@@ -496,13 +523,24 @@ export function AdminHomeContentPage() {
   const promo = draft.sections.find((section) => section.sectionKey === "promo_banner")!;
   const shop = draft.sections.find((section) => section.sectionKey === "shop_the_look")!;
   const promoMessages = readPromoBannerDraftMessages(promo.payload, fallbackPromoBanner.messages);
+  const pageTitle = sectionKey ? SECTION_LABELS[sectionKey] : "Page d’accueil";
+  const pageDescription = sectionKey
+    ? SECTION_DESCRIPTIONS[sectionKey]
+    : "Gérez les sections de la page d’accueil.";
+  const savePending = updateHome.isPending || updateHomeSection.isPending;
+  const publishPending = publishHome.isPending || publishHomeSection.isPending;
+  const archivePending = archiveHome.isPending || archiveHomeSection.isPending;
 
   return (
     <div className="space-y-5">
       <AdminPageHeader
-        title="Page d’accueil"
-        description="Gérez le Hero, la banderole promotionnelle et les points Shop the Look."
-        breadcrumbs={[{ label: "Contenu" }, { label: "Page d’accueil" }]}
+        title={pageTitle}
+        description={pageDescription}
+        breadcrumbs={[
+          { label: "Contenu" },
+          { label: "Page d’accueil", href: "/admin/contenu/accueil" },
+          ...(sectionKey ? [{ label: SECTION_LABELS[sectionKey] }] : []),
+        ]}
         actions={
           <div className="flex flex-wrap gap-2">
             {published ? (
@@ -525,266 +563,275 @@ export function AdminHomeContentPage() {
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-5">
-          <AdminFormSection title={SECTION_LABELS.hero} description={SECTION_DESCRIPTIONS.hero}>
-            <AdminSwitchField
-              checked={hero.isEnabled}
-              onChange={(checked) =>
-                updateSection("hero", (section) => ({ ...section, isEnabled: checked }))
-              }
-              label="Afficher le Hero"
-              disabled={!canWrite}
-            />
-            <div className="grid gap-4 md:grid-cols-2">
+          {!sectionKey || sectionKey === "hero" ? (
+            <AdminFormSection title={SECTION_LABELS.hero} description={SECTION_DESCRIPTIONS.hero}>
+              <AdminSwitchField
+                checked={hero.isEnabled}
+                onChange={(checked) =>
+                  updateSection("hero", (section) => ({ ...section, isEnabled: checked }))
+                }
+                label="Afficher le Hero"
+                disabled={!canWrite}
+              />
+              <div className="grid gap-4 md:grid-cols-2">
+                <AdminField
+                  label="Sur-titre"
+                  value={stringValue(hero.payload, "eyebrow")}
+                  onChange={(value) => updatePayload("hero", "eyebrow", value)}
+                  disabled={!canWrite}
+                />
+                <AdminField
+                  label="Titre"
+                  required
+                  value={stringValue(hero.payload, "title")}
+                  onChange={(value) => updatePayload("hero", "title", value)}
+                  disabled={!canWrite}
+                />
+              </div>
               <AdminField
-                label="Sur-titre"
-                value={stringValue(hero.payload, "eyebrow")}
-                onChange={(value) => updatePayload("hero", "eyebrow", value)}
+                label="Description"
+                multiline
+                rows={3}
+                value={stringValue(hero.payload, "description")}
+                onChange={(value) => updatePayload("hero", "description", value)}
+                disabled={!canWrite}
+              />
+              <div className="grid gap-4 md:grid-cols-2">
+                <AdminField
+                  label="CTA principal"
+                  value={stringValue(hero.payload, "primaryCtaLabel")}
+                  onChange={(value) => updatePayload("hero", "primaryCtaLabel", value)}
+                  disabled={!canWrite}
+                />
+                <AdminField
+                  label="Lien CTA principal"
+                  type="url"
+                  value={stringValue(hero.payload, "primaryCtaHref")}
+                  onChange={(value) => updatePayload("hero", "primaryCtaHref", value)}
+                  disabled={!canWrite}
+                />
+                <AdminField
+                  label="CTA secondaire"
+                  value={stringValue(hero.payload, "secondaryCtaLabel")}
+                  onChange={(value) => updatePayload("hero", "secondaryCtaLabel", value)}
+                  disabled={!canWrite}
+                />
+                <AdminField
+                  label="Lien CTA secondaire"
+                  type="url"
+                  value={stringValue(hero.payload, "secondaryCtaHref")}
+                  onChange={(value) => updatePayload("hero", "secondaryCtaHref", value)}
+                  disabled={!canWrite}
+                />
+              </div>
+              <MediaSelector
+                section={hero}
+                media={media}
+                mobile={false}
+                onChange={(id) => setMedia("hero", false, id)}
+                disabled={!canWrite}
+              />
+              <MediaSelector
+                section={hero}
+                media={media}
+                mobile
+                onChange={(id) => setMedia("hero", true, id)}
+                disabled={!canWrite}
+              />
+            </AdminFormSection>
+          ) : null}
+
+          {!sectionKey || sectionKey === "promo_banner" ? (
+            <AdminFormSection
+              title={SECTION_LABELS.promo_banner}
+              description={SECTION_DESCRIPTIONS.promo_banner}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-background p-3">
+                <AdminSwitchField
+                  checked={promo.isEnabled}
+                  onChange={(checked) =>
+                    updateSection("promo_banner", (section) => ({ ...section, isEnabled: checked }))
+                  }
+                  label="Afficher la banderole"
+                  description="La banderole est placée avant le logo sur toutes les pages publiques."
+                  disabled={!canWrite}
+                />
+                <div className="text-right text-xs text-muted-foreground">
+                  <p>
+                    {promoMessages.filter((message) => message.isEnabled).length} actif(s) sur{" "}
+                    {promoMessages.length}
+                  </p>
+                  <p>Les messages actifs défilent en boucle.</p>
+                </div>
+              </div>
+
+              <div className="grid gap-2">
+                <p className="text-sm font-medium">Aperçu public</p>
+                <div className="overflow-hidden rounded-md border border-border">
+                  <HomePromoBanner content={{ isEnabled: true, messages: promoMessages }} />
+                </div>
+                {promoMessages.every((message) => !message.isEnabled) ? (
+                  <p className="text-xs text-muted-foreground">
+                    Aucun message actif : la banderole sera masquée publiquement.
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-medium">Messages</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Ajoutez, ordonnez et activez les messages affichés dans la banderole.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={addPromoMessage}
+                  disabled={!canWrite || promoMessages.length >= 20}
+                >
+                  <Plus className="mr-1 size-4" /> Ajouter un message
+                </Button>
+              </div>
+
+              <div className="grid gap-3">
+                {promoMessages.length === 0 ? (
+                  <p className="rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">
+                    Aucun message configuré.
+                  </p>
+                ) : (
+                  promoMessages.map((message, index) => (
+                    <div
+                      key={message.id}
+                      className="grid gap-3 rounded-md border border-border p-3"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-full bg-muted px-2 py-1 text-xs font-semibold">
+                            #{index + 1}
+                          </span>
+                          <span className="text-sm font-medium">
+                            {message.text || "Message sans texte"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => movePromoMessage(message.id, -1)}
+                            disabled={!canWrite || index === 0}
+                            aria-label={`Monter le message ${index + 1}`}
+                          >
+                            <ArrowUp className="size-4" aria-hidden />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => movePromoMessage(message.id, 1)}
+                            disabled={!canWrite || index === promoMessages.length - 1}
+                            aria-label={`Descendre le message ${index + 1}`}
+                          >
+                            <ArrowDown className="size-4" aria-hidden />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removePromoMessage(message.id)}
+                            disabled={!canWrite}
+                            aria-label={`Supprimer le message ${index + 1}`}
+                          >
+                            <Trash2 className="size-4 text-red-700" aria-hidden />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <AdminField
+                          label="Message"
+                          required
+                          value={message.text}
+                          onChange={(value) => updatePromoMessage(message.id, { text: value })}
+                          disabled={!canWrite}
+                        />
+                        <AdminField
+                          label="Libellé (optionnel)"
+                          value={message.label ?? ""}
+                          onChange={(value) => updatePromoMessage(message.id, { label: value })}
+                          disabled={!canWrite}
+                        />
+                        <AdminField
+                          label="Lien (optionnel)"
+                          type="url"
+                          value={message.href ?? ""}
+                          onChange={(value) => updatePromoMessage(message.id, { href: value })}
+                          disabled={!canWrite}
+                        />
+                        <AdminSwitchField
+                          checked={message.isEnabled}
+                          onChange={(checked) =>
+                            updatePromoMessage(message.id, { isEnabled: checked })
+                          }
+                          label="Message actif"
+                          disabled={!canWrite}
+                        />
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </AdminFormSection>
+          ) : null}
+
+          {!sectionKey || sectionKey === "shop_the_look" ? (
+            <AdminFormSection
+              title={SECTION_LABELS.shop_the_look}
+              description={SECTION_DESCRIPTIONS.shop_the_look}
+            >
+              <AdminSwitchField
+                checked={shop.isEnabled}
+                onChange={(checked) =>
+                  updateSection("shop_the_look", (section) => ({ ...section, isEnabled: checked }))
+                }
+                label="Afficher Shop the Look"
                 disabled={!canWrite}
               />
               <AdminField
                 label="Titre"
                 required
-                value={stringValue(hero.payload, "title")}
-                onChange={(value) => updatePayload("hero", "title", value)}
-                disabled={!canWrite}
-              />
-            </div>
-            <AdminField
-              label="Description"
-              multiline
-              rows={3}
-              value={stringValue(hero.payload, "description")}
-              onChange={(value) => updatePayload("hero", "description", value)}
-              disabled={!canWrite}
-            />
-            <div className="grid gap-4 md:grid-cols-2">
-              <AdminField
-                label="CTA principal"
-                value={stringValue(hero.payload, "primaryCtaLabel")}
-                onChange={(value) => updatePayload("hero", "primaryCtaLabel", value)}
+                value={stringValue(shop.payload, "title")}
+                onChange={(value) => updatePayload("shop_the_look", "title", value)}
                 disabled={!canWrite}
               />
               <AdminField
-                label="Lien CTA principal"
-                type="url"
-                value={stringValue(hero.payload, "primaryCtaHref")}
-                onChange={(value) => updatePayload("hero", "primaryCtaHref", value)}
+                label="Description"
+                multiline
+                rows={2}
+                value={stringValue(shop.payload, "description")}
+                onChange={(value) => updatePayload("shop_the_look", "description", value)}
                 disabled={!canWrite}
               />
-              <AdminField
-                label="CTA secondaire"
-                value={stringValue(hero.payload, "secondaryCtaLabel")}
-                onChange={(value) => updatePayload("hero", "secondaryCtaLabel", value)}
+              <MediaSelector
+                section={shop}
+                media={media}
+                mobile={false}
+                onChange={(id) => setMedia("shop_the_look", false, id)}
                 disabled={!canWrite}
               />
-              <AdminField
-                label="Lien CTA secondaire"
-                type="url"
-                value={stringValue(hero.payload, "secondaryCtaHref")}
-                onChange={(value) => updatePayload("hero", "secondaryCtaHref", value)}
+              <ShopTheLookEditor
+                section={shop}
+                products={products}
+                activeHotspotId={activeHotspotId}
+                onPosition={positionHotspot}
+                onSelectHotspot={setActiveHotspotId}
+                onAdd={addHotspot}
+                onUpdate={updateHotspot}
+                onRemove={removeHotspot}
                 disabled={!canWrite}
               />
-            </div>
-            <MediaSelector
-              section={hero}
-              media={media}
-              mobile={false}
-              onChange={(id) => setMedia("hero", false, id)}
-              disabled={!canWrite}
-            />
-            <MediaSelector
-              section={hero}
-              media={media}
-              mobile
-              onChange={(id) => setMedia("hero", true, id)}
-              disabled={!canWrite}
-            />
-          </AdminFormSection>
-
-          <AdminFormSection
-            title={SECTION_LABELS.promo_banner}
-            description={SECTION_DESCRIPTIONS.promo_banner}
-          >
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-background p-3">
-              <AdminSwitchField
-                checked={promo.isEnabled}
-                onChange={(checked) =>
-                  updateSection("promo_banner", (section) => ({ ...section, isEnabled: checked }))
-                }
-                label="Afficher la banderole"
-                description="La banderole est placée avant le logo sur toutes les pages publiques."
-                disabled={!canWrite}
-              />
-              <div className="text-right text-xs text-muted-foreground">
-                <p>
-                  {promoMessages.filter((message) => message.isEnabled).length} actif(s) sur{" "}
-                  {promoMessages.length}
-                </p>
-                <p>Les messages actifs défilent en boucle.</p>
-              </div>
-            </div>
-
-            <div className="grid gap-2">
-              <p className="text-sm font-medium">Aperçu public</p>
-              <div className="overflow-hidden rounded-md border border-border">
-                <HomePromoBanner content={{ isEnabled: true, messages: promoMessages }} />
-              </div>
-              {promoMessages.every((message) => !message.isEnabled) ? (
-                <p className="text-xs text-muted-foreground">
-                  Aucun message actif : la banderole sera masquée publiquement.
-                </p>
-              ) : null}
-            </div>
-
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 className="text-sm font-medium">Messages</h3>
-                <p className="text-xs text-muted-foreground">
-                  Ajoutez, ordonnez et activez les messages affichés dans la banderole.
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={addPromoMessage}
-                disabled={!canWrite || promoMessages.length >= 20}
-              >
-                <Plus className="mr-1 size-4" /> Ajouter un message
-              </Button>
-            </div>
-
-            <div className="grid gap-3">
-              {promoMessages.length === 0 ? (
-                <p className="rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">
-                  Aucun message configuré.
-                </p>
-              ) : (
-                promoMessages.map((message, index) => (
-                  <div key={message.id} className="grid gap-3 rounded-md border border-border p-3">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="rounded-full bg-muted px-2 py-1 text-xs font-semibold">
-                          #{index + 1}
-                        </span>
-                        <span className="text-sm font-medium">
-                          {message.text || "Message sans texte"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => movePromoMessage(message.id, -1)}
-                          disabled={!canWrite || index === 0}
-                          aria-label={`Monter le message ${index + 1}`}
-                        >
-                          <ArrowUp className="size-4" aria-hidden />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => movePromoMessage(message.id, 1)}
-                          disabled={!canWrite || index === promoMessages.length - 1}
-                          aria-label={`Descendre le message ${index + 1}`}
-                        >
-                          <ArrowDown className="size-4" aria-hidden />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removePromoMessage(message.id)}
-                          disabled={!canWrite}
-                          aria-label={`Supprimer le message ${index + 1}`}
-                        >
-                          <Trash2 className="size-4 text-red-700" aria-hidden />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="grid gap-3 md:grid-cols-2">
-                      <AdminField
-                        label="Message"
-                        required
-                        value={message.text}
-                        onChange={(value) => updatePromoMessage(message.id, { text: value })}
-                        disabled={!canWrite}
-                      />
-                      <AdminField
-                        label="Libellé (optionnel)"
-                        value={message.label ?? ""}
-                        onChange={(value) => updatePromoMessage(message.id, { label: value })}
-                        disabled={!canWrite}
-                      />
-                      <AdminField
-                        label="Lien (optionnel)"
-                        type="url"
-                        value={message.href ?? ""}
-                        onChange={(value) => updatePromoMessage(message.id, { href: value })}
-                        disabled={!canWrite}
-                      />
-                      <AdminSwitchField
-                        checked={message.isEnabled}
-                        onChange={(checked) =>
-                          updatePromoMessage(message.id, { isEnabled: checked })
-                        }
-                        label="Message actif"
-                        disabled={!canWrite}
-                      />
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </AdminFormSection>
-
-          <AdminFormSection
-            title={SECTION_LABELS.shop_the_look}
-            description={SECTION_DESCRIPTIONS.shop_the_look}
-          >
-            <AdminSwitchField
-              checked={shop.isEnabled}
-              onChange={(checked) =>
-                updateSection("shop_the_look", (section) => ({ ...section, isEnabled: checked }))
-              }
-              label="Afficher Shop the Look"
-              disabled={!canWrite}
-            />
-            <AdminField
-              label="Titre"
-              required
-              value={stringValue(shop.payload, "title")}
-              onChange={(value) => updatePayload("shop_the_look", "title", value)}
-              disabled={!canWrite}
-            />
-            <AdminField
-              label="Description"
-              multiline
-              rows={2}
-              value={stringValue(shop.payload, "description")}
-              onChange={(value) => updatePayload("shop_the_look", "description", value)}
-              disabled={!canWrite}
-            />
-            <MediaSelector
-              section={shop}
-              media={media}
-              mobile={false}
-              onChange={(id) => setMedia("shop_the_look", false, id)}
-              disabled={!canWrite}
-            />
-            <ShopTheLookEditor
-              section={shop}
-              products={products}
-              activeHotspotId={activeHotspotId}
-              onPosition={positionHotspot}
-              onSelectHotspot={setActiveHotspotId}
-              onAdd={addHotspot}
-              onUpdate={updateHotspot}
-              onRemove={removeHotspot}
-              disabled={!canWrite}
-            />
-          </AdminFormSection>
+            </AdminFormSection>
+          ) : null}
         </div>
 
         <aside className="space-y-4">
@@ -816,7 +863,7 @@ export function AdminHomeContentPage() {
           <AdminCard>
             <h2 className="mb-2 text-sm font-semibold">Sections administrées</h2>
             <ul className="space-y-2 text-sm">
-              {orderedSections.map((section) => (
+              {visibleSections.map((section) => (
                 <li key={section.sectionKey} className="flex items-center justify-between gap-2">
                   <span>{SECTION_LABELS[section.sectionKey]}</span>
                   <span
@@ -838,15 +885,17 @@ export function AdminHomeContentPage() {
       ) : null}
 
       <div className="sticky bottom-3 z-10 flex flex-wrap items-center justify-end gap-2 rounded-lg border border-border bg-card/95 p-3 shadow-lg backdrop-blur">
-        <Button variant="outline" onClick={resetDraft} disabled={!dirty || updateHome.isPending}>
+        <Button variant="outline" onClick={resetDraft} disabled={!dirty || savePending}>
           Annuler les modifications
         </Button>
-        <Button onClick={save} disabled={!canWrite || !dirty || updateHome.isPending}>
+        <Button onClick={save} disabled={!canWrite || !dirty || savePending}>
           <Save className="mr-1 size-4" /> Enregistrer le brouillon
         </Button>
         <Button
-          onClick={() => publishHome.mutate(undefined)}
-          disabled={!canPublish || dirty || !data?.draft || publishHome.isPending}
+          onClick={() =>
+            sectionKey ? publishHomeSection.mutate(sectionKey) : publishHome.mutate(undefined)
+          }
+          disabled={!canPublish || dirty || !data?.draft || publishPending}
         >
           <Send className="mr-1 size-4" /> Publier
         </Button>
@@ -854,7 +903,7 @@ export function AdminHomeContentPage() {
           variant="outline"
           className="text-red-700 hover:text-red-800"
           onClick={() => setPendingArchive(true)}
-          disabled={!canPublish || dirty || !published || archiveHome.isPending}
+          disabled={!canPublish || dirty || !published || archivePending}
         >
           <Archive className="mr-1 size-4" /> Archiver la publication
         </Button>
@@ -868,7 +917,8 @@ export function AdminHomeContentPage() {
         confirmLabel="Archiver"
         destructive
         onConfirm={() => {
-          archiveHome.mutate(undefined);
+          if (sectionKey) archiveHomeSection.mutate(sectionKey);
+          else archiveHome.mutate(undefined);
           setPendingArchive(false);
         }}
       />

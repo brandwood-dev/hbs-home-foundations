@@ -5,6 +5,7 @@ import type {
   AdminDashboardPeriod,
   AdminCustomerListParams,
   AdminOrderListParams,
+  AdminHomeSectionKey,
 } from "@/admin/repositories/interfaces";
 
 /** Clés de cache du back-office. */
@@ -23,7 +24,10 @@ export const adminKeys = {
   customer: (id: string) => ["admin", "customers", id] as const,
   promotions: () => ["admin", "promotions"] as const,
   content: () => ["admin", "content"] as const,
-  homeContent: () => ["admin", "content", "home"] as const,
+  homeContent: (sectionKey?: AdminHomeSectionKey) =>
+    sectionKey
+      ? (["admin", "content", "home", sectionKey] as const)
+      : (["admin", "content", "home"] as const),
   pages: () => ["admin", "content", "pages"] as const,
   articles: () => ["admin", "content", "articles"] as const,
   articleCategories: () => ["admin", "content", "article-categories"] as const,
@@ -122,8 +126,12 @@ export function useAdminContent() {
   return useQuery(clientQuery(adminKeys.content(), () => adminRepositories.content.get()));
 }
 
-export function useAdminHomeContent() {
-  return useQuery(clientQuery(adminKeys.homeContent(), () => adminRepositories.homeContent.get()));
+export function useAdminHomeContent(sectionKey?: AdminHomeSectionKey) {
+  return useQuery(
+    clientQuery(adminKeys.homeContent(sectionKey), () =>
+      adminRepositories.homeContent.get(sectionKey),
+    ),
+  );
 }
 
 export function useAdminEditorialPages() {

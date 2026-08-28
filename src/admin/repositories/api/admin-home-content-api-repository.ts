@@ -6,6 +6,8 @@ import type {
   AdminHomeDraftInput,
   AdminHomeRevision,
   AdminHomeSection,
+  AdminHomeSectionInput,
+  AdminHomeSectionKey,
   AdminHomeContentRepository,
 } from "@/admin/repositories/interfaces";
 
@@ -14,6 +16,8 @@ type ApiHomeRevision = NonNullable<ApiHomeContent["draft"]>;
 type ApiHomeSection = ApiHomeRevision["sections"][number];
 type ApiHomeDraftBody =
   operations["adminUpdateHomeContent"]["requestBody"]["content"]["application/json"];
+type ApiHomeSectionDraftBody =
+  operations["adminUpdateHomeSection"]["requestBody"]["content"]["application/json"];
 
 async function accessToken(): Promise<string> {
   const supabase = getSupabaseBrowserClient();
@@ -74,6 +78,23 @@ function draftBody(input: AdminHomeDraftInput): ApiHomeDraftBody {
   };
 }
 
+function sectionDraftBody(
+  input: AdminHomeSectionInput & { expectedVersion?: number },
+): ApiHomeSectionDraftBody {
+  return {
+    sectionKey: input.sectionKey,
+    sortOrder: input.sortOrder,
+    ...(input.isEnabled === undefined ? {} : { isEnabled: input.isEnabled }),
+    ...(input.payload === undefined ? {} : { payload: input.payload }),
+    ...(input.mediaAssetId === undefined ? {} : { mediaAssetId: input.mediaAssetId }),
+    ...(input.mobileMediaAssetId === undefined
+      ? {}
+      : { mobileMediaAssetId: input.mobileMediaAssetId }),
+    ...(input.hotspots === undefined ? {} : { hotspots: input.hotspots }),
+    ...(input.expectedVersion === undefined ? {} : { expectedVersion: input.expectedVersion }),
+  };
+}
+
 export class ApiAdminHomeContentRepository implements AdminHomeContentRepository {
   constructor(
     private readonly client = new HbsApiClient(),
@@ -84,10 +105,16 @@ export class ApiAdminHomeContentRepository implements AdminHomeContentRepository
     return fn(await this.resolveAccessToken());
   }
 
-  async get(): Promise<AdminHomeContent> {
+  async get(sectionKey?: AdminHomeSectionKey): Promise<AdminHomeContent> {
     return mapContent(
       await this.request((token) =>
-        this.client.get<ApiHomeContent>("/api/v1/admin/content/home", undefined, token),
+        this.client.get<ApiHomeContent>(
+          sectionKey
+            ? `/api/v1/admin/content/home/${encodeURIComponent(sectionKey)}`
+            : "/api/v1/admin/content/home",
+          undefined,
+          token,
+        ),
       ),
     );
   }
@@ -100,6 +127,21 @@ export class ApiAdminHomeContentRepository implements AdminHomeContentRepository
     );
   }
 
+  async updateSection(
+    sectionKey: AdminHomeSectionKey,
+    input: AdminHomeSectionInput & { expectedVersion?: number },
+  ): Promise<AdminHomeRevision> {
+    return mapRevision(
+      await this.request((token) =>
+        this.client.put<ApiHomeRevision>(
+          `/api/v1/admin/content/home/${encodeURIComponent(sectionKey)}`,
+          sectionDraftBody(input),
+          token,
+        ),
+      ),
+    );
+  }
+
   async publish(): Promise<AdminHomeRevision> {
     return mapRevision(
       await this.request((token) =>
@@ -108,10 +150,34 @@ export class ApiAdminHomeContentRepository implements AdminHomeContentRepository
     );
   }
 
+  async publishSection(sectionKey: AdminHomeSectionKey): Promise<AdminHomeRevision> {
+    return mapRevision(
+      await this.request((token) =>
+        this.client.post<ApiHomeRevision>(
+          `/api/v1/admin/content/home/${encodeURIComponent(sectionKey)}/publish`,
+          {},
+          token,
+        ),
+      ),
+    );
+  }
+
   async archive(): Promise<AdminHomeRevision> {
     return mapRevision(
       await this.request((token) =>
         this.client.post<ApiHomeRevision>("/api/v1/admin/content/home/archive", {}, token),
+      ),
+    );
+  }
+
+  async archiveSection(sectionKey: AdminHomeSectionKey): Promise<AdminHomeRevision> {
+    return mapRevision(
+      await this.request((token) =>
+        this.client.post<ApiHomeRevision>(
+          `/api/v1/admin/content/home/${encodeURIComponent(sectionKey)}/archive`,
+          {},
+          token,
+        ),
       ),
     );
   }

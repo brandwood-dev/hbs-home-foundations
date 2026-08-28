@@ -152,8 +152,19 @@ GET  /api/v1/admin/content/home
 PUT  /api/v1/admin/content/home
 POST /api/v1/admin/content/home/publish
 POST /api/v1/admin/content/home/archive
+GET  /api/v1/admin/content/home/:sectionKey
+PUT  /api/v1/admin/content/home/:sectionKey
+POST /api/v1/admin/content/home/:sectionKey/publish
+POST /api/v1/admin/content/home/:sectionKey/archive
 GET  /api/v1/content/home
 ```
+
+Les quatre routes `:sectionKey` acceptent uniquement `hero`, `promo_banner` ou
+`shop_the_look`. Elles lisent ou modifient une seule section à la fois : un enregistrement ou une
+publication ciblée ne réécrit pas les deux autres sections. Le corps `PUT` reprend les champs de la
+section (`sectionKey`, `sortOrder`, `isEnabled`, `payload`, médias et hotspots) et accepte
+`expectedVersion` pour le contrôle optimiste. Les routes globales restent disponibles pour les
+opérations de compatibilité et les mises à jour atomiques de la page complète.
 
 La lecture Admin requiert `content.read`. L'enregistrement d'un brouillon requiert `content.write`
 et une session MFA `aal2`; publier ou archiver requiert `content.publish` et `aal2`. Le payload est

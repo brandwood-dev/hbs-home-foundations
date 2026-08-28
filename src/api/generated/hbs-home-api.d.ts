@@ -1363,6 +1363,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/content/home/{sectionKey}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["adminGetHomeSection"];
+        put: operations["adminUpdateHomeSection"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/content/home/{sectionKey}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["adminPublishHomeSection"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/content/home/{sectionKey}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["adminArchiveHomeSection"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/content/home": {
         parameters: {
             query?: never;
@@ -3082,6 +3130,33 @@ export interface components {
                     label?: string | null;
                     sortOrder: number;
                 }[];
+            }[];
+            expectedVersion?: number;
+        };
+        AdminHomeSectionDraftBody: {
+            sectionKey: "hero" | "promo_banner" | "shop_the_look";
+            sortOrder: number;
+            isEnabled?: boolean;
+            payload?: {
+                messages: {
+                    id: string;
+                    label?: string;
+                    text: string;
+                    href?: string;
+                    isEnabled: boolean;
+                    sortOrder: number;
+                }[];
+            } | {
+                [key: string]: unknown;
+            };
+            mediaAssetId?: string | null;
+            mobileMediaAssetId?: string | null;
+            hotspots?: {
+                productId: string;
+                xPercent: number;
+                yPercent: number;
+                label?: string | null;
+                sortOrder: number;
             }[];
             expectedVersion?: number;
         };
@@ -17151,6 +17226,674 @@ export interface operations {
                         nextStepDescription: string;
                         /** @enum {boolean} */
                         isDemo: false;
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminGetHomeSection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sectionKey: "hero" | "promo_banner" | "shop_the_look";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        draft: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            publishedAt: string | null;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            sections: {
+                                /** Format: uuid */
+                                id: string;
+                                sectionKey: "hero" | "promo_banner" | "shop_the_look";
+                                sortOrder: number;
+                                isEnabled: boolean;
+                                payload: {
+                                    messages: {
+                                        id: string;
+                                        label?: string;
+                                        text: string;
+                                        href?: string;
+                                        isEnabled: boolean;
+                                        sortOrder: number;
+                                    }[];
+                                } | {
+                                    [key: string]: unknown;
+                                };
+                                media: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uri */
+                                    publicUrl: string;
+                                    alt: string;
+                                } | null;
+                                mobileMedia: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uri */
+                                    publicUrl: string;
+                                    alt: string;
+                                } | null;
+                                hotspots: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    productId: string;
+                                    xPercent: number;
+                                    yPercent: number;
+                                    label: string | null;
+                                    sortOrder: number;
+                                    product: {
+                                        id: string;
+                                        slug: string;
+                                        name: string;
+                                    } | null;
+                                }[];
+                            }[];
+                        } | null;
+                        published: {
+                            /** Format: uuid */
+                            id: string;
+                            status: "draft" | "published" | "archived";
+                            version: number;
+                            publishedAt: string | null;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            sections: {
+                                /** Format: uuid */
+                                id: string;
+                                sectionKey: "hero" | "promo_banner" | "shop_the_look";
+                                sortOrder: number;
+                                isEnabled: boolean;
+                                payload: {
+                                    messages: {
+                                        id: string;
+                                        label?: string;
+                                        text: string;
+                                        href?: string;
+                                        isEnabled: boolean;
+                                        sortOrder: number;
+                                    }[];
+                                } | {
+                                    [key: string]: unknown;
+                                };
+                                media: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uri */
+                                    publicUrl: string;
+                                    alt: string;
+                                } | null;
+                                mobileMedia: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uri */
+                                    publicUrl: string;
+                                    alt: string;
+                                } | null;
+                                hotspots: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    productId: string;
+                                    xPercent: number;
+                                    yPercent: number;
+                                    label: string | null;
+                                    sortOrder: number;
+                                    product: {
+                                        id: string;
+                                        slug: string;
+                                        name: string;
+                                    } | null;
+                                }[];
+                            }[];
+                        } | null;
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminUpdateHomeSection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sectionKey: "hero" | "promo_banner" | "shop_the_look";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    sectionKey: "hero" | "promo_banner" | "shop_the_look";
+                    sortOrder: number;
+                    isEnabled?: boolean;
+                    payload?: {
+                        messages: {
+                            id: string;
+                            label?: string;
+                            text: string;
+                            href?: string;
+                            isEnabled: boolean;
+                            sortOrder: number;
+                        }[];
+                    } | {
+                        [key: string]: unknown;
+                    };
+                    mediaAssetId?: string | null;
+                    mobileMediaAssetId?: string | null;
+                    hotspots?: {
+                        productId: string;
+                        xPercent: number;
+                        yPercent: number;
+                        label?: string | null;
+                        sortOrder: number;
+                    }[];
+                    expectedVersion?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        status: "draft" | "published" | "archived";
+                        version: number;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        sections: {
+                            /** Format: uuid */
+                            id: string;
+                            sectionKey: "hero" | "promo_banner" | "shop_the_look";
+                            sortOrder: number;
+                            isEnabled: boolean;
+                            payload: {
+                                messages: {
+                                    id: string;
+                                    label?: string;
+                                    text: string;
+                                    href?: string;
+                                    isEnabled: boolean;
+                                    sortOrder: number;
+                                }[];
+                            } | {
+                                [key: string]: unknown;
+                            };
+                            media: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                            } | null;
+                            mobileMedia: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                            } | null;
+                            hotspots: {
+                                /** Format: uuid */
+                                id: string;
+                                productId: string;
+                                xPercent: number;
+                                yPercent: number;
+                                label: string | null;
+                                sortOrder: number;
+                                product: {
+                                    id: string;
+                                    slug: string;
+                                    name: string;
+                                } | null;
+                            }[];
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminPublishHomeSection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sectionKey: "hero" | "promo_banner" | "shop_the_look";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        status: "draft" | "published" | "archived";
+                        version: number;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        sections: {
+                            /** Format: uuid */
+                            id: string;
+                            sectionKey: "hero" | "promo_banner" | "shop_the_look";
+                            sortOrder: number;
+                            isEnabled: boolean;
+                            payload: {
+                                messages: {
+                                    id: string;
+                                    label?: string;
+                                    text: string;
+                                    href?: string;
+                                    isEnabled: boolean;
+                                    sortOrder: number;
+                                }[];
+                            } | {
+                                [key: string]: unknown;
+                            };
+                            media: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                            } | null;
+                            mobileMedia: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                            } | null;
+                            hotspots: {
+                                /** Format: uuid */
+                                id: string;
+                                productId: string;
+                                xPercent: number;
+                                yPercent: number;
+                                label: string | null;
+                                sortOrder: number;
+                                product: {
+                                    id: string;
+                                    slug: string;
+                                    name: string;
+                                } | null;
+                            }[];
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminArchiveHomeSection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sectionKey: "hero" | "promo_banner" | "shop_the_look";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        status: "draft" | "published" | "archived";
+                        version: number;
+                        publishedAt: string | null;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        sections: {
+                            /** Format: uuid */
+                            id: string;
+                            sectionKey: "hero" | "promo_banner" | "shop_the_look";
+                            sortOrder: number;
+                            isEnabled: boolean;
+                            payload: {
+                                messages: {
+                                    id: string;
+                                    label?: string;
+                                    text: string;
+                                    href?: string;
+                                    isEnabled: boolean;
+                                    sortOrder: number;
+                                }[];
+                            } | {
+                                [key: string]: unknown;
+                            };
+                            media: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                            } | null;
+                            mobileMedia: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uri */
+                                publicUrl: string;
+                                alt: string;
+                            } | null;
+                            hotspots: {
+                                /** Format: uuid */
+                                id: string;
+                                productId: string;
+                                xPercent: number;
+                                yPercent: number;
+                                label: string | null;
+                                sortOrder: number;
+                                product: {
+                                    id: string;
+                                    slug: string;
+                                    name: string;
+                                } | null;
+                            }[];
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
                     };
                 };
             };

@@ -104,6 +104,9 @@ import { Route as AdminContenuPagesRouteImport } from './routes/admin/contenu.pa
 import { Route as AdminProduitsIndexRouteImport } from './routes/admin/produits.index'
 import { Route as AdminProduitsProductIdRouteImport } from './routes/admin/produits.$productId'
 import { Route as AdminProduitsNouveauRouteImport } from './routes/admin/produits.nouveau'
+import { Route as AdminContenuAccueilBanderoleRouteImport } from './routes/admin/contenu.accueil.banderole'
+import { Route as AdminContenuAccueilHeroRouteImport } from './routes/admin/contenu.accueil.hero'
+import { Route as AdminContenuAccueilShopTheLookRouteImport } from './routes/admin/contenu.accueil.shop-the-look'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -582,6 +585,23 @@ const AdminProduitsNouveauRoute = AdminProduitsNouveauRouteImport.update({
   path: '/produits/nouveau',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminContenuAccueilBanderoleRoute =
+  AdminContenuAccueilBanderoleRouteImport.update({
+    id: '/banderole',
+    path: '/banderole',
+    getParentRoute: () => AdminContenuAccueilRoute,
+  } as any)
+const AdminContenuAccueilHeroRoute = AdminContenuAccueilHeroRouteImport.update({
+  id: '/hero',
+  path: '/hero',
+  getParentRoute: () => AdminContenuAccueilRoute,
+} as any)
+const AdminContenuAccueilShopTheLookRoute =
+  AdminContenuAccueilShopTheLookRouteImport.update({
+    id: '/shop-the-look',
+    path: '/shop-the-look',
+    getParentRoute: () => AdminContenuAccueilRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -671,7 +691,7 @@ export interface FileRoutesByFullPath {
   '/admin/auth/callback': typeof AdminAuthCallbackRoute
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
-  '/admin/contenu/accueil': typeof AdminContenuAccueilRoute
+  '/admin/contenu/accueil': typeof AdminContenuAccueilRouteWithChildren
   '/admin/contenu/articles': typeof AdminContenuArticlesRoute
   '/admin/contenu/pages': typeof AdminContenuPagesRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
@@ -679,6 +699,9 @@ export interface FileRoutesByFullPath {
   '/admin/clients/': typeof AdminClientsIndexRoute
   '/admin/commandes/': typeof AdminCommandesIndexRoute
   '/admin/produits/': typeof AdminProduitsIndexRoute
+  '/admin/contenu/accueil/banderole': typeof AdminContenuAccueilBanderoleRoute
+  '/admin/contenu/accueil/hero': typeof AdminContenuAccueilHeroRoute
+  '/admin/contenu/accueil/shop-the-look': typeof AdminContenuAccueilShopTheLookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -767,7 +790,7 @@ export interface FileRoutesByTo {
   '/admin/auth/callback': typeof AdminAuthCallbackRoute
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
-  '/admin/contenu/accueil': typeof AdminContenuAccueilRoute
+  '/admin/contenu/accueil': typeof AdminContenuAccueilRouteWithChildren
   '/admin/contenu/articles': typeof AdminContenuArticlesRoute
   '/admin/contenu/pages': typeof AdminContenuPagesRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
@@ -775,6 +798,9 @@ export interface FileRoutesByTo {
   '/admin/clients': typeof AdminClientsIndexRoute
   '/admin/commandes': typeof AdminCommandesIndexRoute
   '/admin/produits': typeof AdminProduitsIndexRoute
+  '/admin/contenu/accueil/banderole': typeof AdminContenuAccueilBanderoleRoute
+  '/admin/contenu/accueil/hero': typeof AdminContenuAccueilHeroRoute
+  '/admin/contenu/accueil/shop-the-look': typeof AdminContenuAccueilShopTheLookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -865,7 +891,7 @@ export interface FileRoutesById {
   '/admin/auth/callback': typeof AdminAuthCallbackRoute
   '/admin/clients/$customerId': typeof AdminClientsCustomerIdRoute
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
-  '/admin/contenu/accueil': typeof AdminContenuAccueilRoute
+  '/admin/contenu/accueil': typeof AdminContenuAccueilRouteWithChildren
   '/admin/contenu/articles': typeof AdminContenuArticlesRoute
   '/admin/contenu/pages': typeof AdminContenuPagesRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
@@ -873,6 +899,9 @@ export interface FileRoutesById {
   '/admin/clients/': typeof AdminClientsIndexRoute
   '/admin/commandes/': typeof AdminCommandesIndexRoute
   '/admin/produits/': typeof AdminProduitsIndexRoute
+  '/admin/contenu/accueil/banderole': typeof AdminContenuAccueilBanderoleRoute
+  '/admin/contenu/accueil/hero': typeof AdminContenuAccueilHeroRoute
+  '/admin/contenu/accueil/shop-the-look': typeof AdminContenuAccueilShopTheLookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -972,6 +1001,9 @@ export interface FileRouteTypes {
     | '/admin/clients/'
     | '/admin/commandes/'
     | '/admin/produits/'
+    | '/admin/contenu/accueil/banderole'
+    | '/admin/contenu/accueil/hero'
+    | '/admin/contenu/accueil/shop-the-look'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1068,6 +1100,9 @@ export interface FileRouteTypes {
     | '/admin/clients'
     | '/admin/commandes'
     | '/admin/produits'
+    | '/admin/contenu/accueil/banderole'
+    | '/admin/contenu/accueil/hero'
+    | '/admin/contenu/accueil/shop-the-look'
   id:
     | '__root__'
     | '/'
@@ -1165,6 +1200,9 @@ export interface FileRouteTypes {
     | '/admin/clients/'
     | '/admin/commandes/'
     | '/admin/produits/'
+    | '/admin/contenu/accueil/banderole'
+    | '/admin/contenu/accueil/hero'
+    | '/admin/contenu/accueil/shop-the-look'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1913,8 +1951,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProduitsNouveauRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/contenu/accueil/banderole': {
+      id: '/admin/contenu/accueil/banderole'
+      path: '/banderole'
+      fullPath: '/admin/contenu/accueil/banderole'
+      preLoaderRoute: typeof AdminContenuAccueilBanderoleRouteImport
+      parentRoute: typeof AdminContenuAccueilRoute
+    }
+    '/admin/contenu/accueil/hero': {
+      id: '/admin/contenu/accueil/hero'
+      path: '/hero'
+      fullPath: '/admin/contenu/accueil/hero'
+      preLoaderRoute: typeof AdminContenuAccueilHeroRouteImport
+      parentRoute: typeof AdminContenuAccueilRoute
+    }
+    '/admin/contenu/accueil/shop-the-look': {
+      id: '/admin/contenu/accueil/shop-the-look'
+      path: '/shop-the-look'
+      fullPath: '/admin/contenu/accueil/shop-the-look'
+      preLoaderRoute: typeof AdminContenuAccueilShopTheLookRouteImport
+      parentRoute: typeof AdminContenuAccueilRoute
+    }
   }
 }
+
+interface AdminContenuAccueilRouteChildren {
+  AdminContenuAccueilBanderoleRoute: typeof AdminContenuAccueilBanderoleRoute
+  AdminContenuAccueilHeroRoute: typeof AdminContenuAccueilHeroRoute
+  AdminContenuAccueilShopTheLookRoute: typeof AdminContenuAccueilShopTheLookRoute
+}
+
+const AdminContenuAccueilRouteChildren: AdminContenuAccueilRouteChildren = {
+  AdminContenuAccueilBanderoleRoute: AdminContenuAccueilBanderoleRoute,
+  AdminContenuAccueilHeroRoute: AdminContenuAccueilHeroRoute,
+  AdminContenuAccueilShopTheLookRoute: AdminContenuAccueilShopTheLookRoute,
+}
+
+const AdminContenuAccueilRouteWithChildren =
+  AdminContenuAccueilRoute._addFileChildren(AdminContenuAccueilRouteChildren)
 
 interface AdminRouteRouteChildren {
   AdminAttributsRoute: typeof AdminAttributsRoute
@@ -1927,7 +2001,7 @@ interface AdminRouteRouteChildren {
   AdminAuthCallbackRoute: typeof AdminAuthCallbackRoute
   AdminClientsCustomerIdRoute: typeof AdminClientsCustomerIdRoute
   AdminCommandesOrderIdRoute: typeof AdminCommandesOrderIdRoute
-  AdminContenuAccueilRoute: typeof AdminContenuAccueilRoute
+  AdminContenuAccueilRoute: typeof AdminContenuAccueilRouteWithChildren
   AdminContenuArticlesRoute: typeof AdminContenuArticlesRoute
   AdminContenuPagesRoute: typeof AdminContenuPagesRoute
   AdminProduitsProductIdRoute: typeof AdminProduitsProductIdRoute
@@ -1948,7 +2022,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAuthCallbackRoute: AdminAuthCallbackRoute,
   AdminClientsCustomerIdRoute: AdminClientsCustomerIdRoute,
   AdminCommandesOrderIdRoute: AdminCommandesOrderIdRoute,
-  AdminContenuAccueilRoute: AdminContenuAccueilRoute,
+  AdminContenuAccueilRoute: AdminContenuAccueilRouteWithChildren,
   AdminContenuArticlesRoute: AdminContenuArticlesRoute,
   AdminContenuPagesRoute: AdminContenuPagesRoute,
   AdminProduitsProductIdRoute: AdminProduitsProductIdRoute,
