@@ -2,6 +2,7 @@ import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import {
   ExternalLink,
+  ChevronDown,
   LogOut,
   Menu as MenuIcon,
   PanelLeftClose,
@@ -18,8 +19,9 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 
-function isActive(pathname: string, href: string): boolean {
+function isActive(pathname: string, href: string, exact = false): boolean {
   if (href === "/admin") return pathname === "/admin" || pathname === "/admin/";
+  if (exact) return pathname === href || pathname === `${href}/`;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -32,9 +34,17 @@ export function AdminSidebar({
 }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { hasPermission } = useAdminAuthorization();
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
   const visibleGroups = ADMIN_NAV.map((group) => ({
     ...group,
-    items: group.items.filter((item) => item.available && hasPermission(item.requiredPermission)),
+    items: group.items
+      .filter((item) => item.available && hasPermission(item.requiredPermission))
+      .map((item) => ({
+        ...item,
+        children: item.children?.filter(
+          (child) => child.available && hasPermission(child.requiredPermission),
+        ),
+      })),
   })).filter((group) => group.items.length > 0);
 
   return (
@@ -65,7 +75,12 @@ export function AdminSidebar({
         ) : null}
       </AppLink>
 
-      <div className={cn("min-h-0 flex-1 space-y-3 lg:space-y-2", collapsed ? "w-full" : "")}>
+      <div
+        className={cn(
+          "min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain pr-1 lg:space-y-2",
+          collapsed ? "w-full" : "",
+        )}
+      >
         {visibleGroups.map((group) => (
           <div key={group.title}>
             {!collapsed ? (
@@ -76,25 +91,83 @@ export function AdminSidebar({
             <ul className="space-y-0.5 lg:space-y-0">
               {group.items.map((item) => {
                 const Icon = item.icon;
-                const active = isActive(pathname, item.href);
+                const children = item.children ?? [];
+                const hasChildren = children.length > 0;
+                const active = isActive(pathname, item.href, hasChildren);
+                const childActive = children.some((child) => isActive(pathname, child.href, true));
+                const expanded = expandedItems[item.href] ?? childActive;
                 return (
                   <li key={item.href}>
-                    <AppLink
-                      href={item.href}
-                      onClick={onNavigate}
-                      aria-current={active ? "page" : undefined}
-                      title={collapsed ? item.label : undefined}
-                      className={cn(
-                        "flex min-h-10 items-center gap-2.5 rounded-md px-2.5 text-sm transition-colors lg:min-h-9",
-                        collapsed ? "justify-center px-0" : "",
-                        active
-                          ? "bg-primary/10 font-medium text-primary"
-                          : "text-foreground/80 hover:bg-muted",
-                      )}
-                    >
-                      <Icon className="size-4 shrink-0" aria-hidden="true" />
-                      {!collapsed ? <span className="truncate">{item.label}</span> : null}
-                    </AppLink>
+                    <div className="flex items-center gap-1">
+                      <AppLink
+                        href={item.href}
+                        onClick={onNavigate}
+                        aria-current={active ? "page" : undefined}
+                        title={collapsed ? item.label : undefined}
+                        className={cn(
+                          "flex min-h-10 min-w-0 flex-1 items-center gap-2.5 rounded-md px-2.5 text-sm transition-colors lg:min-h-9",
+                          collapsed ? "justify-center px-0" : "",
+                          active
+                            ? "bg-primary/10 font-medium text-primary"
+                            : childActive
+                              ? "bg-primary/5 font-medium text-primary"
+                              : "text-foreground/80 hover:bg-muted",
+                        )}
+                      >
+                        <Icon className="size-4 shrink-0" aria-hidden="true" />
+                        {!collapsed ? <span className="truncate">{item.label}</span> : null}
+                      </AppLink>
+                      {hasChildren && !collapsed ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="size-8 shrink-0"
+                          aria-label={`${expanded ? "Réduire" : "Développer"} ${item.label}`}
+                          aria-expanded={expanded}
+                          onClick={() =>
+                            setExpandedItems((current) => ({
+                              ...current,
+                              [item.href]: !expanded,
+                            }))
+                          }
+                        >
+                          <ChevronDown
+                            className={cn(
+                              "size-4 transition-transform",
+                              expanded ? "rotate-180" : "",
+                            )}
+                            aria-hidden="true"
+                          />
+                        </Button>
+                      ) : null}
+                    </div>
+                    {hasChildren && !collapsed && expanded ? (
+                      <ul className="ml-4 mt-0.5 space-y-0.5 border-l border-border pl-2">
+                        {children.map((child) => {
+                          const ChildIcon = child.icon;
+                          const childIsActive = isActive(pathname, child.href, true);
+                          return (
+                            <li key={child.href}>
+                              <AppLink
+                                href={child.href}
+                                onClick={onNavigate}
+                                aria-current={childIsActive ? "page" : undefined}
+                                className={cn(
+                                  "flex min-h-9 items-center gap-2 rounded-md px-2 text-[13px] transition-colors",
+                                  childIsActive
+                                    ? "bg-primary/10 font-medium text-primary"
+                                    : "text-foreground/75 hover:bg-muted",
+                                )}
+                              >
+                                <ChildIcon className="size-3.5 shrink-0" aria-hidden="true" />
+                                <span className="truncate">{child.label}</span>
+                              </AppLink>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : null}
                   </li>
                 );
               })}
@@ -106,7 +179,7 @@ export function AdminSidebar({
       <AppLink
         href="/"
         className={cn(
-          "flex min-h-10 items-center gap-2 rounded-md px-2.5 text-sm text-muted-foreground hover:bg-muted lg:min-h-9",
+          "flex min-h-10 shrink-0 items-center gap-2 rounded-md border-t border-border px-2.5 pt-2 text-sm text-muted-foreground hover:bg-muted lg:min-h-9",
           collapsed ? "justify-center px-0" : "",
         )}
         title={collapsed ? "Voir le site public" : undefined}
