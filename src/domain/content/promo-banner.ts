@@ -86,6 +86,45 @@ export function normalizePromoBannerMessages(
   return fallback.map((message, index) => ({ ...message, sortOrder: index }));
 }
 
+/**
+ * Read messages for the Admin draft editor without dropping a row whose text
+ * is temporarily empty while it is being edited. Public rendering must use
+ * normalizePromoBannerMessages so incomplete rows can never leak to visitors.
+ */
+export function readPromoBannerDraftMessages(
+  payload: Record<string, unknown>,
+  fallback: readonly HomePromoBannerMessage[] = [],
+): HomePromoBannerMessage[] {
+  const rawMessages = payload["messages"];
+  if (!Array.isArray(rawMessages)) {
+    return normalizePromoBannerMessages(payload, fallback);
+  }
+
+  return rawMessages
+    .flatMap((value, index) => {
+      const row = asRecord(value);
+      if (!row) return [];
+      const message: HomePromoBannerMessage = {
+        id: asText(row["id"]) || `promo-${index + 1}`,
+        text: typeof row["text"] === "string" ? row["text"] : "",
+        isEnabled: asBoolean(row["isEnabled"], true),
+        sortOrder:
+          typeof row["sortOrder"] === "number" &&
+          Number.isInteger(row["sortOrder"]) &&
+          row["sortOrder"] >= 0
+            ? row["sortOrder"]
+            : index,
+      };
+      const label = asOptionalText(row["label"]);
+      const href = asOptionalText(row["href"]);
+      if (label) message.label = label;
+      if (href) message.href = href;
+      return [message];
+    })
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map((message, index) => ({ ...message, sortOrder: index }));
+}
+
 export function promoBannerPayload(
   messages: readonly HomePromoBannerMessage[],
 ): Record<string, unknown> {

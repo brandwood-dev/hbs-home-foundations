@@ -33,9 +33,20 @@ export const adminKeys = {
   audit: () => ["admin", "audit"] as const,
 };
 
-/** Les données mock vivent côté navigateur : aucune requête pendant le SSR. */
+/**
+ * Les données Admin ne doivent pas être refetchées à chaque retour de focus :
+ * cela interrompait les formulaires en cours de saisie. Les mutations
+ * invalident explicitement les clés concernées après une sauvegarde.
+ */
 function clientQuery<T>(key: QueryKey, fn: () => Promise<T>) {
-  return { queryKey: key, queryFn: fn, staleTime: 0, retry: false };
+  return {
+    queryKey: key,
+    queryFn: fn,
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: false,
+  };
 }
 
 export function useAdminDashboard(period: AdminDashboardPeriod = {}) {

@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { normalizePromoBannerMessages, promoBannerPayload } from "./promo-banner";
+import {
+  normalizePromoBannerMessages,
+  promoBannerPayload,
+  readPromoBannerDraftMessages,
+} from "./promo-banner";
 
 describe("promo banner payload", () => {
   it("normalizes the legacy payload to one message", () => {
@@ -36,5 +40,18 @@ describe("promo banner payload", () => {
         { id: "b", isEnabled: false, sortOrder: 1 },
       ],
     });
+  });
+
+  it("keeps an empty row while the Admin editor is typing", () => {
+    const messages = readPromoBannerDraftMessages({
+      messages: [
+        { id: "a", text: "Premier", isEnabled: true, sortOrder: 0 },
+        { id: "b", text: "", isEnabled: true, sortOrder: 1 },
+      ],
+    });
+
+    expect(messages).toHaveLength(2);
+    expect(messages[1]).toMatchObject({ id: "b", text: "" });
+    expect(normalizePromoBannerMessages({ messages })).toHaveLength(1);
   });
 });

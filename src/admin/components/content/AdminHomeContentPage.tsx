@@ -14,8 +14,8 @@ import { Button } from "@/components/ui/button";
 import { HomePromoBanner } from "@/components/home/HomePromoBanner";
 import { promoBanner as fallbackPromoBanner } from "@/fixtures/home.fixture";
 import {
-  normalizePromoBannerMessages,
   promoBannerPayload,
+  readPromoBannerDraftMessages,
   type HomePromoBannerMessage,
 } from "@/domain/content/promo-banner";
 import { AdminPageHeader } from "@/admin/components/ui/AdminPageHeader";
@@ -143,7 +143,7 @@ function fromSection(section: AdminHomeSection): SectionDraft {
     payload:
       section.sectionKey === "promo_banner"
         ? promoBannerPayload(
-            normalizePromoBannerMessages(mergedPayload, fallbackPromoBanner.messages),
+            readPromoBannerDraftMessages(mergedPayload, fallbackPromoBanner.messages),
           )
         : mergedPayload,
     mediaAssetId: section.media?.id ?? "",
@@ -293,7 +293,7 @@ export function AdminHomeContentPage() {
         ...current,
         sections: current.sections.map((section) => {
           if (section.sectionKey !== "promo_banner") return section;
-          const messages = normalizePromoBannerMessages(
+          const messages = readPromoBannerDraftMessages(
             section.payload,
             fallbackPromoBanner.messages,
           );
@@ -418,8 +418,10 @@ export function AdminHomeContentPage() {
     if (!draft) return;
     setFormError(null);
     const promo = draft.sections.find((section) => section.sectionKey === "promo_banner");
-    const rawPromoMessages = promo?.payload["messages"];
-    if (Array.isArray(rawPromoMessages) && rawPromoMessages.length !== promoMessages.length) {
+    const promoDraftMessages = promo
+      ? readPromoBannerDraftMessages(promo.payload, fallbackPromoBanner.messages)
+      : [];
+    if (promoDraftMessages.some((message) => !message.text.trim())) {
       setFormError("Chaque message doit contenir un texte valide avant l’enregistrement.");
       return;
     }
@@ -468,7 +470,7 @@ export function AdminHomeContentPage() {
   const hero = draft.sections.find((section) => section.sectionKey === "hero")!;
   const promo = draft.sections.find((section) => section.sectionKey === "promo_banner")!;
   const shop = draft.sections.find((section) => section.sectionKey === "shop_the_look")!;
-  const promoMessages = normalizePromoBannerMessages(promo.payload, fallbackPromoBanner.messages);
+  const promoMessages = readPromoBannerDraftMessages(promo.payload, fallbackPromoBanner.messages);
 
   return (
     <div className="space-y-5">
