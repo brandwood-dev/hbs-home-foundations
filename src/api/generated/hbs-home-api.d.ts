@@ -1643,6 +1643,7 @@ export interface components {
             isNew: boolean;
             isBestSeller: boolean;
             isFeatured: boolean;
+            isOnSale?: boolean;
             createdAt: string;
             recommendationScore: number;
             isDemo: boolean;
@@ -1859,6 +1860,13 @@ export interface components {
             archivedAt: string | null;
             version: number;
             isDemo: boolean;
+            isNew?: boolean;
+            isBestSeller?: boolean;
+            isFeatured?: boolean;
+            isOnSale?: boolean;
+            payload?: {
+                [key: string]: unknown;
+            };
             attributes: {
                 [key: string]: unknown;
             };
@@ -1973,6 +1981,13 @@ export interface components {
                 archivedAt: string | null;
                 version: number;
                 isDemo: boolean;
+                isNew?: boolean;
+                isBestSeller?: boolean;
+                isFeatured?: boolean;
+                isOnSale?: boolean;
+                payload?: {
+                    [key: string]: unknown;
+                };
                 attributes: {
                     [key: string]: unknown;
                 };
@@ -3598,6 +3613,7 @@ export interface operations {
                             isNew: boolean;
                             isBestSeller: boolean;
                             isFeatured: boolean;
+                            isOnSale?: boolean;
                             createdAt: string;
                             recommendationScore: number;
                             isDemo: boolean;
@@ -3774,6 +3790,7 @@ export interface operations {
                         isNew: boolean;
                         isBestSeller: boolean;
                         isFeatured: boolean;
+                        isOnSale?: boolean;
                         createdAt: string;
                         recommendationScore: number;
                         isDemo: boolean;
@@ -3926,6 +3943,7 @@ export interface operations {
                             isNew: boolean;
                             isBestSeller: boolean;
                             isFeatured: boolean;
+                            isOnSale?: boolean;
                             createdAt: string;
                             recommendationScore: number;
                             isDemo: boolean;
@@ -4078,6 +4096,7 @@ export interface operations {
                         isNew: boolean;
                         isBestSeller: boolean;
                         isFeatured: boolean;
+                        isOnSale?: boolean;
                         createdAt: string;
                         recommendationScore: number;
                         isDemo: boolean;
@@ -4253,6 +4272,7 @@ export interface operations {
                         isNew: boolean;
                         isBestSeller: boolean;
                         isFeatured: boolean;
+                        isOnSale?: boolean;
                         createdAt: string;
                         recommendationScore: number;
                         isDemo: boolean;
@@ -5829,6 +5849,13 @@ export interface operations {
                             archivedAt: string | null;
                             version: number;
                             isDemo: boolean;
+                            isNew?: boolean;
+                            isBestSeller?: boolean;
+                            isFeatured?: boolean;
+                            isOnSale?: boolean;
+                            payload?: {
+                                [key: string]: unknown;
+                            };
                             attributes: {
                                 [key: string]: unknown;
                             };
@@ -5942,6 +5969,7 @@ export interface operations {
                     name: string;
                     reference: string;
                     categoryId: string;
+                    category?: string;
                     material: string;
                     sellingMode: string;
                     shortDescription?: string | null;
@@ -5952,6 +5980,7 @@ export interface operations {
                     isNew?: boolean;
                     isBestSeller?: boolean;
                     isFeatured?: boolean;
+                    isOnSale?: boolean;
                     isThermal?: boolean;
                     recommendationScore?: number;
                     attributes?: {
@@ -5988,6 +6017,13 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        isNew?: boolean;
+                        isBestSeller?: boolean;
+                        isFeatured?: boolean;
+                        isOnSale?: boolean;
+                        payload?: {
+                            [key: string]: unknown;
+                        };
                         attributes: {
                             [key: string]: unknown;
                         };
@@ -6184,6 +6220,13 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        isNew?: boolean;
+                        isBestSeller?: boolean;
+                        isFeatured?: boolean;
+                        isOnSale?: boolean;
+                        payload?: {
+                            [key: string]: unknown;
+                        };
                         attributes: {
                             [key: string]: unknown;
                         };
@@ -6317,6 +6360,7 @@ export interface operations {
                     name?: string;
                     reference?: string;
                     categoryId?: string;
+                    category?: string;
                     material?: string;
                     sellingMode?: string;
                     shortDescription?: string | null;
@@ -6327,6 +6371,7 @@ export interface operations {
                     isNew?: boolean;
                     isBestSeller?: boolean;
                     isFeatured?: boolean;
+                    isOnSale?: boolean;
                     isThermal?: boolean;
                     recommendationScore?: number;
                     attributes?: {
@@ -6364,6 +6409,13 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        isNew?: boolean;
+                        isBestSeller?: boolean;
+                        isFeatured?: boolean;
+                        isOnSale?: boolean;
+                        payload?: {
+                            [key: string]: unknown;
+                        };
                         attributes: {
                             [key: string]: unknown;
                         };
@@ -6564,6 +6616,13 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        isNew?: boolean;
+                        isBestSeller?: boolean;
+                        isFeatured?: boolean;
+                        isOnSale?: boolean;
+                        payload?: {
+                            [key: string]: unknown;
+                        };
                         attributes: {
                             [key: string]: unknown;
                         };
@@ -6742,6 +6801,13 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        isNew?: boolean;
+                        isBestSeller?: boolean;
+                        isFeatured?: boolean;
+                        isOnSale?: boolean;
+                        payload?: {
+                            [key: string]: unknown;
+                        };
                         attributes: {
                             [key: string]: unknown;
                         };
@@ -6871,7 +6937,7 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    sku: string;
+                    sku?: string;
                     title?: string | null;
                     priceAmountMinor: number;
                     compareAtPriceAmountMinor?: number | null;
@@ -6912,6 +6978,13 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        isNew?: boolean;
+                        isBestSeller?: boolean;
+                        isFeatured?: boolean;
+                        isOnSale?: boolean;
+                        payload?: {
+                            [key: string]: unknown;
+                        };
                         attributes: {
                             [key: string]: unknown;
                         };
@@ -7150,6 +7223,13 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        isNew?: boolean;
+                        isBestSeller?: boolean;
+                        isFeatured?: boolean;
+                        isOnSale?: boolean;
+                        payload?: {
+                            [key: string]: unknown;
+                        };
                         attributes: {
                             [key: string]: unknown;
                         };
@@ -7373,6 +7453,13 @@ export interface operations {
                         archivedAt: string | null;
                         version: number;
                         isDemo: boolean;
+                        isNew?: boolean;
+                        isBestSeller?: boolean;
+                        isFeatured?: boolean;
+                        isOnSale?: boolean;
+                        payload?: {
+                            [key: string]: unknown;
+                        };
                         attributes: {
                             [key: string]: unknown;
                         };

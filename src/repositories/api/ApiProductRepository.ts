@@ -138,6 +138,7 @@ interface ApiProduct {
   isNew: boolean;
   isBestSeller: boolean;
   isFeatured: boolean;
+  isOnSale?: boolean;
   createdAt: string;
   recommendationScore: number;
   isDemo: boolean;
@@ -641,6 +642,7 @@ export function mapProduct(input: ApiProduct): Product {
     isNew: asBoolean(input.isNew, false),
     isBestSeller: asBoolean(input.isBestSeller, false),
     isFeatured: asBoolean(input.isFeatured, false),
+    isOnSale: asBoolean(input.isOnSale, false),
     createdAt: asString(input.createdAt, new Date().toISOString()),
     recommendationScore: asNumber(input.recommendationScore, 0),
     isDemo: asBoolean(input.isDemo, false),

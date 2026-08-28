@@ -18,7 +18,7 @@ export interface AdminProductField {
 const opt = (value: string, label: string) => ({ value, label });
 
 const FIELDS: AdminProductField[] = [
-  { key: "material", label: "Matière", kind: "text", mappedTo: "material" },
+  { key: "material", label: "Matière", kind: "select", mappedTo: "material" },
   {
     key: "opacity",
     label: "Niveau de lumière",
@@ -33,12 +33,8 @@ const FIELDS: AdminProductField[] = [
   },
   { key: "style", label: "Style", kind: "text", mappedTo: "style" },
   { key: "rooms", label: "Pièces recommandées", kind: "tags", mappedTo: "rooms" },
-  { key: "pattern", label: "Motif", kind: "text" },
-  { key: "composition", label: "Composition", kind: "text" },
-  { key: "fabric_weight", label: "Poids du tissu (g/m²)", kind: "number" },
   { key: "care", label: "Entretien", kind: "textarea" },
   { key: "installation", label: "Installation", kind: "textarea" },
-  { key: "included_items", label: "Éléments inclus", kind: "tags" },
   { key: "large_width", label: "Grande largeur", kind: "boolean" },
   {
     key: "blind_type",
@@ -75,7 +71,7 @@ const FIELDS: AdminProductField[] = [
     label: "Type d'accessoire",
     kind: "select",
     options: [
-      opt("tringle", "Tringle"),
+      opt("tringle_extensible", "Tringle extensible (1,5–3 m)"),
       opt("rail", "Rail"),
       opt("embrasse", "Embrasse"),
       opt("support", "Support"),
@@ -230,37 +226,21 @@ export const adminProductCategoryConfigs: Record<
 > = {
   rideaux: config(
     "rideaux",
-    [
-      "material",
-      "opacity",
-      "pattern",
-      "style",
-      "rooms",
-      "large_width",
-      "composition",
-      "fabric_weight",
-      "care",
-      "installation",
-      "included_items",
-    ],
+    ["material", "opacity", "rooms", "large_width", "care", "installation"],
     { requiredFields: ["material"] },
   ),
   voilages: config("voilages", [
     "material",
     "opacity",
-    "pattern",
-    "style",
+
     "rooms",
     "large_width",
-    "composition",
-    "fabric_weight",
     "care",
     "installation",
-    "included_items",
   ]),
   stores: config(
     "stores",
-    ["blind_type", "opacity", "mechanism", "care", "installation", "included_items", "rooms"],
+    ["blind_type", "opacity", "mechanism", "care", "installation", "rooms"],
     { sellingModes: ["ready_made", "custom_quote", "pack"] },
   ),
   coussins: config(
@@ -292,7 +272,6 @@ export const adminProductCategoryConfigs: Record<
       "min_length_cm",
       "max_length_cm",
       "diameter_mm",
-      "included_items",
     ],
     { sellingModes: ["accessory", "pack"], supportsCustomQuote: false },
   ),
@@ -301,7 +280,6 @@ export const adminProductCategoryConfigs: Record<
     [
       "furniture_type",
       "rooms",
-      "style",
       "upholstery",
       "frame_material",
       "leg_material",
@@ -311,7 +289,6 @@ export const adminProductCategoryConfigs: Record<
       "removable_cover",
       "assembly_level",
       "assembly_time",
-      "included_items",
       "care",
       "shipping_profile",
       "free_shipping_eligible",

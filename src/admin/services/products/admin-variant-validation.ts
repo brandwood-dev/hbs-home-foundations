@@ -1,4 +1,4 @@
-import type { AdminVariant } from "@/admin/types/admin.types";
+import type { AdminProductCategoryKey, AdminVariant } from "@/admin/types/admin.types";
 import type { AdminVariantAxisKey } from "@/admin/config/admin-variant-axes.config";
 
 export interface VariantValidationContext {
@@ -8,6 +8,8 @@ export interface VariantValidationContext {
   foreignSkus: string[];
   supportsInventory: boolean;
   requiresPrice: boolean;
+  category?: AdminProductCategoryKey;
+  material?: string;
 }
 
 /** Signature unique d'une combinaison d'options (tous axes confondus). */
@@ -69,6 +71,28 @@ export function validateVariant(
   }
   if (variant.widthCm < 0 || variant.heightCm < 0) {
     errors["dimensions"] = "Les dimensions ne peuvent pas être négatives.";
+  }
+  if (context.axes.includes("dimensions")) {
+    if (variant.heightCm > 315) {
+      errors["dimensions"] = "La hauteur maximale autorisée est de 315 cm (3,15 m).";
+    }
+    if (
+      context.category === "rideaux" &&
+      context.material?.toLowerCase() === "velours" &&
+      variant.widthCm > 0 &&
+      variant.widthCm % 150 !== 0
+    ) {
+      errors["dimensions"] =
+        "Pour le velours, la largeur doit être un multiple de 150 cm (un panneau).";
+    }
+  }
+
+  if (context.category === "accessoires") {
+    const accessoryType = String((variant.options ?? {})["accessory_type"] ?? "");
+    const length = Number((variant.options ?? {})["length"] ?? 0);
+    if (accessoryType === "tringle_extensible" && length > 0 && (length < 150 || length > 300)) {
+      errors["length"] = "Une tringle extensible doit mesurer entre 150 et 300 cm.";
+    }
   }
 
   const options = variant.options ?? {};

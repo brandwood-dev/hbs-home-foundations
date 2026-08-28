@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -91,6 +92,7 @@ export function AdminField({
   multiline,
   rows = 4,
   disabled,
+  readOnly,
   ...base
 }: BaseFieldProps & {
   value: string;
@@ -100,6 +102,7 @@ export function AdminField({
   multiline?: boolean;
   rows?: number;
   disabled?: boolean;
+  readOnly?: boolean;
 }) {
   const id = useId();
   return (
@@ -110,6 +113,7 @@ export function AdminField({
           rows={rows}
           value={value}
           disabled={disabled}
+          readOnly={readOnly}
           placeholder={placeholder ?? ""}
           aria-invalid={Boolean(base.error)}
           aria-describedby={base.error ? `${id}-error` : base.hint ? `${id}-hint` : undefined}
@@ -122,6 +126,7 @@ export function AdminField({
           type={type}
           value={value}
           disabled={disabled}
+          readOnly={readOnly}
           placeholder={placeholder ?? ""}
           aria-invalid={Boolean(base.error)}
           aria-describedby={base.error ? `${id}-error` : base.hint ? `${id}-hint` : undefined}
@@ -168,6 +173,117 @@ export function AdminSelectField({
           ))}
         </SelectContent>
       </Select>
+    </FieldWrapper>
+  );
+}
+
+export interface AdminColorOption {
+  value: string;
+  label: string;
+  hex?: string;
+}
+
+/** Selecteur de coloris contrôlé, avec aperçu visuel et libellé accessible. */
+export function AdminColorSelectField({
+  value,
+  onChange,
+  options,
+  disabled,
+  ...base
+}: BaseFieldProps & {
+  value: string;
+  onChange: (value: string) => void;
+  options: AdminColorOption[];
+  disabled?: boolean;
+}) {
+  const id = useId();
+  const selected = options.find((option) => option.value === value);
+  return (
+    <FieldWrapper {...base} id={id}>
+      <Select value={value} onValueChange={onChange} disabled={disabled ?? false}>
+        <SelectTrigger
+          id={id}
+          className="h-10 bg-background"
+          aria-label={base.label}
+          aria-invalid={Boolean(base.error)}
+          aria-describedby={base.error ? `${id}-error` : base.hint ? `${id}-hint` : undefined}
+        >
+          {selected ? (
+            <span className="flex min-w-0 items-center gap-2 truncate">
+              <span
+                aria-hidden
+                className="size-4 shrink-0 rounded-full border border-black/15"
+                style={{ backgroundColor: selected.hex ?? "#d6d3d1" }}
+              />
+              <span className="truncate">{selected.label}</span>
+            </span>
+          ) : (
+            <SelectValue placeholder="Sélectionner" />
+          )}
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              <span className="flex items-center gap-2">
+                <span
+                  aria-hidden
+                  className="size-4 rounded-full border border-black/15"
+                  style={{ backgroundColor: option.hex ?? "#d6d3d1" }}
+                />
+                {option.label}
+              </span>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </FieldWrapper>
+  );
+}
+
+/** Liste multi-sélection compacte, utilisable au clavier et confortable sur mobile. */
+export function AdminMultiSelectField({
+  value,
+  onChange,
+  options,
+  ...base
+}: BaseFieldProps & {
+  value: string[];
+  onChange: (value: string[]) => void;
+  options: Array<{ value: string; label: string }>;
+}) {
+  const id = useId();
+  const selected = new Set(value);
+  return (
+    <FieldWrapper {...base} id={id}>
+      <div
+        id={id}
+        role="group"
+        aria-label={base.label}
+        className="grid gap-2 rounded-md border border-input bg-background p-3 sm:grid-cols-2"
+      >
+        {options.map((option) => {
+          const checkboxId = `${id}-${option.value}`;
+          return (
+            <label
+              key={option.value}
+              htmlFor={checkboxId}
+              className="flex min-h-9 cursor-pointer items-center gap-2 rounded-md px-2 text-sm hover:bg-muted/50"
+            >
+              <Checkbox
+                id={checkboxId}
+                checked={selected.has(option.value)}
+                onCheckedChange={(checked) => {
+                  const next = new Set(selected);
+                  if (checked === true) next.add(option.value);
+                  else next.delete(option.value);
+                  onChange([...next]);
+                }}
+              />
+              {option.label}
+            </label>
+          );
+        })}
+      </div>
     </FieldWrapper>
   );
 }

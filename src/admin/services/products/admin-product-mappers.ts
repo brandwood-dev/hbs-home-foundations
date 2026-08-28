@@ -9,6 +9,7 @@ import type {
 import type { AdminProductInput } from "@/admin/repositories/interfaces";
 import { ADMIN_PRODUCT_FIELDS } from "@/admin/config/admin-product-fields.config";
 import { adminId } from "@/admin/utils/admin.utils";
+import { generateProductSeo } from "@/admin/services/products/admin-product-slug";
 
 export interface AdminProductFormValues {
   id?: string;
@@ -18,7 +19,7 @@ export interface AdminProductFormValues {
   reference: string;
   category: AdminProductCategoryKey;
   categoryId: string;
-  subCategoryId?: string;
+  subCategoryId?: string | undefined;
   sellingMode: AdminSellingMode;
   shortDescription: string;
   longDescription: string;
@@ -29,7 +30,9 @@ export interface AdminProductFormValues {
   variants: AdminVariant[];
   images: AdminProductImage[];
   seoTitle: string;
+  seoTitleTouched: boolean;
   seoDescription: string;
+  seoDescriptionTouched: boolean;
   seoIndexable: boolean;
   seoOgImageUrl: string;
   packContent: string;
@@ -39,6 +42,9 @@ export interface AdminProductFormValues {
   perMeterMaxCm: number;
   perMeterStepCm: number;
   customQuoteEnabled: boolean;
+  isNew: boolean;
+  isBestSeller: boolean;
+  isOnSale: boolean;
 }
 
 export function emptyProductForm(
@@ -62,7 +68,9 @@ export function emptyProductForm(
     variants: [],
     images: [],
     seoTitle: "",
+    seoTitleTouched: false,
     seoDescription: "",
+    seoDescriptionTouched: false,
     seoIndexable: true,
     seoOgImageUrl: "",
     packContent: "",
@@ -72,6 +80,9 @@ export function emptyProductForm(
     perMeterMaxCm: 600,
     perMeterStepCm: 10,
     customQuoteEnabled: false,
+    isNew: false,
+    isBestSeller: false,
+    isOnSale: false,
   };
 }
 
@@ -82,6 +93,7 @@ export function productToForm(product: AdminProduct): AdminProductFormValues {
   if (product.style) fields["style"] = product.style;
   if (product.rooms.length > 0) fields["rooms"] = product.rooms;
 
+  const generatedSeo = generateProductSeo(product.name, product.shortDescription);
   return {
     id: product.id,
     name: product.name,
@@ -94,14 +106,16 @@ export function productToForm(product: AdminProduct): AdminProductFormValues {
     sellingMode: product.sellingMode,
     shortDescription: product.shortDescription,
     longDescription: product.longDescription,
-    brand: product.brand ?? "",
+    brand: product.brand ?? "HBS HOME",
     tags: product.tags,
     status: product.status,
     fields,
     variants: product.variants,
     images: product.imageAssets ?? [],
     seoTitle: product.seoTitle,
+    seoTitleTouched: product.seoTitle.trim() !== generatedSeo.title,
     seoDescription: product.seoDescription,
+    seoDescriptionTouched: product.seoDescription.trim() !== generatedSeo.description,
     seoIndexable: product.seoIndexable ?? true,
     seoOgImageUrl: product.seoOgImageUrl ?? "",
     packContent: product.packContent ?? "",
@@ -111,6 +125,14 @@ export function productToForm(product: AdminProduct): AdminProductFormValues {
     perMeterMaxCm: product.perMeter?.maxLengthCm ?? 600,
     perMeterStepCm: product.perMeter?.stepCm ?? 10,
     customQuoteEnabled: product.customQuoteEnabled ?? false,
+    isNew: product.isNew ?? false,
+    isBestSeller: product.isBestSeller ?? false,
+    isOnSale:
+      product.isOnSale ??
+      product.variants.some(
+        (variant) =>
+          variant.compareAtPriceMinor != null && variant.compareAtPriceMinor > variant.priceMinor,
+      ),
   };
 }
 
@@ -151,6 +173,9 @@ export function formToProductInput(values: AdminProductFormValues): AdminProduct
       ? { opacityLevel: values.fields["opacity"] as string }
       : {}),
     status: values.status,
+    isNew: values.isNew,
+    isBestSeller: values.isBestSeller,
+    isFeatured: values.isOnSale,
     ...(primary ? { imageUrl: primary.url } : {}),
     images: images.map((image) => image.url),
     imageAssets: images,
@@ -176,6 +201,7 @@ export function formToProductInput(values: AdminProductFormValues): AdminProduct
         }
       : {}),
     customQuoteEnabled: values.customQuoteEnabled,
+    isOnSale: values.isOnSale,
   };
 }
 

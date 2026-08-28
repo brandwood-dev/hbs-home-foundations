@@ -3,12 +3,11 @@ import { useNavigate } from "@tanstack/react-router";
 import { AlertTriangle, ExternalLink, Save } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   AdminField,
   AdminFormSection,
   AdminMoneyField,
+  AdminMultiSelectField,
   AdminNumberField,
   AdminSelectField,
   AdminSwitchField,
@@ -45,9 +44,16 @@ import {
 } from "@/admin/services/products/admin-product-validation";
 import {
   generateProductReference,
+  generateProductSeo,
   generateProductSlug,
+  generateVariantSku,
   publicProductUrl,
 } from "@/admin/services/products/admin-product-slug";
+import {
+  catalogCategoryOptionsForFamily,
+  familyRootCategory,
+} from "@/admin/services/products/admin-product-taxonomy";
+import { MATERIAL_LABELS } from "@/domain/product/product.constants";
 import {
   useAdminAttributes,
   useAdminCategories,
@@ -82,12 +88,28 @@ function validatePublicationWithAttributes(
       issues.push(`L'attribut « ${attribute.name} » est obligatoire.`);
     }
   }
+  const config = adminProductCategoryConfigs[values.category];
+  for (const key of config.requiredFields) {
+    if (!hasProductAttributeValue(values.fields[key])) {
+      issues.push(`Le champ « ${ADMIN_PRODUCT_FIELDS[key]?.label ?? key} » est obligatoire.`);
+    }
+  }
+  if (
+    values.isOnSale &&
+    !values.variants.some(
+      (variant) =>
+        variant.compareAtPriceMinor != null && variant.compareAtPriceMinor > variant.priceMinor,
+    )
+  ) {
+    issues.push("Un ancien prix supérieur au prix actuel est requis pour une promotion.");
+  }
   return issues;
 }
 
 function filterFieldsForCatalogCategory(
   fields: AdminProductFormValues["fields"],
   categorySlug: string | undefined,
+  familySlug: string | undefined,
   attributes: readonly AdminAttribute[],
 ): AdminProductFormValues["fields"] {
   if (!categorySlug || attributes.length === 0) return fields;
@@ -97,7 +119,11 @@ function filterFieldsForCatalogCategory(
       const definition = definitions.get(key);
       if (!definition) return true;
       if (definition.isActive === false) return false;
-      return !definition.categories?.length || definition.categories.includes(categorySlug);
+      return (
+        !definition.categories?.length ||
+        definition.categories.includes(categorySlug ?? "") ||
+        definition.categories.includes(familySlug ?? "")
+      );
     }),
   );
 }
@@ -138,26 +164,10 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     () => categories.find((category) => category.id === values.categoryId)?.slug,
     [categories, values.categoryId],
   );
-  const catalogCategoryOptions = useMemo(() => {
-    const byParent = new Map<string | null, typeof categories>();
-    for (const category of categories) {
-      const parentKey = category.parentId ?? null;
-      const siblings = byParent.get(parentKey) ?? [];
-      siblings.push(category);
-      byParent.set(parentKey, siblings);
-    }
-    const options: Array<{ value: string; label: string }> = [];
-    const append = (items: typeof categories, prefix = "") => {
-      for (const category of [...items].sort(
-        (left, right) => left.order - right.order || left.name.localeCompare(right.name),
-      )) {
-        options.push({ value: category.id, label: `${prefix}${category.name}` });
-        append(byParent.get(category.id) ?? [], `${prefix}${category.name} › `);
-      }
-    };
-    append(byParent.get(null) ?? []);
-    return options;
-  }, [categories]);
+  const catalogCategoryOptions = useMemo(
+    () => catalogCategoryOptionsForFamily(categories, values.category),
+    [categories, values.category],
+  );
   const catalogAttributes = useMemo(
     () =>
       attributes
@@ -165,16 +175,48 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
         .filter(
           (attribute) =>
             !attribute.categories?.length ||
-            (selectedCatalogCategorySlug !== undefined &&
-              attribute.categories.includes(selectedCatalogCategorySlug)),
+            attribute.categories.some(
+              (categorySlug) =>
+                categorySlug === selectedCatalogCategorySlug || categorySlug === values.category,
+            ),
         )
         .sort((left, right) => left.order - right.order || left.name.localeCompare(right.name)),
-    [attributes, selectedCatalogCategorySlug],
+    [attributes, selectedCatalogCategorySlug, values.category],
   );
   const dynamicAttributes = useMemo(() => {
     const staticKeys = new Set(Object.keys(ADMIN_PRODUCT_FIELDS));
     return catalogAttributes.filter((attribute) => !staticKeys.has(attribute.key));
   }, [catalogAttributes]);
+  const materialOptions = useMemo(() => {
+    const attribute = catalogAttributes.find((item) => item.key === "material");
+    const options = attribute?.values
+      .filter((value) => value.isActive !== false)
+      .map((value) => ({ value: value.slug, label: value.label }));
+    const fallback = Object.entries(MATERIAL_LABELS).map(([value, label]) => ({ value, label }));
+    const source = options && options.length > 0 ? options : fallback;
+    const subCategoryToken = selectedCatalogCategorySlug?.toLowerCase() ?? "";
+    const materialMatch = source.filter((option) =>
+      ["velours", "lin", "satin", "jacquard", "polyester", "voile", "bambou"].some(
+        (token) => subCategoryToken.includes(token) && option.value.includes(token),
+      ),
+    );
+    if (materialMatch.length > 0) return materialMatch;
+    return source;
+  }, [catalogAttributes, selectedCatalogCategorySlug]);
+  const roomOptions = useMemo(() => {
+    const attribute = attributes.find((item) => item.key === "room" || item.key === "rooms");
+    const options = attribute?.values
+      .filter((value) => value.isActive !== false)
+      .map((value) => ({ value: value.slug, label: value.label }));
+    return options && options.length > 0
+      ? options
+      : [
+          { value: "salon", label: "Salon" },
+          { value: "chambre", label: "Chambre" },
+          { value: "cuisine", label: "Cuisine" },
+          { value: "bureau", label: "Bureau" },
+        ];
+  }, [attributes]);
   const others = useMemo(
     () => products.filter((item) => item.id !== values.id),
     [products, values.id],
@@ -202,6 +244,14 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     setValues((current) => ({ ...current, fields: { ...current.fields, [key]: value } }));
   }
 
+  function generatedVariants(variants: AdminProductFormValues["variants"], reference: string) {
+    return variants.map((variant, index) =>
+      variant.sku.trim()
+        ? variant
+        : { ...variant, sku: generateVariantSku(reference, index, variant.colorId) },
+    );
+  }
+
   function handleNameChange(name: string) {
     setDirty(true);
     setValues((current) => ({
@@ -219,13 +269,42 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           name,
           others.map((item) => item.reference),
         ),
-      seoTitle: current.seoTitle || `${name} — HBS HOME`,
+      seoTitle: current.seoTitleTouched
+        ? current.seoTitle
+        : generateProductSeo(name, current.shortDescription).title,
+      variants: generatedVariants(
+        current.variants,
+        current.reference ||
+          generateProductReference(
+            name,
+            others.map((item) => item.reference),
+          ),
+      ),
+    }));
+  }
+
+  function handleShortDescriptionChange(shortDescription: string) {
+    setDirty(true);
+    setValues((current) => ({
+      ...current,
+      shortDescription,
+      seoDescription: current.seoDescriptionTouched
+        ? current.seoDescription
+        : generateProductSeo(current.name, shortDescription).description,
     }));
   }
 
   function save(status: AdminProduct["status"]) {
     setSubmitted(true);
-    const next = { ...values, status };
+    const next = {
+      ...values,
+      status,
+      variants: generatedVariants(values.variants, values.reference),
+      seoTitle: values.seoTitle || generateProductSeo(values.name, values.shortDescription).title,
+      seoDescription:
+        values.seoDescription ||
+        generateProductSeo(values.name, values.shortDescription).description,
+    };
     const identity = validateProductIdentity(formToProductDraft(next), { others });
     if (Object.keys(identity).length > 0) return;
     if (
@@ -268,8 +347,11 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
             onChange={(value) => {
               const category = value as AdminProductCategoryKey;
               const nextConfig = adminProductCategoryConfigs[category];
+              const nextRoot = familyRootCategory(categories, category);
               patch({
                 category,
+                categoryId: nextRoot?.id ?? "",
+                subCategoryId: undefined,
                 fields: {},
                 ...(nextConfig.sellingModes.includes(values.sellingMode)
                   ? {}
@@ -278,15 +360,26 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
             }}
           />
           <AdminSelectField
-            label="Catégorie du catalogue"
+            label="Sous-catégorie du catalogue"
             value={values.categoryId}
-            hint="Choisissez la catégorie racine ou la sous-catégorie de publication."
+            hint={
+              catalogCategoryOptions.length > 1
+                ? "Les choix sont limités à la famille produit sélectionnée."
+                : "Cette famille ne possède pas encore de sous-catégorie active."
+            }
             options={catalogCategoryOptions}
             onChange={(value) => {
-              const categorySlug = categories.find((category) => category.id === value)?.slug;
+              const selected = categories.find((category) => category.id === value);
+              const categorySlug = selected?.slug;
               patch({
                 categoryId: value,
-                fields: filterFieldsForCatalogCategory(values.fields, categorySlug, attributes),
+                ...(selected?.parentId ? { subCategoryId: value } : { subCategoryId: undefined }),
+                fields: filterFieldsForCatalogCategory(
+                  values.fields,
+                  categorySlug,
+                  values.category,
+                  attributes,
+                ),
               });
             }}
           />
@@ -301,7 +394,6 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
             }))}
             onChange={(value) => patch({ sellingMode: value as AdminSellingMode })}
           />
-          <AdminField label="Marque" value={values.brand} onChange={(v) => patch({ brand: v })} />
         </div>
 
         <AdminField
@@ -310,7 +402,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           multiline
           rows={2}
           value={values.shortDescription}
-          onChange={(value) => patch({ shortDescription: value })}
+          onChange={handleShortDescriptionChange}
         />
         <AdminField
           label="Description longue"
@@ -320,21 +412,46 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           onChange={(value) => patch({ longDescription: value })}
         />
 
-        <div className="grid gap-1.5">
-          <Label className="text-xs font-medium">Étiquettes</Label>
-          <Input
-            value={values.tags.join(", ")}
-            placeholder="nouveauté, best-seller…"
-            aria-label="Étiquettes"
-            onChange={(event) =>
-              patch({
-                tags: event.target.value
-                  .split(",")
-                  .map((tag) => tag.trim())
-                  .filter(Boolean),
-              })
-            }
-          />
+        <div className="grid gap-2 border-t border-border pt-4">
+          <div>
+            <h3 className="text-sm font-medium">Sélections de la page d’accueil</h3>
+            <p className="text-xs text-muted-foreground">
+              Activez les emplacements éditoriaux dans lesquels le produit doit apparaître.
+            </p>
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            <AdminSwitchField
+              label="Mettre en avant"
+              description="Apparaît dans les nouveautés."
+              checked={values.isNew}
+              onChange={(checked) => patch({ isNew: checked })}
+            />
+            <AdminSwitchField
+              label="Best-seller"
+              description="Apparaît dans les meilleures ventes."
+              checked={values.isBestSeller}
+              onChange={(checked) => patch({ isBestSeller: checked })}
+            />
+            <AdminSwitchField
+              label="Produit en promotion"
+              description="À compléter avec un ancien prix supérieur au prix actuel."
+              checked={values.isOnSale}
+              onChange={(checked) =>
+                patch({
+                  isOnSale: checked,
+                  ...(checked
+                    ? {}
+                    : {
+                        variants: values.variants.map((variant) => {
+                          const next = { ...variant };
+                          delete next.compareAtPriceMinor;
+                          return next;
+                        }),
+                      }),
+                })
+              }
+            />
+          </div>
         </div>
       </AdminFormSection>
 
@@ -406,6 +523,17 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
         {visibleProductFields(values.category, values.fields).map((field) => {
           const raw = values.fields[field.key];
           const required = config.requiredFields.includes(field.key);
+          if (field.key === "rooms") {
+            return (
+              <AdminMultiSelectField
+                key={field.key}
+                label={field.label}
+                value={Array.isArray(raw) ? raw : []}
+                options={roomOptions}
+                onChange={(next) => patchField(field.key, next)}
+              />
+            );
+          }
           if (field.kind === "boolean") {
             return (
               <AdminSwitchField
@@ -424,7 +552,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
                 label={field.label}
                 required={required}
                 value={typeof raw === "string" ? raw : ""}
-                options={field.options ?? []}
+                options={field.key === "material" ? materialOptions : (field.options ?? [])}
                 {...(field.hint ? { hint: field.hint } : {})}
                 onChange={(value) => patchField(field.key, value)}
               />
@@ -504,7 +632,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           label="Titre SEO"
           value={values.seoTitle}
           hint={`${values.seoTitle.length}/60 caractères`}
-          onChange={(value) => patch({ seoTitle: value })}
+          onChange={(value) => patch({ seoTitle: value, seoTitleTouched: true })}
         />
         <AdminField
           label="Méta description"
@@ -512,7 +640,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           rows={3}
           value={values.seoDescription}
           hint={`${values.seoDescription.length}/160 caractères`}
-          onChange={(value) => patch({ seoDescription: value })}
+          onChange={(value) => patch({ seoDescription: value, seoDescriptionTouched: true })}
         />
         <AdminField
           label="Image de partage (og:image)"
@@ -683,6 +811,21 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
                 variants={values.variants}
                 axes={config.variantAxes}
                 foreignSkus={foreignSkus}
+                category={values.category}
+                material={
+                  typeof values.fields["material"] === "string" ? values.fields["material"] : ""
+                }
+                productReference={values.reference}
+                colorOptions={
+                  attributes
+                    .find((attribute) => attribute.key === "color" || attribute.key === "colors")
+                    ?.values.filter((value) => value.isActive !== false)
+                    .map((value) => ({
+                      value: value.slug,
+                      label: value.label,
+                      ...(value.hex ? { hex: value.hex } : {}),
+                    })) ?? []
+                }
                 supportsInventory={config.supportsInventory && !isCustomQuote}
                 requiresPrice={!isCustomQuote}
                 onChange={(variants) => patch({ variants })}
