@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminHomeContentLayout } from "@/admin/components/content/AdminHomeContentLayout";
+import { AdminHomeOverviewPage } from "@/admin/components/content/AdminHomeOverviewPage";
 
-export const Route = createFileRoute("/admin/contenu/accueil")({
+export const Route = createFileRoute("/admin/contenu/accueil/")({
   head: () => ({
     meta: [
       { title: "Page d’accueil — Back-office HBS HOME" },
@@ -12,5 +12,5 @@ export const Route = createFileRoute("/admin/contenu/accueil")({
       },
     ],
   }),
-  component: AdminHomeContentLayout,
+  component: AdminHomeOverviewPage,
 });
