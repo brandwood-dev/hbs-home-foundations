@@ -90,4 +90,44 @@ describe("ApiAdminHomeContentRepository", () => {
       }),
     );
   });
+
+  it("uses the section endpoint for scoped reads and writes", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json(content))
+      .mockResolvedValueOnce(Response.json(revision));
+    const repository = new ApiAdminHomeContentRepository(
+      new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
+      async () => "token",
+    );
+
+    await repository.get("hero");
+    await repository.updateSection("hero", {
+      sectionKey: "hero",
+      sortOrder: 0,
+      isEnabled: true,
+      payload: { title: "Updated" },
+      expectedVersion: 2,
+    });
+
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      1,
+      "https://api.example.test/api/v1/admin/content/home/hero",
+      expect.objectContaining({ method: "GET" }),
+    );
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      2,
+      "https://api.example.test/api/v1/admin/content/home/hero",
+      expect.objectContaining({
+        method: "PUT",
+        body: JSON.stringify({
+          sectionKey: "hero",
+          sortOrder: 0,
+          isEnabled: true,
+          payload: { title: "Updated" },
+          expectedVersion: 2,
+        }),
+      }),
+    );
+  });
 });

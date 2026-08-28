@@ -362,10 +362,16 @@ export interface AdminHomeDraftInput {
 }
 
 export interface AdminHomeContentRepository {
-  get(): Promise<AdminHomeContent>;
+  get(sectionKey?: AdminHomeSectionKey): Promise<AdminHomeContent>;
   update(input: AdminHomeDraftInput): Promise<AdminHomeRevision>;
+  updateSection(
+    sectionKey: AdminHomeSectionKey,
+    input: AdminHomeSectionInput & { expectedVersion?: number },
+  ): Promise<AdminHomeRevision>;
   publish(): Promise<AdminHomeRevision>;
+  publishSection(sectionKey: AdminHomeSectionKey): Promise<AdminHomeRevision>;
   archive(): Promise<AdminHomeRevision>;
+  archiveSection(sectionKey: AdminHomeSectionKey): Promise<AdminHomeRevision>;
 }
 
 export interface AdminEditorialPageInput {

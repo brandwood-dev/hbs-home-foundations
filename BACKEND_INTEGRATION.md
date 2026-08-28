@@ -236,6 +236,22 @@ L’enregistrement envoie `expectedVersion` pour conserver le contrôle optimist
 l’archivage restent des actions séparées, protégées par `content.publish` et par la MFA exigée par
 l’API.
 
+### Éditeurs isolés par section
+
+Pour éviter qu'une modification mineure transmette toute la configuration de l'accueil, chaque
+section dispose maintenant d'un éditeur et d'un cycle de mutation dédié :
+
+- `/admin/contenu/accueil/hero` → `hero` ;
+- `/admin/contenu/accueil/banderole` → `promo_banner` ;
+- `/admin/contenu/accueil/shop-the-look` → `shop_the_look`.
+
+Ces écrans utilisent `GET`/`PUT /api/v1/admin/content/home/:sectionKey`, puis
+`POST .../:sectionKey/publish` ou `POST .../:sectionKey/archive`. L'API vérifie et remplace
+uniquement la section ciblée dans une transaction, tout en conservant le snapshot des autres
+sections. Le contrôle `expectedVersion`, les permissions `content.write`/`content.publish` et la MFA
+restent identiques. La route historique `/admin/contenu/accueil` et les endpoints globaux sont
+conservés pour la vue d'ensemble et la compatibilité.
+
 ### Homepage publique connectée (phase 9D.3)
 
 `ApiContentRepository.getHomePage()` consomme désormais `GET /api/v1/content/home` lorsque l’URL
