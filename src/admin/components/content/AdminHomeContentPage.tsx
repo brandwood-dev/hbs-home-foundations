@@ -459,10 +459,6 @@ export function AdminHomeContentPage() {
       setFormError("Chaque point Shop the Look doit être lié à un produit.");
       return;
     }
-    if (shop?.hotspots.length && !shop.mediaAssetId) {
-      setFormError("Ajoutez une image Shop the Look avant de positionner les points.");
-      return;
-    }
     updateHome.mutate(toInput(draft), {
       onSuccess: (revision) => {
         setDraft((current) =>
@@ -984,9 +980,17 @@ function ShopTheLookEditor({
           ))}
         </div>
       ) : (
-        <div className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-          Sélectionnez une image pour afficher la zone de positionnement.
-        </div>
+        <>
+          <div className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+            Sélectionnez une image pour afficher la zone de positionnement.
+          </div>
+          {section.hotspots.length > 0 ? (
+            <p role="status" className="text-xs font-medium text-amber-700">
+              Cette section contient des points sans image. Le brouillon peut être enregistré, mais
+              ajoutez une image et vérifiez les points avant publication.
+            </p>
+          ) : null}
+        </>
       )}
       {activeHotspotId ? (
         <p className="flex items-center gap-2 text-xs font-medium text-primary">
