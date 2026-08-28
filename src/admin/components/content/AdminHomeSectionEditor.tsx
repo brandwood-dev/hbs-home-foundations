@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Archive,
   ArrowDown,
@@ -11,7 +11,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Outlet, useRouterState } from "@tanstack/react-router";
 import { HomePromoBanner } from "@/components/home/HomePromoBanner";
 import { promoBanner as fallbackPromoBanner } from "@/fixtures/home.fixture";
 import {
@@ -37,20 +36,21 @@ import {
 import { useAdminAuthorization } from "@/admin/auth/AdminAuthorizationContext";
 import { useAdminHomeContent, useAdminMedia, useAdminProducts } from "@/admin/hooks/admin.queries";
 import {
-  useArchiveAdminHomeContent,
   useArchiveAdminHomeSection,
-  usePublishAdminHomeContent,
   usePublishAdminHomeSection,
-  useUpdateAdminHomeContent,
   useUpdateAdminHomeSection,
 } from "@/admin/hooks/admin-home-content.mutations";
 import type {
   AdminHomeContent,
-  AdminHomeDraftInput,
   AdminHomeSection,
+  AdminHomeSectionInput,
   AdminHomeSectionKey,
 } from "@/admin/repositories/interfaces";
 import type { AdminMedia, AdminProduct } from "@/admin/types/admin.types";
+import {
+  HOME_SECTION_DESCRIPTIONS as SECTION_DESCRIPTIONS,
+  HOME_SECTION_LABELS as SECTION_LABELS,
+} from "@/admin/components/content/home-overview";
 
 type HotspotDraft = {
   id: string;
@@ -61,6 +61,7 @@ type HotspotDraft = {
 };
 
 type SectionDraft = {
+  version?: number;
   sectionKey: AdminHomeSectionKey;
   sortOrder: number;
   isEnabled: boolean;
@@ -72,23 +73,6 @@ type SectionDraft = {
   mobileMediaUrl: string;
   mobileMediaAlt: string;
   hotspots: HotspotDraft[];
-};
-
-type HomeDraft = {
-  version?: number;
-  sections: SectionDraft[];
-};
-
-const SECTION_LABELS: Record<AdminHomeSectionKey, string> = {
-  hero: "Hero principal",
-  promo_banner: "Banderole promotionnelle",
-  shop_the_look: "Shop the Look",
-};
-
-const SECTION_DESCRIPTIONS: Record<AdminHomeSectionKey, string> = {
-  hero: "Le visuel et le message principal affichés en haut de la page d’accueil.",
-  promo_banner: "Des messages affichés tout en haut du site, avant le logo et la navigation.",
-  shop_the_look: "Une image éditoriale avec des points qui renvoient vers les produits.",
 };
 
 const EMPTY_PAYLOADS: Record<AdminHomeSectionKey, Record<string, unknown>> = {
@@ -166,43 +150,37 @@ function fromSection(section: AdminHomeSection): SectionDraft {
   };
 }
 
-function toDraft(content: AdminHomeContent): HomeDraft {
+function toSectionDraft(content: AdminHomeContent, sectionKey: AdminHomeSectionKey): SectionDraft {
   const source = content.draft ?? content.published;
-  const sections = new Map(source?.sections.map((section) => [section.sectionKey, section]));
-  return {
-    ...(source?.version === undefined ? {} : { version: source.version }),
-    sections: (["hero", "promo_banner", "shop_the_look"] as const).map((key, index) =>
-      sections.has(key) ? fromSection(sections.get(key)!) : createSection(key, index),
-    ),
-  };
+  const section = source?.sections.find((item) => item.sectionKey === sectionKey);
+  const draft = section ? fromSection(section) : createSection(sectionKey, 0);
+  return source?.version === undefined ? draft : { ...draft, version: source.version };
 }
 
-function toInput(draft: HomeDraft): AdminHomeDraftInput {
+function toSectionInput(draft: SectionDraft): AdminHomeSectionInput & { expectedVersion?: number } {
   return {
-    sections: draft.sections.map((section) => ({
-      sectionKey: section.sectionKey,
-      sortOrder: section.sortOrder,
-      isEnabled: section.isEnabled,
-      payload: section.payload,
-      mediaAssetId: section.mediaAssetId || null,
-      mobileMediaAssetId: section.mobileMediaAssetId || null,
-      hotspots:
-        section.sectionKey === "shop_the_look"
-          ? section.hotspots.map((hotspot, index) => ({
-              productId: hotspot.productId,
-              xPercent: hotspot.xPercent,
-              yPercent: hotspot.yPercent,
-              label: hotspot.label.trim() || null,
-              sortOrder: index,
-            }))
-          : [],
-    })),
+    sectionKey: draft.sectionKey,
+    sortOrder: draft.sortOrder,
+    isEnabled: draft.isEnabled,
+    payload: draft.payload,
+    mediaAssetId: draft.mediaAssetId || null,
+    mobileMediaAssetId: draft.mobileMediaAssetId || null,
+    hotspots:
+      draft.sectionKey === "shop_the_look"
+        ? draft.hotspots.map((hotspot, index) => ({
+            productId: hotspot.productId,
+            xPercent: hotspot.xPercent,
+            yPercent: hotspot.yPercent,
+            label: hotspot.label.trim() || null,
+            sortOrder: index,
+          }))
+        : [],
     ...(draft.version === undefined ? {} : { expectedVersion: draft.version }),
   };
 }
 
 function statusLabel(content: AdminHomeContent | undefined): string {
-  if (content?.draft) return "Brouillon à enregistrer";
+  if (content?.draft) return "Brouillon disponible";
   if (content?.published) return "Publication active";
   return "Aucune publication";
 }
@@ -265,26 +243,15 @@ function linkedProductNotice(products: AdminProduct[], productId: string): strin
   return null;
 }
 
-export function AdminHomeContentPage({ sectionKey }: { sectionKey?: AdminHomeSectionKey }) {
-  const pathname = useRouterState({ select: (state) => state.location.pathname });
-  if (!sectionKey && pathname.startsWith("/admin/contenu/accueil/")) {
-    return <Outlet />;
-  }
-  return <AdminHomeContentEditor {...(sectionKey ? { sectionKey } : {})} />;
-}
-
-function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionKey }) {
+export function AdminHomeSectionEditor({ sectionKey }: { sectionKey: AdminHomeSectionKey }) {
   const { hasPermission } = useAdminAuthorization();
   const { data, isLoading, error, refetch } = useAdminHomeContent(sectionKey);
-  const { data: media = [] } = useAdminMedia();
-  const { data: products = [] } = useAdminProducts();
-  const updateHome = useUpdateAdminHomeContent();
+  const { data: media = [] } = useAdminMedia({ enabled: sectionKey !== "promo_banner" });
+  const { data: products = [] } = useAdminProducts({ enabled: sectionKey === "shop_the_look" });
   const updateHomeSection = useUpdateAdminHomeSection();
-  const publishHome = usePublishAdminHomeContent();
   const publishHomeSection = usePublishAdminHomeSection();
-  const archiveHome = useArchiveAdminHomeContent();
   const archiveHomeSection = useArchiveAdminHomeSection();
-  const [draft, setDraft] = useState<HomeDraft | null>(null);
+  const [draft, setDraft] = useState<SectionDraft | null>(null);
   const [dirty, setDirty] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [pendingArchive, setPendingArchive] = useState(false);
@@ -296,36 +263,16 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
 
   useEffect(() => {
     if (!data || dirty) return;
-    setDraft(toDraft(data));
-  }, [data, dirty]);
+    setDraft(toSectionDraft(data, sectionKey));
+  }, [data, dirty, sectionKey]);
 
-  const orderedSections = useMemo(
-    () => [...(draft?.sections ?? [])].sort((a, b) => a.sortOrder - b.sortOrder),
-    [draft],
-  );
-  const visibleSections = sectionKey
-    ? orderedSections.filter((section) => section.sectionKey === sectionKey)
-    : orderedSections;
-
-  function updateSection(
-    sectionKey: AdminHomeSectionKey,
-    update: (section: SectionDraft) => SectionDraft,
-  ) {
-    setDraft((current) =>
-      current
-        ? {
-            ...current,
-            sections: current.sections.map((section) =>
-              section.sectionKey === sectionKey ? update(section) : section,
-            ),
-          }
-        : current,
-    );
+  function updateSection(update: (section: SectionDraft) => SectionDraft) {
+    setDraft((current) => (current ? update(current) : current));
     setDirty(true);
   }
 
-  function updatePayload(sectionKey: AdminHomeSectionKey, key: string, value: string) {
-    updateSection(sectionKey, (section) => ({
+  function updatePayload(key: string, value: string) {
+    updateSection((section) => ({
       ...section,
       payload: { ...section.payload, [key]: value },
     }));
@@ -335,20 +282,11 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
     update: (messages: HomePromoBannerMessage[]) => HomePromoBannerMessage[],
   ) {
     setDraft((current) => {
-      if (!current) return current;
+      if (!current || current.sectionKey !== "promo_banner") return current;
+      const messages = readPromoBannerDraftMessages(current.payload, fallbackPromoBanner.messages);
       return {
         ...current,
-        sections: current.sections.map((section) => {
-          if (section.sectionKey !== "promo_banner") return section;
-          const messages = readPromoBannerDraftMessages(
-            section.payload,
-            fallbackPromoBanner.messages,
-          );
-          return {
-            ...section,
-            payload: promoBannerPayload(update(messages)),
-          };
-        }),
+        payload: promoBannerPayload(update(messages)),
       };
     });
     setDirty(true);
@@ -391,9 +329,9 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
     });
   }
 
-  function setMedia(sectionKey: AdminHomeSectionKey, mobile: boolean, id: string) {
+  function setMedia(mobile: boolean, id: string) {
     const selected = id === "__none" ? undefined : media.find((item) => item.id === id);
-    updateSection(sectionKey, (section) => ({
+    updateSection((section) => ({
       ...section,
       ...(mobile
         ? {
@@ -410,10 +348,9 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
   }
 
   function addHotspot() {
-    const shop = draft?.sections.find((section) => section.sectionKey === "shop_the_look");
-    if (!shop) return;
+    if (sectionKey !== "shop_the_look") return;
     const id = stableId("hotspot");
-    updateSection("shop_the_look", (section) => ({
+    updateSection((section) => ({
       ...section,
       hotspots: [
         ...section.hotspots,
@@ -430,7 +367,7 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
   }
 
   function updateHotspot(id: string, update: Partial<HotspotDraft>) {
-    updateSection("shop_the_look", (section) => ({
+    updateSection((section) => ({
       ...section,
       hotspots: section.hotspots.map((hotspot) =>
         hotspot.id === id ? { ...hotspot, ...update } : hotspot,
@@ -439,7 +376,7 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
   }
 
   function removeHotspot(id: string) {
-    updateSection("shop_the_look", (section) => ({
+    updateSection((section) => ({
       ...section,
       hotspots: section.hotspots.filter((hotspot) => hotspot.id !== id),
     }));
@@ -464,55 +401,34 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
   function save() {
     if (!draft) return;
     setFormError(null);
-    const targetKey = sectionKey;
-    if (!targetKey || targetKey === "promo_banner") {
-      const promo = draft.sections.find((section) => section.sectionKey === "promo_banner");
-      const promoDraftMessages = promo
-        ? readPromoBannerDraftMessages(promo.payload, fallbackPromoBanner.messages)
-        : [];
+    if (sectionKey === "promo_banner") {
+      const promoDraftMessages = readPromoBannerDraftMessages(
+        draft.payload,
+        fallbackPromoBanner.messages,
+      );
       if (promoDraftMessages.some((message) => !message.text.trim())) {
         setFormError("Chaque message doit contenir un texte valide avant l’enregistrement.");
         return;
       }
     }
-    if (!targetKey || targetKey === "shop_the_look") {
-      const shop = draft.sections.find((section) => section.sectionKey === "shop_the_look");
-      if (shop?.hotspots.some((hotspot) => !hotspot.productId)) {
-        setFormError("Chaque point Shop the Look doit être lié à un produit.");
-        return;
-      }
-    }
-    if (targetKey) {
-      const sectionInput = toInput(draft).sections.find((item) => item.sectionKey === targetKey);
-      if (!sectionInput) return;
-      updateHomeSection.mutate(
-        {
-          sectionKey: targetKey,
-          section: {
-            ...sectionInput,
-            ...(draft.version === undefined ? {} : { expectedVersion: draft.version }),
-          },
-        },
-        {
-          onSuccess: (revision) => {
-            setDraft((current) => (current ? { ...current, version: revision.version } : current));
-            setDirty(false);
-          },
-        },
-      );
+    if (sectionKey === "shop_the_look" && draft.hotspots.some((hotspot) => !hotspot.productId)) {
+      setFormError("Chaque point Shop the Look doit être lié à un produit.");
       return;
     }
-    updateHome.mutate(toInput(draft), {
-      onSuccess: (revision) => {
-        setDraft((current) => (current ? { ...current, version: revision.version } : current));
-        setDirty(false);
+    updateHomeSection.mutate(
+      { sectionKey, section: toSectionInput(draft) },
+      {
+        onSuccess: (revision) => {
+          setDraft((current) => (current ? { ...current, version: revision.version } : current));
+          setDirty(false);
+        },
       },
-    });
+    );
   }
 
   function resetDraft() {
     if (data) {
-      setDraft(toDraft(data));
+      setDraft(toSectionDraft(data, sectionKey));
       setDirty(false);
       setFormError(null);
     }
@@ -528,27 +444,23 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
   }
   if (isLoading || !draft) return <AdminSkeleton rows={12} />;
 
-  const hero = draft.sections.find((section) => section.sectionKey === "hero")!;
-  const promo = draft.sections.find((section) => section.sectionKey === "promo_banner")!;
-  const shop = draft.sections.find((section) => section.sectionKey === "shop_the_look")!;
-  const promoMessages = readPromoBannerDraftMessages(promo.payload, fallbackPromoBanner.messages);
-  const pageTitle = sectionKey ? SECTION_LABELS[sectionKey] : "Page d’accueil";
-  const pageDescription = sectionKey
-    ? SECTION_DESCRIPTIONS[sectionKey]
-    : "Gérez les sections de la page d’accueil.";
-  const savePending = updateHome.isPending || updateHomeSection.isPending;
-  const publishPending = publishHome.isPending || publishHomeSection.isPending;
-  const archivePending = archiveHome.isPending || archiveHomeSection.isPending;
+  const promoMessages =
+    sectionKey === "promo_banner"
+      ? readPromoBannerDraftMessages(draft.payload, fallbackPromoBanner.messages)
+      : [];
+  const savePending = updateHomeSection.isPending;
+  const publishPending = publishHomeSection.isPending;
+  const archivePending = archiveHomeSection.isPending;
 
   return (
     <div className="space-y-5">
       <AdminPageHeader
-        title={pageTitle}
-        description={pageDescription}
+        title={SECTION_LABELS[sectionKey]}
+        description={SECTION_DESCRIPTIONS[sectionKey]}
         breadcrumbs={[
           { label: "Contenu" },
           { label: "Page d’accueil", href: "/admin/contenu/accueil" },
-          ...(sectionKey ? [{ label: SECTION_LABELS[sectionKey] }] : []),
+          { label: SECTION_LABELS[sectionKey] },
         ]}
         actions={
           <div className="flex flex-wrap gap-2">
@@ -572,12 +484,12 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-5">
-          {!sectionKey || sectionKey === "hero" ? (
+          {sectionKey === "hero" ? (
             <AdminFormSection title={SECTION_LABELS.hero} description={SECTION_DESCRIPTIONS.hero}>
               <AdminSwitchField
-                checked={hero.isEnabled}
+                checked={draft.isEnabled}
                 onChange={(checked) =>
-                  updateSection("hero", (section) => ({ ...section, isEnabled: checked }))
+                  updateSection((section) => ({ ...section, isEnabled: checked }))
                 }
                 label="Afficher le Hero"
                 disabled={!canWrite}
@@ -585,15 +497,15 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
               <div className="grid gap-4 md:grid-cols-2">
                 <AdminField
                   label="Sur-titre"
-                  value={stringValue(hero.payload, "eyebrow")}
-                  onChange={(value) => updatePayload("hero", "eyebrow", value)}
+                  value={stringValue(draft.payload, "eyebrow")}
+                  onChange={(value) => updatePayload("eyebrow", value)}
                   disabled={!canWrite}
                 />
                 <AdminField
                   label="Titre"
                   required
-                  value={stringValue(hero.payload, "title")}
-                  onChange={(value) => updatePayload("hero", "title", value)}
+                  value={stringValue(draft.payload, "title")}
+                  onChange={(value) => updatePayload("title", value)}
                   disabled={!canWrite}
                 />
               </div>
@@ -601,65 +513,65 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
                 label="Description"
                 multiline
                 rows={3}
-                value={stringValue(hero.payload, "description")}
-                onChange={(value) => updatePayload("hero", "description", value)}
+                value={stringValue(draft.payload, "description")}
+                onChange={(value) => updatePayload("description", value)}
                 disabled={!canWrite}
               />
               <div className="grid gap-4 md:grid-cols-2">
                 <AdminField
                   label="CTA principal"
-                  value={stringValue(hero.payload, "primaryCtaLabel")}
-                  onChange={(value) => updatePayload("hero", "primaryCtaLabel", value)}
+                  value={stringValue(draft.payload, "primaryCtaLabel")}
+                  onChange={(value) => updatePayload("primaryCtaLabel", value)}
                   disabled={!canWrite}
                 />
                 <AdminField
                   label="Lien CTA principal"
                   type="url"
-                  value={stringValue(hero.payload, "primaryCtaHref")}
-                  onChange={(value) => updatePayload("hero", "primaryCtaHref", value)}
+                  value={stringValue(draft.payload, "primaryCtaHref")}
+                  onChange={(value) => updatePayload("primaryCtaHref", value)}
                   disabled={!canWrite}
                 />
                 <AdminField
                   label="CTA secondaire"
-                  value={stringValue(hero.payload, "secondaryCtaLabel")}
-                  onChange={(value) => updatePayload("hero", "secondaryCtaLabel", value)}
+                  value={stringValue(draft.payload, "secondaryCtaLabel")}
+                  onChange={(value) => updatePayload("secondaryCtaLabel", value)}
                   disabled={!canWrite}
                 />
                 <AdminField
                   label="Lien CTA secondaire"
                   type="url"
-                  value={stringValue(hero.payload, "secondaryCtaHref")}
-                  onChange={(value) => updatePayload("hero", "secondaryCtaHref", value)}
+                  value={stringValue(draft.payload, "secondaryCtaHref")}
+                  onChange={(value) => updatePayload("secondaryCtaHref", value)}
                   disabled={!canWrite}
                 />
               </div>
               <MediaSelector
-                section={hero}
+                section={draft}
                 media={media}
                 mobile={false}
-                onChange={(id) => setMedia("hero", false, id)}
+                onChange={(id) => setMedia(false, id)}
                 disabled={!canWrite}
               />
               <MediaSelector
-                section={hero}
+                section={draft}
                 media={media}
                 mobile
-                onChange={(id) => setMedia("hero", true, id)}
+                onChange={(id) => setMedia(true, id)}
                 disabled={!canWrite}
               />
             </AdminFormSection>
           ) : null}
 
-          {!sectionKey || sectionKey === "promo_banner" ? (
+          {sectionKey === "promo_banner" ? (
             <AdminFormSection
               title={SECTION_LABELS.promo_banner}
               description={SECTION_DESCRIPTIONS.promo_banner}
             >
               <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-background p-3">
                 <AdminSwitchField
-                  checked={promo.isEnabled}
+                  checked={draft.isEnabled}
                   onChange={(checked) =>
-                    updateSection("promo_banner", (section) => ({ ...section, isEnabled: checked }))
+                    updateSection((section) => ({ ...section, isEnabled: checked }))
                   }
                   label="Afficher la banderole"
                   description="La banderole est placée avant le logo sur toutes les pages publiques."
@@ -793,15 +705,15 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
             </AdminFormSection>
           ) : null}
 
-          {!sectionKey || sectionKey === "shop_the_look" ? (
+          {sectionKey === "shop_the_look" ? (
             <AdminFormSection
               title={SECTION_LABELS.shop_the_look}
               description={SECTION_DESCRIPTIONS.shop_the_look}
             >
               <AdminSwitchField
-                checked={shop.isEnabled}
+                checked={draft.isEnabled}
                 onChange={(checked) =>
-                  updateSection("shop_the_look", (section) => ({ ...section, isEnabled: checked }))
+                  updateSection((section) => ({ ...section, isEnabled: checked }))
                 }
                 label="Afficher Shop the Look"
                 disabled={!canWrite}
@@ -809,27 +721,27 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
               <AdminField
                 label="Titre"
                 required
-                value={stringValue(shop.payload, "title")}
-                onChange={(value) => updatePayload("shop_the_look", "title", value)}
+                value={stringValue(draft.payload, "title")}
+                onChange={(value) => updatePayload("title", value)}
                 disabled={!canWrite}
               />
               <AdminField
                 label="Description"
                 multiline
                 rows={2}
-                value={stringValue(shop.payload, "description")}
-                onChange={(value) => updatePayload("shop_the_look", "description", value)}
+                value={stringValue(draft.payload, "description")}
+                onChange={(value) => updatePayload("description", value)}
                 disabled={!canWrite}
               />
               <MediaSelector
-                section={shop}
+                section={draft}
                 media={media}
                 mobile={false}
-                onChange={(id) => setMedia("shop_the_look", false, id)}
+                onChange={(id) => setMedia(false, id)}
                 disabled={!canWrite}
               />
               <ShopTheLookEditor
-                section={shop}
+                section={draft}
                 products={products}
                 activeHotspotId={activeHotspotId}
                 onPosition={positionHotspot}
@@ -871,18 +783,12 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
           </AdminCard>
           <AdminCard>
             <h2 className="mb-2 text-sm font-semibold">Sections administrées</h2>
-            <ul className="space-y-2 text-sm">
-              {visibleSections.map((section) => (
-                <li key={section.sectionKey} className="flex items-center justify-between gap-2">
-                  <span>{SECTION_LABELS[section.sectionKey]}</span>
-                  <span
-                    className={section.isEnabled ? "text-emerald-700" : "text-muted-foreground"}
-                  >
-                    {section.isEnabled ? "Active" : "Masquée"}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <div className="flex items-center justify-between gap-2 text-sm">
+              <span>{SECTION_LABELS[sectionKey]}</span>
+              <span className={draft.isEnabled ? "text-emerald-700" : "text-muted-foreground"}>
+                {draft.isEnabled ? "Active" : "Masquée"}
+              </span>
+            </div>
           </AdminCard>
         </aside>
       </div>
@@ -901,9 +807,7 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
           <Save className="mr-1 size-4" /> Enregistrer le brouillon
         </Button>
         <Button
-          onClick={() =>
-            sectionKey ? publishHomeSection.mutate(sectionKey) : publishHome.mutate(undefined)
-          }
+          onClick={() => publishHomeSection.mutate(sectionKey)}
           disabled={!canPublish || dirty || !data?.draft || publishPending}
         >
           <Send className="mr-1 size-4" /> Publier
@@ -926,8 +830,7 @@ function AdminHomeContentEditor({ sectionKey }: { sectionKey?: AdminHomeSectionK
         confirmLabel="Archiver"
         destructive
         onConfirm={() => {
-          if (sectionKey) archiveHomeSection.mutate(sectionKey);
-          else archiveHome.mutate(undefined);
+          archiveHomeSection.mutate(sectionKey);
           setPendingArchive(false);
         }}
       />

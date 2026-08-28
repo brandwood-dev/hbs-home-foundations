@@ -59,8 +59,11 @@ export function useAdminDashboard(period: AdminDashboardPeriod = {}) {
   );
 }
 
-export function useAdminProducts() {
-  return useQuery(clientQuery(adminKeys.products(), () => adminRepositories.products.list()));
+export function useAdminProducts(options: { enabled?: boolean } = {}) {
+  return useQuery({
+    ...clientQuery(adminKeys.products(), () => adminRepositories.products.list()),
+    enabled: options.enabled ?? true,
+  });
 }
 
 export function useAdminProduct(id: string) {
@@ -170,8 +173,11 @@ export function useAdminArticleCategories() {
   );
 }
 
-export function useAdminMedia() {
-  return useQuery(clientQuery(adminKeys.media(), () => adminRepositories.media.list()));
+export function useAdminMedia(options: { enabled?: boolean } = {}) {
+  return useQuery({
+    ...clientQuery(adminKeys.media(), () => adminRepositories.media.list()),
+    enabled: options.enabled ?? true,
+  });
 }
 
 export function useAdminSettings() {
