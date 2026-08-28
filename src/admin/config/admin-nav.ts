@@ -25,6 +25,7 @@ export interface AdminNavItem {
   icon: ComponentType<{ className?: string }>;
   requiredPermission: string;
   available: boolean;
+  children?: AdminNavItem[];
 }
 
 export interface AdminNavGroup {
@@ -113,27 +114,29 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         icon: Home,
         requiredPermission: "content.read",
         available: true,
-      },
-      {
-        label: "Hero principal",
-        href: "/admin/contenu/accueil/hero",
-        icon: Home,
-        requiredPermission: "content.read",
-        available: true,
-      },
-      {
-        label: "Banderole promotionnelle",
-        href: "/admin/contenu/accueil/banderole",
-        icon: Percent,
-        requiredPermission: "content.read",
-        available: true,
-      },
-      {
-        label: "Shop the Look",
-        href: "/admin/contenu/accueil/shop-the-look",
-        icon: MousePointer2,
-        requiredPermission: "content.read",
-        available: true,
+        children: [
+          {
+            label: "Hero principal",
+            href: "/admin/contenu/accueil/hero",
+            icon: Home,
+            requiredPermission: "content.read",
+            available: true,
+          },
+          {
+            label: "Banderole promotionnelle",
+            href: "/admin/contenu/accueil/banderole",
+            icon: Percent,
+            requiredPermission: "content.read",
+            available: true,
+          },
+          {
+            label: "Shop the Look",
+            href: "/admin/contenu/accueil/shop-the-look",
+            icon: MousePointer2,
+            requiredPermission: "content.read",
+            available: true,
+          },
+        ],
       },
       {
         label: "Navigation",
