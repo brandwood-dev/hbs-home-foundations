@@ -222,14 +222,43 @@ function mediaOptions(media: AdminMedia[], selectedId: string) {
 }
 
 function productOptions(products: AdminProduct[], selectedId: string) {
-  const available = products.filter((product) => product.status === "published");
+  // Drafts may keep a link to a product that is not published yet. It must
+  // remain selectable in the editor so changing an unrelated section (such as
+  // the promo banner) does not turn the existing hotspot into an opaque
+  // "Produit indisponible" value. Publication performs the stricter check.
+  const available = products.filter((product) => product.status !== "archived");
+  const selected = selectedId ? products.find((product) => product.id === selectedId) : undefined;
   return [
     { value: "__none", label: "Sélectionner un produit" },
-    ...(selectedId && !available.some((product) => product.id === selectedId)
-      ? [{ value: selectedId, label: "Produit indisponible" }]
-      : []),
-    ...available.map((product) => ({ value: product.id, label: product.name })),
+    ...(selectedId && selected?.status === "archived"
+      ? [
+          {
+            value: selected.id,
+            label: `${selected.name} (archivé — à remplacer avant publication)`,
+          },
+        ]
+      : selectedId && !selected
+        ? [{ value: selectedId, label: "Produit introuvable — à remplacer" }]
+        : []),
+    ...available.map((product) => ({
+      value: product.id,
+      label: product.status === "draft" ? `${product.name} (brouillon)` : product.name,
+    })),
   ];
+}
+
+function linkedProductNotice(products: AdminProduct[], productId: string): string | null {
+  if (!productId) return null;
+  const product = products.find((item) => item.id === productId);
+  if (!product)
+    return "La référence produit est introuvable. Remplacez ce produit avant d’enregistrer.";
+  if (product.status === "archived") {
+    return "Ce produit est archivé. Le brouillon peut être enregistré, mais remplacez-le avant publication.";
+  }
+  if (product.status === "draft") {
+    return "Ce produit est encore en brouillon. Il doit être publié avant la publication de la homepage.";
+  }
+  return null;
 }
 
 export function AdminHomeContentPage() {
@@ -994,6 +1023,11 @@ function ShopTheLookEditor({
                 }
                 disabled={disabled}
               />
+              {linkedProductNotice(products, hotspot.productId) ? (
+                <p role="alert" className="text-xs font-medium text-amber-700">
+                  {linkedProductNotice(products, hotspot.productId)}
+                </p>
+              ) : null}
               <div className="grid gap-3 md:grid-cols-3">
                 <AdminNumberField
                   label="X (%)"
