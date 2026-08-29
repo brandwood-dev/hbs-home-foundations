@@ -89,6 +89,21 @@ describe("Admin catalog API adapters", () => {
     ]);
   });
 
+  it("keeps the product family when the API category is a child category", () => {
+    const mapped = mapProduct({
+      ...product,
+      categoryId: "category-lin",
+      categorySlug: "lin",
+      payload: { category: "rideaux" },
+    });
+
+    expect(mapped).toMatchObject({
+      category: "rideaux",
+      categoryId: "category-lin",
+      subCategoryId: "category-lin",
+    });
+  });
+
   it("preserves category and attribute semantics used by the Admin screens", () => {
     expect(
       mapCategory({

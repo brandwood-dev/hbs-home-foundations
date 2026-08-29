@@ -360,6 +360,8 @@ export interface Product {
   isNew: boolean;
   isBestSeller: boolean;
   isFeatured: boolean;
+  /** Publication dans la sélection promotions de la page d'accueil. */
+  isOnSale?: boolean;
 
   createdAt: string;
   recommendationScore: number;

@@ -3,6 +3,7 @@ import { Copy, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
+  AdminColorSelectField,
   AdminField,
   AdminFormSection,
   AdminMoneyField,
@@ -15,8 +16,9 @@ import {
   ADMIN_VARIANT_AXES,
   type AdminVariantAxisKey,
 } from "@/admin/config/admin-variant-axes.config";
-import type { AdminVariant } from "@/admin/types/admin.types";
-import { adminId, discountPercent, marginPercent, slugify } from "@/admin/utils/admin.utils";
+import type { AdminProductCategoryKey, AdminVariant } from "@/admin/types/admin.types";
+import type { AdminColorOption } from "@/admin/components/ui/AdminForm";
+import { adminId, discountPercent, marginPercent } from "@/admin/utils/admin.utils";
 import {
   validateVariant,
   type VariantValidationContext,
@@ -25,6 +27,7 @@ import {
   createEmptyVariant,
   variantSummary,
 } from "@/admin/services/products/admin-product-mappers";
+import { generateVariantSku } from "@/admin/services/products/admin-product-slug";
 
 const AVAILABILITY_OPTIONS = [
   { value: "in_stock", label: "En stock" },
@@ -37,6 +40,10 @@ export function AdminVariantsEditor({
   variants,
   axes,
   foreignSkus,
+  category,
+  material,
+  colorOptions,
+  productReference,
   supportsInventory,
   requiresPrice,
   onChange,
@@ -44,13 +51,25 @@ export function AdminVariantsEditor({
   variants: AdminVariant[];
   axes: AdminVariantAxisKey[];
   foreignSkus: string[];
+  category: AdminProductCategoryKey;
+  material: string;
+  colorOptions: AdminColorOption[];
+  productReference: string;
   supportsInventory: boolean;
   requiresPrice: boolean;
   onChange: (variants: AdminVariant[]) => void;
 }) {
   const context: VariantValidationContext = useMemo(
-    () => ({ axes, siblings: variants, foreignSkus, supportsInventory, requiresPrice }),
-    [axes, variants, foreignSkus, supportsInventory, requiresPrice],
+    () => ({
+      axes,
+      siblings: variants,
+      foreignSkus,
+      supportsInventory,
+      requiresPrice,
+      category,
+      material,
+    }),
+    [axes, variants, foreignSkus, supportsInventory, requiresPrice, category, material],
   );
 
   function update(id: string, patch: Partial<AdminVariant>) {
@@ -76,6 +95,14 @@ export function AdminVariantsEditor({
 
   function updateOption(variant: AdminVariant, key: string, value: string | number) {
     update(variant.id, { options: { ...(variant.options ?? {}), [key]: value } });
+  }
+
+  function nextSku(colorId = ""): string {
+    const taken = new Set(variants.map((variant) => variant.sku));
+    for (let index = variants.length; ; index += 1) {
+      const candidate = generateVariantSku(productReference || "HBS-PRODUIT", index, colorId);
+      if (!taken.has(candidate)) return candidate;
+    }
   }
 
   return (
@@ -116,7 +143,11 @@ export function AdminVariantsEditor({
                     onClick={() =>
                       onChange([
                         ...variants,
-                        { ...variant, id: adminId("var"), sku: `${variant.sku}-COPIE` },
+                        {
+                          ...variant,
+                          id: adminId("var"),
+                          sku: nextSku(variant.colorId),
+                        },
                       ])
                     }
                   >
@@ -140,20 +171,38 @@ export function AdminVariantsEditor({
                   required
                   value={variant.sku}
                   error={errors["sku"]}
-                  onChange={(value) => update(variant.id, { sku: value.toUpperCase() })}
+                  hint="Généré automatiquement à partir de la référence du produit."
+                  readOnly
+                  onChange={() => undefined}
                 />
 
                 {axes.map((axisKey) => {
                   const axis = ADMIN_VARIANT_AXES[axisKey];
                   if (axisKey === "color") {
                     return (
-                      <AdminField
+                      <AdminColorSelectField
                         key={axisKey}
                         label={axis.label}
-                        value={variant.colorLabel}
-                        onChange={(value) =>
-                          update(variant.id, { colorLabel: value, colorId: slugify(value) })
+                        value={variant.colorId}
+                        options={
+                          variant.colorId &&
+                          !colorOptions.some((option) => option.value === variant.colorId)
+                            ? [
+                                ...colorOptions,
+                                {
+                                  value: variant.colorId,
+                                  label: variant.colorLabel || variant.colorId,
+                                },
+                              ]
+                            : colorOptions
                         }
+                        onChange={(value) => {
+                          const option = colorOptions.find((item) => item.value === value);
+                          update(variant.id, {
+                            colorId: value,
+                            colorLabel: option?.label ?? value,
+                          });
+                        }}
                       />
                     );
                   }
@@ -331,7 +380,15 @@ export function AdminVariantsEditor({
         variant="outline"
         size="sm"
         className="justify-self-start"
-        onClick={() => onChange([...variants, createEmptyVariant()])}
+        onClick={() =>
+          onChange([
+            ...variants,
+            {
+              ...createEmptyVariant(),
+              sku: nextSku(),
+            },
+          ])
+        }
       >
         <Plus className="mr-1 size-4" /> Ajouter une variante
       </Button>

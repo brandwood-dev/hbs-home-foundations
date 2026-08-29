@@ -599,6 +599,9 @@
           "isFeatured": {
             "type": "boolean"
           },
+          "isOnSale": {
+            "type": "boolean"
+          },
           "createdAt": {
             "type": "string"
           },
@@ -1870,6 +1873,22 @@
           "isDemo": {
             "type": "boolean"
           },
+          "isNew": {
+            "type": "boolean"
+          },
+          "isBestSeller": {
+            "type": "boolean"
+          },
+          "isFeatured": {
+            "type": "boolean"
+          },
+          "isOnSale": {
+            "type": "boolean"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": {}
+          },
           "attributes": {
             "type": "object",
             "additionalProperties": {}
@@ -2543,6 +2562,22 @@
                 },
                 "isDemo": {
                   "type": "boolean"
+                },
+                "isNew": {
+                  "type": "boolean"
+                },
+                "isBestSeller": {
+                  "type": "boolean"
+                },
+                "isFeatured": {
+                  "type": "boolean"
+                },
+                "isOnSale": {
+                  "type": "boolean"
+                },
+                "payload": {
+                  "type": "object",
+                  "additionalProperties": {}
                 },
                 "attributes": {
                   "type": "object",
@@ -10197,6 +10232,9 @@
                           "isFeatured": {
                             "type": "boolean"
                           },
+                          "isOnSale": {
+                            "type": "boolean"
+                          },
                           "createdAt": {
                             "type": "string"
                           },
@@ -10863,6 +10901,9 @@
                       "isFeatured": {
                         "type": "boolean"
                       },
+                      "isOnSale": {
+                        "type": "boolean"
+                      },
                       "createdAt": {
                         "type": "string"
                       },
@@ -11362,6 +11403,9 @@
                           "isFeatured": {
                             "type": "boolean"
                           },
+                          "isOnSale": {
+                            "type": "boolean"
+                          },
                           "createdAt": {
                             "type": "string"
                           },
@@ -11855,6 +11899,9 @@
                       "type": "boolean"
                     },
                     "isFeatured": {
+                      "type": "boolean"
+                    },
+                    "isOnSale": {
                       "type": "boolean"
                     },
                     "createdAt": {
@@ -12423,6 +12470,9 @@
                         "type": "boolean"
                       },
                       "isFeatured": {
+                        "type": "boolean"
+                      },
+                      "isOnSale": {
                         "type": "boolean"
                       },
                       "createdAt": {
@@ -17888,6 +17938,22 @@
                           "isDemo": {
                             "type": "boolean"
                           },
+                          "isNew": {
+                            "type": "boolean"
+                          },
+                          "isBestSeller": {
+                            "type": "boolean"
+                          },
+                          "isFeatured": {
+                            "type": "boolean"
+                          },
+                          "isOnSale": {
+                            "type": "boolean"
+                          },
+                          "payload": {
+                            "type": "object",
+                            "additionalProperties": {}
+                          },
                           "attributes": {
                             "type": "object",
                             "additionalProperties": {}
@@ -18290,6 +18356,11 @@
                     "maxLength": 160,
                     "type": "string"
                   },
+                  "category": {
+                    "minLength": 1,
+                    "maxLength": 80,
+                    "type": "string"
+                  },
                   "material": {
                     "minLength": 1,
                     "maxLength": 120,
@@ -18343,6 +18414,9 @@
                     "type": "boolean"
                   },
                   "isFeatured": {
+                    "type": "boolean"
+                  },
+                  "isOnSale": {
                     "type": "boolean"
                   },
                   "isThermal": {
@@ -18514,6 +18588,22 @@
                     },
                     "isDemo": {
                       "type": "boolean"
+                    },
+                    "isNew": {
+                      "type": "boolean"
+                    },
+                    "isBestSeller": {
+                      "type": "boolean"
+                    },
+                    "isFeatured": {
+                      "type": "boolean"
+                    },
+                    "isOnSale": {
+                      "type": "boolean"
+                    },
+                    "payload": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "attributes": {
                       "type": "object",
@@ -19232,6 +19322,22 @@
                     "isDemo": {
                       "type": "boolean"
                     },
+                    "isNew": {
+                      "type": "boolean"
+                    },
+                    "isBestSeller": {
+                      "type": "boolean"
+                    },
+                    "isFeatured": {
+                      "type": "boolean"
+                    },
+                    "isOnSale": {
+                      "type": "boolean"
+                    },
+                    "payload": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    },
                     "attributes": {
                       "type": "object",
                       "additionalProperties": {}
@@ -19685,6 +19791,11 @@
                     "maxLength": 160,
                     "type": "string"
                   },
+                  "category": {
+                    "minLength": 1,
+                    "maxLength": 80,
+                    "type": "string"
+                  },
                   "material": {
                     "minLength": 1,
                     "maxLength": 120,
@@ -19738,6 +19849,9 @@
                     "type": "boolean"
                   },
                   "isFeatured": {
+                    "type": "boolean"
+                  },
+                  "isOnSale": {
                     "type": "boolean"
                   },
                   "isThermal": {
@@ -19925,6 +20039,22 @@
                     },
                     "isDemo": {
                       "type": "boolean"
+                    },
+                    "isNew": {
+                      "type": "boolean"
+                    },
+                    "isBestSeller": {
+                      "type": "boolean"
+                    },
+                    "isFeatured": {
+                      "type": "boolean"
+                    },
+                    "isOnSale": {
+                      "type": "boolean"
+                    },
+                    "payload": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "attributes": {
                       "type": "object",
@@ -20655,6 +20785,22 @@
                     "isDemo": {
                       "type": "boolean"
                     },
+                    "isNew": {
+                      "type": "boolean"
+                    },
+                    "isBestSeller": {
+                      "type": "boolean"
+                    },
+                    "isFeatured": {
+                      "type": "boolean"
+                    },
+                    "isOnSale": {
+                      "type": "boolean"
+                    },
+                    "payload": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    },
                     "attributes": {
                       "type": "object",
                       "additionalProperties": {}
@@ -21320,6 +21466,22 @@
                     "isDemo": {
                       "type": "boolean"
                     },
+                    "isNew": {
+                      "type": "boolean"
+                    },
+                    "isBestSeller": {
+                      "type": "boolean"
+                    },
+                    "isFeatured": {
+                      "type": "boolean"
+                    },
+                    "isOnSale": {
+                      "type": "boolean"
+                    },
+                    "payload": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    },
                     "attributes": {
                       "type": "object",
                       "additionalProperties": {}
@@ -21753,7 +21915,7 @@
               "schema": {
                 "additionalProperties": false,
                 "type": "object",
-                "required": ["sku", "priceAmountMinor"],
+                "required": ["priceAmountMinor"],
                 "properties": {
                   "sku": {
                     "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{1,119}$",
@@ -21982,6 +22144,22 @@
                     },
                     "isDemo": {
                       "type": "boolean"
+                    },
+                    "isNew": {
+                      "type": "boolean"
+                    },
+                    "isBestSeller": {
+                      "type": "boolean"
+                    },
+                    "isFeatured": {
+                      "type": "boolean"
+                    },
+                    "isOnSale": {
+                      "type": "boolean"
+                    },
+                    "payload": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "attributes": {
                       "type": "object",
@@ -22851,6 +23029,22 @@
                     "isDemo": {
                       "type": "boolean"
                     },
+                    "isNew": {
+                      "type": "boolean"
+                    },
+                    "isBestSeller": {
+                      "type": "boolean"
+                    },
+                    "isFeatured": {
+                      "type": "boolean"
+                    },
+                    "isOnSale": {
+                      "type": "boolean"
+                    },
+                    "payload": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    },
                     "attributes": {
                       "type": "object",
                       "additionalProperties": {}
@@ -23653,6 +23847,22 @@
                     },
                     "isDemo": {
                       "type": "boolean"
+                    },
+                    "isNew": {
+                      "type": "boolean"
+                    },
+                    "isBestSeller": {
+                      "type": "boolean"
+                    },
+                    "isFeatured": {
+                      "type": "boolean"
+                    },
+                    "isOnSale": {
+                      "type": "boolean"
+                    },
+                    "payload": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "attributes": {
                       "type": "object",

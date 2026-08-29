@@ -116,6 +116,12 @@ export interface AdminProduct {
     stepCm: number;
   };
   customQuoteEnabled?: boolean;
+  /** Publication dans les sélections de la page d'accueil. */
+  isNew?: boolean;
+  isBestSeller?: boolean;
+  /** Promotion éditoriale ; les prix remisés restent portés par les variantes. */
+  isOnSale?: boolean;
+  isFeatured?: boolean;
   createdAt: string;
   updatedAt: string;
 }

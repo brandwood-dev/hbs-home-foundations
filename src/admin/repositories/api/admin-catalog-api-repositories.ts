@@ -322,33 +322,69 @@ function mapMedia(media: ApiProductMedia): AdminProductImage {
 function mapProduct(product: ApiProduct): AdminProduct {
   const status: ProductPublicationStatus =
     product.status === "active" ? "published" : product.status;
-  const category = categoryKey(product.categorySlug);
+  const payload = record(product.payload);
+  // `categorySlug` is the normalized catalogue category (often a child),
+  // while the product family is kept in the product payload. Resolve both so
+  // the form can display the family and the selected sub-category together.
+  const category =
+    categoryKey(product.categorySlug ?? null) ??
+    categoryKey(stringValue(payload["category"]) ?? null);
+  const subCategoryId =
+    product.categoryId && product.categorySlug && category && product.categorySlug !== category
+      ? product.categoryId
+      : undefined;
   const imageAssets = product.media.map(mapMedia);
   const images = imageAssets.map((image) => image.url);
   const primary = imageAssets.find((image) => image.isPrimary) ?? imageAssets[0];
+  const brand = stringValue(payload["brand"]);
+  const style = stringValue(payload["style"]);
+  const opacityLevel = stringValue(payload["opacityLevel"]);
+  const seoOgImageUrl = stringValue(payload["seoOgImageUrl"]);
+  const packContent = stringValue(payload["packContent"]);
+  const listValue = (key: string): string[] =>
+    Array.isArray(payload[key])
+      ? payload[key].filter((value): value is string => typeof value === "string")
+      : [];
   return {
     id: product.id,
     name: product.name,
     slug: product.slug,
     reference: product.reference,
     categoryId: product.categoryId ?? "",
+    ...(subCategoryId ? { subCategoryId } : {}),
     sellingMode: product.sellingMode as AdminSellingMode,
     shortDescription: product.shortDescription ?? "",
     longDescription: product.longDescription ?? "",
     ...(product.material ? { material: product.material } : {}),
+    ...(brand ? { brand } : {}),
+    tags: listValue("tags"),
+    rooms: listValue("rooms"),
+    ...(style ? { style } : {}),
+    ...(opacityLevel ? { opacityLevel } : {}),
     status,
     attributes: attributeValues(product.attributes),
     ...(primary ? { imageUrl: primary.url } : {}),
     images,
     ...(imageAssets.length > 0 ? { imageAssets } : {}),
-    tags: [],
-    rooms: [],
     variants: product.variants.map(mapVariant),
-    seoTitle: product.name,
-    seoDescription: product.shortDescription ?? "",
+    seoTitle: stringValue(payload["seoTitle"]) ?? product.name,
+    seoDescription: stringValue(payload["seoDescription"]) ?? product.shortDescription ?? "",
     ...(category ? { category } : {}),
     publicSlug: product.slug,
-    seoIndexable: true,
+    seoIndexable: typeof payload["seoIndexable"] === "boolean" ? payload["seoIndexable"] : true,
+    ...(seoOgImageUrl ? { seoOgImageUrl } : {}),
+    ...(packContent ? { packContent } : {}),
+    ...(typeof payload["packQuantity"] === "number"
+      ? { packQuantity: payload["packQuantity"] }
+      : {}),
+    ...(typeof payload["customQuoteEnabled"] === "boolean"
+      ? { customQuoteEnabled: payload["customQuoteEnabled"] }
+      : {}),
+    isNew: product.isNew ?? false,
+    isBestSeller: product.isBestSeller ?? false,
+    isOnSale:
+      product.isOnSale ?? (typeof payload["isOnSale"] === "boolean" ? payload["isOnSale"] : false),
+    isFeatured: product.isFeatured ?? false,
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,
   };
@@ -371,6 +407,7 @@ function productPayload(input: AdminProductInput): Record<string, unknown> {
     packQuantity: input.packQuantity,
     perMeter: input.perMeter,
     customQuoteEnabled: input.customQuoteEnabled,
+    isOnSale: input.isOnSale,
     attributes: input.attributes,
   };
 }
@@ -383,6 +420,10 @@ function productBody(input: AdminProductInput): ProductCreateBody {
     categoryId: input.categoryId,
     material: input.material?.trim() ?? "",
     sellingMode: input.sellingMode,
+    ...(input.category ? { category: input.category } : {}),
+    ...(input.isNew === undefined ? {} : { isNew: input.isNew }),
+    ...(input.isBestSeller === undefined ? {} : { isBestSeller: input.isBestSeller }),
+    ...(input.isFeatured === undefined ? {} : { isFeatured: input.isFeatured }),
     ...(input.attributes === undefined ? {} : { attributes: input.attributes }),
     shortDescription: input.shortDescription.trim() || null,
     longDescription: input.longDescription.trim() || null,
@@ -402,6 +443,29 @@ function productPatch(
           images: input.images ?? input.imageAssets?.map((image) => image.url) ?? [],
           imageAssets: input.imageAssets ?? [],
         };
+  const payloadPatch: Record<string, unknown> = {};
+  const copyPayloadKey = (key: keyof AdminProductInput) => {
+    if (input[key] !== undefined) payloadPatch[key] = input[key];
+  };
+  for (const key of [
+    "brand",
+    "tags",
+    "rooms",
+    "style",
+    "opacityLevel",
+    "seoTitle",
+    "seoDescription",
+    "seoIndexable",
+    "seoOgImageUrl",
+    "packContent",
+    "packQuantity",
+    "perMeter",
+    "customQuoteEnabled",
+    "isOnSale",
+  ] as const)
+    copyPayloadKey(key);
+  if (input.imageAssets !== undefined || input.images !== undefined)
+    Object.assign(payloadPatch, mediaPayload);
   return {
     ...(input.slug === undefined ? {} : { slug: input.slug.trim() }),
     ...(input.name === undefined ? {} : { name: input.name.trim() }),
@@ -409,6 +473,10 @@ function productPatch(
     ...(input.categoryId === undefined ? {} : { categoryId: input.categoryId }),
     ...(input.material === undefined ? {} : { material: input.material?.trim() ?? "" }),
     ...(input.sellingMode === undefined ? {} : { sellingMode: input.sellingMode }),
+    ...(input.category === undefined ? {} : { category: input.category }),
+    ...(input.isNew === undefined ? {} : { isNew: input.isNew }),
+    ...(input.isBestSeller === undefined ? {} : { isBestSeller: input.isBestSeller }),
+    ...(input.isFeatured === undefined ? {} : { isFeatured: input.isFeatured }),
     ...(input.attributes === undefined ? {} : { attributes: input.attributes }),
     ...(input.shortDescription === undefined
       ? {}
@@ -416,7 +484,7 @@ function productPatch(
     ...(input.longDescription === undefined
       ? {}
       : { longDescription: input.longDescription.trim() || null }),
-    ...(Object.keys(mediaPayload).length > 0 ? { payload: mediaPayload } : {}),
+    ...(Object.keys(payloadPatch).length > 0 ? { payload: payloadPatch } : {}),
     ...(expectedVersion === undefined ? {} : { expectedVersion }),
   };
 }
@@ -447,7 +515,7 @@ function variantPayload(variant: AdminVariant): Record<string, unknown> {
 
 function variantBody(variant: AdminVariant): VariantCreateBody {
   return {
-    sku: variant.sku.trim(),
+    ...(variant.sku.trim() ? { sku: variant.sku.trim() } : {}),
     title: variant.curtainHeader.trim() || null,
     priceAmountMinor: variant.priceMinor,
     ...(variant.compareAtPriceMinor === undefined
