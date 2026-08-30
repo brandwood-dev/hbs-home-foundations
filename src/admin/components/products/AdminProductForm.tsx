@@ -63,6 +63,7 @@ import {
   useCreateAdminProduct,
   useUpdateAdminProduct,
 } from "@/admin/hooks/admin-catalog.mutations";
+import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
 
 const CATEGORY_OPTIONS = Object.entries(ADMIN_PRODUCT_CATEGORY_LABELS).map(([value, label]) => ({
   value,
@@ -133,15 +134,25 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
   const { data: products = [] } = useAdminProducts();
   const { data: categories = [] } = useAdminCategories();
   const { data: attributes = [] } = useAdminAttributes();
-  const createProduct = useCreateAdminProduct(() => navigate({ to: "/admin/produits" }));
-  const updateProduct = useUpdateAdminProduct();
-
-  const [values, setValues] = useState<AdminProductFormValues>(() =>
+  const productDraftState = useAdminDraftState(`hbs-admin-product-${product?.id ?? "new"}`, () =>
     product ? productToForm(product) : emptyProductForm("rideaux", categories[0]?.id ?? ""),
   );
-  const [dirty, setDirty] = useState(false);
+  const { value: values, setValue: setValues, restored, setPersist, clear } = productDraftState;
+  const [dirty, setDirty] = useState(restored);
   const [showLeave, setShowLeave] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => setPersist(dirty), [dirty, setPersist]);
+
+  const createProduct = useCreateAdminProduct(() => {
+    clear();
+    setDirty(false);
+    void navigate({ to: "/admin/produits" });
+  });
+  const updateProduct = useUpdateAdminProduct(() => {
+    clear();
+    setDirty(false);
+  });
 
   useEffect(() => {
     if (product || values.categoryId || categories.length === 0) return;
@@ -157,7 +168,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
         : current.category;
       return { ...current, category: nextCategory, categoryId: selectedCategory.id };
     });
-  }, [categories, product, values.category, values.categoryId]);
+  }, [categories, product, setValues, values.category, values.categoryId]);
 
   const config = adminProductCategoryConfigs[values.category];
   const selectedCatalogCategorySlug = useMemo(
@@ -315,7 +326,6 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
 
     const input = formToProductInput(next);
     setValues(next);
-    setDirty(false);
     if (values.id) updateProduct.mutate({ id: values.id, input });
     else createProduct.mutate(input);
   }

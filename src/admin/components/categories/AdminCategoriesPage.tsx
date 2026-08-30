@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -32,6 +32,7 @@ import {
 } from "@/admin/components/ui/AdminForm";
 import { AdminSearchInput } from "@/admin/components/ui/AdminDataTable";
 import { useAdminCategories, useAdminProducts } from "@/admin/hooks/admin.queries";
+import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
 import { adminRepositories } from "@/admin/repositories/adminRepositoryFactory";
 import {
   useDeleteAdminCategory,
@@ -159,13 +160,19 @@ export function AdminCategoriesPage() {
 
   const [search, setSearch] = useState("");
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-  const [draft, setDraft] = useState<CategoryDraft | null>(null);
+  const categoryDraftState = useAdminDraftState<CategoryDraft | null>(
+    "hbs-admin-category-form",
+    null,
+  );
+  const { value: draft, setValue: setDraft, setPersist, clear } = categoryDraftState;
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [pendingDelete, setPendingDelete] = useState<AdminCategory | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
   const draftInstanceRef = useRef(0);
   const uploadRequestRef = useRef(0);
+
+  useEffect(() => setPersist(draft !== null), [draft, setPersist]);
 
   const productCount = useMemo(() => {
     const counts = new Map<string, number>();
@@ -306,6 +313,7 @@ export function AdminCategoriesPage() {
       draftInstanceRef.current += 1;
       uploadRequestRef.current += 1;
       setDraft(null);
+      clear();
     } catch {
       // useAdminMutation already exposes the API error through a toast. Keep
       // the drawer open so the user can correct the form or retry.
@@ -483,6 +491,7 @@ export function AdminCategoriesPage() {
             draftInstanceRef.current += 1;
             uploadRequestRef.current += 1;
             setDraft(null);
+            clear();
           }
         }}
         title={
@@ -502,7 +511,10 @@ export function AdminCategoriesPage() {
             <Button
               variant="outline"
               disabled={saveCategory.isPending || imageUploading}
-              onClick={() => setDraft(null)}
+              onClick={() => {
+                setDraft(null);
+                clear();
+              }}
             >
               Annuler
             </Button>

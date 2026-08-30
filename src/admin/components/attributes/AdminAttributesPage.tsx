@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,7 @@ import {
   AdminSwitchField,
 } from "@/admin/components/ui/AdminForm";
 import { useAdminAttributes, useAdminCategories } from "@/admin/hooks/admin.queries";
+import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
 import {
   useDeleteAdminAttribute,
   useSaveAdminAttribute,
@@ -94,8 +95,14 @@ export function AdminAttributesPage() {
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
-  const [draft, setDraft] = useState<AttributeDraft | null>(null);
+  const attributeDraftState = useAdminDraftState<AttributeDraft | null>(
+    "hbs-admin-attribute-form",
+    null,
+  );
+  const { value: draft, setValue: setDraft, setPersist, clear } = attributeDraftState;
   const [pendingDelete, setPendingDelete] = useState<AdminAttribute | null>(null);
+
+  useEffect(() => setPersist(draft !== null), [draft, setPersist]);
 
   const categoryOptions = useMemo(
     () =>
@@ -181,23 +188,30 @@ export function AdminAttributesPage() {
 
   function submit() {
     if (!draft || !draft.name.trim()) return;
-    saveAttribute.mutate({
-      ...(draft.id ? { id: draft.id } : {}),
-      input: {
-        name: draft.name.trim(),
-        key: draft.key.trim() || slugify(draft.name).replace(/-/g, "_"),
-        fieldType: draft.fieldType,
-        isFilterable: draft.isFilterable,
-        isVariantAxis: draft.isVariantAxis,
-        isRequired: draft.isRequired,
-        isActive: draft.isActive,
-        order: draft.order,
-        categories: draft.categories,
-        values: draft.values.map((value, index) => ({ ...value, order: index + 1 })),
-        isSystem: draft.isSystem,
+    saveAttribute.mutate(
+      {
+        ...(draft.id ? { id: draft.id } : {}),
+        input: {
+          name: draft.name.trim(),
+          key: draft.key.trim() || slugify(draft.name).replace(/-/g, "_"),
+          fieldType: draft.fieldType,
+          isFilterable: draft.isFilterable,
+          isVariantAxis: draft.isVariantAxis,
+          isRequired: draft.isRequired,
+          isActive: draft.isActive,
+          order: draft.order,
+          categories: draft.categories,
+          values: draft.values.map((value, index) => ({ ...value, order: index + 1 })),
+          isSystem: draft.isSystem,
+        },
       },
-    });
-    setDraft(null);
+      {
+        onSuccess: () => {
+          setDraft(null);
+          clear();
+        },
+      },
+    );
   }
 
   const showValues = draft ? LIST_TYPES.includes(draft.fieldType) : false;
@@ -253,12 +267,23 @@ export function AdminAttributesPage() {
 
       <AdminFormDrawer
         open={draft !== null}
-        onOpenChange={(open) => !open && setDraft(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDraft(null);
+            clear();
+          }
+        }}
         title={draft?.id ? "Modifier l'attribut" : "Nouvel attribut"}
         description="Les attributs système sont utilisés par le site public et ne peuvent pas être supprimés."
         footer={
           <>
-            <Button variant="outline" onClick={() => setDraft(null)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDraft(null);
+                clear();
+              }}
+            >
               Annuler
             </Button>
             <Button onClick={submit}>Enregistrer</Button>

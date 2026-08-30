@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import { Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { AdminField, AdminSelectField } from "@/admin/components/ui/AdminForm";
 import { AdminStatusBadge } from "@/admin/components/ui/AdminStates";
 import { useAdminMedia } from "@/admin/hooks/admin.queries";
+import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
 import {
   useCreateAdminMedia,
   useDeleteAdminMedia,
@@ -76,9 +77,12 @@ export function AdminMediaPage() {
   const updateMedia = useUpdateAdminMedia();
   const deleteMedia = useDeleteAdminMedia();
   const [search, setSearch] = useState("");
-  const [draft, setDraft] = useState<MediaDraft | null>(null);
+  const mediaDraftState = useAdminDraftState<MediaDraft | null>("hbs-admin-media-form", null);
+  const { value: draft, setValue: setDraft, setPersist, clear } = mediaDraftState;
   const [pendingDelete, setPendingDelete] = useState<AdminMedia | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  useEffect(() => setPersist(draft !== null), [draft, setPersist]);
 
   const rows = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
@@ -170,9 +174,22 @@ export function AdminMediaPage() {
       usage: rest.usage.trim() || "unassigned",
     };
     if (id) {
-      updateMedia.mutate({ id, input }, { onSuccess: () => setDraft(null) });
+      updateMedia.mutate(
+        { id, input },
+        {
+          onSuccess: () => {
+            setDraft(null);
+            clear();
+          },
+        },
+      );
     } else {
-      createMedia.mutate(input, { onSuccess: () => setDraft(null) });
+      createMedia.mutate(input, {
+        onSuccess: () => {
+          setDraft(null);
+          clear();
+        },
+      });
     }
   }
 
@@ -237,12 +254,23 @@ export function AdminMediaPage() {
 
       <AdminFormDrawer
         open={draft !== null}
-        onOpenChange={(open) => !open && setDraft(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDraft(null);
+            clear();
+          }
+        }}
         title={draft?.id ? "Modifier le média" : "Ajouter un média"}
         description="Un texte alternatif descriptif est obligatoire pour l’accessibilité."
         footer={
           <>
-            <Button variant="outline" onClick={() => setDraft(null)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDraft(null);
+                clear();
+              }}
+            >
               Annuler
             </Button>
             <Button onClick={submit} disabled={createMedia.isPending || updateMedia.isPending}>

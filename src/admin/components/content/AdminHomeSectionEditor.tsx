@@ -35,6 +35,7 @@ import {
 } from "@/admin/components/ui/AdminStates";
 import { useAdminAuthorization } from "@/admin/auth/AdminAuthorizationContext";
 import { useAdminHomeContent, useAdminMedia, useAdminProducts } from "@/admin/hooks/admin.queries";
+import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
 import {
   useArchiveAdminHomeSection,
   usePublishAdminHomeSection,
@@ -251,11 +252,17 @@ export function AdminHomeSectionEditor({ sectionKey }: { sectionKey: AdminHomeSe
   const updateHomeSection = useUpdateAdminHomeSection();
   const publishHomeSection = usePublishAdminHomeSection();
   const archiveHomeSection = useArchiveAdminHomeSection();
-  const [draft, setDraft] = useState<SectionDraft | null>(null);
-  const [dirty, setDirty] = useState(false);
+  const sectionDraftState = useAdminDraftState<SectionDraft | null>(
+    `hbs-admin-home-section-${sectionKey}`,
+    null,
+  );
+  const { value: draft, setValue: setDraft, restored, setPersist, clear } = sectionDraftState;
+  const [dirty, setDirty] = useState(restored);
   const [formError, setFormError] = useState<string | null>(null);
   const [pendingArchive, setPendingArchive] = useState(false);
   const [activeHotspotId, setActiveHotspotId] = useState<string | null>(null);
+
+  useEffect(() => setPersist(dirty), [dirty, setPersist]);
 
   const canWrite = hasPermission("content.write");
   const canPublish = hasPermission("content.publish");
@@ -264,7 +271,7 @@ export function AdminHomeSectionEditor({ sectionKey }: { sectionKey: AdminHomeSe
   useEffect(() => {
     if (!data || dirty) return;
     setDraft(toSectionDraft(data, sectionKey));
-  }, [data, dirty, sectionKey]);
+  }, [data, dirty, sectionKey, setDraft]);
 
   function updateSection(update: (section: SectionDraft) => SectionDraft) {
     setDraft((current) => (current ? update(current) : current));
@@ -421,6 +428,7 @@ export function AdminHomeSectionEditor({ sectionKey }: { sectionKey: AdminHomeSe
         onSuccess: (revision) => {
           setDraft((current) => (current ? { ...current, version: revision.version } : current));
           setDirty(false);
+          clear();
         },
       },
     );
@@ -430,6 +438,7 @@ export function AdminHomeSectionEditor({ sectionKey }: { sectionKey: AdminHomeSe
     if (data) {
       setDraft(toSectionDraft(data, sectionKey));
       setDirty(false);
+      clear();
       setFormError(null);
     }
   }
