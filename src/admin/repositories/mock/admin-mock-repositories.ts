@@ -395,6 +395,9 @@ export class MockAdminAttributeRepository implements AdminAttributeRepository {
   }
 
   async create(input: AdminAttributeInput): Promise<AdminAttribute> {
+    if (input.isSystem === true) {
+      throw new Error("Les attributs système sont provisionnés par le catalogue.");
+    }
     const attribute: AdminAttribute = { ...clone(input), id: adminId("attr") };
     mutateDb((db) => {
       assertAttribute(db.attributes, attribute);
@@ -413,6 +416,16 @@ export class MockAdminAttributeRepository implements AdminAttributeRepository {
     const updated = mutateDb((db) => {
       const index = db.attributes.findIndex((item) => item.id === id);
       if (index === -1) throw new Error("Attribut introuvable.");
+      const current = db.attributes[index] as AdminAttribute;
+      if (
+        (current.isSystem === true &&
+          ((input.key !== undefined && input.key !== current.key) ||
+            (input.fieldType !== undefined && input.fieldType !== current.fieldType) ||
+            input.isSystem === false)) ||
+        (current.isSystem !== true && input.isSystem === true)
+      ) {
+        throw new Error("La clé et le type d'un attribut système sont immuables.");
+      }
       const next = { ...(db.attributes[index] as AdminAttribute), ...clone(input), id };
       assertAttribute(db.attributes, next);
       db.attributes[index] = next;
@@ -429,6 +442,10 @@ export class MockAdminAttributeRepository implements AdminAttributeRepository {
 
   async delete(id: string): Promise<void> {
     mutateDb((db) => {
+      const current = db.attributes.find((item) => item.id === id);
+      if (current?.isSystem === true) {
+        throw new Error("Un attribut système ne peut pas être supprimé.");
+      }
       db.attributes = db.attributes.filter((item) => item.id !== id);
     });
     logActivity({

@@ -95,6 +95,7 @@ export function AdminAttributesPage() {
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
+  const [origin, setOrigin] = useState("all");
   const attributeDraftState = useAdminDraftState<AttributeDraft | null>(
     "hbs-admin-attribute-form",
     null,
@@ -123,13 +124,19 @@ export function AdminAttributesPage() {
     const query = normalizeKey(search);
     return attributes.filter((attribute) => {
       const categories = attribute.categories ?? [];
+      if (
+        (origin === "system" && attribute.isSystem !== true) ||
+        (origin === "custom" && attribute.isSystem === true)
+      ) {
+        return false;
+      }
       if (category !== "all" && categories.length > 0 && !categories.includes(category)) {
         return false;
       }
       if (!query) return true;
       return `${normalizeKey(attribute.name)} ${normalizeKey(attribute.key)}`.includes(query);
     });
-  }, [attributes, search, category]);
+  }, [attributes, search, category, origin]);
 
   const columns: AdminColumn<AdminAttribute>[] = [
     {
@@ -246,6 +253,16 @@ export function AdminAttributesPage() {
               onChange={setCategory}
               options={categoryOptions}
             />
+            <AdminSelectFilter
+              label="Origine"
+              value={origin}
+              onChange={setOrigin}
+              options={[
+                { value: "all", label: "Toutes" },
+                { value: "system", label: "Système" },
+                { value: "custom", label: "Personnalisé" },
+              ]}
+            />
           </>
         }
         rowActions={(attribute) => (
@@ -274,7 +291,7 @@ export function AdminAttributesPage() {
           }
         }}
         title={draft?.id ? "Modifier l'attribut" : "Nouvel attribut"}
-        description="Les attributs système sont utilisés par le site public et ne peuvent pas être supprimés."
+        description="Les attributs système alimentent les caractéristiques produit et les filtres publics. Leur clé et leur type sont protégés."
         footer={
           <>
             <Button
@@ -292,6 +309,13 @@ export function AdminAttributesPage() {
       >
         {draft ? (
           <div className="grid gap-4">
+            {draft.isSystem ? (
+              <div className="rounded-md border border-primary/20 bg-primary/5 p-3 text-xs text-muted-foreground">
+                Attribut système : vous pouvez ajuster le libellé, les options et les catégories,
+                mais sa clé technique et son type restent stables pour préserver les produits
+                existants.
+              </div>
+            ) : null}
             <AdminField
               label="Nom"
               required
@@ -308,13 +332,19 @@ export function AdminAttributesPage() {
               label="Clé technique"
               required
               value={draft.key}
-              hint="Utilisée par les filtres et l'API."
+              hint={
+                draft.isSystem
+                  ? "Clé système protégée : elle est utilisée par les produits et les filtres."
+                  : "Utilisée par les filtres et l'API."
+              }
+              readOnly={draft.isSystem}
               onChange={(value) => setDraft({ ...draft, key: value })}
             />
             <AdminSelectField
               label="Type de champ"
               value={draft.fieldType}
               options={FIELD_TYPES}
+              disabled={draft.isSystem}
               onChange={(value) =>
                 setDraft({ ...draft, fieldType: value as AdminAttributeFieldType })
               }

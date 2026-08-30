@@ -84,6 +84,7 @@ function validatePublicationWithAttributes(
   catalogAttributes: readonly AdminAttribute[],
 ) {
   const issues = validateProductForPublication(formToProductDraft(values));
+  const attributeKeys = new Set(catalogAttributes.map((attribute) => attribute.key));
   for (const attribute of catalogAttributes) {
     if (attribute.isRequired && !hasProductAttributeValue(values.fields[attribute.key])) {
       issues.push(`L'attribut « ${attribute.name} » est obligatoire.`);
@@ -91,6 +92,7 @@ function validatePublicationWithAttributes(
   }
   const config = adminProductCategoryConfigs[values.category];
   for (const key of config.requiredFields) {
+    if (attributeKeys.has(key)) continue;
     if (!hasProductAttributeValue(values.fields[key])) {
       issues.push(`Le champ « ${ADMIN_PRODUCT_FIELDS[key]?.label ?? key} » est obligatoire.`);
     }
@@ -181,7 +183,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
   );
   const catalogAttributes = useMemo(
     () =>
-      attributes
+      [...attributes]
         .filter((attribute) => attribute.isActive !== false)
         .filter(
           (attribute) =>
@@ -193,6 +195,10 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
         )
         .sort((left, right) => left.order - right.order || left.name.localeCompare(right.name)),
     [attributes, selectedCatalogCategorySlug, values.category],
+  );
+  const attributesByKey = useMemo(
+    () => new Map(catalogAttributes.map((attribute) => [attribute.key, attribute])),
+    [catalogAttributes],
   );
   const dynamicAttributes = useMemo(() => {
     const staticKeys = new Set(Object.keys(ADMIN_PRODUCT_FIELDS));
@@ -215,7 +221,9 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     return source;
   }, [catalogAttributes, selectedCatalogCategorySlug]);
   const roomOptions = useMemo(() => {
-    const attribute = attributes.find((item) => item.key === "room" || item.key === "rooms");
+    const attribute =
+      catalogAttributes.find((item) => item.key === "rooms") ??
+      catalogAttributes.find((item) => item.key === "room");
     const options = attribute?.values
       .filter((value) => value.isActive !== false)
       .map((value) => ({ value: value.slug, label: value.label }));
@@ -227,7 +235,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           { value: "cuisine", label: "Cuisine" },
           { value: "bureau", label: "Bureau" },
         ];
-  }, [attributes]);
+  }, [catalogAttributes]);
   const others = useMemo(
     () => products.filter((item) => item.id !== values.id),
     [products, values.id],
@@ -527,17 +535,22 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
   const specificTab = (
     <AdminFormSection
       title={`Caractéristiques — ${ADMIN_PRODUCT_CATEGORY_LABELS[values.category]}`}
-      description="Ces champs alimentent les filtres et la fiche produit publique."
+      description="Ces champs système sont gérés depuis Attributs et filtres ; leurs valeurs alimentent les filtres et la fiche produit publique."
     >
       <div className="grid items-start gap-4 md:grid-cols-2">
         {visibleProductFields(values.category, values.fields).map((field) => {
           const raw = values.fields[field.key];
-          const required = config.requiredFields.includes(field.key);
+          const definition = attributesByKey.get(field.key);
+          const definitionOptions = definition?.values
+            .filter((value) => value.isActive !== false)
+            .map((value) => ({ value: value.slug, label: value.label }));
+          const label = definition?.name ?? field.label;
+          const required = definition?.isRequired ?? config.requiredFields.includes(field.key);
           if (field.key === "rooms") {
             return (
               <AdminMultiSelectField
                 key={field.key}
-                label={field.label}
+                label={label}
                 value={Array.isArray(raw) ? raw : []}
                 options={roomOptions}
                 onChange={(next) => patchField(field.key, next)}
@@ -548,7 +561,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
             return (
               <AdminSwitchField
                 key={field.key}
-                label={field.label}
+                label={label}
                 {...(field.hint ? { description: field.hint } : {})}
                 checked={raw === true}
                 onChange={(checked) => patchField(field.key, checked)}
@@ -559,10 +572,16 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
             return (
               <AdminSelectField
                 key={field.key}
-                label={field.label}
+                label={label}
                 required={required}
                 value={typeof raw === "string" ? raw : ""}
-                options={field.key === "material" ? materialOptions : (field.options ?? [])}
+                options={
+                  field.key === "material"
+                    ? materialOptions
+                    : definitionOptions && definitionOptions.length > 0
+                      ? definitionOptions
+                      : (field.options ?? [])
+                }
                 {...(field.hint ? { hint: field.hint } : {})}
                 onChange={(value) => patchField(field.key, value)}
               />
@@ -572,7 +591,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
             return (
               <AdminNumberField
                 key={field.key}
-                label={field.label}
+                label={label}
                 value={typeof raw === "number" ? raw : 0}
                 onChange={(value) => patchField(field.key, value)}
               />
@@ -582,7 +601,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
             return (
               <AdminField
                 key={field.key}
-                label={field.label}
+                label={label}
                 hint={field.hint ?? "Séparez les valeurs par une virgule."}
                 value={Array.isArray(raw) ? raw.join(", ") : ""}
                 onChange={(value) =>
@@ -600,7 +619,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           return (
             <AdminField
               key={field.key}
-              label={field.label}
+              label={label}
               required={required}
               multiline={field.kind === "textarea"}
               rows={3}
