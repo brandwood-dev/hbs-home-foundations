@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AdminPageHeader } from "@/admin/components/ui/AdminPageHeader";
 import { AdminCard, AdminStatusBadge } from "@/admin/components/ui/AdminStates";
+import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
 import {
   AdminDataTable,
   AdminSearchInput,
@@ -78,8 +79,19 @@ export function AdminPromotionsPage() {
   const save = useSaveAdminPromotion();
   const archive = useDeleteAdminPromotion();
   const [query, setQuery] = useState("");
-  const [editing, setEditing] = useState<AdminPromotion | null>(null);
-  const [form, setForm] = useState<PromotionForm>(emptyForm);
+  const promotionDraftState = useAdminDraftState<{ editingId: string | null; form: PromotionForm }>(
+    "hbs-admin-promotion-form",
+    { editingId: null, form: emptyForm() },
+  );
+  const { value: promotionDraft, setValue: setPromotionDraft, clear } = promotionDraftState;
+  const editingId = promotionDraft.editingId;
+  const editing = editingId ? promotions.find((promotion) => promotion.id === editingId) : null;
+  const form = promotionDraft.form;
+
+  function setForm(next: PromotionForm) {
+    setPromotionDraft((current) => ({ ...current, form: next }));
+    promotionDraftState.setPersist(true);
+  }
 
   const rows = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -91,27 +103,30 @@ export function AdminPromotionsPage() {
   }, [promotions, query]);
 
   function startCreate() {
-    setEditing(null);
-    setForm(emptyForm());
+    clear();
+    setPromotionDraft({ editingId: null, form: emptyForm() });
   }
 
   function startEdit(promotion: AdminPromotion) {
-    setEditing(promotion);
-    setForm({
-      name: promotion.name,
-      code: promotion.code ?? "",
-      type: "coupon",
-      discountType: promotion.discountType,
-      value: promotion.value,
-      startAt: dateInput(promotion.startAt),
-      endAt: dateInput(promotion.endAt),
-      isActive: promotion.isActive,
-      minimumOrderMinor: promotion.minimumOrderMinor,
-      productIds: [],
-      categoryIds: [],
-      usageLimit: promotion.usageLimit ?? null,
-      priority: 0,
-      isStackable: false,
+    clear();
+    setPromotionDraft({
+      editingId: promotion.id,
+      form: {
+        name: promotion.name,
+        code: promotion.code ?? "",
+        type: "coupon",
+        discountType: promotion.discountType,
+        value: promotion.value,
+        startAt: dateInput(promotion.startAt),
+        endAt: dateInput(promotion.endAt),
+        isActive: promotion.isActive,
+        minimumOrderMinor: promotion.minimumOrderMinor,
+        productIds: [],
+        categoryIds: [],
+        usageLimit: promotion.usageLimit ?? null,
+        priority: 0,
+        isStackable: false,
+      },
     });
   }
 
@@ -127,10 +142,11 @@ export function AdminPromotionsPage() {
       ...(usageLimit !== null ? { usageLimit: Number(usageLimit) } : {}),
     };
     save.mutate(
-      { ...(editing ? { id: editing.id } : {}), input },
+      { ...(editingId ? { id: editingId } : {}), input },
       {
         onSuccess: () => {
-          if (!editing) startCreate();
+          clear();
+          if (!editingId) setPromotionDraft({ editingId: null, form: emptyForm() });
         },
       },
     );

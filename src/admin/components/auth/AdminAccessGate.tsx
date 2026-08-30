@@ -1,6 +1,6 @@
 import { Navigate, useRouterState } from "@tanstack/react-router";
 import { LoaderCircle } from "lucide-react";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { HbsApiClient, HbsApiError, type ApiAdminSession } from "@/api";
 import { useAdminAuth } from "@/admin/auth/AdminAuthProvider";
 import { AdminAuthorizationProvider } from "@/admin/auth/AdminAuthorizationContext";
@@ -19,19 +19,30 @@ export function AdminAccessGate({ children }: { children: ReactNode }) {
   const api = useMemo(() => new HbsApiClient(), []);
   const [attempt, setAttempt] = useState(0);
   const [apiState, setApiState] = useState<ApiState>({ status: "loading" });
+  // A Supabase TOKEN_REFRESHED event replaces the session object while the
+  // authenticated user remains the same. Keep the current Admin tree mounted
+  // during that background validation so active forms are not destroyed.
+  const lastValidatedUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!auth.session) {
+      lastValidatedUserIdRef.current = null;
       setApiState({ status: "loading" });
       return;
     }
     const controller = new AbortController();
-    setApiState({ status: "loading" });
+    const sameValidatedUser = lastValidatedUserIdRef.current === auth.session.user.id;
+    if (!sameValidatedUser) setApiState({ status: "loading" });
     void api
       .getAdminSession(auth.session.access_token, controller.signal)
-      .then((session) => setApiState({ status: "ready", session }))
+      .then((session) => {
+        if (controller.signal.aborted) return;
+        lastValidatedUserIdRef.current = auth.session?.user.id ?? null;
+        setApiState({ status: "ready", session });
+      })
       .catch((reason: unknown) => {
         if (controller.signal.aborted) return;
+        lastValidatedUserIdRef.current = null;
         setApiState({
           status: "error",
           message:

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Archive, Copy, FileText, Plus, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
@@ -16,6 +16,7 @@ import {
   useAdminArticles,
   useAdminMedia,
 } from "@/admin/hooks/admin.queries";
+import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
 import {
   useArchiveAdminArticle,
   useCreateAdminArticle,
@@ -111,8 +112,11 @@ export function AdminArticlesPage() {
   const archiveArticle = useArchiveAdminArticle();
   const duplicateArticle = useDuplicateAdminArticle();
   const [search, setSearch] = useState("");
-  const [draft, setDraft] = useState<ArticleDraft | null>(null);
+  const articleDraftState = useAdminDraftState<ArticleDraft | null>("hbs-admin-article-form", null);
+  const { value: draft, setValue: setDraft, setPersist, clear } = articleDraftState;
   const [formError, setFormError] = useState<string | null>(null);
+
+  useEffect(() => setPersist(draft !== null), [draft, setPersist]);
 
   const rows = useMemo(() => {
     const query = search.trim().toLocaleLowerCase("fr");
@@ -186,9 +190,22 @@ export function AdminArticlesPage() {
           id: draft.id,
           input: { ...input, ...(draft.version ? { expectedVersion: draft.version } : {}) },
         },
-        { onSuccess: () => setDraft(null), onError },
+        {
+          onSuccess: () => {
+            setDraft(null);
+            clear();
+          },
+          onError,
+        },
       );
-    else createArticle.mutate(input, { onSuccess: () => setDraft(null), onError });
+    else
+      createArticle.mutate(input, {
+        onSuccess: () => {
+          setDraft(null);
+          clear();
+        },
+        onError,
+      });
   }
 
   const mediaOptions = [
@@ -254,7 +271,12 @@ export function AdminArticlesPage() {
 
       <AdminFormDrawer
         open={draft !== null}
-        onOpenChange={(open) => !open && setDraft(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDraft(null);
+            clear();
+          }
+        }}
         title={draft?.id ? "Modifier l'article" : "Nouvel article"}
         description={
           draft?.status === "published"
@@ -263,7 +285,13 @@ export function AdminArticlesPage() {
         }
         footer={
           <>
-            <Button variant="outline" onClick={() => setDraft(null)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDraft(null);
+                clear();
+              }}
+            >
               Annuler
             </Button>
             <Button

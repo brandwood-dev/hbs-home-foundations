@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Archive, FileText, Plus, Send, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
@@ -16,6 +16,7 @@ import {
 import { AdminField, AdminSelectField } from "@/admin/components/ui/AdminForm";
 import { AdminStatusBadge } from "@/admin/components/ui/AdminStates";
 import { useAdminEditorialPages } from "@/admin/hooks/admin.queries";
+import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
 import {
   useArchiveAdminEditorialPage,
   useCreateAdminEditorialPage,
@@ -93,9 +94,15 @@ export function AdminEditorialPagesPage() {
   const publishPage = usePublishAdminEditorialPage();
   const archivePage = useArchiveAdminEditorialPage();
   const [search, setSearch] = useState("");
-  const [draft, setDraft] = useState<PageDraft | null>(null);
+  const pageDraftState = useAdminDraftState<PageDraft | null>(
+    "hbs-admin-editorial-page-form",
+    null,
+  );
+  const { value: draft, setValue: setDraft, setPersist, clear } = pageDraftState;
   const [pendingArchive, setPendingArchive] = useState<AdminEditorialPage | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+
+  useEffect(() => setPersist(draft !== null), [draft, setPersist]);
 
   const rows = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
@@ -177,10 +184,20 @@ export function AdminEditorialPagesPage() {
           id: draft.id,
           input: { ...input, ...(draft.version ? { expectedVersion: draft.version } : {}) },
         },
-        { onSuccess: () => setDraft(null) },
+        {
+          onSuccess: () => {
+            setDraft(null);
+            clear();
+          },
+        },
       );
     } else {
-      createPage.mutate(input, { onSuccess: () => setDraft(null) });
+      createPage.mutate(input, {
+        onSuccess: () => {
+          setDraft(null);
+          clear();
+        },
+      });
     }
   }
 
@@ -237,12 +254,23 @@ export function AdminEditorialPagesPage() {
 
       <AdminFormDrawer
         open={draft !== null}
-        onOpenChange={(open) => !open && setDraft(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDraft(null);
+            clear();
+          }
+        }}
         title={draft?.id ? "Modifier la page" : "Nouvelle page éditoriale"}
         description="Les pages publiées ne sont pas modifiables directement : archivez-les puis créez un nouveau brouillon."
         footer={
           <>
-            <Button variant="outline" onClick={() => setDraft(null)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDraft(null);
+                clear();
+              }}
+            >
               Annuler
             </Button>
             <Button
