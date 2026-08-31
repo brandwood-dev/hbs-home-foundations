@@ -47,6 +47,8 @@ interface CategoryDraft {
   id?: string;
   name: string;
   slug: string;
+  /** True after an admin explicitly customizes the slug in this draft. */
+  slugTouched: boolean;
   parentId: string;
   order: number;
   isActive: boolean;
@@ -72,6 +74,7 @@ function toDraft(category?: AdminCategory, parentId = "", order = 0): CategoryDr
     ...(category?.id ? { id: category.id } : {}),
     name: category?.name ?? "",
     slug: category?.slug ?? "",
+    slugTouched: false,
     parentId: category?.parentId ?? parentId,
     order: category?.order ?? order,
     isActive: category?.isActive ?? true,
@@ -549,11 +552,15 @@ export function AdminCategoriesPage() {
                   value={draft.name}
                   error={formErrors.name}
                   onChange={(value) =>
-                    setDraft({
-                      ...draft,
-                      name: value,
-                      slug: draft.id ? draft.slug : slugify(value),
-                    })
+                    setDraft((current) =>
+                      current
+                        ? {
+                            ...current,
+                            name: value,
+                            slug: current.slugTouched ? current.slug : slugify(value),
+                          }
+                        : current,
+                    )
                   }
                 />
                 <AdminField
@@ -561,8 +568,12 @@ export function AdminCategoriesPage() {
                   required
                   value={draft.slug}
                   error={formErrors.slug}
-                  hint="L’URL est générée en minuscules, sans accents ni espaces."
-                  onChange={(value) => setDraft({ ...draft, slug: slugify(value) })}
+                  hint="Le slug se met à jour avec le nom. Modifiez-le pour le personnaliser."
+                  onChange={(value) =>
+                    setDraft((current) =>
+                      current ? { ...current, slug: slugify(value), slugTouched: true } : current,
+                    )
+                  }
                 />
               </div>
               <AdminSelectField
