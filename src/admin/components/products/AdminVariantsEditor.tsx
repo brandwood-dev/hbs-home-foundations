@@ -27,7 +27,10 @@ import {
   createEmptyVariant,
   variantSummary,
 } from "@/admin/services/products/admin-product-mappers";
-import { generateVariantSku } from "@/admin/services/products/admin-product-slug";
+import {
+  generateVariantSku,
+  normalizeVariantSku,
+} from "@/admin/services/products/admin-product-slug";
 
 const AVAILABILITY_OPTIONS = [
   { value: "in_stock", label: "En stock" },
@@ -98,10 +101,15 @@ export function AdminVariantsEditor({
   }
 
   function nextSku(colorId = ""): string {
-    const taken = new Set(variants.map((variant) => variant.sku));
+    // Include SKUs from other products as well as the current siblings. The
+    // API enforces this invariant globally, so the UI must not suggest a
+    // value that will only be rejected after submission.
+    const taken = new Set(
+      [...variants.map((variant) => variant.sku), ...foreignSkus].map(normalizeVariantSku),
+    );
     for (let index = variants.length; ; index += 1) {
       const candidate = generateVariantSku(productReference || "HBS-PRODUIT", index, colorId);
-      if (!taken.has(candidate)) return candidate;
+      if (!taken.has(normalizeVariantSku(candidate))) return candidate;
     }
   }
 

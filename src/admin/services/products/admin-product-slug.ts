@@ -50,6 +50,11 @@ export function generateVariantSku(reference: string, variantIndex: number, colo
   return `${base}-${color || "VAR"}-${String(variantIndex + 1).padStart(2, "0")}`;
 }
 
+/** Canonical comparison form used to prevent case/whitespace SKU collisions. */
+export function normalizeVariantSku(value: string): string {
+  return value.trim().toUpperCase();
+}
+
 /** Référence provisoire lisible, unique dans le jeu fourni. */
 export function generateProductReference(name: string, existingReferences: string[] = []): string {
   const prefix = slugify(name).replace(/-/g, "").slice(0, 4).toUpperCase() || "HBS";
