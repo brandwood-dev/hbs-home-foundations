@@ -234,6 +234,10 @@ export interface ProductVariant {
   sku: string;
 
   colorId: string;
+  /** Libellé et métadonnées du coloris quand l'API les fournit sur la variante. */
+  colorLabel?: string;
+  colorHex?: string;
+  colorFamily?: ColorFamily;
   widthCm: number;
   heightCm: number;
 

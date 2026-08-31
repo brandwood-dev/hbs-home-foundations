@@ -43,6 +43,23 @@ const apiProduct = {
 } as Parameters<typeof mapProduct>[0];
 
 describe("public catalogue API adapter", () => {
+  it("reconstructs color swatches when the API only exposes the variant color id", () => {
+    const mapped = mapProduct({
+      ...apiProduct,
+      variants: [{ ...apiProduct.variants[0]!, colorId: "c-blanc" }],
+      colors: [],
+    });
+
+    expect(mapped.colors).toEqual([
+      expect.objectContaining({
+        id: "c-blanc",
+        name: "Blanc optique",
+        hex: "#FBFAF7",
+        family: "white",
+      }),
+    ]);
+  });
+
   it("keeps the API demo flag instead of forcing every product into demo mode", () => {
     expect(mapProduct(apiProduct)).toMatchObject({ id: "product-1", isDemo: false });
   });
