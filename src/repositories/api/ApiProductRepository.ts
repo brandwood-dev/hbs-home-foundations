@@ -35,6 +35,7 @@ import type {
   ProductMaterial,
   ProductPattern,
 } from "@/domain/product/product.types";
+import { COLORS } from "@/domain/product/product-colors";
 import { HbsApiError, HbsApiClient } from "@/api/client";
 import type {
   CatalogScope,
@@ -55,6 +56,9 @@ interface ApiProductVariant {
   id: string;
   sku: string;
   colorId: string;
+  colorLabel?: string;
+  colorHex?: string;
+  colorFamily?: string;
   widthCm: number;
   heightCm: number;
   curtainHeader?: string;
@@ -526,6 +530,13 @@ function mapProductVariant(variant: ApiProductVariant) {
     price: { amountMinor: asMoneyAmount(variant.price), currency: "TND" },
   };
 
+  const colorLabel = asStringOptional(variant.colorLabel);
+  if (colorLabel) mapped.colorLabel = colorLabel;
+  const colorHex = asStringOptional(variant.colorHex);
+  if (colorHex) mapped.colorHex = colorHex;
+  const colorFamily = asEnum(variant.colorFamily, COLOR_FAMILIES);
+  if (colorFamily) mapped.colorFamily = colorFamily;
+
   const compareAtPrice = asMoneyAmount(variant.compareAtPrice);
   if (compareAtPrice > 0) {
     mapped.compareAtPrice = { amountMinor: compareAtPrice, currency: "TND" };
@@ -609,12 +620,51 @@ function mapProductColor(color: ApiProductColor) {
   return { id, name, slug, family, hex };
 }
 
+function colorsFromVariants(
+  variants: readonly Product["variants"][number][],
+  colors: readonly Product["colors"][number][],
+): Product["colors"] {
+  const byId = new Map(colors.map((color) => [color.id, color]));
+  const canonicalByToken = new Map<string, (typeof COLORS)[keyof typeof COLORS]>();
+  for (const color of Object.values(COLORS)) {
+    canonicalByToken.set(color.id.toLowerCase(), color);
+    canonicalByToken.set(color.slug.toLowerCase(), color);
+  }
+
+  for (const variant of variants) {
+    const id = variant.colorId.trim();
+    if (!id || byId.has(id)) continue;
+    const canonical = canonicalByToken.get(id.toLowerCase());
+    if (canonical) {
+      byId.set(id, canonical);
+      continue;
+    }
+    const label = variant.colorLabel?.trim() || id;
+    const slug =
+      label
+        .normalize("NFD")
+        .replace(/[\\u0300-\\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "") || id;
+    byId.set(id, {
+      id,
+      name: label,
+      slug,
+      family: variant.colorFamily ?? "grey",
+      hex: variant.colorHex ?? "#808080",
+    });
+  }
+  return [...byId.values()];
+}
+
 export function mapProduct(input: ApiProduct): Product {
   const images = input.images.map((image) => mapProductImage(image));
   const variants = input.variants.map((variant) => mapProductVariant(variant));
-  const colors = input.colors
+  const declaredColors = input.colors
     .map((color) => mapProductColor(color))
     .filter((color): color is NonNullable<ReturnType<typeof mapProductColor>> => color !== null);
+  const colors = colorsFromVariants(variants, declaredColors);
 
   const product: Product = {
     id: asString(input.id),
