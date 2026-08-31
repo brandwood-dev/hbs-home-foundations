@@ -47,6 +47,7 @@ import {
   generateProductSeo,
   generateProductSlug,
   generateVariantSku,
+  normalizeVariantSku,
   publicProductUrl,
 } from "@/admin/services/products/admin-product-slug";
 import {
@@ -267,11 +268,20 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
   }
 
   function generatedVariants(variants: AdminProductFormValues["variants"], reference: string) {
-    return variants.map((variant, index) =>
-      variant.sku.trim()
-        ? variant
-        : { ...variant, sku: generateVariantSku(reference, index, variant.colorId) },
+    const taken = new Set(
+      [...foreignSkus, ...variants.map((variant) => variant.sku)].map(normalizeVariantSku),
     );
+    return variants.map((variant, index) => {
+      if (variant.sku.trim()) return variant;
+      let candidateIndex = index;
+      let sku = generateVariantSku(reference, candidateIndex, variant.colorId);
+      while (taken.has(normalizeVariantSku(sku))) {
+        candidateIndex += 1;
+        sku = generateVariantSku(reference, candidateIndex, variant.colorId);
+      }
+      taken.add(normalizeVariantSku(sku));
+      return { ...variant, sku };
+    });
   }
 
   function handleNameChange(name: string) {
