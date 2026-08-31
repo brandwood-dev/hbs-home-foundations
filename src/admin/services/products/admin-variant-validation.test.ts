@@ -51,4 +51,22 @@ describe("admin variant business rules", () => {
       )["dimensions"],
     ).toContain("multiple de 150 cm");
   });
+
+  it("requires a color and positive dimensions when those axes are enabled", () => {
+    const errors = validateVariant(
+      { ...variant, colorId: "", widthCm: 0 },
+      {
+        axes: ["color", "dimensions"],
+        siblings: [],
+        foreignSkus: [],
+        supportsInventory: true,
+        requiresPrice: true,
+        category: "rideaux",
+        material: "lin",
+      },
+    );
+
+    expect(errors["colorId"]).toContain("couleur");
+    expect(errors["dimensions"]).toContain("supérieures à 0");
+  });
 });

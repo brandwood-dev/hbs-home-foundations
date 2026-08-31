@@ -53,6 +53,7 @@ import {
   catalogCategoryOptionsForFamily,
   familyRootCategory,
 } from "@/admin/services/products/admin-product-taxonomy";
+import { resolveAdminColorOptions } from "@/admin/config/admin-color-options";
 import { MATERIAL_LABELS } from "@/domain/product/product.constants";
 import {
   useAdminAttributes,
@@ -61,6 +62,7 @@ import {
 } from "@/admin/hooks/admin.queries";
 import {
   useCreateAdminProduct,
+  useSetAdminProductStatus,
   useUpdateAdminProduct,
 } from "@/admin/hooks/admin-catalog.mutations";
 import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
@@ -146,15 +148,10 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
 
   useEffect(() => setPersist(dirty), [dirty, setPersist]);
 
-  const createProduct = useCreateAdminProduct(() => {
-    clear();
-    setDirty(false);
-    void navigate({ to: "/admin/produits" });
-  });
-  const updateProduct = useUpdateAdminProduct(() => {
-    clear();
-    setDirty(false);
-  });
+  const createProduct = useCreateAdminProduct();
+  const updateProduct = useUpdateAdminProduct();
+  const setProductStatus = useSetAdminProductStatus();
+  const isSaving = createProduct.isPending || updateProduct.isPending || setProductStatus.isPending;
 
   useEffect(() => {
     if (product || values.categoryId || categories.length === 0) return;
@@ -236,6 +233,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           { value: "bureau", label: "Bureau" },
         ];
   }, [catalogAttributes]);
+  const colorOptions = useMemo(() => resolveAdminColorOptions(attributes), [attributes]);
   const others = useMemo(
     () => products.filter((item) => item.id !== values.id),
     [products, values.id],
@@ -318,7 +316,8 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     }));
   }
 
-  function save(status: AdminProduct["status"]) {
+  async function save(status: AdminProduct["status"]) {
+    if (isSaving) return;
     setSubmitted(true);
     const next = {
       ...values,
@@ -339,8 +338,19 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
 
     const input = formToProductInput(next);
     setValues(next);
-    if (values.id) updateProduct.mutate({ id: values.id, input });
-    else createProduct.mutate(input);
+    try {
+      const saved = values.id
+        ? await updateProduct.mutateAsync({ id: values.id, input })
+        : await createProduct.mutateAsync(input);
+      if (status === "published") {
+        await setProductStatus.mutateAsync({ id: saved.id, status: "published" });
+      }
+      clear();
+      setDirty(false);
+      if (!values.id) void navigate({ to: "/admin/produits" });
+    } catch {
+      // useAdminMutation affiche déjà l'erreur de l'opération concernée.
+    }
   }
 
   const generalTab = (
@@ -856,16 +866,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
                   typeof values.fields["material"] === "string" ? values.fields["material"] : ""
                 }
                 productReference={values.reference}
-                colorOptions={
-                  attributes
-                    .find((attribute) => attribute.key === "color" || attribute.key === "colors")
-                    ?.values.filter((value) => value.isActive !== false)
-                    .map((value) => ({
-                      value: value.slug,
-                      label: value.label,
-                      ...(value.hex ? { hex: value.hex } : {}),
-                    })) ?? []
-                }
+                colorOptions={colorOptions}
                 supportsInventory={config.supportsInventory && !isCustomQuote}
                 requiresPrice={!isCustomQuote}
                 onChange={(variants) => patch({ variants })}
@@ -894,20 +895,25 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
               Modifications non enregistrées
             </span>
           ) : null}
-          <Button className="w-full sm:w-auto" variant="outline" onClick={() => save("draft")}>
+          <Button
+            className="w-full sm:w-auto"
+            variant="outline"
+            disabled={isSaving}
+            onClick={() => void save("draft")}
+          >
             <Save className="mr-1 size-4" /> Enregistrer le brouillon
           </Button>
           <Button
             className="w-full sm:w-auto"
-            onClick={() => save("published")}
-            disabled={publicationIssues.length > 0}
+            onClick={() => void save("published")}
+            disabled={isSaving || publicationIssues.length > 0}
             title={
               publicationIssues.length > 0
                 ? "Complétez les éléments requis avant publication."
                 : undefined
             }
           >
-            Publier
+            {isSaving ? "Enregistrement…" : "Publier"}
           </Button>
         </div>
       </div>

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { formatMoney } from "@/lib/money/money";
+import type { AdminColorOption } from "@/admin/config/admin-color-options";
 
 export function AdminFormSection({
   title,
@@ -177,11 +178,7 @@ export function AdminSelectField({
   );
 }
 
-export interface AdminColorOption {
-  value: string;
-  label: string;
-  hex?: string;
-}
+export type { AdminColorOption } from "@/admin/config/admin-color-options";
 
 /** Selecteur de coloris contrôlé, avec aperçu visuel et libellé accessible. */
 export function AdminColorSelectField({

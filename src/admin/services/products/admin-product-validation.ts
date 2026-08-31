@@ -86,6 +86,13 @@ export function validateProductForPublication(product: AdminProduct): string[] {
   if (activeVariants.some((variant) => !variant.sku.trim())) {
     blocking.push("Chaque variante active doit avoir un SKU.");
   }
+  activeVariants.forEach((variant, index) => {
+    const label = `La variante ${index + 1}`;
+    if (!variant.colorId.trim()) blocking.push(`${label} doit avoir une couleur sélectionnée.`);
+    if (variant.widthCm <= 0 || variant.heightCm <= 0) {
+      blocking.push(`${label} doit avoir une largeur et une hauteur supérieures à 0 cm.`);
+    }
+  });
   if (!product.sellingMode) blocking.push("L'unité de vente n'est pas définie.");
 
   return blocking;

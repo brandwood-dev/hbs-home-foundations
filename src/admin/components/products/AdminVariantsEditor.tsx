@@ -183,7 +183,9 @@ export function AdminVariantsEditor({
                       <AdminColorSelectField
                         key={axisKey}
                         label={axis.label}
+                        required
                         value={variant.colorId}
+                        error={errors["colorId"]}
                         options={
                           variant.colorId &&
                           !colorOptions.some((option) => option.value === variant.colorId)

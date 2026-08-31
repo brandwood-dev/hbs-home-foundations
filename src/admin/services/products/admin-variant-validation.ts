@@ -69,10 +69,16 @@ export function validateVariant(
   if (variant.packQuantity != null && variant.packQuantity < 1) {
     errors["packQuantity"] = "La quantité du lot doit être au minimum de 1.";
   }
+  if (context.axes.includes("color") && !variant.colorId.trim()) {
+    errors["colorId"] = "Sélectionnez une couleur pour cette variante.";
+  }
   if (variant.widthCm < 0 || variant.heightCm < 0) {
     errors["dimensions"] = "Les dimensions ne peuvent pas être négatives.";
   }
   if (context.axes.includes("dimensions")) {
+    if (variant.widthCm <= 0 || variant.heightCm <= 0) {
+      errors["dimensions"] = "La largeur et la hauteur doivent être supérieures à 0 cm.";
+    }
     if (variant.heightCm > 315) {
       errors["dimensions"] = "La hauteur maximale autorisée est de 315 cm (3,15 m).";
     }
