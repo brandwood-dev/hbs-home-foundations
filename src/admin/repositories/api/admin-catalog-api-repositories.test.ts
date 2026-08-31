@@ -248,7 +248,7 @@ describe("Admin catalog API adapters", () => {
     );
     expect(productGetRequests).toHaveLength(4);
     for (const [, init] of productGetRequests) {
-      expect(init?.headers).toEqual(expect.objectContaining({ "cache-control": "no-cache" }));
+      expect(init?.headers).not.toHaveProperty("cache-control");
     }
   });
 

@@ -667,7 +667,6 @@ export class AdminCatalogApi {
         `/api/v1/admin/products/${encodeURIComponent(id)}`,
         undefined,
         token,
-        { "cache-control": "no-cache" },
       ),
     );
   }
