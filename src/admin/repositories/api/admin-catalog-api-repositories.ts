@@ -547,6 +547,29 @@ function variantPatch(variant: AdminVariant, expectedVersion: number): VariantPa
   return { ...variantBody(variant), expectedVersion };
 }
 
+function isProductVersionConflict(error: unknown): boolean {
+  return error instanceof HbsApiError && error.problem?.code === "PRODUCT_VERSION_CONFLICT";
+}
+
+async function updateVariantWithFreshVersion(
+  api: AdminCatalogApi,
+  productId: string,
+  variantId: string,
+  variant: AdminVariant,
+): Promise<ApiProduct> {
+  let latest = await api.getProduct(productId);
+  try {
+    return await api.updateVariant(productId, variantId, variantPatch(variant, latest.version));
+  } catch (error) {
+    if (!isProductVersionConflict(error)) throw error;
+    // A concurrent product update (or an intermediary cache) may have made
+    // the first read stale. Re-read once and retry with the authoritative
+    // version while preserving optimistic locking on the API.
+    latest = await api.getProduct(productId);
+    return api.updateVariant(productId, variantId, variantPatch(variant, latest.version));
+  }
+}
+
 export class AdminCatalogApi {
   constructor(
     private readonly client = new HbsApiClient(),
@@ -644,6 +667,7 @@ export class AdminCatalogApi {
         `/api/v1/admin/products/${encodeURIComponent(id)}`,
         undefined,
         token,
+        { "cache-control": "no-cache" },
       ),
     );
   }
@@ -852,9 +876,9 @@ export class ApiAdminProductRepository implements AdminProductRepository {
     const variants = input.variants;
     if (variants === undefined) return mapProduct(dto);
 
-    // The product PATCH already bumps the product version. Re-read it before
-    // touching a real variant so an API response/cache cannot provide a stale
-    // expectedVersion to the variant endpoint.
+    // The product PATCH already bumps the product version. Refresh each
+    // variant independently so a stale response cannot poison the next
+    // optimistic-lock check.
     dto = await this.api.getProduct(id);
     const seen = new Set<string>();
 
@@ -863,7 +887,7 @@ export class ApiAdminProductRepository implements AdminProductRepository {
       if (existing) {
         seen.add(existing.id);
         if (variantFingerprint(variant) === variantFingerprint(mapVariant(existing))) continue;
-        dto = await this.api.updateVariant(id, existing.id, variantPatch(variant, dto.version));
+        dto = await updateVariantWithFreshVersion(this.api, id, existing.id, variant);
       } else {
         dto = await this.api.createVariant(id, variantBody(variant));
       }

@@ -185,6 +185,73 @@ describe("Admin catalog API adapters", () => {
     );
   });
 
+  it("refreshes the product version and retries a stale variant update", async () => {
+    const mapped = mapProduct(product);
+    const originalVariant = mapped.variants[0];
+    if (!originalVariant) throw new Error("Expected a fixture variant.");
+    const changedVariant = { ...originalVariant, priceMinor: 130000 };
+    let productReads = 0;
+    let variantAttempts = 0;
+    const fetchImplementation = vi.fn<typeof fetch>().mockImplementation(async (input, init) => {
+      const url = String(input);
+      const method = init?.method ?? "GET";
+      if (method === "GET" && url.endsWith("/api/v1/admin/products/product-1")) {
+        productReads += 1;
+        const version = productReads <= 3 ? 2 : 3;
+        return Response.json({ ...product, version });
+      }
+      if (method === "PATCH" && url.endsWith("/api/v1/admin/products/product-1")) {
+        return Response.json({ ...product, version: 3 });
+      }
+      if (
+        method === "PATCH" &&
+        url.endsWith("/api/v1/admin/products/product-1/variants/variant-1")
+      ) {
+        variantAttempts += 1;
+        if (variantAttempts === 1) {
+          return new Response(
+            JSON.stringify({
+              status: 409,
+              code: "PRODUCT_VERSION_CONFLICT",
+              title: "Product changed",
+              detail: "Reload the product before saving this variant.",
+              requestId: "request-1",
+            }),
+            { status: 409, headers: { "content-type": "application/problem+json" } },
+          );
+        }
+        return Response.json({ ...product, version: 4 });
+      }
+      throw new Error(`Unexpected request: ${method} ${url}`);
+    });
+    const api = new AdminCatalogApi(
+      new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
+      async () => "admin-token",
+    );
+    const repository = new ApiAdminProductRepository(api);
+
+    await repository.update("product-1", {
+      ...mapped,
+      variants: [changedVariant],
+    });
+
+    const variantRequests = fetchImplementation.mock.calls.filter(([input]) =>
+      String(input).includes("/variants/variant-1"),
+    );
+    expect(variantRequests).toHaveLength(2);
+    expect(JSON.parse(String(variantRequests[0]?.[1]?.body))).toMatchObject({ expectedVersion: 2 });
+    expect(JSON.parse(String(variantRequests[1]?.[1]?.body))).toMatchObject({ expectedVersion: 3 });
+    const productGetRequests = fetchImplementation.mock.calls.filter(
+      ([input, init]) =>
+        (init?.method ?? "GET") === "GET" &&
+        String(input).endsWith("/api/v1/admin/products/product-1"),
+    );
+    expect(productGetRequests).toHaveLength(4);
+    for (const [, init] of productGetRequests) {
+      expect(init?.headers).toEqual(expect.objectContaining({ "cache-control": "no-cache" }));
+    }
+  });
+
   it("does not rewrite unchanged variants when saving product media", async () => {
     const mapped = mapProduct(product);
     let productReads = 0;
