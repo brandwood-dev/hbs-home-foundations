@@ -354,6 +354,8 @@ export interface Product {
   seo: {
     title: string;
     description: string;
+    /** Image publique utilisée pour les aperçus de partage (Open Graph). */
+    ogImage?: string;
   };
 
   isThermal: boolean;

@@ -62,6 +62,9 @@ export const Route = createFileRoute("/$")({
         { property: "og:title", content: loaderData.seo.title },
         { property: "og:description", content: loaderData.seo.description },
         { property: "og:type", content: loaderData.kind === "product" ? "product" : "website" },
+        ...(loaderData.kind === "product" && loaderData.seo.ogImage
+          ? [{ property: "og:image", content: loaderData.seo.ogImage }]
+          : []),
       ],
       links: [{ rel: "canonical", href: `https://hbs-home.com${loaderData.canonicalPath}` }],
     };

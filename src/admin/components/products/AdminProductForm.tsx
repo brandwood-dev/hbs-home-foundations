@@ -252,6 +252,11 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     [values, catalogAttributes],
   );
   const isCustomQuote = values.sellingMode === "custom_quote";
+  const primaryImageUrl = useMemo(() => {
+    const primary = values.images.find((image) => image.isPrimary) ?? values.images[0];
+    return primary?.url.trim() ?? "";
+  }, [values.images]);
+  const effectiveSeoOgImageUrl = primaryImageUrl || values.seoOgImageUrl.trim();
 
   function patch(next: Partial<AdminProductFormValues>) {
     setDirty(true);
@@ -673,8 +678,14 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
         />
         <AdminField
           label="Image de partage (og:image)"
-          value={values.seoOgImageUrl}
-          onChange={(value) => patch({ seoOgImageUrl: value })}
+          value={effectiveSeoOgImageUrl}
+          readOnly
+          hint={
+            primaryImageUrl
+              ? "Définie automatiquement depuis l’image principale de la galerie."
+              : "Ajoutez d’abord une image dans Médias pour la définir automatiquement."
+          }
+          onChange={() => undefined}
         />
         <AdminSwitchField
           label="Indexable par les moteurs de recherche"

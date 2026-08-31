@@ -19,7 +19,7 @@ export const Route = createFileRoute("/$category/$productSlug")({
         meta: [{ title: "Produit introuvable — HBS HOME" }, { name: "robots", content: "noindex" }],
       };
     }
-    const { title, description } = loaderData.seo;
+    const { title, description, ogImage } = loaderData.seo;
     return {
       meta: [
         { title },
@@ -27,6 +27,7 @@ export const Route = createFileRoute("/$category/$productSlug")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "product" },
+        ...(ogImage ? [{ property: "og:image", content: ogImage }] : []),
         { name: "twitter:card", content: "summary_large_image" },
       ],
       links: [{ rel: "canonical", href: `https://hbs-home.com${loaderData.canonicalPath}` }],

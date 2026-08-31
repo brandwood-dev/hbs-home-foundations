@@ -637,6 +637,7 @@ export function mapProduct(input: ApiProduct): Product {
     seo: {
       title: asString(input.seo?.title, asString(input.name)),
       description: asString(input.seo?.description, asString(input.shortDescription)),
+      ...(images[0]?.url && /^https?:\/\//i.test(images[0].url) ? { ogImage: images[0].url } : {}),
     },
     isThermal: asBoolean(input.isThermal, false),
     isNew: asBoolean(input.isNew, false),

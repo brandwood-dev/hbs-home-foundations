@@ -183,7 +183,10 @@ export function formToProductInput(values: AdminProductFormValues): AdminProduct
     seoTitle: values.seoTitle.trim(),
     seoDescription: values.seoDescription.trim(),
     seoIndexable: values.seoIndexable,
-    ...(values.seoOgImageUrl.trim() ? { seoOgImageUrl: values.seoOgImageUrl.trim() } : {}),
+    // The social preview follows the product's main media. Keep the legacy
+    // value only when no media exists yet, so existing drafts remain editable
+    // without introducing a second image-selection workflow.
+    seoOgImageUrl: primary?.url.trim() || values.seoOgImageUrl.trim(),
     category: values.category,
     attributes,
     publicSlug: values.slug.trim(),
