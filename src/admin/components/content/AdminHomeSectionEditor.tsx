@@ -193,14 +193,21 @@ function statusTone(content: AdminHomeContent | undefined): "success" | "warning
 }
 
 function mediaOptions(media: AdminMedia[], selectedId: string) {
-  const available = media.filter((item) => item.status !== "archived");
+  const available = media.filter((item) => item.status === "active");
   const selected = selectedId && media.find((item) => item.id === selectedId);
   return [
     { value: "__none", label: "Aucun média" },
-    ...(selected && selected.status === "archived"
-      ? [{ value: selected.id, label: `${selected.name} (archivé)` }]
+    ...(selected && selected.status !== "active"
+      ? [
+          {
+            value: selected.id,
+            label: `${selected.name} (${selected.status === "draft" ? "brouillon" : "archivé"})`,
+          },
+        ]
       : []),
-    ...available.map((item) => ({ value: item.id, label: item.name })),
+    ...available
+      .filter((item) => item.id !== selectedId)
+      .map((item) => ({ value: item.id, label: item.name })),
   ];
 }
 
@@ -863,6 +870,13 @@ function MediaSelector({
   const id = mobile ? section.mobileMediaAssetId : section.mediaAssetId;
   const url = mobile ? section.mobileMediaUrl : section.mediaUrl;
   const alt = mobile ? section.mobileMediaAlt : section.mediaAlt;
+  const selected = id ? media.find((item) => item.id === id) : undefined;
+  const statusNotice =
+    selected?.status === "draft"
+      ? "Ce média est encore en brouillon. Il sera activé automatiquement lors de la publication de cette section."
+      : selected?.status === "archived"
+        ? "Ce média est archivé et ne peut pas être publié. Sélectionnez un média actif."
+        : null;
   return (
     <div className="grid gap-3 rounded-md border border-dashed border-border p-3">
       <AdminSelectField
@@ -871,8 +885,9 @@ function MediaSelector({
         options={mediaOptions(media, id)}
         onChange={onChange}
         disabled={disabled}
-        hint="Sélectionnez un média actif dans la médiathèque."
+        hint="Les médias actifs sont sélectionnables. Un brouillon déjà lié sera activé à la publication."
       />
+      {statusNotice ? <p className="text-xs text-amber-700">{statusNotice}</p> : null}
       {url ? (
         <img
           src={url}

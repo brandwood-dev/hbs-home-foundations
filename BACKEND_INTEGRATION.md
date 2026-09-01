@@ -232,6 +232,11 @@ de modifier le brouillon du Hero, de la banderole promotionnelle et de Shop the 
 sont sélectionnés depuis la médiathèque API et les hotspots sont positionnés en pourcentage sur
 l’image, puis liés à un produit publié du catalogue.
 
+Les images téléversées directement dans la médiathèque sont créées comme médias actifs et peuvent
+être sélectionnées immédiatement. Les anciens médias brouillon déjà liés à une section sont
+activés atomiquement lors de la publication de cette section ; un média inexistant ou archivé
+reste bloquant afin de préserver l’intégrité du contenu public.
+
 L’enregistrement envoie `expectedVersion` pour conserver le contrôle optimiste. La publication et
 l’archivage restent des actions séparées, protégées par `content.publish` et par la MFA exigée par
 l’API.

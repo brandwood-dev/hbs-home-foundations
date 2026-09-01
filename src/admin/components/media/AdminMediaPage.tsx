@@ -154,7 +154,11 @@ export function AdminMediaPage() {
         width: null,
         height: null,
         mimeType: result.mimeType,
-        status: "draft",
+        // A direct file upload has already passed the client-side format and
+        // size checks, so it is ready to be selected by homepage editors.
+        // Draft remains available for manually added URLs that still need
+        // review before publication.
+        status: "active",
         usage: "unassigned",
       });
     } catch (reason) {
