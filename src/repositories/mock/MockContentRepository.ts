@@ -3,6 +3,7 @@ import type { EditorialPage } from "@/domain/content/editorial-page.types";
 import type { Article, ArticleList, ArticleListParams } from "@/domain/content/article.types";
 import type { ContentRepository } from "@/repositories/interfaces/ContentRepository";
 import { adviceArticles } from "@/fixtures/advice.fixture";
+import { getEditorialPageFixture } from "@/fixtures/editorial-pages.fixture";
 import {
   accessoriesEditorial,
   composeWindow,
@@ -47,6 +48,9 @@ export class MockContentRepository implements ContentRepository {
   }
 
   async getEditorialPage(slug: string): Promise<EditorialPage | null> {
+    const fixture = getEditorialPageFixture(slug);
+    if (fixture) return fixture;
+
     const titles: Record<string, string> = {
       "a-propos": "À propos",
       cgv: "Conditions générales de vente",
