@@ -1,13 +1,13 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { EditorialPageError, EditorialPageNotFound } from "@/components/content/EditorialPageView";
 import { ConfidentialitePage } from "@/components/content/ConfidentialitePage";
+import { EditorialPageError, EditorialPageNotFound } from "@/components/content/EditorialPageView";
 import { editorialPageQuery } from "@/hooks/content/useHomeContent";
 
 const description =
-  "Politique de confidentialité — HBS HOME, rideaux, voilages et décoration textile en Tunisie.";
+  "Politique de confidentialité HBS HOME : données de commande, compte, newsletter, droits et protection des visiteurs en Tunisie.";
 
-export const Route = createFileRoute("/confidentialite")({
+/** Long-form public alias retained for SEO and links from the newsletter. */
+export const Route = createFileRoute("/politique-de-confidentialite")({
   loader: async ({ context }) => {
     const page = await context.queryClient.ensureQueryData(editorialPageQuery("confidentialite"));
     if (!page) throw notFound();

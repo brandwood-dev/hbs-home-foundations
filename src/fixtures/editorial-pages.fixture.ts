@@ -203,32 +203,40 @@ export const editorialPageFixtures: Record<string, EditorialPage> = {
   confidentialite: page(
     "confidentialite",
     "Politique de confidentialité",
-    "HBS HOME protège les informations nécessaires au fonctionnement de la boutique et explique de façon transparente comment elles sont utilisées.",
+    "Cette politique de confidentialité explique comment HBS HOME collecte, utilise et protège les données personnelles liées à la boutique en ligne, aux commandes et aux demandes de conseil en Tunisie.",
     "Politique de confidentialité HBS HOME : données de commande, compte, newsletter, droits et protection des visiteurs en Tunisie.",
     [
       block(0, "section", {
-        heading: "Les données collectées",
-        body: "Selon votre parcours, nous pouvons traiter les informations nécessaires à une commande (nom, adresse, téléphone et éventuellement e-mail), au suivi d’une commande, à une demande sur mesure ou à l’inscription à la newsletter. Nous ne demandons que les informations utiles au service choisi.",
+        heading: "Qui traite vos données ?",
+        body: "HBS HOME, enseigne spécialisée dans les rideaux, voilages, stores et la décoration textile, est responsable des informations transmises sur ce site. Pour toute question relative à vos données personnelles, vous pouvez nous écrire à contact@hbs-home.tn ou utiliser la page Contact.",
       }),
       block(1, "section", {
-        heading: "Pourquoi les utiliser ?",
-        body: "Ces données servent à préparer et livrer votre commande, répondre à vos demandes, assurer le suivi après-vente, sécuriser l’espace d’administration et envoyer la newsletter lorsque vous l’avez demandée. Les événements de mesure d’audience restent inactifs tant qu’aucun outil d’analytics n’est configuré.",
+        heading: "Les données collectées",
+        body: "Selon votre parcours, nous pouvons traiter votre nom, votre adresse de livraison, votre numéro de téléphone et, si vous le renseignez, votre adresse e-mail. Ces informations sont collectées lors d’une commande, d’une demande sur mesure, d’un contact avec notre équipe ou d’une inscription à la newsletter. Les champs non nécessaires ne sont pas demandés.",
       }),
       block(2, "section", {
-        heading: "Conservation et accès",
-        body: "Les informations sont conservées pendant la durée nécessaire au traitement de la relation commerciale et aux obligations applicables. L’accès est limité aux personnes et prestataires qui en ont besoin pour fournir le service, avec des mesures de protection adaptées.",
+        heading: "Pourquoi les utiliser ?",
+        body: "Nous utilisons ces informations pour confirmer et préparer une commande, organiser la livraison partout en Tunisie, répondre à vos questions, assurer le suivi après-vente et traiter les demandes de confection ou de conseil. Votre adresse e-mail sert à la newsletter uniquement si vous l’avez demandée ; vous pouvez vous désinscrire à tout moment.",
       }),
       block(3, "section", {
-        heading: "Données enregistrées sur votre appareil",
-        body: "Le panier, les favoris et l’historique de recherche peuvent être conservés localement dans votre navigateur pour améliorer votre expérience. Vous pouvez les supprimer depuis les fonctions correspondantes du site ou les réglages de votre navigateur.",
+        heading: "Partage et sécurité",
+        body: "Les données utiles peuvent être communiquées aux personnes ou prestataires strictement nécessaires au traitement de la commande, à la livraison, à l’hébergement technique ou à la sécurité du service. HBS HOME ne vend pas vos données personnelles. Des mesures techniques et organisationnelles sont mises en place pour limiter les accès non autorisés.",
       }),
       block(4, "section", {
-        heading: "Vos droits",
-        body: "Vous pouvez demander l’accès, la rectification ou la suppression des informations vous concernant, ainsi que vous opposer à une communication non indispensable. Pour exercer un droit, contactez HBS HOME en précisant l’objet de votre demande.",
+        heading: "Conservation et données locales",
+        body: "Les informations liées à une commande ou à une demande sont conservées pendant la durée nécessaire au service et aux obligations applicables. Le panier, les favoris et l’historique de recherche peuvent aussi être conservés localement dans votre navigateur ; vous pouvez les supprimer depuis le site ou les réglages de votre navigateur.",
       }),
       block(5, "section", {
-        heading: "Mise à jour",
-        body: "Cette politique peut évoluer pour refléter les changements du site, des services ou du cadre légal. La date de mise à jour affichée avec la page indique la version actuellement publiée.",
+        heading: "Vos droits",
+        body: "Vous pouvez demander l’accès, la rectification ou la suppression des informations vous concernant, ainsi que vous opposer à une communication non indispensable. Pour exercer un droit, écrivez à contact@hbs-home.tn en précisant votre demande et un moyen de vous recontacter. Nous pourrons demander un justificatif raisonnable afin de protéger vos informations.",
+      }),
+      block(6, "section", {
+        heading: "Cookies et mesure d’audience",
+        body: "Le fonctionnement du panier, des favoris et de certaines préférences peut nécessiter des cookies ou du stockage local. Aucun outil d’analytics ou pixel publicitaire n’est actuellement activé sur le site. Consultez la Politique de cookies pour connaître les réglages disponibles.",
+      }),
+      block(7, "section", {
+        heading: "Mise à jour de cette politique",
+        body: "Cette politique peut évoluer lorsque le site, les services ou le cadre applicable changent. La version publiée sur cette page est la référence en vigueur ; nous vous invitons à la consulter régulièrement.",
       }),
     ],
   ),
