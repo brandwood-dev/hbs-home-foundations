@@ -492,13 +492,17 @@ function asMoneyAmount(value: unknown): number {
 
 function parseProductDetails(input: unknown) {
   const details = asRecord(input);
+  const composition = asStringOptional(details["composition"]);
+  const weightGsm = asOptionalNumber(details["weightGsm"]);
+  const originNote = asStringOptional(details["originNote"]);
+
   return {
-    composition: asString(details["composition"], "Composition non précisée."),
-    weightGsm: asNumber(details["weightGsm"], 0),
     care: asStringList(details["care"]),
     features: asStringList(details["features"]),
     installationNotes: asStringList(details["installationNotes"]),
-    originNote: asString(details["originNote"], "Provenance à confirmer."),
+    ...(composition ? { composition } : {}),
+    ...(weightGsm !== undefined ? { weightGsm } : {}),
+    ...(originNote ? { originNote } : {}),
   };
 }
 

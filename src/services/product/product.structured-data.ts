@@ -17,7 +17,7 @@ export function buildProductJsonLd(product: Product) {
     sku: product.reference,
     description: product.seo.description,
     brand: { "@type": "Brand", name: storeConfig.brandName },
-    material: product.details.composition,
+    ...(product.details.composition ? { material: product.details.composition } : {}),
     offers: product.variants.map((variant) => ({
       "@type": "Offer",
       sku: variant.sku,

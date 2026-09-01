@@ -221,12 +221,13 @@ export interface ProductImage {
 }
 
 export interface ProductDetails {
-  composition: string;
-  weightGsm: number;
+  /** Optional catalogue metadata; absent values stay absent instead of using placeholders. */
+  composition?: string;
+  weightGsm?: number;
   care: string[];
   features: string[];
   installationNotes: string[];
-  originNote: string;
+  originNote?: string;
 }
 
 export interface ProductVariant {
