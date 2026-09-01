@@ -46,6 +46,68 @@ describe("dynamic catalog navigation", () => {
     expect(result[1]).toMatchObject({ id: "inspirations", href: "/inspirations" });
   });
 
+  it("exposes at most two newest sub-category image shortcuts", () => {
+    const rootCategory = categories[0]!;
+    const baseChild = rootCategory.children[0]!;
+    const category = {
+      ...rootCategory,
+      children: [
+        {
+          ...baseChild,
+          latestProduct: {
+            slug: "lin-ancien",
+            name: "Lin ancien",
+            imageUrl: "https://cdn.example.test/lin-ancien.webp",
+            imageAlt: "Rideau en lin ancien",
+            createdAt: "2026-08-01T00:00:00.000Z",
+          },
+        },
+        {
+          ...baseChild,
+          slug: "velours",
+          name: "Velours",
+          path: "/rideaux/velours",
+          latestProduct: {
+            slug: "velours-nouveau",
+            name: "Velours nouveau",
+            imageUrl: "https://cdn.example.test/velours-nouveau.webp",
+            imageAlt: "Rideau en velours nouveau",
+            createdAt: "2026-08-03T00:00:00.000Z",
+          },
+        },
+        {
+          ...baseChild,
+          slug: "satin",
+          name: "Satin",
+          path: "/rideaux/satin",
+          latestProduct: {
+            slug: "satin-nouveau",
+            name: "Satin nouveau",
+            imageUrl: "https://cdn.example.test/satin-nouveau.webp",
+            imageAlt: "Rideau en satin nouveau",
+            createdAt: "2026-08-02T00:00:00.000Z",
+          },
+        },
+      ],
+    };
+    const result = mergeCatalogNavigation(fallback, [category]);
+
+    expect(result[0]?.menuShortcuts).toEqual([
+      {
+        label: "Velours",
+        href: "/rideaux/velours",
+        imageUrl: "https://cdn.example.test/velours-nouveau.webp",
+        imageAlt: "Rideau en velours nouveau",
+      },
+      {
+        label: "Satin",
+        href: "/rideaux/satin",
+        imageUrl: "https://cdn.example.test/satin-nouveau.webp",
+        imageAlt: "Rideau en satin nouveau",
+      },
+    ]);
+  });
+
   it("keeps the fixture navigation during an API outage", () => {
     expect(mergeCatalogNavigation(fallback, undefined)).toEqual(fallback);
   });

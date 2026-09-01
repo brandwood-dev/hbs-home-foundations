@@ -178,6 +178,7 @@ export function SiteHeader() {
               <DesktopMegaMenu
                 key={item.id}
                 columns={item.megaMenu}
+                shortcuts={item.menuShortcuts}
                 onNavigate={() => setOpenMenuId(null)}
               />
             ) : null,

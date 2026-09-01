@@ -1657,6 +1657,14 @@ export interface components {
             imageUrl: string | null;
             seoTitle: string | null;
             seoDescription: string | null;
+            latestProduct: {
+                slug: string;
+                name: string;
+                imageUrl: string;
+                imageAlt: string;
+                /** Format: date-time */
+                createdAt: string;
+            } | null;
             attributes: {
                 key: string;
                 name: string;
@@ -4329,6 +4337,14 @@ export interface operations {
                         imageUrl: string | null;
                         seoTitle: string | null;
                         seoDescription: string | null;
+                        latestProduct: {
+                            slug: string;
+                            name: string;
+                            imageUrl: string;
+                            imageAlt: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                        } | null;
                         attributes: {
                             key: string;
                             name: string;
@@ -4375,6 +4391,14 @@ export interface operations {
                         imageUrl: string | null;
                         seoTitle: string | null;
                         seoDescription: string | null;
+                        latestProduct: {
+                            slug: string;
+                            name: string;
+                            imageUrl: string;
+                            imageAlt: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                        } | null;
                         attributes: {
                             key: string;
                             name: string;
