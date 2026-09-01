@@ -26,6 +26,7 @@ import { Route as LivraisonEtRetoursRouteImport } from './routes/livraison-et-re
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as NouveautesRouteImport } from './routes/nouveautes'
 import { Route as PanierRouteImport } from './routes/panier'
+import { Route as PolitiqueDeConfidentialiteRouteImport } from './routes/politique-de-confidentialite'
 import { Route as ProfessionnelsRouteImport } from './routes/professionnels'
 import { Route as PromotionsRouteImport } from './routes/promotions'
 import { Route as RechercheRouteImport } from './routes/recherche'
@@ -194,6 +195,12 @@ const PanierRoute = PanierRouteImport.update({
   path: '/panier',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PolitiqueDeConfidentialiteRoute =
+  PolitiqueDeConfidentialiteRouteImport.update({
+    id: '/politique-de-confidentialite',
+    path: '/politique-de-confidentialite',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ProfessionnelsRoute = ProfessionnelsRouteImport.update({
   id: '/professionnels',
   path: '/professionnels',
@@ -628,6 +635,7 @@ export interface FileRoutesByFullPath {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/nouveautes': typeof NouveautesRoute
   '/panier': typeof PanierRoute
+  '/politique-de-confidentialite': typeof PolitiqueDeConfidentialiteRoute
   '/professionnels': typeof ProfessionnelsRoute
   '/promotions': typeof PromotionsRoute
   '/recherche': typeof RechercheRoute
@@ -728,6 +736,7 @@ export interface FileRoutesByTo {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/nouveautes': typeof NouveautesRoute
   '/panier': typeof PanierRoute
+  '/politique-de-confidentialite': typeof PolitiqueDeConfidentialiteRoute
   '/professionnels': typeof ProfessionnelsRoute
   '/promotions': typeof PromotionsRoute
   '/recherche': typeof RechercheRoute
@@ -829,6 +838,7 @@ export interface FileRoutesById {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/nouveautes': typeof NouveautesRoute
   '/panier': typeof PanierRoute
+  '/politique-de-confidentialite': typeof PolitiqueDeConfidentialiteRoute
   '/professionnels': typeof ProfessionnelsRoute
   '/promotions': typeof PromotionsRoute
   '/recherche': typeof RechercheRoute
@@ -932,6 +942,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/nouveautes'
     | '/panier'
+    | '/politique-de-confidentialite'
     | '/professionnels'
     | '/promotions'
     | '/recherche'
@@ -1032,6 +1043,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/nouveautes'
     | '/panier'
+    | '/politique-de-confidentialite'
     | '/professionnels'
     | '/promotions'
     | '/recherche'
@@ -1132,6 +1144,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/nouveautes'
     | '/panier'
+    | '/politique-de-confidentialite'
     | '/professionnels'
     | '/promotions'
     | '/recherche'
@@ -1234,6 +1247,7 @@ export interface RootRouteChildren {
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   NouveautesRoute: typeof NouveautesRoute
   PanierRoute: typeof PanierRoute
+  PolitiqueDeConfidentialiteRoute: typeof PolitiqueDeConfidentialiteRoute
   ProfessionnelsRoute: typeof ProfessionnelsRoute
   PromotionsRoute: typeof PromotionsRoute
   RechercheRoute: typeof RechercheRoute
@@ -1414,6 +1428,13 @@ declare module '@tanstack/react-router' {
       path: '/panier'
       fullPath: '/panier'
       preLoaderRoute: typeof PanierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/politique-de-confidentialite': {
+      id: '/politique-de-confidentialite'
+      path: '/politique-de-confidentialite'
+      fullPath: '/politique-de-confidentialite'
+      preLoaderRoute: typeof PolitiqueDeConfidentialiteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/professionnels': {
@@ -2086,6 +2107,7 @@ const rootRouteChildren: RootRouteChildren = {
   MentionsLegalesRoute: MentionsLegalesRoute,
   NouveautesRoute: NouveautesRoute,
   PanierRoute: PanierRoute,
+  PolitiqueDeConfidentialiteRoute: PolitiqueDeConfidentialiteRoute,
   ProfessionnelsRoute: ProfessionnelsRoute,
   PromotionsRoute: PromotionsRoute,
   RechercheRoute: RechercheRoute,
