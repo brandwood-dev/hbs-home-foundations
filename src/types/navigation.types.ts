@@ -10,10 +10,18 @@ export interface MegaMenuColumn {
   links: NavLink[];
 }
 
+export interface NavMenuShortcut {
+  label: string;
+  href: NavHref;
+  imageUrl: string;
+  imageAlt: string;
+}
+
 export interface NavItem extends NavLink {
   id: string;
   highlight?: boolean;
   megaMenu?: MegaMenuColumn[];
+  menuShortcuts?: NavMenuShortcut[];
 }
 
 export interface FooterColumn {

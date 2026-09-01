@@ -14,6 +14,7 @@ interface ApiCategoryResponse {
   seoTitle: string | null;
   seoDescription: string | null;
   attributes: PublicCategory["attributes"];
+  latestProduct?: NonNullable<PublicCategory["latestProduct"]> | null;
   children: ApiCategoryResponse[];
 }
 
@@ -24,6 +25,7 @@ function mapCategory(category: ApiCategoryResponse): PublicCategory {
       ...attribute,
       options: [...attribute.options],
     })),
+    latestProduct: category.latestProduct ?? null,
     children: category.children.map(mapCategory),
   };
 }

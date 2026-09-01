@@ -15,6 +15,32 @@ function categoryMenu(category: PublicCategory): NavItem["megaMenu"] {
   ];
 }
 
+function categoryMenuShortcuts(category: PublicCategory): NonNullable<NavItem["menuShortcuts"]> {
+  const ranked = category.children
+    .map((child, index) => ({ child, index }))
+    .filter(({ child }) => {
+      const preview = child.latestProduct;
+      return Boolean(preview?.imageUrl && preview.imageUrl.trim());
+    });
+
+  ranked.sort((left, right) => {
+    const rightDate = right.child.latestProduct?.createdAt ?? "";
+    const leftDate = left.child.latestProduct?.createdAt ?? "";
+    const byDate = rightDate.localeCompare(leftDate);
+    return byDate !== 0 ? byDate : left.index - right.index;
+  });
+
+  return ranked.slice(0, 2).map(({ child }) => {
+    const preview = child.latestProduct!;
+    return {
+      label: child.name,
+      href: child.path,
+      imageUrl: preview.imageUrl,
+      imageAlt: preview.imageAlt || child.name,
+    };
+  });
+}
+
 /**
  * Merge the API taxonomy into the existing editorial navigation while the
  * remaining non-catalog links are still owned by the fixture. This keeps the
@@ -41,19 +67,28 @@ export function mergeCatalogNavigation(
     if (!category) return item;
     known.add(category.slug);
     const megaMenu = categoryMenu(category) ?? item.megaMenu;
+    const menuShortcuts = categoryMenuShortcuts(category);
     return megaMenu
-      ? { ...item, label: category.name, href: category.path, megaMenu }
+      ? {
+          ...item,
+          label: category.name,
+          href: category.path,
+          megaMenu,
+          ...(menuShortcuts.length > 0 ? { menuShortcuts } : {}),
+        }
       : { ...item, label: category.name, href: category.path };
   });
 
   for (const category of categories) {
     if (known.has(category.slug)) continue;
     const megaMenu = categoryMenu(category);
+    const menuShortcuts = categoryMenuShortcuts(category);
     merged.push({
       id: category.slug,
       label: category.name,
       href: category.path,
       ...(megaMenu ? { megaMenu } : {}),
+      ...(menuShortcuts.length > 0 ? { menuShortcuts } : {}),
     });
   }
   return merged;

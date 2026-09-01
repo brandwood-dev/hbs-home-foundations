@@ -15,6 +15,15 @@ export interface CategoryAttribute {
   options: CategoryAttributeOption[];
 }
 
+/** Latest published product media used by desktop navigation shortcuts. */
+export interface CategoryLatestProduct {
+  slug: string;
+  name: string;
+  imageUrl: string;
+  imageAlt: string;
+  createdAt: string;
+}
+
 export interface PublicCategory {
   slug: string;
   name: string;
@@ -25,6 +34,8 @@ export interface PublicCategory {
   seoTitle: string | null;
   seoDescription: string | null;
   attributes: CategoryAttribute[];
+  /** Optional for backwards compatibility with an older API deployment. */
+  latestProduct?: CategoryLatestProduct | null;
   children: PublicCategory[];
 }
 
