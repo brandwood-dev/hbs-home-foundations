@@ -19,6 +19,7 @@ import { relatedProductsQuery } from "@/services/product/product.queries";
 import {
   changeAxis,
   getInitialVariant,
+  getVariantImages,
   type VariantAxis,
 } from "@/services/product/product-variants";
 import { ProductVariantSelectors } from "@/components/product/ProductVariantSelectors";
@@ -58,7 +59,10 @@ export function ProductDetailView({ product }: { product: Product }) {
         />
 
         <div className="mt-6 grid gap-8 lg:grid-cols-2 lg:gap-12">
-          <ProductGallery images={product.images} activeImageId={variant.imageIds[0]} />
+          <ProductGallery
+            images={getVariantImages(product, variant)}
+            activeImageId={variant.imageIds[0]}
+          />
 
           <div className="space-y-6">
             <header>

@@ -2,6 +2,7 @@ import type { Order } from "@/domain/order/order.types";
 import { formatMoney } from "@/lib/money/money";
 import { AppLink } from "@/components/ui/app-link";
 import { getProductPath } from "@/services/product/product-url";
+import { formatOptionDetails } from "@/services/product/product-options";
 
 export function OrderItemsRecap({ order }: { order: Order }) {
   return (
@@ -33,13 +34,18 @@ export function OrderItemsRecap({ order }: { order: Order }) {
               <p className="text-xs text-foreground-muted">Référence {item.sku}</p>
               <p className="mt-1 text-xs text-foreground-muted">
                 {[
-                  item.colorLabel,
-                  item.widthCm && item.heightCm
-                    ? `${item.widthCm} × ${item.heightCm} cm`
-                    : undefined,
-                  item.curtainHeaderLabel,
-                  item.eyeletColorLabel,
-                  item.liningLabel,
+                  formatOptionDetails(item.selectedOptions) ||
+                    [
+                      item.colorLabel,
+                      item.widthCm && item.heightCm
+                        ? `${item.widthCm} × ${item.heightCm} cm`
+                        : undefined,
+                      item.curtainHeaderLabel,
+                      item.eyeletColorLabel,
+                      item.liningLabel,
+                    ]
+                      .filter(Boolean)
+                      .join(" · "),
                   item.sellingUnitLabel,
                 ]
                   .filter(Boolean)

@@ -317,7 +317,7 @@ describe("ApiContentRepository", () => {
     );
   });
 
-  it("maps an unpublished page to null", async () => {
+  it("uses the authored fallback when an editorial page is not published", async () => {
     const fetchImplementation = vi
       .fn<typeof fetch>()
       .mockResolvedValue(new Response(null, { status: 404 }));
@@ -325,6 +325,36 @@ describe("ApiContentRepository", () => {
       new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
     );
 
-    await expect(repository.getEditorialPage("a-propos")).resolves.toBeNull();
+    await expect(repository.getEditorialPage("a-propos")).resolves.toMatchObject({
+      slug: "a-propos",
+      title: "À propos",
+      blocks: expect.arrayContaining([expect.objectContaining({ blockType: "hero" })]),
+    });
+  });
+
+  it("uses the authored fallback when the API returns an empty page", async () => {
+    const fetchImplementation = vi.fn<typeof fetch>().mockResolvedValue(
+      Response.json({
+        slug: "faq",
+        title: "FAQ",
+        body: "",
+        seoTitle: null,
+        seoDescription: null,
+        version: 1,
+        publishedAt: "2026-09-01T00:00:00.000Z",
+        updatedAt: "2026-09-01T00:00:00.000Z",
+        blocks: [],
+      }),
+    );
+    const repository = new ApiContentRepository(
+      new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
+    );
+
+    await expect(repository.getEditorialPage("faq")).resolves.toMatchObject({
+      slug: "faq",
+      title: "FAQ",
+      body: expect.stringContaining("questions"),
+      blocks: expect.arrayContaining([expect.objectContaining({ blockType: "faq" })]),
+    });
   });
 });

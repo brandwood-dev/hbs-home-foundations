@@ -64,6 +64,14 @@ describe("public catalogue API adapter", () => {
     expect(mapProduct(apiProduct)).toMatchObject({ id: "product-1", isDemo: false });
   });
 
+  it("does not invent product detail placeholders when the API omits optional fields", () => {
+    expect(mapProduct({ ...apiProduct, details: {} }).details).toEqual({
+      care: [],
+      features: [],
+      installationNotes: [],
+    });
+  });
+
   it("reads the public product list without an Admin bearer token", async () => {
     const fetchImplementation = vi
       .fn<typeof fetch>()

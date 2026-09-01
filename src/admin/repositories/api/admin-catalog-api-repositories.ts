@@ -489,6 +489,36 @@ function productPatch(
   };
 }
 
+/**
+ * Les variantes créées dans le formulaire ont un identifiant local jusqu'à
+ * leur persistance. Les médias sont d'abord envoyés sans association, puis
+ * rebinding avec les identifiants générés par l'API.
+ */
+function withoutVariantMediaAssociations(
+  images: AdminProductImage[] | undefined,
+  keepVariantIds?: ReadonlySet<string>,
+): AdminProductImage[] | undefined {
+  return images?.map((image) => {
+    if (!image.variantId || keepVariantIds?.has(image.variantId)) return image;
+    const { variantId: _variantId, ...withoutVariantId } = image;
+    return withoutVariantId;
+  });
+}
+
+function remapVariantMediaAssociations(
+  images: AdminProductImage[] | undefined,
+  variantIds: ReadonlyMap<string, string>,
+): AdminProductImage[] | undefined {
+  return images?.map((image) => {
+    if (!image.variantId) return image;
+    const persistedVariantId = variantIds.get(image.variantId);
+    if (!persistedVariantId) {
+      throw new Error("Impossible de retrouver la variante associée à ce média.");
+    }
+    return { ...image, variantId: persistedVariantId };
+  });
+}
+
 function variantOptions(variant: AdminVariant): Record<string, unknown> {
   return {
     ...(variant.options ?? {}),
@@ -862,16 +892,40 @@ export class ApiAdminProductRepository implements AdminProductRepository {
   }
 
   async create(input: AdminProductInput): Promise<AdminProduct> {
-    let dto = await this.api.createProduct(productBody(input));
+    const initialInput =
+      input.imageAssets === undefined
+        ? input
+        : {
+            ...input,
+            imageAssets: withoutVariantMediaAssociations(input.imageAssets)!,
+          };
+    let dto = await this.api.createProduct(productBody(initialInput));
+    const persistedVariantIds = new Map<string, string>();
     for (const variant of input.variants) {
+      const before = new Set(dto.variants.map((item) => item.id));
       dto = await this.api.createVariant(dto.id, variantBody(variant));
+      const created = dto.variants.find((item) => !before.has(item.id));
+      if (!created) throw new Error("La variante créée n'a pas été retournée par l'API.");
+      persistedVariantIds.set(variant.id, created.id);
+    }
+    const imageAssets = remapVariantMediaAssociations(input.imageAssets, persistedVariantIds);
+    if (imageAssets?.some((image) => image.variantId)) {
+      dto = await this.api.updateProduct(dto.id, productPatch({ imageAssets }, dto.version));
     }
     return mapProduct(dto);
   }
 
   async update(id: string, input: Partial<AdminProductInput>): Promise<AdminProduct> {
     const current = await this.api.getProduct(id);
-    let dto = await this.api.updateProduct(id, productPatch(input, current.version));
+    const existingVariantIds = new Set(current.variants.map((variant) => variant.id));
+    const initialInput =
+      input.imageAssets === undefined
+        ? input
+        : {
+            ...input,
+            imageAssets: withoutVariantMediaAssociations(input.imageAssets, existingVariantIds)!,
+          };
+    let dto = await this.api.updateProduct(id, productPatch(initialInput, current.version));
     const variants = input.variants;
     if (variants === undefined) return mapProduct(dto);
 
@@ -880,6 +934,9 @@ export class ApiAdminProductRepository implements AdminProductRepository {
     // optimistic-lock check.
     dto = await this.api.getProduct(id);
     const seen = new Set<string>();
+    const persistedVariantIds = new Map(
+      current.variants.map((variant) => [variant.id, variant.id]),
+    );
 
     for (const variant of variants) {
       const existing = current.variants.find((item) => item.id === variant.id);
@@ -888,7 +945,11 @@ export class ApiAdminProductRepository implements AdminProductRepository {
         if (variantFingerprint(variant) === variantFingerprint(mapVariant(existing))) continue;
         dto = await updateVariantWithFreshVersion(this.api, id, existing.id, variant);
       } else {
+        const before = new Set(dto.variants.map((item) => item.id));
         dto = await this.api.createVariant(id, variantBody(variant));
+        const created = dto.variants.find((item) => !before.has(item.id));
+        if (!created) throw new Error("La variante créée n'a pas été retournée par l'API.");
+        persistedVariantIds.set(variant.id, created.id);
       }
     }
 
@@ -898,6 +959,10 @@ export class ApiAdminProductRepository implements AdminProductRepository {
       if (!variants.some((variant) => variant.id === existing.id)) {
         dto = await this.api.archiveVariant(id, existing.id);
       }
+    }
+    const imageAssets = remapVariantMediaAssociations(input.imageAssets, persistedVariantIds);
+    if (imageAssets?.some((image) => image.variantId && !existingVariantIds.has(image.variantId))) {
+      dto = await this.api.updateProduct(id, productPatch({ imageAssets }, dto.version));
     }
     return mapProduct(dto);
   }

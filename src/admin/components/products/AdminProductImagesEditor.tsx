@@ -3,10 +3,11 @@ import type { ChangeEvent } from "react";
 import { ArrowDown, ArrowUp, Plus, Star, Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AdminFormSection } from "@/admin/components/ui/AdminForm";
+import { AdminFormSection, AdminSelectField } from "@/admin/components/ui/AdminForm";
 import { AdminEmptyState } from "@/admin/components/ui/AdminStates";
-import type { AdminProductImage } from "@/admin/types/admin.types";
+import type { AdminProductImage, AdminVariant } from "@/admin/types/admin.types";
 import { adminId } from "@/admin/utils/admin.utils";
+import { variantSummary } from "@/admin/services/products/admin-product-mappers";
 import {
   PRODUCT_MEDIA_MIME_TYPES,
   uploadProductImage,
@@ -14,16 +15,29 @@ import {
 
 export function AdminProductImagesEditor({
   images,
+  variants,
   onChange,
   productSlug,
 }: {
   images: AdminProductImage[];
+  variants: AdminVariant[];
   onChange: (images: AdminProductImage[]) => void;
   productSlug?: string;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const variantOptions = [
+    {
+      value: "__product__",
+      label: "Produit entier (image commune)",
+      description: "Utilisée comme fallback pour les variantes sans image dédiée.",
+    },
+    ...variants.map((variant, index) => ({
+      value: variant.id,
+      label: `Variante ${index + 1} · ${variantSummary(variant)}`,
+    })),
+  ];
 
   async function upload(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -104,6 +118,22 @@ export function AdminProductImagesEditor({
                   aria-label="Texte alternatif"
                   placeholder="Texte alternatif (accessibilité et SEO)"
                   onChange={(event) => update(image.id, { alt: event.target.value })}
+                />
+                <AdminSelectField
+                  label="Associer à"
+                  value={image.variantId ?? "__product__"}
+                  options={variantOptions}
+                  onChange={(value) => {
+                    onChange(
+                      images.map((item) => {
+                        if (item.id !== image.id) return item;
+                        const next = { ...item };
+                        if (value === "__product__") delete next.variantId;
+                        else next.variantId = value;
+                        return next;
+                      }),
+                    );
+                  }}
                 />
               </div>
               <div className="flex gap-1 sm:flex-col">

@@ -17,6 +17,7 @@ import { HbsApiClient, HbsApiError } from "@/api/client";
 import type { components } from "@/api/generated/hbs-home-api";
 import type { ContentRepository } from "@/repositories/interfaces/ContentRepository";
 import { MockContentRepository } from "@/repositories/mock/MockContentRepository";
+import { getEditorialPageFixture } from "@/fixtures/editorial-pages.fixture";
 import type { PublicCategory } from "@/repositories/interfaces/CategoryRepository";
 
 type ApiEditorialPage = EditorialPage;
@@ -48,6 +49,17 @@ function sectionFor(
   key: ApiPublicHomeSection["sectionKey"],
 ): ApiPublicHomeSection | undefined {
   return content.sections.find((section) => section.sectionKey === key);
+}
+
+function hasEditorialContent(page: EditorialPage): boolean {
+  if (page.body.trim().length > 0) return true;
+
+  return page.blocks.some((block) => {
+    if (block.media) return true;
+    return Object.values(block.payload).some(
+      (value) => typeof value === "string" && value.trim().length > 0,
+    );
+  });
 }
 
 function setManagedSectionVisibility(
@@ -263,12 +275,14 @@ export class ApiContentRepository implements ContentRepository {
   }
 
   async getEditorialPage(slug: string): Promise<EditorialPage | null> {
+    const fallback = getEditorialPageFixture(slug);
     try {
-      return await this.client.get<ApiEditorialPage>(
+      const page = await this.client.get<ApiEditorialPage>(
         `/api/v1/content/pages/${encodeURIComponent(slug)}`,
       );
+      return hasEditorialContent(page) ? page : fallback;
     } catch (error) {
-      if (error instanceof HbsApiError && error.status === 404) return null;
+      if (error instanceof HbsApiError && error.status === 404) return fallback;
       throw error;
     }
   }
