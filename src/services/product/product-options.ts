@@ -166,3 +166,9 @@ export function formatOptionSummary(options: ProductOptionDisplay[] | undefined)
   if (!options || options.length === 0) return "";
   return options.map((option) => option.value).join(" · ");
 }
+
+/** Résumé explicite pour le panier et le checkout (ex. « Coloris : Ivoire »). */
+export function formatOptionDetails(options: ProductOptionDisplay[] | undefined): string {
+  if (!options || options.length === 0) return "";
+  return options.map((option) => `${option.label} : ${option.value}`).join(" · ");
+}

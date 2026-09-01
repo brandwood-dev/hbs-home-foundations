@@ -7,6 +7,7 @@ import {
 } from "@/services/checkout/checkout-calculations";
 import { formatMoney } from "@/lib/money/money";
 import { AppLink } from "@/components/ui/app-link";
+import { formatOptionDetails } from "@/services/product/product-options";
 
 export function CheckoutSummary({
   cart,
@@ -58,9 +59,20 @@ export function CheckoutSummary({
               <div className="min-w-0 flex-1 text-sm">
                 <p className="truncate font-medium">{item.productName}</p>
                 <p className="text-xs text-foreground-muted">
-                  {item.colorLabel ? `${item.colorLabel} · ` : ""}
-                  {item.widthCm && item.heightCm ? `${item.widthCm}×${item.heightCm} cm · ` : ""}
-                  Qté {item.quantity}
+                  {[
+                    formatOptionDetails(item.selectedOptions) ||
+                      [
+                        item.colorLabel,
+                        item.widthCm && item.heightCm
+                          ? `${item.widthCm}×${item.heightCm} cm`
+                          : undefined,
+                      ]
+                        .filter(Boolean)
+                        .join(" · "),
+                    `Qté ${item.quantity}`,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
                 </p>
               </div>
               <span className="text-sm">{formatMoney(item.lineTotalMinor)}</span>

@@ -1,5 +1,6 @@
 import type { OrderItemSnapshot } from "@/domain/order/order.types";
 import { formatMoney } from "@/lib/money/money";
+import { formatOptionDetails } from "@/services/product/product-options";
 
 export function OrderTrackingItems({ items }: { items: OrderItemSnapshot[] }) {
   return (
@@ -24,13 +25,18 @@ export function OrderTrackingItems({ items }: { items: OrderItemSnapshot[] }) {
               <p className="font-medium">{item.productName}</p>
               <p className="text-xs text-foreground-muted">
                 {[
-                  item.colorLabel,
-                  item.widthCm && item.heightCm
-                    ? `${item.widthCm} × ${item.heightCm} cm`
-                    : undefined,
-                  item.curtainHeaderLabel,
-                  item.eyeletColorLabel,
-                  item.liningLabel,
+                  formatOptionDetails(item.selectedOptions) ||
+                    [
+                      item.colorLabel,
+                      item.widthCm && item.heightCm
+                        ? `${item.widthCm} × ${item.heightCm} cm`
+                        : undefined,
+                      item.curtainHeaderLabel,
+                      item.eyeletColorLabel,
+                      item.liningLabel,
+                    ]
+                      .filter(Boolean)
+                      .join(" · "),
                   item.sellingUnitLabel,
                 ]
                   .filter(Boolean)

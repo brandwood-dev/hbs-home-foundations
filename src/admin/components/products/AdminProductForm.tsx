@@ -889,6 +889,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
             content: (
               <AdminProductImagesEditor
                 images={values.images}
+                variants={values.variants}
                 productSlug={values.slug}
                 onChange={(images) => patch({ images })}
               />

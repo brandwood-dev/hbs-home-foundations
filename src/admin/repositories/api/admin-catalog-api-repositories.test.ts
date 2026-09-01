@@ -289,4 +289,64 @@ describe("Admin catalog API adapters", () => {
       "GET https://api.example.test/api/v1/admin/products/product-1",
     ]);
   });
+
+  it("rebinds media to persisted variant ids when creating a product", async () => {
+    const mapped = mapProduct(product);
+    const localVariantId = "local-variant-1";
+    const persistedVariantId = "persisted-variant-1";
+    const createProduct = vi.fn().mockResolvedValue({
+      ...product,
+      status: "draft",
+      version: 1,
+      media: product.media,
+      variants: [],
+    });
+    const createVariant = vi.fn().mockResolvedValue({
+      ...product,
+      status: "draft",
+      version: 2,
+      media: product.media,
+      variants: [{ ...product.variants[0], id: persistedVariantId }],
+    });
+    const updateProduct = vi.fn().mockResolvedValue({
+      ...product,
+      status: "draft",
+      version: 3,
+      media: [{ ...product.media[0], variantId: persistedVariantId }],
+      variants: [{ ...product.variants[0], id: persistedVariantId }],
+    });
+    const api = {
+      createProduct,
+      createVariant,
+      updateProduct,
+    } as unknown as AdminCatalogApi;
+    const repository = new ApiAdminProductRepository(api);
+    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...input } = mapped;
+    const sourceVariant = input.variants[0];
+    if (!sourceVariant) throw new Error("Expected a fixture variant.");
+    const variant = { ...sourceVariant, id: localVariantId };
+    const imageAssets = (input.imageAssets ?? []).map((image) => ({
+      ...image,
+      variantId: localVariantId,
+    }));
+
+    await repository.create({ ...input, variants: [variant], imageAssets });
+
+    expect(createProduct).toHaveBeenCalledWith(
+      expect.objectContaining({
+        payload: expect.objectContaining({
+          imageAssets: [expect.not.objectContaining({ variantId: localVariantId })],
+        }),
+      }),
+    );
+    expect(updateProduct).toHaveBeenCalledWith(
+      "product-1",
+      expect.objectContaining({
+        expectedVersion: 2,
+        payload: expect.objectContaining({
+          imageAssets: [expect.objectContaining({ variantId: persistedVariantId })],
+        }),
+      }),
+    );
+  });
 });
