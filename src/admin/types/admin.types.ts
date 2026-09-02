@@ -568,6 +568,8 @@ export interface AdminSettings {
     customerAccounts: boolean;
     onlinePayment: boolean;
   };
+  /** Version renvoyée par l’API pour éviter les écrasements concurrents. */
+  version?: number;
 }
 
 export type AdminRoleId =
@@ -599,6 +601,9 @@ export interface AdminUser {
   isActive: boolean;
   createdAt: string;
   lastSeenAt?: string;
+  /** Un utilisateur peut cumuler plusieurs rôles persistés. */
+  roles?: AdminRoleId[];
+  status?: "invited" | "active" | "suspended" | "revoked";
 }
 
 export type AuditAction = "create" | "update" | "delete" | "status_change" | "adjustment";
@@ -612,6 +617,7 @@ export interface AdminAuditLog {
   resourceType: string;
   resourceId: string;
   details: string;
+  outcome?: "success" | "denied" | "failure";
 }
 
 export interface AdminMockDatabase {

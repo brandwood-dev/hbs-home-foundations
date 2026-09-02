@@ -43,9 +43,12 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminAttributsRouteImport } from './routes/admin/attributs'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminConnexionRouteImport } from './routes/admin/connexion'
+import { Route as AdminJournalActiviteRouteImport } from './routes/admin/journal-activite'
 import { Route as AdminMediasRouteImport } from './routes/admin/medias'
+import { Route as AdminParametresRouteImport } from './routes/admin/parametres'
 import { Route as AdminPromotionsRouteImport } from './routes/admin/promotions'
 import { Route as AdminStockRouteImport } from './routes/admin/stock'
+import { Route as AdminUtilisateursRouteImport } from './routes/admin/utilisateurs'
 import { Route as CommandeIndexRouteImport } from './routes/commande.index'
 import { Route as CommandeConfirmationRouteImport } from './routes/commande.confirmation'
 import { Route as CoussinsIndexRouteImport } from './routes/coussins.index'
@@ -282,9 +285,19 @@ const AdminConnexionRoute = AdminConnexionRouteImport.update({
   path: '/connexion',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminJournalActiviteRoute = AdminJournalActiviteRouteImport.update({
+  id: '/journal-activite',
+  path: '/journal-activite',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminMediasRoute = AdminMediasRouteImport.update({
   id: '/medias',
   path: '/medias',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminParametresRoute = AdminParametresRouteImport.update({
+  id: '/parametres',
+  path: '/parametres',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminPromotionsRoute = AdminPromotionsRouteImport.update({
@@ -295,6 +308,11 @@ const AdminPromotionsRoute = AdminPromotionsRouteImport.update({
 const AdminStockRoute = AdminStockRouteImport.update({
   id: '/stock',
   path: '/stock',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminUtilisateursRoute = AdminUtilisateursRouteImport.update({
+  id: '/utilisateurs',
+  path: '/utilisateurs',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const CommandeIndexRoute = CommandeIndexRouteImport.update({
@@ -650,9 +668,12 @@ export interface FileRoutesByFullPath {
   '/admin/attributs': typeof AdminAttributsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/connexion': typeof AdminConnexionRoute
+  '/admin/journal-activite': typeof AdminJournalActiviteRoute
   '/admin/medias': typeof AdminMediasRoute
+  '/admin/parametres': typeof AdminParametresRoute
   '/admin/promotions': typeof AdminPromotionsRoute
   '/admin/stock': typeof AdminStockRoute
+  '/admin/utilisateurs': typeof AdminUtilisateursRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
   '/coussins/lin': typeof CoussinsLinRoute
   '/coussins/lots': typeof CoussinsLotsRoute
@@ -751,9 +772,12 @@ export interface FileRoutesByTo {
   '/admin/attributs': typeof AdminAttributsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/connexion': typeof AdminConnexionRoute
+  '/admin/journal-activite': typeof AdminJournalActiviteRoute
   '/admin/medias': typeof AdminMediasRoute
+  '/admin/parametres': typeof AdminParametresRoute
   '/admin/promotions': typeof AdminPromotionsRoute
   '/admin/stock': typeof AdminStockRoute
+  '/admin/utilisateurs': typeof AdminUtilisateursRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
   '/coussins/lin': typeof CoussinsLinRoute
   '/coussins/lots': typeof CoussinsLotsRoute
@@ -853,9 +877,12 @@ export interface FileRoutesById {
   '/admin/attributs': typeof AdminAttributsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/connexion': typeof AdminConnexionRoute
+  '/admin/journal-activite': typeof AdminJournalActiviteRoute
   '/admin/medias': typeof AdminMediasRoute
+  '/admin/parametres': typeof AdminParametresRoute
   '/admin/promotions': typeof AdminPromotionsRoute
   '/admin/stock': typeof AdminStockRoute
+  '/admin/utilisateurs': typeof AdminUtilisateursRoute
   '/commande/confirmation': typeof CommandeConfirmationRoute
   '/coussins/lin': typeof CoussinsLinRoute
   '/coussins/lots': typeof CoussinsLotsRoute
@@ -957,9 +984,12 @@ export interface FileRouteTypes {
     | '/admin/attributs'
     | '/admin/categories'
     | '/admin/connexion'
+    | '/admin/journal-activite'
     | '/admin/medias'
+    | '/admin/parametres'
     | '/admin/promotions'
     | '/admin/stock'
+    | '/admin/utilisateurs'
     | '/commande/confirmation'
     | '/coussins/lin'
     | '/coussins/lots'
@@ -1058,9 +1088,12 @@ export interface FileRouteTypes {
     | '/admin/attributs'
     | '/admin/categories'
     | '/admin/connexion'
+    | '/admin/journal-activite'
     | '/admin/medias'
+    | '/admin/parametres'
     | '/admin/promotions'
     | '/admin/stock'
+    | '/admin/utilisateurs'
     | '/commande/confirmation'
     | '/coussins/lin'
     | '/coussins/lots'
@@ -1159,9 +1192,12 @@ export interface FileRouteTypes {
     | '/admin/attributs'
     | '/admin/categories'
     | '/admin/connexion'
+    | '/admin/journal-activite'
     | '/admin/medias'
+    | '/admin/parametres'
     | '/admin/promotions'
     | '/admin/stock'
+    | '/admin/utilisateurs'
     | '/commande/confirmation'
     | '/coussins/lin'
     | '/coussins/lots'
@@ -1549,11 +1585,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminConnexionRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/journal-activite': {
+      id: '/admin/journal-activite'
+      path: '/journal-activite'
+      fullPath: '/admin/journal-activite'
+      preLoaderRoute: typeof AdminJournalActiviteRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/medias': {
       id: '/admin/medias'
       path: '/medias'
       fullPath: '/admin/medias'
       preLoaderRoute: typeof AdminMediasRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/parametres': {
+      id: '/admin/parametres'
+      path: '/parametres'
+      fullPath: '/admin/parametres'
+      preLoaderRoute: typeof AdminParametresRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/promotions': {
@@ -1568,6 +1618,13 @@ declare module '@tanstack/react-router' {
       path: '/stock'
       fullPath: '/admin/stock'
       preLoaderRoute: typeof AdminStockRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/utilisateurs': {
+      id: '/admin/utilisateurs'
+      path: '/utilisateurs'
+      fullPath: '/admin/utilisateurs'
+      preLoaderRoute: typeof AdminUtilisateursRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/commande/': {
@@ -2035,9 +2092,12 @@ interface AdminRouteRouteChildren {
   AdminAttributsRoute: typeof AdminAttributsRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminConnexionRoute: typeof AdminConnexionRoute
+  AdminJournalActiviteRoute: typeof AdminJournalActiviteRoute
   AdminMediasRoute: typeof AdminMediasRoute
+  AdminParametresRoute: typeof AdminParametresRoute
   AdminPromotionsRoute: typeof AdminPromotionsRoute
   AdminStockRoute: typeof AdminStockRoute
+  AdminUtilisateursRoute: typeof AdminUtilisateursRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminAuthCallbackRoute: typeof AdminAuthCallbackRoute
   AdminClientsCustomerIdRoute: typeof AdminClientsCustomerIdRoute
@@ -2056,9 +2116,12 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAttributsRoute: AdminAttributsRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminConnexionRoute: AdminConnexionRoute,
+  AdminJournalActiviteRoute: AdminJournalActiviteRoute,
   AdminMediasRoute: AdminMediasRoute,
+  AdminParametresRoute: AdminParametresRoute,
   AdminPromotionsRoute: AdminPromotionsRoute,
   AdminStockRoute: AdminStockRoute,
+  AdminUtilisateursRoute: AdminUtilisateursRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminAuthCallbackRoute: AdminAuthCallbackRoute,
   AdminClientsCustomerIdRoute: AdminClientsCustomerIdRoute,

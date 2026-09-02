@@ -19,6 +19,9 @@ export const adminConfig = {
   mediaDataProvider: "api" as AdminDataProvider,
   /** Les pages éditoriales sont migrées dans la phase 9C.2. */
   editorialDataProvider: "api" as AdminDataProvider,
+  settingsDataProvider: "api" as AdminDataProvider,
+  accessDataProvider: "api" as AdminDataProvider,
+  auditDataProvider: "api" as AdminDataProvider,
   demoMode: false,
   pageSize: 20,
   currency: "TND",

@@ -188,8 +188,10 @@ export function useAdminUsers() {
   return useQuery(clientQuery(adminKeys.users(), () => adminRepositories.users.list()));
 }
 
-export function useAdminAudit() {
-  return useQuery(clientQuery(adminKeys.audit(), () => adminRepositories.audit.list()));
+export function useAdminAudit(params?: Parameters<typeof adminRepositories.audit.list>[0]) {
+  return useQuery(
+    clientQuery([...adminKeys.audit(), params ?? {}], () => adminRepositories.audit.list(params)),
+  );
 }
 
 /**

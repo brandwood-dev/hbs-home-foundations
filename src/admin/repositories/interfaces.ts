@@ -456,14 +456,24 @@ export interface AdminSettingsRepository {
 }
 
 export type AdminUserInput = Omit<AdminUser, "id" | "createdAt">;
-export type AdminUserRepository = CrudRepository<
+export interface AdminUserRepository extends CrudRepository<
   AdminUser,
   AdminUserInput,
   Partial<AdminUserInput>
->;
+> {
+  /** Optional because legacy mocks predate multi-role access management. */
+  revokeRole?(id: string, role: string): Promise<AdminUser>;
+}
 
 export interface AdminAuditRepository {
-  list(): Promise<AdminAuditLog[]>;
+  list(params?: {
+    action?: string;
+    resourceType?: string;
+    outcome?: "success" | "denied" | "failure";
+    actorUserId?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  }): Promise<AdminAuditLog[]>;
 }
 
 export interface AdminDashboardPeriod {

@@ -29,6 +29,11 @@ import { ApiAdminEditorialPageRepository } from "@/admin/repositories/api/admin-
 import { ApiAdminArticleRepository } from "@/admin/repositories/api/admin-article-api-repository";
 import { ApiAdminHomeContentRepository } from "@/admin/repositories/api/admin-home-content-api-repository";
 import { adminConfig } from "@/admin/config/admin.config";
+import {
+  ApiAdminAuditRepository,
+  ApiAdminSettingsRepository,
+  ApiAdminUserRepository,
+} from "@/admin/repositories/api/admin-management-api-repositories";
 
 /**
  * Point d'entrée unique du back-office.
@@ -80,7 +85,16 @@ export const adminRepositories = {
     adminConfig.mediaDataProvider === "api"
       ? new ApiAdminMediaRepository()
       : new MockAdminMediaRepository(),
-  settings: new MockAdminSettingsRepository(),
-  users: new MockAdminUserRepository(),
-  audit: new MockAdminAuditRepository(),
+  settings:
+    adminConfig.settingsDataProvider === "api"
+      ? new ApiAdminSettingsRepository()
+      : new MockAdminSettingsRepository(),
+  users:
+    adminConfig.accessDataProvider === "api"
+      ? new ApiAdminUserRepository()
+      : new MockAdminUserRepository(),
+  audit:
+    adminConfig.auditDataProvider === "api"
+      ? new ApiAdminAuditRepository()
+      : new MockAdminAuditRepository(),
 };
