@@ -32,6 +32,7 @@ import {
 } from "@/admin/components/ui/AdminForm";
 import { AdminSearchInput } from "@/admin/components/ui/AdminDataTable";
 import { useAdminCategories, useAdminProducts } from "@/admin/hooks/admin.queries";
+import { isMfaRequiredError, useAdminMfaOptional } from "@/admin/auth/AdminMfaContext";
 import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
 import { adminRepositories } from "@/admin/repositories/adminRepositoryFactory";
 import {
@@ -157,6 +158,7 @@ function CategoryThumbnail({ category }: { category: AdminCategory }) {
 export function AdminCategoriesPage() {
   const { data: categories = [], isLoading, error, refetch } = useAdminCategories();
   const { data: products = [] } = useAdminProducts();
+  const mfa = useAdminMfaOptional();
   const saveCategory = useSaveAdminCategory();
   const deleteCategory = useDeleteAdminCategory();
   const moveCategory = useMoveAdminCategory();
@@ -234,11 +236,20 @@ export function AdminCategoriesPage() {
     }
     setImageUploading(true);
     try {
-      const uploaded = await adminRepositories.categories.uploadImage(
-        file,
-        draft.name || file.name,
-        draft.name || "Image de catégorie",
-      );
+      const upload = () =>
+        adminRepositories.categories.uploadImage(
+          file,
+          draft.name || file.name,
+          draft.name || "Image de catégorie",
+        );
+      let uploaded;
+      try {
+        uploaded = await upload();
+      } catch (reason) {
+        if (!mfa || !isMfaRequiredError(reason)) throw reason;
+        await mfa.requireMfa();
+        uploaded = await upload();
+      }
       if (
         draftInstanceRef.current === draftInstance &&
         uploadRequestRef.current === uploadRequest

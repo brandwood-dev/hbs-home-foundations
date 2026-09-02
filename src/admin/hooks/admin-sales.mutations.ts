@@ -1,3 +1,4 @@
+import { isMfaRequiredError } from "@/admin/auth/AdminMfaContext";
 import { adminKeys, useAdminMutation } from "@/admin/hooks/admin.queries";
 import { adminRepositories } from "@/admin/repositories/adminRepositoryFactory";
 import type {
@@ -43,6 +44,9 @@ export function useBulkUpdateOrderStatus() {
           await adminRepositories.orders.updateStatus({ orderId, status: input.status });
           succeeded.push(orderId);
         } catch (error) {
+          // Let the generic mutation wrapper open the step-up challenge. A
+          // security failure must not be converted into a partial result.
+          if (isMfaRequiredError(error)) throw error;
           failures.push({
             orderId,
             message: error instanceof Error ? error.message : "Erreur inconnue.",

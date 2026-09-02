@@ -39,7 +39,8 @@ cet usage ; une clé secrète Supabase ou `service_role` ne doit jamais être pr
 
 Supabase Auth doit autoriser exactement la redirection
 `https://preview.hbs-home.com/admin/auth/callback`. Le frontend refuse l'accès aux modules Admin
-tant que l'API n'a pas confirmé un profil actif, la permission demandée et le niveau MFA `aal2`.
+tant que l'API n'a pas confirmé un profil actif et la permission demandée. Les opérations sensibles
+déclenchent ensuite une vérification MFA « step-up » uniquement lorsque l'API exige le niveau `aal2`.
 
 Si l'interface affiche `Supabase Auth n’est pas configuré pour cet environnement.` sur
 `/admin/auth/callback`, cela signifie que le build actuel a été fait sans

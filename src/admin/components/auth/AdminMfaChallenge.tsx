@@ -99,9 +99,11 @@ async function prepareFactor(client: SupabaseClient): Promise<FactorState> {
 export function AdminMfaChallenge({
   client,
   onVerified,
+  onCancelled,
 }: {
   client: SupabaseClient;
   onVerified: () => Promise<void>;
+  onCancelled?: () => void;
 }) {
   const [factor, setFactor] = useState<FactorState | null>(null);
   const [code, setCode] = useState("");
@@ -156,8 +158,8 @@ export function AdminMfaChallenge({
 
   return (
     <AdminAuthPage
-      title="Vérification en deux étapes"
-      description="Le MFA TOTP est obligatoire pour accéder au back-office HBS HOME."
+      title="Vérification de sécurité"
+      description="Une vérification supplémentaire est requise pour cette action d’administration."
     >
       {loading ? (
         <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
@@ -204,9 +206,16 @@ export function AdminMfaChallenge({
               {error}
             </p>
           ) : null}
-          <Button className="w-full" type="submit" disabled={submitting || code.length !== 6}>
-            {submitting ? "Vérification…" : "Vérifier et continuer"}
-          </Button>
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            {onCancelled ? (
+              <Button type="button" variant="outline" onClick={onCancelled} disabled={submitting}>
+                Annuler
+              </Button>
+            ) : null}
+            <Button type="submit" disabled={submitting || code.length !== 6}>
+              {submitting ? "Vérification…" : "Vérifier et continuer"}
+            </Button>
+          </div>
         </form>
       ) : (
         <div
