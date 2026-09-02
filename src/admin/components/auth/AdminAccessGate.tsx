@@ -4,8 +4,8 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { HbsApiClient, HbsApiError, type ApiAdminSession } from "@/api";
 import { useAdminAuth } from "@/admin/auth/AdminAuthProvider";
 import { AdminAuthorizationProvider } from "@/admin/auth/AdminAuthorizationContext";
+import { AdminMfaProvider } from "@/admin/auth/AdminMfaContext";
 import { AdminAuthPage } from "./AdminAuthPage";
-import { AdminMfaChallenge } from "./AdminMfaChallenge";
 import { Button } from "@/components/ui/button";
 
 type ApiState =
@@ -106,19 +106,6 @@ export function AdminAccessGate({ children }: { children: ReactNode }) {
       </AdminAuthPage>
     );
   }
-  if (apiState.session.mfaRequired || apiState.session.assuranceLevel !== "aal2") {
-    if (!auth.client) return <AdminGateLoading />;
-    return (
-      <AdminMfaChallenge
-        client={auth.client}
-        onVerified={async () => {
-          await auth.refreshSession();
-          setAttempt((value) => value + 1);
-        }}
-      />
-    );
-  }
-
   const requiredPermission = permissionForPath(pathname);
   if (requiredPermission && !apiState.session.permissions.includes(requiredPermission)) {
     return (
@@ -133,8 +120,22 @@ export function AdminAccessGate({ children }: { children: ReactNode }) {
     );
   }
 
-  return (
+  const authorizedTree = (
     <AdminAuthorizationProvider session={apiState.session}>{children}</AdminAuthorizationProvider>
+  );
+
+  if (!auth.client) return authorizedTree;
+
+  return (
+    <AdminMfaProvider
+      client={auth.client}
+      onVerified={async () => {
+        await auth.refreshSession();
+        setAttempt((value) => value + 1);
+      }}
+    >
+      {authorizedTree}
+    </AdminMfaProvider>
   );
 }
 

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient, type QueryKey } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { adminRepositories } from "@/admin/repositories/adminRepositoryFactory";
+import { isMfaRequiredError, useAdminMfaOptional } from "@/admin/auth/AdminMfaContext";
 import type {
   AdminDashboardPeriod,
   AdminCustomerListParams,
@@ -53,46 +54,75 @@ function clientQuery<T>(key: QueryKey, fn: () => Promise<T>) {
   };
 }
 
+type AdminQueryOptions<T> = ReturnType<typeof clientQuery<T>> & { enabled?: boolean };
+
+/**
+ * Read endpoints that expose sensitive operational data may also require
+ * AAL2. Handle that response here so opening a protected read page presents
+ * the same step-up dialog as a write, without losing the page state.
+ */
+function useAdminQuery<T>(options: AdminQueryOptions<T>) {
+  const mfa = useAdminMfaOptional();
+  return useQuery({
+    ...options,
+    queryFn: async () => {
+      try {
+        return await options.queryFn();
+      } catch (error) {
+        if (!mfa || !isMfaRequiredError(error)) throw error;
+        await mfa.requireMfa();
+        return options.queryFn();
+      }
+    },
+  });
+}
+
 export function useAdminDashboard(period: AdminDashboardPeriod = {}) {
-  return useQuery(
+  return useAdminQuery(
     clientQuery(adminKeys.dashboard(period), () => adminRepositories.dashboard.metrics(period)),
   );
 }
 
 export function useAdminProducts(options: { enabled?: boolean } = {}) {
-  return useQuery({
+  return useAdminQuery({
     ...clientQuery(adminKeys.products(), () => adminRepositories.products.list()),
     enabled: options.enabled ?? true,
   });
 }
 
 export function useAdminProduct(id: string) {
-  return useQuery({
+  return useAdminQuery({
     ...clientQuery(adminKeys.product(id), () => adminRepositories.products.getById(id)),
     enabled: Boolean(id),
   });
 }
 
 export function useAdminCategories() {
-  return useQuery(clientQuery(adminKeys.categories(), () => adminRepositories.categories.list()));
+  return useAdminQuery(
+    clientQuery(adminKeys.categories(), () => adminRepositories.categories.list()),
+  );
 }
 
 export function useAdminAttributes() {
-  return useQuery(clientQuery(adminKeys.attributes(), () => adminRepositories.attributes.list()));
+  return useAdminQuery(
+    clientQuery(adminKeys.attributes(), () => adminRepositories.attributes.list()),
+  );
 }
 
 export function useAdminInventory() {
-  return useQuery(clientQuery(adminKeys.inventory(), () => adminRepositories.inventory.list()));
+  return useAdminQuery(
+    clientQuery(adminKeys.inventory(), () => adminRepositories.inventory.list()),
+  );
 }
 
 export function useAdminStockMovements() {
-  return useQuery(
+  return useAdminQuery(
     clientQuery(adminKeys.movements(), () => adminRepositories.inventory.movements()),
   );
 }
 
 export function useAdminOrders(params: AdminOrderListParams, search?: string) {
-  return useQuery(
+  return useAdminQuery(
     clientQuery([...adminKeys.orders(), "list", params, search ?? ""], () =>
       adminRepositories.orders.list(params, search),
     ),
@@ -100,14 +130,14 @@ export function useAdminOrders(params: AdminOrderListParams, search?: string) {
 }
 
 export function useAdminOrder(id: string) {
-  return useQuery({
+  return useAdminQuery({
     ...clientQuery(adminKeys.order(id), () => adminRepositories.orders.getById(id)),
     enabled: Boolean(id),
   });
 }
 
 export function useAdminCustomers(params: AdminCustomerListParams, search?: string) {
-  return useQuery(
+  return useAdminQuery(
     clientQuery([...adminKeys.customers(), "list", params, search ?? ""], () =>
       adminRepositories.customers.list(params, search),
     ),
@@ -115,22 +145,24 @@ export function useAdminCustomers(params: AdminCustomerListParams, search?: stri
 }
 
 export function useAdminCustomer(id: string) {
-  return useQuery({
+  return useAdminQuery({
     ...clientQuery(adminKeys.customer(id), () => adminRepositories.customers.getById(id)),
     enabled: Boolean(id),
   });
 }
 
 export function useAdminPromotions() {
-  return useQuery(clientQuery(adminKeys.promotions(), () => adminRepositories.promotions.list()));
+  return useAdminQuery(
+    clientQuery(adminKeys.promotions(), () => adminRepositories.promotions.list()),
+  );
 }
 
 export function useAdminContent() {
-  return useQuery(clientQuery(adminKeys.content(), () => adminRepositories.content.get()));
+  return useAdminQuery(clientQuery(adminKeys.content(), () => adminRepositories.content.get()));
 }
 
 export function useAdminHomeContent(sectionKey?: AdminHomeSectionKey) {
-  return useQuery(
+  return useAdminQuery(
     clientQuery(adminKeys.homeContent(sectionKey), () =>
       adminRepositories.homeContent.get(sectionKey),
     ),
@@ -138,11 +170,11 @@ export function useAdminHomeContent(sectionKey?: AdminHomeSectionKey) {
 }
 
 export function useAdminEditorialPages() {
-  return useQuery(clientQuery(adminKeys.pages(), () => adminRepositories.pages.list()));
+  return useAdminQuery(clientQuery(adminKeys.pages(), () => adminRepositories.pages.list()));
 }
 
 export function useAdminEditorialPage(id: string) {
-  return useQuery({
+  return useAdminQuery({
     ...clientQuery([...adminKeys.pages(), id], () => adminRepositories.pages.get(id)),
     enabled: Boolean(id),
   });
@@ -153,7 +185,7 @@ export function useAdminArticles(params?: {
   status?: "draft" | "published" | "archived";
   categoryId?: string;
 }) {
-  return useQuery(
+  return useAdminQuery(
     clientQuery([...adminKeys.articles(), params ?? {}], () =>
       adminRepositories.articles.list(params),
     ),
@@ -161,35 +193,35 @@ export function useAdminArticles(params?: {
 }
 
 export function useAdminArticle(id: string) {
-  return useQuery({
+  return useAdminQuery({
     ...clientQuery([...adminKeys.articles(), id], () => adminRepositories.articles.get(id)),
     enabled: Boolean(id),
   });
 }
 
 export function useAdminArticleCategories() {
-  return useQuery(
+  return useAdminQuery(
     clientQuery(adminKeys.articleCategories(), () => adminRepositories.articles.listCategories()),
   );
 }
 
 export function useAdminMedia(options: { enabled?: boolean } = {}) {
-  return useQuery({
+  return useAdminQuery({
     ...clientQuery(adminKeys.media(), () => adminRepositories.media.list()),
     enabled: options.enabled ?? true,
   });
 }
 
 export function useAdminSettings() {
-  return useQuery(clientQuery(adminKeys.settings(), () => adminRepositories.settings.get()));
+  return useAdminQuery(clientQuery(adminKeys.settings(), () => adminRepositories.settings.get()));
 }
 
 export function useAdminUsers() {
-  return useQuery(clientQuery(adminKeys.users(), () => adminRepositories.users.list()));
+  return useAdminQuery(clientQuery(adminKeys.users(), () => adminRepositories.users.list()));
 }
 
 export function useAdminAudit(params?: Parameters<typeof adminRepositories.audit.list>[0]) {
-  return useQuery(
+  return useAdminQuery(
     clientQuery([...adminKeys.audit(), params ?? {}], () => adminRepositories.audit.list(params)),
   );
 }
@@ -205,8 +237,17 @@ export function useAdminMutation<TVariables, TData>(options: {
   onSuccess?: (data: TData) => void;
 }) {
   const queryClient = useQueryClient();
+  const mfa = useAdminMfaOptional();
   return useMutation({
-    mutationFn: options.mutationFn,
+    mutationFn: async (variables: TVariables) => {
+      try {
+        return await options.mutationFn(variables);
+      } catch (error) {
+        if (!mfa || !isMfaRequiredError(error)) throw error;
+        await mfa.requireMfa();
+        return options.mutationFn(variables);
+      }
+    },
     onSuccess: (data) => {
       for (const key of options.invalidate ?? [adminKeys.all]) {
         void queryClient.invalidateQueries({ queryKey: key });
