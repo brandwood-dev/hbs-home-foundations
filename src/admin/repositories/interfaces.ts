@@ -432,6 +432,7 @@ export interface AdminArticleRepository {
   update(id: string, input: AdminArticlePatch): Promise<AdminArticle>;
   publish(id: string): Promise<AdminArticle>;
   archive(id: string): Promise<AdminArticle>;
+  delete(id: string): Promise<void>;
   duplicate(id: string): Promise<AdminArticle>;
 }
 

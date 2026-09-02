@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { Archive, Copy, FileText, Plus, Send } from "lucide-react";
+import { Archive, Copy, FileText, Plus, Send, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { AdminPageHeader } from "@/admin/components/ui/AdminPageHeader";
-import { AdminActionMenu, AdminFormDrawer } from "@/admin/components/ui/AdminOverlays";
+import {
+  AdminActionMenu,
+  AdminConfirmDialog,
+  AdminFormDrawer,
+} from "@/admin/components/ui/AdminOverlays";
 import {
   AdminDataTable,
   AdminSearchInput,
@@ -20,6 +24,7 @@ import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
 import {
   useArchiveAdminArticle,
   useCreateAdminArticle,
+  useDeleteAdminArticle,
   useDuplicateAdminArticle,
   usePublishAdminArticle,
   useUpdateAdminArticle,
@@ -110,8 +115,10 @@ export function AdminArticlesPage() {
   const updateArticle = useUpdateAdminArticle();
   const publishArticle = usePublishAdminArticle();
   const archiveArticle = useArchiveAdminArticle();
+  const deleteArticle = useDeleteAdminArticle();
   const duplicateArticle = useDuplicateAdminArticle();
   const [search, setSearch] = useState("");
+  const [pendingDelete, setPendingDelete] = useState<AdminArticle | null>(null);
   const articleDraftState = useAdminDraftState<ArticleDraft | null>("hbs-admin-article-form", null);
   const { value: draft, setValue: setDraft, setPersist, clear } = articleDraftState;
   const [formError, setFormError] = useState<string | null>(null);
@@ -265,8 +272,26 @@ export function AdminArticlesPage() {
                 <Archive className="size-4" aria-hidden /> Archiver
               </DropdownMenuItem>
             ) : null}
+            {article.status === "archived" ? (
+              <DropdownMenuItem className="text-red-600" onClick={() => setPendingDelete(article)}>
+                <Trash2 className="size-4" aria-hidden /> Supprimer définitivement
+              </DropdownMenuItem>
+            ) : null}
           </AdminActionMenu>
         )}
+      />
+
+      <AdminConfirmDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => !open && setPendingDelete(null)}
+        title="Supprimer définitivement cet article ?"
+        description={`« ${pendingDelete?.draft?.title ?? pendingDelete?.published?.title ?? pendingDelete?.slug ?? ""} » sera supprimé ainsi que ses révisions. Cette action est irréversible.`}
+        confirmLabel="Supprimer définitivement"
+        destructive
+        onConfirm={() => {
+          if (pendingDelete) deleteArticle.mutate(pendingDelete.id);
+          setPendingDelete(null);
+        }}
       />
 
       <AdminFormDrawer

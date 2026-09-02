@@ -35,6 +35,14 @@ export function useArchiveAdminArticle() {
   });
 }
 
+export function useDeleteAdminArticle() {
+  return useAdminMutation({
+    mutationFn: (id: string) => adminRepositories.articles.delete(id),
+    successMessage: "Article supprimé définitivement.",
+    invalidate: [adminKeys.articles()],
+  });
+}
+
 export function useDuplicateAdminArticle() {
   return useAdminMutation({
     mutationFn: (id: string) => adminRepositories.articles.duplicate(id),

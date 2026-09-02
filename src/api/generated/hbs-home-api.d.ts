@@ -1136,7 +1136,8 @@ export interface paths {
         get: operations["adminGetArticle"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** Permanently delete an archived article */
+        delete: operations["adminDeleteArticle"];
         options?: never;
         head?: never;
         patch: operations["adminUpdateArticle"];
@@ -15216,6 +15217,114 @@ export interface operations {
             };
             /** @description Default Response */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    adminDeleteArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Default Response */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        type: string;
+                        title: string;
+                        status: number;
+                        detail: string;
+                        instance: string;
+                        code: string;
+                        requestId: string;
+                        errors?: {
+                            path: string;
+                            message: string;
+                            keyword: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Default Response */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
