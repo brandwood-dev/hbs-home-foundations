@@ -12,6 +12,90 @@ interface FactorState {
   secret: string | null;
 }
 
+const MFA_FRIENDLY_NAME = "HBS HOME Admin";
+
+// Enrollment is a remote mutation. Keep one initialization promise per client
+// so a remount or a concurrent auth-state update cannot create the same factor
+// twice (Supabase rejects duplicate friendly names).
+const factorInitialization = new WeakMap<SupabaseClient, Promise<FactorState>>();
+
+function wait(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+}
+
+function isDuplicateFactorError(reason: unknown): boolean {
+  return (
+    reason instanceof Error &&
+    /friendly name/i.test(reason.message) &&
+    /already exists/i.test(reason.message)
+  );
+}
+
+async function prepareFactor(client: SupabaseClient): Promise<FactorState> {
+  const existingInitialization = factorInitialization.get(client);
+  if (existingInitialization) return existingInitialization;
+
+  const initialization = (async () => {
+    const { data: factors, error: factorsError } = await client.auth.mfa.listFactors();
+    if (factorsError) throw factorsError;
+
+    const verified = factors.totp.find((item) => item.status === "verified");
+    if (verified) return { id: verified.id, qrCode: null, secret: null };
+
+    // An interrupted enrollment leaves an unverified factor behind. Remove it
+    // before creating a fresh one so the QR code shown to the user is always
+    // backed by the factor that will be verified.
+    for (const staleFactor of factors.totp.filter((item) => item.status !== "verified")) {
+      const { error: unenrollError } = await client.auth.mfa.unenroll({
+        factorId: staleFactor.id,
+      });
+      if (unenrollError) throw unenrollError;
+    }
+    if (factors.totp.some((item) => item.status !== "verified")) await wait(250);
+
+    const enroll = async () => {
+      const { data: enrollment, error: enrollmentError } = await client.auth.mfa.enroll({
+        factorType: "totp",
+        friendlyName: MFA_FRIENDLY_NAME,
+      });
+      if (enrollmentError) throw enrollmentError;
+      return {
+        id: enrollment.id,
+        qrCode: enrollment.totp.qr_code,
+        secret: enrollment.totp.secret,
+      };
+    };
+
+    try {
+      return await enroll();
+    } catch (reason) {
+      // If another request won the race, clean up its unverified factor and
+      // retry once. This also recovers accounts left in the failed state by an
+      // earlier version of the flow.
+      if (!isDuplicateFactorError(reason)) throw reason;
+      const { data: retryFactors, error: retryFactorsError } = await client.auth.mfa.listFactors();
+      if (retryFactorsError) throw retryFactorsError;
+      const retryVerified = retryFactors.totp.find((item) => item.status === "verified");
+      if (retryVerified) return { id: retryVerified.id, qrCode: null, secret: null };
+      for (const staleFactor of retryFactors.totp.filter((item) => item.status !== "verified")) {
+        const { error: unenrollError } = await client.auth.mfa.unenroll({
+          factorId: staleFactor.id,
+        });
+        if (unenrollError) throw unenrollError;
+      }
+      await wait(300);
+      return enroll();
+    }
+  })();
+
+  const retryableInitialization = initialization.catch((reason: unknown) => {
+    factorInitialization.delete(client);
+    throw reason;
+  });
+  factorInitialization.set(client, retryableInitialization);
+  return retryableInitialization;
+}
+
 export function AdminMfaChallenge({
   client,
   onVerified,
@@ -29,30 +113,8 @@ export function AdminMfaChallenge({
     let active = true;
     void (async () => {
       try {
-        const { data: factors, error: factorsError } = await client.auth.mfa.listFactors();
-        if (factorsError) throw factorsError;
-        const verified = factors.totp.find((item) => item.status === "verified");
-        if (verified) {
-          if (active) setFactor({ id: verified.id, qrCode: null, secret: null });
-          return;
-        }
-
-        for (const staleFactor of factors.totp.filter((item) => item.status !== "verified")) {
-          await client.auth.mfa.unenroll({ factorId: staleFactor.id });
-        }
-
-        const { data: enrollment, error: enrollmentError } = await client.auth.mfa.enroll({
-          factorType: "totp",
-          friendlyName: "HBS HOME Admin",
-        });
-        if (enrollmentError) throw enrollmentError;
-        if (active) {
-          setFactor({
-            id: enrollment.id,
-            qrCode: enrollment.totp.qr_code,
-            secret: enrollment.totp.secret,
-          });
-        }
+        const preparedFactor = await prepareFactor(client);
+        if (active) setFactor(preparedFactor);
       } catch (reason) {
         if (active) {
           setError(reason instanceof Error ? reason.message : "Impossible d’initialiser le MFA.");
@@ -82,6 +144,7 @@ export function AdminMfaChallenge({
         code,
       });
       if (verifyError) throw verifyError;
+      factorInitialization.delete(client);
       await onVerified();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Le code TOTP est invalide.");
