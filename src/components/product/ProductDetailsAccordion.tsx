@@ -4,9 +4,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { storeConfig } from "@/config/store.config";
 import { MATERIAL_LABELS, OPACITY_LABELS } from "@/domain/product/product.constants";
 import type { Product, ProductVariant } from "@/domain/product/product.types";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 function isMeaningfulText(value: string | undefined): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -32,6 +32,7 @@ export function ProductDetailsAccordion({
   product: Product;
   variant: ProductVariant;
 }) {
+  const { data: storeSettings } = useStoreSettings();
   const { details } = product;
   const hasDescription = isMeaningfulText(product.longDescription);
   const hasComposition = isMeaningfulText(details.composition);
@@ -137,9 +138,9 @@ export function ProductDetailsAccordion({
         <AccordionContent>
           <List
             items={[
-              `Livraison partout en Tunisie en ${storeConfig.estimatedDeliveryLabel}`,
+              `Livraison partout en Tunisie — ${storeSettings.shipping.estimatedDeliveryLabel}`,
               "Paiement à la livraison disponible",
-              `Retrait en boutique : ${storeConfig.storeAddress}`,
+              `Retrait en boutique : ${storeSettings.shipping.pickupAddress || storeSettings.store.address}`,
               "Échange ou retour sous 7 jours, produit non lavé et dans son emballage",
             ]}
           />

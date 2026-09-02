@@ -1,22 +1,23 @@
-import { storeConfig } from "@/config/store.config";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 
-function buildWhatsAppUrl(): string {
-  const number = storeConfig.whatsappNumber.replace(/\D/g, "");
+function buildWhatsAppUrl(numberValue: string): string {
+  const number = numberValue.replace(/\D/g, "");
   if (!number) return "#";
 
   const message = encodeURIComponent(
-    storeConfig.whatsappMessage || "Bonjour HBS HOME, j'ai une question concernant vos produits.",
+    "Bonjour HBS HOME, j'ai une question concernant vos produits.",
   );
   return `https://wa.me/${number}?text=${message}`;
 }
 
 export function WhatsAppFloatingButton() {
-  const number = storeConfig.whatsappNumber.replace(/\D/g, "");
+  const { data: storeSettings } = useStoreSettings();
+  const number = storeSettings.contact.whatsapp.replace(/\D/g, "");
   if (!number) return null;
 
   return (
     <a
-      href={buildWhatsAppUrl()}
+      href={buildWhatsAppUrl(storeSettings.contact.whatsapp)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contacter HBS HOME sur WhatsApp"

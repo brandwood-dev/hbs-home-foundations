@@ -1,9 +1,9 @@
 import { DELIVERY_METHOD_LABELS, PAYMENT_METHOD_LABELS } from "@/domain/checkout/checkout.types";
 import { ORDER_STATUS_LABELS } from "@/domain/order/order.constants";
 import type { Order } from "@/domain/order/order.types";
-import { storeConfig } from "@/config/store.config";
 import { getGovernorateLabel } from "@/fixtures/tunisia-governorates.fixture";
 import { formatTunisianPhone } from "@/services/checkout/phone-normalization";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -15,6 +15,7 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
 }
 
 export function OrderSummaryCard({ order }: { order: Order }) {
+  const { data: storeSettings } = useStoreSettings();
   const address = order.shippingAddress;
 
   return (
@@ -41,10 +42,10 @@ export function OrderSummaryCard({ order }: { order: Order }) {
             </p>
             {address.landmark ? <p>Repère : {address.landmark}</p> : null}
             {address.deliveryNote ? <p>Note : {address.deliveryNote}</p> : null}
-            <p className="mt-1">Délai estimé : {storeConfig.estimatedDeliveryLabel}.</p>
+            <p className="mt-1">Délai estimé : {storeSettings.shipping.estimatedDeliveryLabel}.</p>
           </>
         ) : (
-          <p>{storeConfig.storeAddress}</p>
+          <p>{storeSettings.shipping.pickupAddress || storeSettings.store.address}</p>
         )}
       </Block>
 

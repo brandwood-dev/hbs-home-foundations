@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Save, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { AdminCard, AdminErrorState, AdminSkeleton } from "@/admin/components/ui/AdminStates";
 import { AdminPageHeader } from "@/admin/components/ui/AdminPageHeader";
-import { useAdminMutation, useAdminSettings } from "@/admin/hooks/admin.queries";
+import { adminKeys, useAdminMutation, useAdminSettings } from "@/admin/hooks/admin.queries";
 import { adminRepositories } from "@/admin/repositories/adminRepositoryFactory";
 import type { AdminSettings } from "@/admin/types/admin.types";
 
@@ -96,6 +97,7 @@ function Field({
 
 export function AdminSettingsPage() {
   const query = useAdminSettings();
+  const queryClient = useQueryClient();
   const [settings, setSettings] = useState<AdminSettings>(DEFAULT_SETTINGS);
   const [dirty, setDirty] = useState(false);
   useEffect(() => {
@@ -106,6 +108,10 @@ export function AdminSettingsPage() {
     successMessage: "Paramètres enregistrés.",
     invalidate: [],
     onSuccess: (value) => {
+      // Keep the query cache in sync with the persisted version. Without this,
+      // returning to the page within the 30s freshness window showed the old
+      // values even though Supabase had saved the update successfully.
+      queryClient.setQueryData(adminKeys.settings(), value);
       setSettings(value);
       setDirty(false);
     },

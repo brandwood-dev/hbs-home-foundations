@@ -1,9 +1,10 @@
 import { AlertTriangle, PackageCheck } from "lucide-react";
 import type { OrderTrackingResult } from "@/domain/order/order-tracking.types";
 import { ORDER_TRACKING_CANCELLED_NOTICE } from "@/domain/order/order-tracking.constants";
-import { storeConfig } from "@/config/store.config";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 export function OrderTrackingStatus({ result }: { result: OrderTrackingResult }) {
+  const { data: storeSettings } = useStoreSettings();
   const cancelled = result.status === "cancelled";
 
   return (
@@ -24,9 +25,7 @@ export function OrderTrackingStatus({ result }: { result: OrderTrackingResult })
         {cancelled ? (
           <p className="text-foreground-muted">
             {ORDER_TRACKING_CANCELLED_NOTICE}
-            {(storeConfig.customerServicePhone as string)
-              ? ` (${storeConfig.customerServicePhone})`
-              : ""}
+            {storeSettings.contact.phone ? ` (${storeSettings.contact.phone})` : ""}
           </p>
         ) : null}
       </div>

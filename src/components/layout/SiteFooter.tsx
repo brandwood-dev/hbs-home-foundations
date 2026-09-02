@@ -1,11 +1,15 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import { AppLink } from "@/components/ui/app-link";
 import { footerColumns } from "@/fixtures/navigation.fixture";
-import { storeConfig } from "@/config/store.config";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 export function SiteFooter() {
-  const { customerServiceEmail, customerServicePhone, storeAddress, socialLinks } = storeConfig;
+  const { data: storeSettings } = useStoreSettings();
+  const customerServiceEmail = storeSettings.contact.email;
+  const customerServicePhone = storeSettings.contact.phone;
+  const storeAddress = storeSettings.store.address;
+  const socialLinks = storeSettings.social;
   const socials = Object.entries(socialLinks).filter(([, url]) => url !== "");
 
   return (
@@ -70,7 +74,7 @@ export function SiteFooter() {
         </div>
 
         <p className="mt-8 text-xs text-foreground-muted">
-          © {new Date().getFullYear()} {storeConfig.brandName}. Tous droits réservés.
+          © {new Date().getFullYear()} {storeSettings.store.name}. Tous droits réservés.
         </p>
       </div>
     </footer>

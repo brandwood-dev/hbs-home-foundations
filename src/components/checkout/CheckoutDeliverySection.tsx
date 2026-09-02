@@ -2,9 +2,9 @@ import type { FieldErrors, UseFormRegister } from "react-hook-form";
 import { CheckoutField, checkoutInputClass } from "@/components/checkout/CheckoutField";
 import type { CheckoutFormInput } from "@/domain/checkout/checkout.schemas";
 import type { DeliveryMethod } from "@/domain/checkout/checkout.types";
-import { storeConfig } from "@/config/store.config";
 import { TUNISIA_GOVERNORATES } from "@/fixtures/tunisia-governorates.fixture";
 import { formatMoney } from "@/lib/money/money";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 const optionClass =
   "flex cursor-pointer gap-3 rounded-sm border p-4 text-left transition-colors hover:bg-surface-muted";
@@ -20,6 +20,7 @@ export function CheckoutDeliverySection({
   deliveryMethod: DeliveryMethod;
   shippingMinor: number;
 }) {
+  const { data: storeSettings } = useStoreSettings();
   const address = errors.shippingAddress;
 
   return (
@@ -43,13 +44,13 @@ export function CheckoutDeliverySection({
           <span>
             <span className="block text-sm font-medium">Livraison à domicile</span>
             <span className="block text-xs text-foreground-muted">
-              Partout en Tunisie sous {storeConfig.estimatedDeliveryLabel} —{" "}
+              Partout en Tunisie — {storeSettings.shipping.estimatedDeliveryLabel} —{" "}
               {shippingMinor === 0 ? "offerte" : formatMoney(shippingMinor)}.
             </span>
           </span>
         </label>
 
-        {storeConfig.storePickupEnabled ? (
+        {storeSettings.shipping.storePickupEnabled ? (
           <label
             className={`${optionClass} ${deliveryMethod === "store_pickup" ? "border-accent bg-surface-muted" : "border-border"}`}
           >
@@ -62,7 +63,8 @@ export function CheckoutDeliverySection({
             <span>
               <span className="block text-sm font-medium">Retrait en magasin — gratuit</span>
               <span className="block text-xs text-foreground-muted">
-                {storeConfig.storeAddress}. Nous vous appelons dès que votre commande est prête.
+                {storeSettings.shipping.pickupAddress || storeSettings.store.address}. Nous vous
+                appelons dès que votre commande est prête.
               </span>
             </span>
           </label>
@@ -170,7 +172,9 @@ export function CheckoutDeliverySection({
         </div>
       ) : (
         <p className="rounded-sm border border-border bg-surface-muted p-4 text-sm text-foreground-muted">
-          Retrait à l'adresse : {storeConfig.storeAddress}. Aucun frais de livraison n'est appliqué.
+          Retrait à l'adresse :{" "}
+          {storeSettings.shipping.pickupAddress || storeSettings.store.address}. Aucun frais de
+          livraison n'est appliqué.
         </p>
       )}
     </section>
