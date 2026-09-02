@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Search, ShieldCheck, UserCheck, UserX } from "lucide-react";
+import { Search, ShieldCheck, Trash2, UserCheck, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -9,6 +9,8 @@ import {
   AdminErrorState,
 } from "@/admin/components/ui/AdminStates";
 import { AdminPageHeader } from "@/admin/components/ui/AdminPageHeader";
+import { AdminConfirmDialog } from "@/admin/components/ui/AdminOverlays";
+import { useAdminAuthorization } from "@/admin/auth/AdminAuthorizationContext";
 import { useAdminMutation, useAdminUsers } from "@/admin/hooks/admin.queries";
 import { adminRepositories } from "@/admin/repositories/adminRepositoryFactory";
 import type { AdminRoleId, AdminUser } from "@/admin/types/admin.types";
@@ -31,6 +33,9 @@ export function AdminUsersPage() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteName, setInviteName] = useState("");
   const [inviteRole, setInviteRole] = useState<AdminRoleId>("read_only");
+  const [pendingDelete, setPendingDelete] = useState<AdminUser | null>(null);
+  const { session } = useAdminAuthorization();
+  const canDeleteMembers = session.roles.includes("super_admin");
   const query = useAdminUsers();
   const status = useAdminMutation({
     mutationFn: ({ id, active }: { id: string; active: boolean }) =>
@@ -73,6 +78,12 @@ export function AdminUsersPage() {
       setInviteName("");
       void query.refetch();
     },
+  });
+  const removeMember = useAdminMutation({
+    mutationFn: (id: string) => adminRepositories.users.delete(id),
+    successMessage: "Membre retiré de l’équipe.",
+    invalidate: [],
+    onSuccess: () => void query.refetch(),
   });
   const rows = useMemo(
     () =>
@@ -215,7 +226,7 @@ export function AdminUsersPage() {
                         if (event.target.value)
                           role.mutate({ id: user.id, value: event.target.value as AdminRoleId });
                       }}
-                      disabled={role.isPending}
+                      disabled={role.isPending || user.status === "revoked"}
                     >
                       <option value="">Attribuer un rôle…</option>
                       {ROLES.filter((item) => !(user.roles ?? [user.role]).includes(item.key)).map(
@@ -228,27 +239,56 @@ export function AdminUsersPage() {
                     </select>
                   </td>
                   <td className="px-3 py-4 text-right">
-                    {user.isActive ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={status.isPending}
-                        onClick={() => status.mutate({ id: user.id, active: false })}
-                      >
-                        <UserX className="mr-1.5 size-4" />
-                        Suspendre
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={status.isPending}
-                        onClick={() => status.mutate({ id: user.id, active: true })}
-                      >
-                        <UserCheck className="mr-1.5 size-4" />
-                        Réactiver
-                      </Button>
-                    )}
+                    <div className="flex justify-end gap-2">
+                      {user.status === "revoked" ? (
+                        <span className="self-center text-xs text-muted-foreground">
+                          Accès révoqué
+                        </span>
+                      ) : user.isActive ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={status.isPending}
+                          onClick={() => status.mutate({ id: user.id, active: false })}
+                        >
+                          <UserX className="mr-1.5 size-4" />
+                          Suspendre
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={status.isPending}
+                          onClick={() => status.mutate({ id: user.id, active: true })}
+                        >
+                          <UserCheck className="mr-1.5 size-4" />
+                          Réactiver
+                        </Button>
+                      )}
+                      {canDeleteMembers ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          disabled={
+                            removeMember.isPending ||
+                            user.id === session.user.id ||
+                            user.status === "revoked"
+                          }
+                          title={
+                            user.id === session.user.id
+                              ? "Vous ne pouvez pas supprimer votre propre compte."
+                              : user.status === "revoked"
+                                ? "Ce membre a déjà été retiré de l’équipe."
+                                : "Retirer ce membre de l’équipe"
+                          }
+                          onClick={() => setPendingDelete(user)}
+                        >
+                          <Trash2 className="mr-1.5 size-4" />
+                          Supprimer
+                        </Button>
+                      ) : null}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -281,6 +321,26 @@ export function AdminUsersPage() {
           ))}
         </div>
       </AdminCard>
+      <AdminConfirmDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null);
+        }}
+        title="Retirer ce membre de l’équipe ?"
+        description={
+          pendingDelete
+            ? `« ${pendingDelete.fullName} » perdra définitivement son accès Admin et tous ses rôles seront révoqués. Son historique restera conservé pour l’audit.`
+            : "Cette action révoque définitivement l’accès Admin du membre."
+        }
+        confirmLabel={removeMember.isPending ? "Suppression…" : "Supprimer le membre"}
+        destructive
+        onConfirm={() => {
+          if (!pendingDelete) return;
+          const id = pendingDelete.id;
+          setPendingDelete(null);
+          removeMember.mutate(id);
+        }}
+      />
     </div>
   );
 }

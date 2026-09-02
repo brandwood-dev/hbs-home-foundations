@@ -153,9 +153,9 @@ export class ApiAdminUserRepository implements AdminUserRepository {
     return (await this.getById(id)) as AdminUser;
   }
   async delete(id: string): Promise<void> {
-    await this.client.patch(
-      `/api/v1/admin/users/${encodeURIComponent(id)}/status`,
-      { status: "revoked" },
+    await this.client.delete<void>(
+      `/api/v1/admin/users/${encodeURIComponent(id)}`,
+      undefined,
       await token(),
     );
   }
