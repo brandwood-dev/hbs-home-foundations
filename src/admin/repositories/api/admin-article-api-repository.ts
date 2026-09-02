@@ -170,6 +170,16 @@ export class ApiAdminArticleRepository implements AdminArticleRepository {
     );
   }
 
+  async delete(id: string): Promise<void> {
+    await this.request((token) =>
+      this.client.delete<void>(
+        `/api/v1/admin/content/articles/${encodeURIComponent(id)}`,
+        undefined,
+        token,
+      ),
+    );
+  }
+
   async duplicate(id: string): Promise<AdminArticle> {
     return mapArticle(
       await this.request((token) =>
