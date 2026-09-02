@@ -8,6 +8,7 @@ import {
 import { formatMoney } from "@/lib/money/money";
 import { AppLink } from "@/components/ui/app-link";
 import { formatOptionDetails } from "@/services/product/product-options";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 export function CheckoutSummary({
   cart,
@@ -16,6 +17,7 @@ export function CheckoutSummary({
   cart: Cart;
   deliveryMethod: DeliveryMethod;
 }) {
+  const { data: storeSettings } = useStoreSettings();
   const subtotalMinor = cart.totals.subtotalMinor;
   const discountMinor = cart.totals.discountMinor ?? 0;
   const discountedSubtotalMinor = calculateDiscountedSubtotal(subtotalMinor, discountMinor);
@@ -24,7 +26,7 @@ export function CheckoutSummary({
     discountedSubtotalMinor,
     deliveryMethod,
     cart.totals.freeShippingThresholdMinor,
-    undefined,
+    storeSettings.shipping.standardFeeMinor,
     quoteRequired,
   );
   const totalMinor = discountedSubtotalMinor + shippingMinor;

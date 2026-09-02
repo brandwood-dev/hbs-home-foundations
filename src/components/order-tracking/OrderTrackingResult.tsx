@@ -1,8 +1,8 @@
 import { MessageCircle, Phone } from "lucide-react";
 import type { OrderTrackingResult as TrackingResult } from "@/domain/order/order-tracking.types";
 import { AppLink } from "@/components/ui/app-link";
-import { storeConfig } from "@/config/store.config";
 import { ORDER_TRACKING_DEMO_NOTICE } from "@/domain/order/order-tracking.constants";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 import { OrderTrackingDelivery } from "@/components/order-tracking/OrderTrackingDelivery";
 import { OrderTrackingHeader } from "@/components/order-tracking/OrderTrackingHeader";
 import { OrderTrackingItems } from "@/components/order-tracking/OrderTrackingItems";
@@ -12,8 +12,9 @@ import { OrderTrackingSummary } from "@/components/order-tracking/OrderTrackingS
 import { OrderTrackingTimeline } from "@/components/order-tracking/OrderTrackingTimeline";
 
 export function OrderTrackingResultView({ result }: { result: TrackingResult }) {
-  const whatsapp: string = storeConfig.whatsappNumber;
-  const servicePhone: string = storeConfig.customerServicePhone;
+  const { data: storeSettings } = useStoreSettings();
+  const whatsapp = storeSettings.contact.whatsapp;
+  const servicePhone = storeSettings.contact.phone;
   const whatsappHref = whatsapp
     ? `https://wa.me/${whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
         `Bonjour HBS HOME, je souhaite obtenir des informations concernant ma commande ${result.orderNumber}.`,

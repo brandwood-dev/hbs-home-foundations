@@ -55,6 +55,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/store/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Return the public store settings */
+        get: operations["getStoreSettings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/products": {
         parameters: {
             query?: never;
@@ -1659,6 +1676,48 @@ export interface components {
             gitSha: string;
             builtAt: string;
             environment: "development" | "test" | "staging" | "production";
+        };
+        PublicStoreSettings: {
+            store: {
+                name: string;
+                currency: string;
+                language: string;
+                timezone: string;
+                address: string;
+            };
+            shipping: {
+                standardFeeMinor: number;
+                freeShippingThresholdMinor: number;
+                estimatedDeliveryLabel: string;
+                storePickupEnabled: boolean;
+                pickupAddress: string;
+            };
+            contact: {
+                phone: string;
+                email: string;
+                whatsapp: string;
+                openingHours: string;
+            };
+            social: {
+                facebook: string;
+                instagram: string;
+                tiktok: string;
+            };
+            seo: {
+                defaultTitle: string;
+                defaultDescription: string;
+                ogImageUrl: string;
+            };
+            features: {
+                checkout: boolean;
+                favorites: boolean;
+                reviews: boolean;
+                customMade: boolean;
+                professionals: boolean;
+                orderTracking: boolean;
+                customerAccounts: boolean;
+                onlinePayment: boolean;
+            };
         };
         Product: {
             id: string;
@@ -3622,6 +3681,67 @@ export interface operations {
                         gitSha: string;
                         builtAt: string;
                         environment: "development" | "test" | "staging" | "production";
+                    };
+                };
+            };
+        };
+    };
+    getStoreSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Default Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        store: {
+                            name: string;
+                            currency: string;
+                            language: string;
+                            timezone: string;
+                            address: string;
+                        };
+                        shipping: {
+                            standardFeeMinor: number;
+                            freeShippingThresholdMinor: number;
+                            estimatedDeliveryLabel: string;
+                            storePickupEnabled: boolean;
+                            pickupAddress: string;
+                        };
+                        contact: {
+                            phone: string;
+                            email: string;
+                            whatsapp: string;
+                            openingHours: string;
+                        };
+                        social: {
+                            facebook: string;
+                            instagram: string;
+                            tiktok: string;
+                        };
+                        seo: {
+                            defaultTitle: string;
+                            defaultDescription: string;
+                            ogImageUrl: string;
+                        };
+                        features: {
+                            checkout: boolean;
+                            favorites: boolean;
+                            reviews: boolean;
+                            customMade: boolean;
+                            professionals: boolean;
+                            orderTracking: boolean;
+                            customerAccounts: boolean;
+                            onlinePayment: boolean;
+                        };
                     };
                 };
             };

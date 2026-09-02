@@ -1,31 +1,35 @@
 import { BadgeCheck, Store, Truck, Wallet } from "lucide-react";
-import { storeConfig } from "@/config/store.config";
 import { formatMoney } from "@/lib/money/money";
-
-const items = [
-  {
-    icon: Truck,
-    title: "Livraison rapide",
-    text: `Partout en Tunisie en ${storeConfig.estimatedDeliveryLabel}`,
-  },
-  {
-    icon: Wallet,
-    title: "Paiement à la livraison",
-    text: `Livraison offerte dès ${formatMoney(storeConfig.freeShippingThresholdMinor)}`,
-  },
-  {
-    icon: Store,
-    title: "Retrait en boutique",
-    text: storeConfig.storeAddress,
-  },
-  {
-    icon: BadgeCheck,
-    title: "Qualité contrôlée",
-    text: "Confection et finitions vérifiées avant expédition",
-  },
-];
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 export function ProductTrustPoints() {
+  const { data: storeSettings } = useStoreSettings();
+  const items = [
+    {
+      icon: Truck,
+      title: "Livraison rapide",
+      text: `Partout en Tunisie — ${storeSettings.shipping.estimatedDeliveryLabel}`,
+    },
+    {
+      icon: Wallet,
+      title: "Paiement à la livraison",
+      text: `Livraison offerte dès ${formatMoney(storeSettings.shipping.freeShippingThresholdMinor)}`,
+    },
+    ...(storeSettings.shipping.storePickupEnabled
+      ? [
+          {
+            icon: Store,
+            title: "Retrait en boutique",
+            text: storeSettings.shipping.pickupAddress || storeSettings.store.address,
+          },
+        ]
+      : []),
+    {
+      icon: BadgeCheck,
+      title: "Qualité contrôlée",
+      text: "Confection et finitions vérifiées avant expédition",
+    },
+  ];
   return (
     <ul className="grid gap-3 rounded-md border border-border bg-surface p-4 sm:grid-cols-2">
       {items.map((item) => (

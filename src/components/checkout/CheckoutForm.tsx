@@ -23,6 +23,7 @@ import {
   calculateCheckoutShipping,
   calculateDiscountedSubtotal,
 } from "@/services/checkout/checkout-calculations";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 const defaultValues: CheckoutFormInput = {
   customer: { firstName: "", lastName: "", phone: "", email: "" },
@@ -42,6 +43,7 @@ const defaultValues: CheckoutFormInput = {
 export function CheckoutForm({ cart }: { cart: Cart }) {
   const navigate = useNavigate();
   const createOrder = useCreateOrderMutation();
+  const { data: storeSettings } = useStoreSettings();
   const idempotencyKey = useRef(createIdempotencyKey());
 
   const {
@@ -69,7 +71,7 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
         subtotal,
         deliveryMethod,
         cart.totals.freeShippingThresholdMinor,
-        undefined,
+        storeSettings.shipping.standardFeeMinor,
         cart.totals.requiresShippingQuote,
       )
     );
@@ -78,6 +80,7 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
     cart.totals.requiresShippingQuote,
     deliveryMethod,
     discountedSubtotalMinor,
+    storeSettings.shipping.standardFeeMinor,
   ]);
 
   const busy = isSubmitting || createOrder.isPending;
@@ -141,7 +144,7 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
             discountedSubtotalMinor,
             deliveryMethod,
             cart.totals.freeShippingThresholdMinor,
-            undefined,
+            storeSettings.shipping.standardFeeMinor,
             cart.totals.requiresShippingQuote,
           )}
         />
