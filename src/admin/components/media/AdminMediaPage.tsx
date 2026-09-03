@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import { Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { AdminPageHeader } from "@/admin/components/ui/AdminPageHeader";
 import {
   AdminDataTable,
+  AdminPagination,
   AdminSearchInput,
   type AdminColumn,
 } from "@/admin/components/ui/AdminDataTable";
@@ -17,7 +18,7 @@ import {
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { AdminField, AdminSelectField } from "@/admin/components/ui/AdminForm";
 import { AdminStatusBadge } from "@/admin/components/ui/AdminStates";
-import { useAdminMedia } from "@/admin/hooks/admin.queries";
+import { useAdminMediaPage } from "@/admin/hooks/admin.queries";
 import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
 import {
   useCreateAdminMedia,
@@ -72,7 +73,7 @@ function labelForStatus(status: AdminMedia["status"]): string {
 
 export function AdminMediaPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { data: media = [], isLoading, error, refetch } = useAdminMedia();
+  const [page, setPage] = useState(1);
   const createMedia = useCreateAdminMedia();
   const updateMedia = useUpdateAdminMedia();
   const deleteMedia = useDeleteAdminMedia();
@@ -84,13 +85,13 @@ export function AdminMediaPage() {
 
   useEffect(() => setPersist(draft !== null), [draft, setPersist]);
 
-  const rows = useMemo(() => {
-    const query = search.trim().toLocaleLowerCase();
-    if (!query) return media;
-    return media.filter((item) =>
-      `${item.name} ${item.alt} ${item.usage}`.toLocaleLowerCase().includes(query),
-    );
-  }, [media, search]);
+  const params = {
+    page,
+    pageSize: 20,
+    ...(search.trim() ? { query: search.trim() } : {}),
+  };
+  const { data, isLoading, error, refetch } = useAdminMediaPage(params);
+  const rows = data?.items ?? [];
 
   const columns: AdminColumn<AdminMedia>[] = [
     {
@@ -237,7 +238,10 @@ export function AdminMediaPage() {
         toolbar={
           <AdminSearchInput
             value={search}
-            onChange={setSearch}
+            onChange={(value) => {
+              setSearch(value);
+              setPage(1);
+            }}
             placeholder="Nom, texte alternatif ou usage"
           />
         }
@@ -250,6 +254,16 @@ export function AdminMediaPage() {
           </AdminActionMenu>
         )}
       />
+      {data && data.pageCount > 1 ? (
+        <div className="mt-3 rounded-lg border border-border bg-card">
+          <AdminPagination
+            page={data.page}
+            pageCount={data.pageCount}
+            total={data.total}
+            onPageChange={setPage}
+          />
+        </div>
+      ) : null}
       {uploadError ? (
         <p role="alert" className="mt-3 text-sm text-destructive">
           {uploadError}

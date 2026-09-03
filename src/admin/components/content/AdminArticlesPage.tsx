@@ -10,6 +10,7 @@ import {
 } from "@/admin/components/ui/AdminOverlays";
 import {
   AdminDataTable,
+  AdminPagination,
   AdminSearchInput,
   type AdminColumn,
 } from "@/admin/components/ui/AdminDataTable";
@@ -17,7 +18,7 @@ import { AdminField, AdminSelectField } from "@/admin/components/ui/AdminForm";
 import { AdminStatusBadge } from "@/admin/components/ui/AdminStates";
 import {
   useAdminArticleCategories,
-  useAdminArticles,
+  useAdminArticlesPage,
   useAdminMedia,
 } from "@/admin/hooks/admin.queries";
 import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
@@ -108,7 +109,7 @@ function statusTone(status: AdminArticle["status"]): "success" | "warning" | "ne
 }
 
 export function AdminArticlesPage() {
-  const { data: articles = [], isLoading, error, refetch } = useAdminArticles();
+  const [page, setPage] = useState(1);
   const { data: categories = [] } = useAdminArticleCategories();
   const { data: media = [] } = useAdminMedia();
   const createArticle = useCreateAdminArticle();
@@ -125,16 +126,12 @@ export function AdminArticlesPage() {
 
   useEffect(() => setPersist(draft !== null), [draft, setPersist]);
 
-  const rows = useMemo(() => {
-    const query = search.trim().toLocaleLowerCase("fr");
-    return query
-      ? articles.filter((article) =>
-          `${article.draft?.title ?? article.published?.title ?? ""} ${article.slug}`
-            .toLocaleLowerCase("fr")
-            .includes(query),
-        )
-      : articles;
-  }, [articles, search]);
+  const articleParams = useMemo(
+    () => ({ page, pageSize: 20, ...(search.trim() ? { query: search.trim() } : {}) }),
+    [page, search],
+  );
+  const { data, isLoading, error, refetch } = useAdminArticlesPage(articleParams);
+  const rows = data?.items ?? [];
 
   const columns: AdminColumn<AdminArticle>[] = [
     {
@@ -252,7 +249,14 @@ export function AdminArticlesPage() {
         onRetry={() => void refetch()}
         emptyTitle="Aucun article"
         toolbar={
-          <AdminSearchInput value={search} onChange={setSearch} placeholder="Titre ou slug" />
+          <AdminSearchInput
+            value={search}
+            onChange={(value) => {
+              setSearch(value);
+              setPage(1);
+            }}
+            placeholder="Titre ou slug"
+          />
         }
         rowActions={(article) => (
           <AdminActionMenu>
@@ -280,6 +284,17 @@ export function AdminArticlesPage() {
           </AdminActionMenu>
         )}
       />
+
+      {data && data.pageCount > 1 ? (
+        <div className="mt-3 rounded-lg border border-border bg-card">
+          <AdminPagination
+            page={data.page}
+            pageCount={data.pageCount}
+            total={data.total}
+            onPageChange={setPage}
+          />
+        </div>
+      ) : null}
 
       <AdminConfirmDialog
         open={pendingDelete !== null}

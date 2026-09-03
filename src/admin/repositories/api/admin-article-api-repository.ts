@@ -6,6 +6,7 @@ import type {
   AdminArticleInput,
   AdminArticlePatch,
   AdminArticleRepository,
+  AdminArticleListParams,
 } from "@/admin/repositories/interfaces";
 
 type ApiArticle = components["schemas"]["AdminArticle"];
@@ -77,6 +78,30 @@ export class ApiAdminArticleRepository implements AdminArticleRepository {
 
   private async request<T>(fn: (token: string) => Promise<T>): Promise<T> {
     return fn(await this.resolveAccessToken());
+  }
+
+  async listPage(params: AdminArticleListParams) {
+    const query = new URLSearchParams({
+      page: String(params.page),
+      pageSize: String(params.pageSize),
+    });
+    if (params.query) query.set("q", params.query);
+    if (params.status) query.set("status", params.status);
+    if (params.categoryId) query.set("categoryId", params.categoryId);
+    const response = await this.request((token) =>
+      this.client.get<components["schemas"]["AdminArticleList"]>(
+        `/api/v1/admin/content/articles?${query.toString()}`,
+        undefined,
+        token,
+      ),
+    );
+    return {
+      items: response.items.map(mapArticle),
+      total: response.total,
+      page: params.page,
+      pageSize: params.pageSize,
+      pageCount: Math.max(1, Math.ceil(response.total / params.pageSize)),
+    };
   }
 
   async listCategories(): Promise<

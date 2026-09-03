@@ -10,8 +10,9 @@ import {
 } from "@/admin/components/ui/AdminStates";
 import { AdminPageHeader } from "@/admin/components/ui/AdminPageHeader";
 import { AdminConfirmDialog } from "@/admin/components/ui/AdminOverlays";
+import { AdminPagination } from "@/admin/components/ui/AdminDataTable";
 import { useAdminAuthorization } from "@/admin/auth/AdminAuthorizationContext";
-import { useAdminMutation, useAdminUsers } from "@/admin/hooks/admin.queries";
+import { useAdminMutation, useAdminUsersPage } from "@/admin/hooks/admin.queries";
 import { adminRepositories } from "@/admin/repositories/adminRepositoryFactory";
 import type { AdminRoleId, AdminUser } from "@/admin/types/admin.types";
 
@@ -28,6 +29,7 @@ const ROLES: Array<{ key: AdminRoleId; label: string; description: string }> = [
 ];
 
 export function AdminUsersPage() {
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -36,7 +38,11 @@ export function AdminUsersPage() {
   const [pendingDelete, setPendingDelete] = useState<AdminUser | null>(null);
   const { session } = useAdminAuthorization();
   const canDeleteMembers = session.roles.includes("super_admin");
-  const query = useAdminUsers();
+  const params = useMemo(
+    () => ({ page, pageSize: 20, ...(search.trim() ? { query: search.trim() } : {}) }),
+    [page, search],
+  );
+  const query = useAdminUsersPage(params);
   const status = useAdminMutation({
     mutationFn: ({ id, active }: { id: string; active: boolean }) =>
       adminRepositories.users.update(id, { isActive: active }),
@@ -85,13 +91,7 @@ export function AdminUsersPage() {
     invalidate: [],
     onSuccess: () => void query.refetch(),
   });
-  const rows = useMemo(
-    () =>
-      (query.data ?? []).filter((item) =>
-        `${item.fullName} ${item.email}`.toLowerCase().includes(search.toLowerCase()),
-      ),
-    [query.data, search],
-  );
+  const rows = query.data?.items ?? [];
   if (query.isLoading) return <AdminSkeleton rows={6} />;
   if (query.error)
     return (
@@ -171,7 +171,10 @@ export function AdminUsersPage() {
           <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
             placeholder="Rechercher par nom ou e-mail"
             className="pl-9"
           />
@@ -300,6 +303,14 @@ export function AdminUsersPage() {
             </p>
           ) : null}
         </div>
+        {query.data && query.data.pageCount > 1 ? (
+          <AdminPagination
+            page={query.data.page}
+            pageCount={query.data.pageCount}
+            total={query.data.total}
+            onPageChange={setPage}
+          />
+        ) : null}
       </AdminCard>
       <AdminCard>
         <div className="mb-4 flex items-center gap-2">

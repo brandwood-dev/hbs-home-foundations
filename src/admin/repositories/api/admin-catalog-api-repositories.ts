@@ -22,6 +22,7 @@ import type {
   AdminCategoryRepository,
   AdminProductInput,
   AdminProductRepository,
+  AdminProductListParams,
   AdminInventoryRepository,
   InventoryRow,
   StockAdjustmentInput,
@@ -679,9 +680,27 @@ export class AdminCatalogApi {
     );
   }
 
-  listProducts(query?: string): Promise<components["schemas"]["AdminProductsResponse"]> {
-    const params = new URLSearchParams({ limit: "100", offset: "0" });
-    if (query?.trim()) params.set("q", query.trim());
+  listProducts(
+    input:
+      | string
+      | {
+          query?: string;
+          status?: "draft" | "active" | "archived";
+          category?: string;
+          stock?: "low" | "out";
+          limit?: number;
+          offset?: number;
+        } = {},
+  ): Promise<components["schemas"]["AdminProductsResponse"]> {
+    const options = typeof input === "string" ? { query: input } : input;
+    const params = new URLSearchParams({
+      limit: String(options.limit ?? 100),
+      offset: String(options.offset ?? 0),
+    });
+    if (options.query?.trim()) params.set("q", options.query.trim());
+    if (options.status) params.set("status", options.status);
+    if (options.category) params.set("category", options.category);
+    if (options.stock) params.set("stock", options.stock);
     return this.token().then((token) =>
       this.client.get<components["schemas"]["AdminProductsResponse"]>(
         `/api/v1/admin/products?${params.toString()}`,
@@ -876,6 +895,26 @@ export class ApiAdminAttributeRepository implements AdminAttributeRepository {
 
 export class ApiAdminProductRepository implements AdminProductRepository {
   constructor(private readonly api = new AdminCatalogApi()) {}
+
+  async listPage(params: AdminProductListParams) {
+    const response = await this.api.listProducts({
+      limit: params.pageSize,
+      offset: (params.page - 1) * params.pageSize,
+      ...(params.query ? { query: params.query } : {}),
+      ...(params.status
+        ? { status: params.status === "published" ? "active" : params.status }
+        : {}),
+      ...(params.category ? { category: params.category } : {}),
+      ...(params.stock ? { stock: params.stock } : {}),
+    });
+    return {
+      items: response.items.map(mapProduct),
+      total: response.total,
+      page: params.page,
+      pageSize: params.pageSize,
+      pageCount: Math.max(1, Math.ceil(response.total / params.pageSize)),
+    };
+  }
 
   async list(): Promise<AdminProduct[]> {
     const response = await this.api.listProducts();

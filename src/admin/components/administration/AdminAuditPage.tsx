@@ -6,33 +6,33 @@ import {
   AdminErrorState,
 } from "@/admin/components/ui/AdminStates";
 import { AdminPageHeader } from "@/admin/components/ui/AdminPageHeader";
-import { AdminSearchInput } from "@/admin/components/ui/AdminDataTable";
-import { useAdminAudit } from "@/admin/hooks/admin.queries";
+import { AdminPagination, AdminSearchInput } from "@/admin/components/ui/AdminDataTable";
+import { useAdminAuditPage } from "@/admin/hooks/admin.queries";
 import { Button } from "@/components/ui/button";
 
 export function AdminAuditPage() {
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [outcome, setOutcome] = useState<"all" | "success" | "denied" | "failure">("all");
   const [action, setAction] = useState("");
   const [resourceType, setResourceType] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const query = useAdminAudit({
-    ...(outcome === "all" ? {} : { outcome }),
-    ...(action ? { action } : {}),
-    ...(resourceType ? { resourceType } : {}),
-    ...(dateFrom ? { dateFrom: `${dateFrom}T00:00:00.000Z` } : {}),
-    ...(dateTo ? { dateTo: `${dateTo}T23:59:59.999Z` } : {}),
-  });
-  const rows = useMemo(
-    () =>
-      (query.data ?? []).filter((item) =>
-        `${item.action} ${item.resourceType} ${item.userName} ${item.resourceId}`
-          .toLowerCase()
-          .includes(search.toLowerCase()),
-      ),
-    [query.data, search],
+  const params = useMemo(
+    () => ({
+      page,
+      pageSize: 30,
+      ...(search.trim() ? { query: search.trim() } : {}),
+      ...(outcome === "all" ? {} : { outcome }),
+      ...(action ? { action } : {}),
+      ...(resourceType ? { resourceType } : {}),
+      ...(dateFrom ? { dateFrom: `${dateFrom}T00:00:00.000Z` } : {}),
+      ...(dateTo ? { dateTo: `${dateTo}T23:59:59.999Z` } : {}),
+    }),
+    [page, search, outcome, action, resourceType, dateFrom, dateTo],
   );
+  const query = useAdminAuditPage(params);
+  const rows = query.data?.items ?? [];
   if (query.isLoading) return <AdminSkeleton rows={8} />;
   if (query.error)
     return (
@@ -53,7 +53,10 @@ export function AdminAuditPage() {
       <AdminCard className="space-y-4">
         <AdminSearchInput
           value={search}
-          onChange={setSearch}
+          onChange={(value) => {
+            setSearch(value);
+            setPage(1);
+          }}
           placeholder="Action, ressource, utilisateur…"
         />
         <div className="flex flex-wrap items-center gap-2">
@@ -64,7 +67,10 @@ export function AdminAuditPage() {
             id="audit-outcome"
             className="h-9 rounded-md border bg-background px-2 text-sm"
             value={outcome}
-            onChange={(event) => setOutcome(event.target.value as typeof outcome)}
+            onChange={(event) => {
+              setOutcome(event.target.value as typeof outcome);
+              setPage(1);
+            }}
           >
             <option value="all">Tous</option>
             <option value="success">Succès</option>
@@ -74,14 +80,20 @@ export function AdminAuditPage() {
           <input
             className="h-9 rounded-md border bg-background px-2 text-sm"
             value={action}
-            onChange={(event) => setAction(event.target.value)}
+            onChange={(event) => {
+              setAction(event.target.value);
+              setPage(1);
+            }}
             placeholder="Action exacte"
             aria-label="Filtrer par action"
           />
           <input
             className="h-9 rounded-md border bg-background px-2 text-sm"
             value={resourceType}
-            onChange={(event) => setResourceType(event.target.value)}
+            onChange={(event) => {
+              setResourceType(event.target.value);
+              setPage(1);
+            }}
             placeholder="Type de ressource"
             aria-label="Filtrer par type de ressource"
           />
@@ -91,7 +103,10 @@ export function AdminAuditPage() {
               className="h-9 rounded-md border bg-background px-2 text-sm text-foreground"
               type="date"
               value={dateFrom}
-              onChange={(event) => setDateFrom(event.target.value)}
+              onChange={(event) => {
+                setDateFrom(event.target.value);
+                setPage(1);
+              }}
               aria-label="Date de début"
             />
           </label>
@@ -101,7 +116,10 @@ export function AdminAuditPage() {
               className="h-9 rounded-md border bg-background px-2 text-sm text-foreground"
               type="date"
               value={dateTo}
-              onChange={(event) => setDateTo(event.target.value)}
+              onChange={(event) => {
+                setDateTo(event.target.value);
+                setPage(1);
+              }}
               aria-label="Date de fin"
             />
           </label>
@@ -115,6 +133,7 @@ export function AdminAuditPage() {
                 setDateFrom("");
                 setDateTo("");
                 setOutcome("all");
+                setPage(1);
               }}
             >
               Réinitialiser
@@ -170,6 +189,14 @@ export function AdminAuditPage() {
             </p>
           ) : null}
         </div>
+        {query.data && query.data.pageCount > 1 ? (
+          <AdminPagination
+            page={query.data.page}
+            pageCount={query.data.pageCount}
+            total={query.data.total}
+            onPageChange={setPage}
+          />
+        ) : null}
       </AdminCard>
     </div>
   );
