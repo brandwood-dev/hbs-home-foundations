@@ -5,6 +5,7 @@ import type {
   AdminMediaInput,
   AdminMediaPatch,
   AdminMediaRepository,
+  AdminMediaListParams,
 } from "@/admin/repositories/interfaces";
 import type { AdminMedia } from "@/admin/types/admin.types";
 
@@ -69,6 +70,29 @@ export class ApiAdminMediaRepository implements AdminMediaRepository {
 
   private async request<T>(fn: (token: string) => Promise<T>): Promise<T> {
     return fn(await accessToken());
+  }
+
+  async listPage(params: AdminMediaListParams) {
+    const query = new URLSearchParams({
+      limit: String(params.pageSize),
+      offset: String((params.page - 1) * params.pageSize),
+    });
+    if (params.query) query.set("q", params.query);
+    const response = await this.request((token) =>
+      this.client.get<{
+        items: ApiMedia[];
+        total: number;
+        limit: number;
+        offset: number;
+      }>(`/api/v1/admin/media?${query.toString()}`, undefined, token),
+    );
+    return {
+      items: response.items.map(mapMedia),
+      total: response.total,
+      page: params.page,
+      pageSize: params.pageSize,
+      pageCount: Math.max(1, Math.ceil(response.total / params.pageSize)),
+    };
   }
 
   async list(): Promise<AdminMedia[]> {

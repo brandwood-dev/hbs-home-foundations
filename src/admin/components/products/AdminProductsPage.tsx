@@ -6,13 +6,14 @@ import { DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdow
 import { AdminPageHeader } from "@/admin/components/ui/AdminPageHeader";
 import {
   AdminDataTable,
+  AdminPagination,
   AdminSearchInput,
   AdminSelectFilter,
   type AdminColumn,
 } from "@/admin/components/ui/AdminDataTable";
 import { AdminActionMenu, AdminConfirmDialog } from "@/admin/components/ui/AdminOverlays";
 import { AdminStatusBadge } from "@/admin/components/ui/AdminStates";
-import { useAdminProducts } from "@/admin/hooks/admin.queries";
+import { useAdminProductsPage } from "@/admin/hooks/admin.queries";
 import {
   useDeleteAdminProduct,
   useDuplicateAdminProduct,
@@ -25,7 +26,7 @@ import {
 } from "@/admin/types/admin.types";
 import { SELLING_MODE_LABELS } from "@/admin/config/admin-product-fields.config";
 import { formatMoney } from "@/lib/money/money";
-import { formatDate, normalizeKey } from "@/admin/utils/admin.utils";
+import { formatDate } from "@/admin/utils/admin.utils";
 import { validateProductForPublication } from "@/admin/services/products/admin-product-validation";
 
 const STATUS_LABELS: Record<
@@ -51,7 +52,7 @@ function totalStock(product: AdminProduct): number {
 
 export function AdminProductsPage() {
   const navigate = useNavigate();
-  const { data: products = [], isLoading, error, refetch } = useAdminProducts();
+  const [page, setPage] = useState(1);
   const duplicateProduct = useDuplicateAdminProduct();
   const deleteProduct = useDeleteAdminProduct();
   const setStatus = useSetAdminProductStatus();
@@ -61,32 +62,19 @@ export function AdminProductsPage() {
   const [status, setStatus_] = useState("all");
   const [stockFilter, setStockFilter] = useState("all");
   const [pendingDelete, setPendingDelete] = useState<AdminProduct | null>(null);
-
-  const rows = useMemo(() => {
-    const query = normalizeKey(search);
-    return products.filter((product) => {
-      if (category !== "all" && (product.category ?? "") !== category) return false;
-      if (status !== "all" && product.status !== status) return false;
-      const stock = totalStock(product);
-      if (stockFilter === "out" && stock > 0) return false;
-      if (
-        stockFilter === "low" &&
-        !product.variants.some((v) => v.stock > 0 && v.stock <= v.lowStockThreshold)
-      ) {
-        return false;
-      }
-      if (!query) return true;
-      const haystack = [
-        product.name,
-        product.reference,
-        product.slug,
-        ...product.variants.map((variant) => variant.sku),
-      ]
-        .map(normalizeKey)
-        .join(" ");
-      return haystack.includes(query);
-    });
-  }, [products, search, category, status, stockFilter]);
+  const params = useMemo(
+    () => ({
+      page,
+      pageSize: 20,
+      ...(search.trim() ? { query: search.trim() } : {}),
+      ...(category !== "all" ? { category } : {}),
+      ...(status !== "all" ? { status: status as AdminProduct["status"] } : {}),
+      ...(stockFilter !== "all" ? { stock: stockFilter as "low" | "out" } : {}),
+    }),
+    [page, search, category, status, stockFilter],
+  );
+  const { data, isLoading, error, refetch } = useAdminProductsPage(params);
+  const rows = data?.items ?? [];
 
   const columns: AdminColumn<AdminProduct>[] = [
     {
@@ -195,13 +183,19 @@ export function AdminProductsPage() {
           <>
             <AdminSearchInput
               value={search}
-              onChange={setSearch}
+              onChange={(value) => {
+                setSearch(value);
+                setPage(1);
+              }}
               placeholder="Nom, référence ou SKU"
             />
             <AdminSelectFilter
               label="Catégorie"
               value={category}
-              onChange={setCategory}
+              onChange={(value) => {
+                setCategory(value);
+                setPage(1);
+              }}
               options={Object.entries(ADMIN_PRODUCT_CATEGORY_LABELS).map(([value, label]) => ({
                 value: value as AdminProductCategoryKey,
                 label,
@@ -210,7 +204,10 @@ export function AdminProductsPage() {
             <AdminSelectFilter
               label="Statut"
               value={status}
-              onChange={setStatus_}
+              onChange={(value) => {
+                setStatus_(value);
+                setPage(1);
+              }}
               options={[
                 { value: "published", label: "Publié" },
                 { value: "draft", label: "Brouillon" },
@@ -220,7 +217,10 @@ export function AdminProductsPage() {
             <AdminSelectFilter
               label="Stock"
               value={stockFilter}
-              onChange={setStockFilter}
+              onChange={(value) => {
+                setStockFilter(value);
+                setPage(1);
+              }}
               options={[
                 { value: "low", label: "Stock faible" },
                 { value: "out", label: "Rupture" },
@@ -266,6 +266,17 @@ export function AdminProductsPage() {
           </AdminActionMenu>
         )}
       />
+
+      {data && data.pageCount > 1 ? (
+        <div className="mt-3 rounded-lg border border-border bg-card">
+          <AdminPagination
+            page={data.page}
+            pageCount={data.pageCount}
+            total={data.total}
+            onPageChange={setPage}
+          />
+        </div>
+      ) : null}
 
       <AdminConfirmDialog
         open={pendingDelete !== null}

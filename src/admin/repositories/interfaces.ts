@@ -35,6 +35,19 @@ export interface CrudRepository<T, CreateInput, UpdateInput> {
   delete(id: string): Promise<void>;
 }
 
+export interface AdminPageParams {
+  page: number;
+  pageSize: number;
+}
+
+export interface PaginatedAdminItems<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  pageCount: number;
+}
+
 export type AdminProductInput = Omit<AdminProduct, "id" | "createdAt" | "updatedAt">;
 
 export interface AdminProductRepository extends CrudRepository<
@@ -42,10 +55,18 @@ export interface AdminProductRepository extends CrudRepository<
   AdminProductInput,
   Partial<AdminProductInput>
 > {
+  listPage?(params: AdminProductListParams): Promise<PaginatedAdminItems<AdminProduct>>;
   duplicate(id: string): Promise<AdminProduct>;
   setStatus(id: string, status: AdminProduct["status"]): Promise<AdminProduct>;
   /** Un produit référencé par une commande ne peut plus être supprimé. */
   isUsedInOrders(id: string): Promise<boolean>;
+}
+
+export interface AdminProductListParams extends AdminPageParams {
+  query?: string;
+  status?: AdminProduct["status"];
+  category?: string;
+  stock?: "low" | "out";
 }
 
 export type AdminCategoryInput = Omit<AdminCategory, "id">;
@@ -427,6 +448,7 @@ export interface AdminArticleRepository {
     status?: AdminArticle["status"];
     categoryId?: string;
   }): Promise<AdminArticle[]>;
+  listPage?(params: AdminArticleListParams): Promise<PaginatedAdminItems<AdminArticle>>;
   get(id: string): Promise<AdminArticle | null>;
   create(input: AdminArticleInput): Promise<AdminArticle>;
   update(id: string, input: AdminArticlePatch): Promise<AdminArticle>;
@@ -436,14 +458,25 @@ export interface AdminArticleRepository {
   duplicate(id: string): Promise<AdminArticle>;
 }
 
+export interface AdminArticleListParams extends AdminPageParams {
+  query?: string;
+  status?: AdminArticle["status"];
+  categoryId?: string;
+}
+
 export type AdminMediaInput = Omit<AdminMedia, "id" | "createdAt">;
 export type AdminMediaPatch = Partial<AdminMediaInput>;
 
 export interface AdminMediaRepository {
   list(): Promise<AdminMedia[]>;
+  listPage?(params: AdminMediaListParams): Promise<PaginatedAdminItems<AdminMedia>>;
   create(input: AdminMediaInput): Promise<AdminMedia>;
   update(id: string, input: AdminMediaPatch): Promise<AdminMedia>;
   delete(id: string): Promise<void>;
+}
+
+export interface AdminMediaListParams extends AdminPageParams {
+  query?: string;
 }
 
 export interface AdminSettingsRepository {
@@ -461,8 +494,14 @@ export interface AdminUserRepository extends CrudRepository<
   AdminUserInput,
   Partial<AdminUserInput>
 > {
+  listPage?(params: AdminUserListParams): Promise<PaginatedAdminItems<AdminUser>>;
   /** Optional because legacy mocks predate multi-role access management. */
   revokeRole?(id: string, role: string): Promise<AdminUser>;
+}
+
+export interface AdminUserListParams extends AdminPageParams {
+  query?: string;
+  status?: AdminUser["status"];
 }
 
 export interface AdminAuditRepository {
@@ -474,6 +513,17 @@ export interface AdminAuditRepository {
     dateFrom?: string;
     dateTo?: string;
   }): Promise<AdminAuditLog[]>;
+  listPage?(params: AdminAuditListParams): Promise<PaginatedAdminItems<AdminAuditLog>>;
+}
+
+export interface AdminAuditListParams extends AdminPageParams {
+  query?: string;
+  action?: string;
+  resourceType?: string;
+  outcome?: "success" | "denied" | "failure";
+  actorUserId?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export interface AdminDashboardPeriod {

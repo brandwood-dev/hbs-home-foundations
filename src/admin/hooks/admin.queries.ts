@@ -5,8 +5,14 @@ import { isMfaRequiredError, useAdminMfaOptional } from "@/admin/auth/AdminMfaCo
 import type {
   AdminDashboardPeriod,
   AdminCustomerListParams,
+  AdminProductListParams,
+  AdminArticleListParams,
+  AdminMediaListParams,
+  AdminUserListParams,
+  AdminAuditListParams,
   AdminOrderListParams,
   AdminHomeSectionKey,
+  PaginatedAdminItems,
 } from "@/admin/repositories/interfaces";
 
 /** Clés de cache du back-office. */
@@ -54,6 +60,21 @@ function clientQuery<T>(key: QueryKey, fn: () => Promise<T>) {
   };
 }
 
+function paginateFallback<T>(
+  items: T[],
+  params: { page: number; pageSize: number },
+): PaginatedAdminItems<T> {
+  const pageCount = Math.max(1, Math.ceil(items.length / params.pageSize));
+  const page = Math.min(Math.max(1, params.page), pageCount);
+  return {
+    items: items.slice((page - 1) * params.pageSize, page * params.pageSize),
+    total: items.length,
+    page,
+    pageSize: params.pageSize,
+    pageCount,
+  };
+}
+
 type AdminQueryOptions<T> = ReturnType<typeof clientQuery<T>> & { enabled?: boolean };
 
 /**
@@ -88,6 +109,37 @@ export function useAdminProducts(options: { enabled?: boolean } = {}) {
     ...clientQuery(adminKeys.products(), () => adminRepositories.products.list()),
     enabled: options.enabled ?? true,
   });
+}
+
+export function useAdminProductsPage(params: AdminProductListParams) {
+  return useAdminQuery(
+    clientQuery([...adminKeys.products(), "page", params], async () => {
+      if ("listPage" in adminRepositories.products && adminRepositories.products.listPage)
+        return adminRepositories.products.listPage(params);
+      let items = await adminRepositories.products.list();
+      if (params.query?.trim()) {
+        const query = params.query.trim().toLocaleLowerCase();
+        items = items.filter((item) =>
+          `${item.name} ${item.reference} ${item.slug} ${item.variants.map((v) => v.sku).join(" ")}`
+            .toLocaleLowerCase()
+            .includes(query),
+        );
+      }
+      if (params.category) items = items.filter((item) => item.category === params.category);
+      if (params.status) items = items.filter((item) => item.status === params.status);
+      if (params.stock === "out")
+        items = items.filter(
+          (item) => item.variants.reduce((sum, variant) => sum + variant.stock, 0) <= 0,
+        );
+      if (params.stock === "low")
+        items = items.filter((item) =>
+          item.variants.some(
+            (variant) => variant.stock > 0 && variant.stock <= variant.lowStockThreshold,
+          ),
+        );
+      return paginateFallback(items, params);
+    }),
+  );
 }
 
 export function useAdminProduct(id: string) {
@@ -192,6 +244,17 @@ export function useAdminArticles(params?: {
   );
 }
 
+export function useAdminArticlesPage(params: AdminArticleListParams) {
+  return useAdminQuery(
+    clientQuery([...adminKeys.articles(), "page", params], async () => {
+      if ("listPage" in adminRepositories.articles && adminRepositories.articles.listPage)
+        return adminRepositories.articles.listPage(params);
+      const items = await adminRepositories.articles.list(params);
+      return paginateFallback(items, params);
+    }),
+  );
+}
+
 export function useAdminArticle(id: string) {
   return useAdminQuery({
     ...clientQuery([...adminKeys.articles(), id], () => adminRepositories.articles.get(id)),
@@ -212,6 +275,23 @@ export function useAdminMedia(options: { enabled?: boolean } = {}) {
   });
 }
 
+export function useAdminMediaPage(params: AdminMediaListParams) {
+  return useAdminQuery(
+    clientQuery([...adminKeys.media(), "page", params], async () => {
+      if ("listPage" in adminRepositories.media && adminRepositories.media.listPage)
+        return adminRepositories.media.listPage(params);
+      let items = await adminRepositories.media.list();
+      if (params.query?.trim()) {
+        const query = params.query.trim().toLocaleLowerCase();
+        items = items.filter((item) =>
+          `${item.name} ${item.alt} ${item.usage}`.toLocaleLowerCase().includes(query),
+        );
+      }
+      return paginateFallback(items, params);
+    }),
+  );
+}
+
 export function useAdminSettings() {
   return useAdminQuery(clientQuery(adminKeys.settings(), () => adminRepositories.settings.get()));
 }
@@ -220,9 +300,38 @@ export function useAdminUsers() {
   return useAdminQuery(clientQuery(adminKeys.users(), () => adminRepositories.users.list()));
 }
 
+export function useAdminUsersPage(params: AdminUserListParams) {
+  return useAdminQuery(
+    clientQuery([...adminKeys.users(), "page", params], async () => {
+      if ("listPage" in adminRepositories.users && adminRepositories.users.listPage)
+        return adminRepositories.users.listPage(params);
+      let items = await adminRepositories.users.list();
+      if (params.query?.trim()) {
+        const query = params.query.trim().toLocaleLowerCase();
+        items = items.filter((item) =>
+          `${item.fullName} ${item.email}`.toLocaleLowerCase().includes(query),
+        );
+      }
+      if (params.status) items = items.filter((item) => item.status === params.status);
+      return paginateFallback(items, params);
+    }),
+  );
+}
+
 export function useAdminAudit(params?: Parameters<typeof adminRepositories.audit.list>[0]) {
   return useAdminQuery(
     clientQuery([...adminKeys.audit(), params ?? {}], () => adminRepositories.audit.list(params)),
+  );
+}
+
+export function useAdminAuditPage(params: AdminAuditListParams) {
+  return useAdminQuery(
+    clientQuery([...adminKeys.audit(), "page", params], async () => {
+      if ("listPage" in adminRepositories.audit && adminRepositories.audit.listPage)
+        return adminRepositories.audit.listPage(params);
+      const items = await adminRepositories.audit.list(params);
+      return paginateFallback(items, params);
+    }),
   );
 }
 

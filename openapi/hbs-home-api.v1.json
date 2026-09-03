@@ -1115,7 +1115,7 @@
       "AuditListResponse": {
         "additionalProperties": false,
         "type": "object",
-        "required": ["items"],
+        "required": ["items", "total", "limit", "offset"],
         "properties": {
           "items": {
             "type": "array",
@@ -1227,6 +1227,18 @@
                 }
               }
             }
+          },
+          "total": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "limit": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "offset": {
+            "minimum": 0,
+            "type": "integer"
           }
         }
       },
@@ -5419,7 +5431,7 @@
       "AdminMediaResponse": {
         "additionalProperties": false,
         "type": "object",
-        "required": ["items"],
+        "required": ["items", "total", "limit", "offset"],
         "properties": {
           "items": {
             "type": "array",
@@ -5528,6 +5540,18 @@
                 }
               }
             }
+          },
+          "total": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "limit": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "offset": {
+            "minimum": 0,
+            "type": "integer"
           }
         }
       },
@@ -13853,6 +13877,24 @@
           },
           {
             "schema": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          },
+          {
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            },
+            "in": "query",
+            "name": "q",
+            "required": false
+          },
+          {
+            "schema": {
               "format": "uuid",
               "type": "string"
             },
@@ -13933,7 +13975,7 @@
                 "schema": {
                   "additionalProperties": false,
                   "type": "object",
-                  "required": ["items"],
+                  "required": ["items", "total", "limit", "offset"],
                   "properties": {
                     "items": {
                       "type": "array",
@@ -14045,6 +14087,18 @@
                           }
                         }
                       }
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "minimum": 0,
+                      "type": "integer"
                     }
                   }
                 }
@@ -21396,6 +21450,32 @@
             },
             "in": "query",
             "name": "q",
+            "required": false
+          },
+          {
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            },
+            "in": "query",
+            "name": "category",
+            "required": false
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": ["low"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["out"]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "stock",
             "required": false
           },
           {
@@ -48228,6 +48308,36 @@
       "get": {
         "operationId": "adminListMedia",
         "tags": ["admin-content"],
+        "parameters": [
+          {
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            },
+            "in": "query",
+            "name": "q",
+            "required": false
+          },
+          {
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          }
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -48241,7 +48351,7 @@
                 "schema": {
                   "additionalProperties": false,
                   "type": "object",
-                  "required": ["items"],
+                  "required": ["items", "total", "limit", "offset"],
                   "properties": {
                     "items": {
                       "type": "array",
@@ -48350,6 +48460,18 @@
                           }
                         }
                       }
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "minimum": 0,
+                      "type": "integer"
                     }
                   }
                 }

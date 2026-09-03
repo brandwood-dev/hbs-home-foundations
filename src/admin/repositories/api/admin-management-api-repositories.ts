@@ -5,6 +5,8 @@ import type {
   AdminSettingsRepository,
   AdminUserRepository,
   AdminAuditRepository,
+  AdminUserListParams,
+  AdminAuditListParams,
 } from "@/admin/repositories/interfaces";
 import type { AdminAuditLog, AdminSettings, AdminUser } from "@/admin/types/admin.types";
 
@@ -98,6 +100,27 @@ export class ApiAdminSettingsRepository implements AdminSettingsRepository {
 
 export class ApiAdminUserRepository implements AdminUserRepository {
   constructor(private readonly client = new HbsApiClient()) {}
+  async listPage(params: AdminUserListParams) {
+    const search = new URLSearchParams({
+      limit: String(params.pageSize),
+      offset: String((params.page - 1) * params.pageSize),
+    });
+    if (params.query) search.set("q", params.query);
+    if (params.status) search.set("status", params.status);
+    const response = await this.client.get<components["schemas"]["AdminUserList"]>(
+      `/api/v1/admin/users?${search.toString()}`,
+      undefined,
+      await token(),
+    );
+    return {
+      items: response.items.map(userFromApi),
+      total: response.total,
+      page: params.page,
+      pageSize: params.pageSize,
+      pageCount: Math.max(1, Math.ceil(response.total / params.pageSize)),
+    };
+  }
+
   async list(params?: Record<string, unknown>): Promise<AdminUser[]> {
     const search = new URLSearchParams();
     const q = params?.["q"] ?? params?.["query"];
@@ -173,6 +196,32 @@ export class ApiAdminUserRepository implements AdminUserRepository {
 
 export class ApiAdminAuditRepository implements AdminAuditRepository {
   constructor(private readonly client = new HbsApiClient()) {}
+  async listPage(params: AdminAuditListParams) {
+    const search = new URLSearchParams({
+      limit: String(params.pageSize),
+      offset: String((params.page - 1) * params.pageSize),
+    });
+    if (params.query) search.set("q", params.query);
+    if (params.action) search.set("action", params.action);
+    if (params.resourceType) search.set("resourceType", params.resourceType);
+    if (params.outcome) search.set("outcome", params.outcome);
+    if (params.actorUserId) search.set("actorUserId", params.actorUserId);
+    if (params.dateFrom) search.set("dateFrom", params.dateFrom);
+    if (params.dateTo) search.set("dateTo", params.dateTo);
+    const response = await this.client.get<components["schemas"]["AuditListResponse"]>(
+      `/api/v1/admin/audit-events?${search.toString()}`,
+      undefined,
+      await token(),
+    );
+    return {
+      items: response.items.map(auditFromApi),
+      total: response.total,
+      page: params.page,
+      pageSize: params.pageSize,
+      pageCount: Math.max(1, Math.ceil(response.total / params.pageSize)),
+    };
+  }
+
   async list(params?: Parameters<AdminAuditRepository["list"]>[0]): Promise<AdminAuditLog[]> {
     const search = new URLSearchParams({ limit: "100" });
     if (params?.action) search.set("action", params.action);

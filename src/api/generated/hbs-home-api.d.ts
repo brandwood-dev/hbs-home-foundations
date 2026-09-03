@@ -1926,6 +1926,9 @@ export interface components {
                     [key: string]: unknown;
                 };
             }[];
+            total: number;
+            limit: number;
+            offset: number;
         };
         AdminManagedUser: {
             /** Format: uuid */
@@ -2729,6 +2732,9 @@ export interface components {
                 /** Format: date-time */
                 updatedAt: string;
             }[];
+            total: number;
+            limit: number;
+            offset: number;
         };
         AdminEditorialPage: {
             /** Format: uuid */
@@ -4824,6 +4830,8 @@ export interface operations {
         parameters: {
             query?: {
                 limit?: number;
+                offset?: number;
+                q?: string;
                 actorUserId?: string;
                 action?: string;
                 resourceType?: string;
@@ -4861,6 +4869,9 @@ export interface operations {
                                 [key: string]: unknown;
                             };
                         }[];
+                        total: number;
+                        limit: number;
+                        offset: number;
                     };
                 };
             };
@@ -7151,6 +7162,8 @@ export interface operations {
             query?: {
                 status?: "draft" | "active" | "archived";
                 q?: string;
+                category?: string;
+                stock?: "low" | "out";
                 limit?: number;
                 offset?: number;
             };
@@ -14657,7 +14670,11 @@ export interface operations {
     };
     adminListMedia: {
         parameters: {
-            query?: never;
+            query?: {
+                q?: string;
+                limit?: number;
+                offset?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -14688,6 +14705,9 @@ export interface operations {
                             /** Format: date-time */
                             updatedAt: string;
                         }[];
+                        total: number;
+                        limit: number;
+                        offset: number;
                     };
                 };
             };
