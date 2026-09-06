@@ -64,15 +64,6 @@ function KpiCard({
   );
 }
 
-function UnavailableCard({ label }: { label: string }) {
-  return (
-    <div className="rounded-xl border border-dashed border-border bg-card/60 p-5">
-      <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</p>
-      <p className="mt-2 text-sm text-muted-foreground italic">{UNAVAILABLE}</p>
-    </div>
-  );
-}
-
 function SectionCard({
   title,
   description,
@@ -147,12 +138,12 @@ export function AdminDashboardView({ data }: { data: DashboardMetrics }) {
   } satisfies ChartConfig;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <section aria-labelledby="kpi-heading" className="space-y-3">
         <h2 id="kpi-heading" className="sr-only">
           Indicateurs clés
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
           <KpiCard
             label="Chiffre d'affaires"
             value={formatMoney(data.revenueMinor)}
@@ -168,25 +159,6 @@ export function AdminDashboardView({ data }: { data: DashboardMetrics }) {
           />
           <KpiCard label="Commandes livrées" value={data.deliveredCount} emphasis />
         </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-          <KpiCard label="À confirmer" value={data.pendingConfirmationCount} />
-          <KpiCard label="En préparation" value={data.preparingCount} />
-          <KpiCard label="Expédiées" value={data.shippedCount} />
-          <KpiCard label="Annulées" value={data.cancelledCount} />
-          <KpiCard label="Produits en faible stock" value={data.lowStockCount} />
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <UnavailableCard label="Commandes en attente de paiement" />
-          <UnavailableCard label="Frais de livraison à confirmer" />
-          <UnavailableCard label="Clients" />
-          <UnavailableCard label="Promotions actives" />
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Ces indicateurs ne sont pas exposés par l’API du tableau de bord actuelle : aucune valeur
-          n’est estimée.
-        </p>
       </section>
 
       <div className="grid gap-4 xl:grid-cols-3">
@@ -334,8 +306,8 @@ export function AdminDashboardView({ data }: { data: DashboardMetrics }) {
         </SectionCard>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-3">
-        <SectionCard title="Dernières commandes" className="xl:col-span-2">
+      <div className="grid gap-4">
+        <SectionCard title="Dernières commandes">
           {data.recentOrders.length === 0 ? (
             <p className="text-sm text-muted-foreground">Aucune commande pour le moment.</p>
           ) : (
@@ -392,24 +364,6 @@ export function AdminDashboardView({ data }: { data: DashboardMetrics }) {
                 </tbody>
               </table>
             </div>
-          )}
-        </SectionCard>
-
-        <SectionCard title="Produits en faible stock">
-          {data.lowStockRows.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Aucun produit en alerte de stock.</p>
-          ) : (
-            <ul className="divide-y divide-border text-sm">
-              {data.lowStockRows.map((row) => (
-                <li key={row.variant.id} className="flex justify-between gap-3 py-2">
-                  <span className="truncate">
-                    {row.productName}
-                    <span className="text-xs text-muted-foreground"> · {row.variant.sku}</span>
-                  </span>
-                  <span className="shrink-0 tabular-nums">{row.variant.stock}</span>
-                </li>
-              ))}
-            </ul>
           )}
         </SectionCard>
       </div>
