@@ -91,7 +91,7 @@ export function AdminUsersPage() {
     invalidate: [],
     onSuccess: () => void query.refetch(),
   });
-  const rows = query.data?.items ?? [];
+  const rows = (query.data?.items ?? []).filter((item) => item.status !== "revoked");
   if (query.isLoading) return <AdminSkeleton rows={6} />;
   if (query.error)
     return (
@@ -340,8 +340,8 @@ export function AdminUsersPage() {
         title="Retirer ce membre de l’équipe ?"
         description={
           pendingDelete
-            ? `« ${pendingDelete.fullName} » perdra définitivement son accès Admin et tous ses rôles seront révoqués. Son historique restera conservé pour l’audit.`
-            : "Cette action révoque définitivement l’accès Admin du membre."
+            ? `« ${pendingDelete.fullName} » sera définitivement supprimé de l’équipe et de l’accès Admin. Son historique d’audit restera conservé.`
+            : "Cette action supprime définitivement le membre de l’équipe et son accès Admin."
         }
         confirmLabel={removeMember.isPending ? "Suppression…" : "Supprimer le membre"}
         destructive
