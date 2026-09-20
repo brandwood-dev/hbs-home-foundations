@@ -285,9 +285,7 @@ function AdminInviteCallbackPage() {
   const description = isRecovery
     ? "Créez un nouveau mot de passe fort pour retrouver l’accès."
     : "Définissez un mot de passe fort pour activer votre accès au back-office.";
-  const submitLabel = isRecovery
-    ? "Réinitialiser mon mot de passe"
-    : "Activer mon accès";
+  const submitLabel = isRecovery ? "Réinitialiser mon mot de passe" : "Activer mon accès";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
