@@ -246,7 +246,17 @@ export function variantSummary(variant: AdminVariant): string {
   const parts: string[] = [];
   if (variant.colorLabel) parts.push(variant.colorLabel);
   if (variant.widthCm || variant.heightCm) parts.push(`${variant.widthCm}×${variant.heightCm} cm`);
+  const internalOptionKeys = new Set([
+    "colorId",
+    "colorLabel",
+    "widthCm",
+    "heightCm",
+    "curtainHeader",
+    "eyeletColor",
+    "lining",
+  ]);
   for (const [key, value] of Object.entries(variant.options ?? {})) {
+    if (internalOptionKeys.has(key)) continue;
     if (value === "" || value == null) continue;
     parts.push(`${key.replace(/_/g, " ")} ${String(value)}`);
   }
