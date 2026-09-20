@@ -179,6 +179,8 @@ export function SiteHeader() {
                 key={item.id}
                 columns={item.megaMenu}
                 shortcuts={item.menuShortcuts}
+                collectionHref={item.href}
+                collectionLabel={`Voir ${item.label.toLowerCase()}`}
                 onNavigate={() => setOpenMenuId(null)}
               />
             ) : null,
