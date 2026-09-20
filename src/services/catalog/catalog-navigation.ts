@@ -7,12 +7,28 @@ function categoryMenu(category: PublicCategory): NavItem["megaMenu"] {
   return [
     {
       title: "Sous-catégories",
-      links: category.children.map((child) => ({
+      links: orderedCategories(category.children).map((child) => ({
         label: child.name,
         href: child.path,
       })),
     },
   ];
+}
+
+function orderedCategories(categories: readonly PublicCategory[]): PublicCategory[] {
+  return categories
+    .map((category, index) => ({ category, index }))
+    .sort((left, right) => {
+      const leftOrder = left.category.sortOrder;
+      const rightOrder = right.category.sortOrder;
+      if (typeof leftOrder === "number" && typeof rightOrder === "number") {
+        return leftOrder - rightOrder || left.index - right.index;
+      }
+      if (typeof leftOrder === "number") return -1;
+      if (typeof rightOrder === "number") return 1;
+      return left.index - right.index;
+    })
+    .map(({ category }) => category);
 }
 
 function categoryMenuShortcuts(category: PublicCategory): NonNullable<NavItem["menuShortcuts"]> {
@@ -55,41 +71,37 @@ export function mergeCatalogNavigation(
   // editorial fixture as a resilient fallback. An empty array is a valid API
   // response and must hide catalog entries that are no longer published.
   if (categories === undefined) return [...fallback];
-  const bySlug = new Map(categories.map((category) => [category.slug, category]));
-  const known = new Set<string>();
   const catalogRootIds = new Set(
     catalogGroups.flatMap((group) => [group.id, group.path.replace(/^\//, "")]),
   );
-
-  const merged = fallback.flatMap((item) => {
-    if (catalogRootIds.has(item.id) && !bySlug.has(item.id)) return [];
-    const category = bySlug.get(item.id);
-    if (!category) return item;
-    known.add(category.slug);
-    const megaMenu = categoryMenu(category) ?? item.megaMenu;
-    const menuShortcuts = categoryMenuShortcuts(category);
-    return megaMenu
-      ? {
-          ...item,
-          label: category.name,
-          href: category.path,
-          megaMenu,
-          ...(menuShortcuts.length > 0 ? { menuShortcuts } : {}),
-        }
-      : { ...item, label: category.name, href: category.path };
-  });
-
-  for (const category of categories) {
-    if (known.has(category.slug)) continue;
+  const isCatalogFallbackItem = (item: NavItem) =>
+    catalogRootIds.has(item.id) || catalogRootIds.has(item.href.replace(/^\//, ""));
+  const firstCatalogIndex = fallback.findIndex(isCatalogFallbackItem);
+  const catalogItems = orderedCategories(
+    categories.filter((category) => category.parentSlug === null),
+  ).map((category) => {
     const megaMenu = categoryMenu(category);
     const menuShortcuts = categoryMenuShortcuts(category);
-    merged.push({
+    return {
       id: category.slug,
       label: category.name,
       href: category.path,
       ...(megaMenu ? { megaMenu } : {}),
       ...(menuShortcuts.length > 0 ? { menuShortcuts } : {}),
-    });
-  }
-  return merged;
+    };
+  });
+
+  // Replace the static catalog slots as one contiguous block. The API order
+  // is the admin `sort_order`, so reordering in Admin is reflected in the
+  // public navbar instead of being constrained by the old fixture order.
+  const editorialItems = fallback.filter((item) => !isCatalogFallbackItem(item));
+  if (firstCatalogIndex < 0) return [...editorialItems, ...catalogItems];
+
+  const beforeCatalog = fallback
+    .slice(0, firstCatalogIndex)
+    .filter((item) => !isCatalogFallbackItem(item));
+  const afterCatalog = fallback
+    .slice(firstCatalogIndex)
+    .filter((item) => !isCatalogFallbackItem(item));
+  return [...beforeCatalog, ...catalogItems, ...afterCatalog];
 }
