@@ -1832,7 +1832,7 @@ export interface components {
             attributes: {
                 [key: string]: unknown;
             };
-            confectionOptions: {
+            confectionOptions?: {
                 key: string;
                 label: string;
                 description: string;
@@ -3929,7 +3929,7 @@ export interface operations {
                             attributes: {
                                 [key: string]: unknown;
                             };
-                            confectionOptions: {
+                            confectionOptions?: {
                                 key: string;
                                 label: string;
                                 description: string;
@@ -4111,7 +4111,7 @@ export interface operations {
                         attributes: {
                             [key: string]: unknown;
                         };
-                        confectionOptions: {
+                        confectionOptions?: {
                             key: string;
                             label: string;
                             description: string;
@@ -4269,7 +4269,7 @@ export interface operations {
                             attributes: {
                                 [key: string]: unknown;
                             };
-                            confectionOptions: {
+                            confectionOptions?: {
                                 key: string;
                                 label: string;
                                 description: string;
@@ -4427,7 +4427,7 @@ export interface operations {
                         attributes: {
                             [key: string]: unknown;
                         };
-                        confectionOptions: {
+                        confectionOptions?: {
                             key: string;
                             label: string;
                             description: string;
@@ -4608,7 +4608,7 @@ export interface operations {
                         attributes: {
                             [key: string]: unknown;
                         };
-                        confectionOptions: {
+                        confectionOptions?: {
                             key: string;
                             label: string;
                             description: string;
