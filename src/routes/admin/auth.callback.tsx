@@ -284,10 +284,10 @@ function AdminInviteCallbackPage() {
   const title = isRecovery ? "Réinitialisation du mot de passe" : "Activez votre compte Admin";
   const description = isRecovery
     ? "Créez un nouveau mot de passe fort pour retrouver l’accès."
-    : "Définissez un mot de passe fort. Le MFA sera configuré à l’étape suivante.";
+    : "Définissez un mot de passe fort pour activer votre accès au back-office.";
   const submitLabel = isRecovery
     ? "Réinitialiser mon mot de passe"
-    : "Activer et configurer le MFA";
+    : "Activer mon accès";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
