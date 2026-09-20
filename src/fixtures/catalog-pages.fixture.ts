@@ -11,8 +11,6 @@ export interface CatalogGroup {
 
 export const catalogGroups: CatalogGroup[] = [
   { id: "rideaux", label: "Rideaux", path: "/rideaux" },
-  { id: "voilages", label: "Voilages", path: "/voilages" },
-  { id: "stores", label: "Stores", path: "/stores" },
   { id: "coussins", label: "Coussins", path: "/coussins" },
   { id: "galettes_de_chaise", label: "Galettes de chaise", path: "/galettes-de-chaise" },
   { id: "accessoires", label: "Accessoires", path: "/accessoires" },
