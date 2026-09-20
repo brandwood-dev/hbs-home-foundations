@@ -31,6 +31,10 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   const hydrateSessionFromHash = useCallback(async (supabase: SupabaseClient) => {
     if (typeof window === "undefined") return;
+    // The callback route owns recovery/invitation token exchange. Avoid
+    // restoring the same one-time token here as well, which can consume the
+    // refresh token before the reset form is rendered.
+    if (window.location.pathname === "/admin/auth/callback") return;
     const query = new URLSearchParams(window.location.search);
     const code = query.get("code");
     if (code) {

@@ -144,11 +144,7 @@ function RootComponent() {
 
     const isAdminAuthFlow = hasAuthToken || hasAuthCode || hasAuthFlow;
 
-    if (
-      isAdminAuthFlow &&
-      window.location.pathname !== "/admin/auth/callback" &&
-      window.location.pathname !== "/admin/connexion"
-    ) {
+    if (isAdminAuthFlow && window.location.pathname !== "/admin/auth/callback") {
       const query = window.location.search;
       const fragment = window.location.hash;
       window.location.replace(`/admin/auth/callback${query}${fragment}`);
