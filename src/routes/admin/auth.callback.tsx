@@ -1,4 +1,5 @@
 import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
+import type { Session } from "@supabase/supabase-js";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { useAdminAuth } from "@/admin/auth/AdminAuthProvider";
 import { AdminAuthPage } from "@/admin/components/auth/AdminAuthPage";
@@ -21,7 +22,9 @@ type AuthCallbackParams =
   | { kind: "tokens"; accessToken: string; refreshToken: string }
   | { kind: "token_hash"; tokenHash: string };
 
-type SessionRestoreResult = { success: true } | { success: false; message: string };
+type SessionRestoreResult =
+  | { success: true; session: Session }
+  | { success: false; message: string };
 
 function validPassword(password: string): boolean {
   return (
@@ -44,6 +47,7 @@ function AdminInviteCallbackPage() {
   const [restoringSession, setRestoringSession] = useState(false);
   const [restoreError, setRestoreError] = useState<string | null>(null);
   const restoreAttempted = useRef(false);
+  const recoveredSession = useRef<Session | null>(null);
 
   const authFlow =
     typeof window === "undefined"
@@ -98,6 +102,8 @@ function AdminInviteCallbackPage() {
       return { success: false, message: "Aucun token de reset détecté dans le lien." };
     }
 
+    let restoredSession: Session | null = null;
+
     if (params.kind === "code") {
       const { data, error } = await auth.client.auth.exchangeCodeForSession(params.code);
       if (error) {
@@ -114,6 +120,7 @@ function AdminInviteCallbackPage() {
             "La session de réinitialisation n’a pas pu être activée. Demandez un nouveau lien.",
         };
       }
+      restoredSession = data.session;
     } else if (params.kind === "token_hash") {
       const { data, error } = await auth.client.auth.verifyOtp({
         token_hash: params.tokenHash,
@@ -133,6 +140,7 @@ function AdminInviteCallbackPage() {
             "La session de réinitialisation n’a pas pu être activée. Demandez un nouveau lien.",
         };
       }
+      restoredSession = data.session;
     } else {
       const { data, error } = await auth.client.auth.setSession({
         access_token: params.accessToken,
@@ -153,12 +161,14 @@ function AdminInviteCallbackPage() {
             "La session de réinitialisation n’a pas pu être activée. Demandez un nouveau lien.",
         };
       }
+      restoredSession = data.session;
     }
 
     // setSession/exchangeCodeForSession already validates the one-time recovery
     // token. Do not refresh immediately: refresh-token rotation can invalidate
     // a freshly issued recovery link before the password form is displayed.
-    return { success: true };
+    recoveredSession.current = restoredSession;
+    return { success: true, session: restoredSession };
   }, [auth.client, getAuthParamsFromLocation]);
 
   const restoreSessionFromAuthLink = useCallback(async () => {
@@ -181,6 +191,18 @@ function AdminInviteCallbackPage() {
     if (current.data.session) {
       const user = await auth.client.auth.getUser();
       if (user.data.user) return true;
+    }
+
+    // The one-time recovery token must never be verified a second time. If
+    // the provider has not propagated the session yet, restore the session
+    // returned by the first verification instead of consuming token_hash
+    // again (which Supabase correctly rejects as invalid/expired).
+    if (recoveredSession.current) {
+      const { data, error } = await auth.client.auth.setSession({
+        access_token: recoveredSession.current.access_token,
+        refresh_token: recoveredSession.current.refresh_token,
+      });
+      if (!error && data.session) return true;
     }
 
     return restoreSessionFromAuthLink();
