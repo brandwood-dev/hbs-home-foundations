@@ -27,6 +27,8 @@ export interface CategoryLatestProduct {
 export interface PublicCategory {
   slug: string;
   name: string;
+  /** Optional ordering metadata; the API array order remains the fallback. */
+  sortOrder?: number;
   description: string | null;
   parentSlug: string | null;
   path: string;

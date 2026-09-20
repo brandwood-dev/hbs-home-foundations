@@ -5,6 +5,7 @@ import type { NavItem } from "@/types/navigation.types";
 
 const fallback: NavItem[] = [
   { id: "rideaux", label: "Rideaux", href: "/rideaux" },
+  { id: "coussins", label: "Coussins", href: "/coussins" },
   { id: "inspirations", label: "Inspirations", href: "/inspirations" },
 ];
 
@@ -12,6 +13,7 @@ const categories: PublicCategory[] = [
   {
     slug: "rideaux",
     name: "Habillage de fenêtres",
+    sortOrder: 2,
     description: null,
     parentSlug: null,
     path: "/rideaux",
@@ -44,6 +46,22 @@ describe("dynamic catalog navigation", () => {
       { label: "Lin naturel", href: "/rideaux/lin" },
     ]);
     expect(result[1]).toMatchObject({ id: "inspirations", href: "/inspirations" });
+  });
+
+  it("uses the API/admin order for the public catalog block", () => {
+    const result = mergeCatalogNavigation(fallback, [
+      { ...categories[0]!, sortOrder: 1 },
+      {
+        ...categories[0]!,
+        slug: "coussins",
+        name: "Coussins API",
+        path: "/coussins",
+        sortOrder: 0,
+        children: [],
+      },
+    ]);
+
+    expect(result.map((item) => item.id)).toEqual(["coussins", "rideaux", "inspirations"]);
   });
 
   it("exposes at most two newest sub-category image shortcuts", () => {
