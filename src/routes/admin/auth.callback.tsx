@@ -17,7 +17,9 @@ export const Route = createFileRoute("/admin/auth/callback")({
 });
 
 type AuthCallbackParams =
-  { kind: "code"; code: string } | { kind: "tokens"; accessToken: string; refreshToken: string };
+  | { kind: "code"; code: string }
+  | { kind: "tokens"; accessToken: string; refreshToken: string }
+  | { kind: "token_hash"; tokenHash: string };
 
 type SessionRestoreResult = { success: true } | { success: false; message: string };
 
@@ -58,7 +60,9 @@ function AdminInviteCallbackPage() {
     window.location.hash.includes("refresh_token=");
   const hasAuthCode =
     typeof window !== "undefined" && new URLSearchParams(window.location.search).has("code");
-  const hasAuthLink = hasAuthHash || hasAuthCode;
+  const hasAuthTokenHash =
+    typeof window !== "undefined" && new URLSearchParams(window.location.search).has("token_hash");
+  const hasAuthLink = hasAuthHash || hasAuthCode || hasAuthTokenHash;
 
   const isRecoveryFlow = authFlow === "recovery";
   const hasInvitationFlow =
@@ -70,6 +74,8 @@ function AdminInviteCallbackPage() {
     const searchParams = new URLSearchParams(window.location.search);
     const code = searchParams.get("code");
     if (code) return { kind: "code", code };
+    const tokenHash = searchParams.get("token_hash");
+    if (tokenHash) return { kind: "token_hash", tokenHash };
 
     const hashParams = new URLSearchParams(window.location.hash.slice(1));
     const accessToken = hashParams.get("access_token");
@@ -94,6 +100,25 @@ function AdminInviteCallbackPage() {
 
     if (params.kind === "code") {
       const { data, error } = await auth.client.auth.exchangeCodeForSession(params.code);
+      if (error) {
+        return {
+          success: false,
+          message:
+            "Le lien de réinitialisation a expiré ou n’est pas valide. Demandez un nouveau lien.",
+        };
+      }
+      if (!data.session) {
+        return {
+          success: false,
+          message:
+            "La session de réinitialisation n’a pas pu être activée. Demandez un nouveau lien.",
+        };
+      }
+    } else if (params.kind === "token_hash") {
+      const { data, error } = await auth.client.auth.verifyOtp({
+        token_hash: params.tokenHash,
+        type: "recovery",
+      });
       if (error) {
         return {
           success: false,
