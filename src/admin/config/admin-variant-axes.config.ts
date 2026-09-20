@@ -4,9 +4,6 @@ import type { AdminProductCategoryKey } from "@/admin/types/admin.types";
 export type AdminVariantAxisKey =
   | "color"
   | "dimensions"
-  | "curtain_header"
-  | "eyelet_color"
-  | "lining"
   | "sheer_finish"
   | "mounting"
   | "control_side"
@@ -39,30 +36,6 @@ const option = (value: string, label: string) => ({ value, label });
 export const ADMIN_VARIANT_AXES: Record<AdminVariantAxisKey, AdminVariantAxis> = {
   color: { key: "color", label: "Couleur", kind: "color" },
   dimensions: { key: "dimensions", label: "Dimensions", kind: "dimensions" },
-  curtain_header: {
-    key: "curtain_header",
-    label: "Tête de rideau",
-    kind: "select",
-    options: [
-      option("oeillets", "Œillets"),
-      option("ruflette", "Ruflette"),
-      option("pattes", "Pattes"),
-      option("wave", "Wave"),
-    ],
-  },
-  eyelet_color: {
-    key: "eyelet_color",
-    label: "Couleur des œillets",
-    kind: "select",
-    options: [option("argent", "Argent"), option("dore", "Doré"), option("noir", "Noir")],
-    hint: "Disponible uniquement avec une tête à œillets.",
-  },
-  lining: {
-    key: "lining",
-    label: "Doublure",
-    kind: "select",
-    options: [option("sans_doublure", "Sans doublure"), option("thermique", "Thermique")],
-  },
   sheer_finish: {
     key: "sheer_finish",
     label: "Finition",
@@ -155,8 +128,11 @@ export const ADMIN_VARIANT_AXES_BY_CATEGORY: Record<
   AdminProductCategoryKey,
   AdminVariantAxisKey[]
 > = {
-  rideaux: ["color", "dimensions", "curtain_header", "eyelet_color", "lining"],
-  voilages: ["color", "dimensions", "sheer_finish", "eyelet_color"],
+  // Les finitions de confection des rideaux/voilages sont proposées
+  // automatiquement sur la fiche produit, et ne sont donc plus des axes
+  // à saisir pour chaque variante.
+  rideaux: ["color", "dimensions"],
+  voilages: ["color", "dimensions", "sheer_finish"],
   stores: ["color", "dimensions", "mounting", "control_side", "mechanism_color"],
   coussins: ["color", "dimensions", "cushion_content", "closure", "pack_quantity"],
   galettes_de_chaise: ["color", "dimensions", "fastening", "thickness", "pack_quantity"],

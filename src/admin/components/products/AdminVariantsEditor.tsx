@@ -113,11 +113,13 @@ export function AdminVariantsEditor({
     }
   }
 
+  const isCurtainFamily = category === "rideaux" || category === "voilages";
+  const sectionDescription = isCurtainFamily
+    ? "Chaque combinaison doit être unique et posséder un SKU distinct. Les 4 types de confection sont proposés automatiquement sur la fiche produit."
+    : "Chaque combinaison doit être unique et posséder un SKU distinct.";
+
   return (
-    <AdminFormSection
-      title="Variantes"
-      description="Chaque combinaison doit être unique et posséder un SKU distinct."
-    >
+    <AdminFormSection title="Variantes" description={sectionDescription}>
       {variants.length === 0 ? (
         <AdminEmptyState
           title="Aucune variante"
@@ -231,42 +233,6 @@ export function AdminVariantsEditor({
                           onChange={(value) => update(variant.id, { heightCm: value })}
                         />
                       </div>
-                    );
-                  }
-                  if (axisKey === "curtain_header") {
-                    return (
-                      <AdminSelectField
-                        key={axisKey}
-                        label={axis.label}
-                        value={variant.curtainHeader}
-                        options={axis.options ?? []}
-                        onChange={(value) => update(variant.id, { curtainHeader: value })}
-                      />
-                    );
-                  }
-                  if (axisKey === "eyelet_color") {
-                    return (
-                      <AdminSelectField
-                        key={axisKey}
-                        label={axis.label}
-                        value={variant.eyeletColor ?? ""}
-                        error={errors["eyeletColor"]}
-                        options={axis.options ?? []}
-                        {...(axis.hint ? { hint: axis.hint } : {})}
-                        onChange={(value) => update(variant.id, { eyeletColor: value })}
-                      />
-                    );
-                  }
-                  if (axisKey === "lining") {
-                    return (
-                      <AdminSelectField
-                        key={axisKey}
-                        label={axis.label}
-                        value={variant.lining ?? ""}
-                        error={errors["lining"]}
-                        options={axis.options ?? []}
-                        onChange={(value) => update(variant.id, { lining: value })}
-                      />
                     );
                   }
                   if (axisKey === "pack_quantity") {
