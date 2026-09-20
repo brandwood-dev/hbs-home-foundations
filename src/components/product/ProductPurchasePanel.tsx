@@ -5,12 +5,14 @@ import { ProductPurchaseActions } from "@/components/product/ProductPurchaseActi
 import { ProductShippingNotice } from "@/components/product/ProductShippingNotice";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import type { Product, ProductVariant } from "@/domain/product/product.types";
+import type { ConfectionKey } from "@/domain/product/confection";
 
 interface ProductPurchasePanelProps {
   product: Product;
   variant: ProductVariant;
   quantity: number;
   onQuantityChange: (quantity: number) => void;
+  confectionKey?: ConfectionKey | undefined;
 }
 
 export function ProductPurchasePanel({
@@ -18,6 +20,7 @@ export function ProductPurchasePanel({
   variant,
   quantity,
   onQuantityChange,
+  confectionKey,
 }: ProductPurchasePanelProps) {
   const unavailable = variant.availability === "out_of_stock";
   const max = Math.max(1, variant.availableQuantity || 1);
@@ -62,6 +65,7 @@ export function ProductPurchasePanel({
             product={product}
             variant={variant}
             quantity={quantity}
+            confectionKey={confectionKey}
             missingOptionLabel="Sélectionnez une dimension"
           />
         </div>

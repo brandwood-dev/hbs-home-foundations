@@ -11,6 +11,7 @@ import type {
   ResolvedCartItem,
 } from "@/domain/cart/cart.types";
 import type { Product, ProductVariant } from "@/domain/product/product.types";
+import { confectionOptionsFor, isCurtainFamily } from "@/domain/product/confection";
 import {
   calculateCartItemCount,
   calculateCartLineTotal,
@@ -27,12 +28,13 @@ function unavailableLine(
   product?: Product,
 ): ResolvedCartItem {
   return {
-    lineId: createCartLineId(item.productId, item.variantId),
+    lineId: createCartLineId(item.productId, item.variantId, item.confectionKey),
     productId: item.productId,
     productSlug: product?.slug ?? "",
     productName: product?.name ?? "Article indisponible",
     productReference: product?.reference ?? "",
     variantId: item.variantId,
+    ...(item.confectionKey ? { confectionKey: item.confectionKey } : {}),
     sku: "",
     quantity: item.quantity,
     unitPriceMinor: 0,
@@ -87,12 +89,13 @@ export function resolveCartItem(
   const image = variantImage(product, variant);
 
   return {
-    lineId: createCartLineId(product.id, variant.id),
+    lineId: createCartLineId(product.id, variant.id, item.confectionKey),
     productId: product.id,
     productSlug: product.slug,
     productName: product.name,
     productReference: product.reference,
     variantId: variant.id,
+    ...(item.confectionKey ? { confectionKey: item.confectionKey } : {}),
     sku: variant.sku,
     quantity,
     unitPriceMinor,
@@ -111,7 +114,17 @@ export function resolveCartItem(
     ...(variant.curtainHeader ? { curtainHeaderLabel: HEADER_LABELS[variant.curtainHeader] } : {}),
     ...(variant.eyeletColor ? { eyeletColorLabel: EYELET_COLOR_LABELS[variant.eyeletColor] } : {}),
     ...(variant.lining ? { liningLabel: LINING_LABELS[variant.lining] } : {}),
-    selectedOptions: getVariantDisplayOptions(product, variant),
+    selectedOptions: [
+      ...getVariantDisplayOptions(product, variant),
+      ...(isCurtainFamily(product.category) && item.confectionKey
+        ? (() => {
+            const option = confectionOptionsFor(product.category, product.confectionOptions).find(
+              (candidate) => candidate.key === item.confectionKey,
+            );
+            return option ? [{ label: "Confection", value: option.label }] : [];
+          })()
+        : []),
+    ],
     sellingUnitLabel: SELLING_MODE_LABELS[product.sellingMode],
     ...(product.shippingProfile ? { shippingProfile: product.shippingProfile } : {}),
     availability: variant.availability,

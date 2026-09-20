@@ -9,6 +9,7 @@ export function toOrderItemInputs(cart: Cart): CreateOrderItemInput[] {
     .map((item) => ({
       productId: item.productId,
       variantId: item.variantId,
+      ...(item.confectionKey ? { confectionKey: item.confectionKey } : {}),
       quantity: item.quantity,
       expectedUnitPriceMinor: item.unitPriceMinor,
     }));

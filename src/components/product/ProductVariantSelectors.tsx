@@ -30,6 +30,11 @@ import type {
   ProductVariant,
 } from "@/domain/product/product.types";
 import {
+  confectionOptionsFor,
+  isCurtainFamily,
+  type ConfectionKey,
+} from "@/domain/product/confection";
+import {
   getAxisOptions,
   sizeKeyOf,
   selectionOf,
@@ -40,6 +45,8 @@ interface ProductVariantSelectorsProps {
   product: Product;
   variant: ProductVariant;
   onChange: (axis: VariantAxis, value: string) => void;
+  selectedConfection?: ConfectionKey | undefined;
+  onConfectionChange?: ((value: ConfectionKey) => void) | undefined;
 }
 
 function Legend({ label, value }: { label: string; value: string }) {
@@ -64,6 +71,8 @@ export function ProductVariantSelectors({
   product,
   variant,
   onChange,
+  selectedConfection,
+  onConfectionChange,
 }: ProductVariantSelectorsProps) {
   const selection = selectionOf(variant);
   const colorOptions = getAxisOptions(product.variants, "colorId", selection);
@@ -87,6 +96,8 @@ export function ProductVariantSelectors({
     if (item.sizeLabel) sizeLabels.set(sizeKeyOf(item), item.sizeLabel);
   }
   const labelForSize = (key: string) => sizeLabels.get(key) ?? `${key.replace("x", " × ")} cm`;
+  const confectionOptions = confectionOptionsFor(product.category, product.confectionOptions);
+  const showConfection = isCurtainFamily(product.category) && confectionOptions.length > 0;
 
   const activeColor = product.colors.find((color) => color.id === variant.colorId);
   const sizeFieldLabel =
@@ -134,6 +145,54 @@ export function ProductVariantSelectors({
           })}
         </div>
       </fieldset>
+
+      {showConfection && onConfectionChange ? (
+        <fieldset>
+          <Legend
+            label="Type de confection"
+            value={
+              confectionOptions.find((option) => option.key === selectedConfection)?.label ??
+              "Choisissez une finition"
+            }
+          />
+          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {confectionOptions.map((option) => {
+              const selected = option.key === selectedConfection;
+              return (
+                <button
+                  key={option.key}
+                  type="button"
+                  onClick={() => onConfectionChange(option.key)}
+                  aria-pressed={selected}
+                  className={`group overflow-hidden rounded-sm border text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+                    selected
+                      ? "border-accent ring-2 ring-accent/30"
+                      : "border-border hover:border-accent"
+                  }`}
+                >
+                  <img
+                    src={option.imageUrl}
+                    alt=""
+                    loading="lazy"
+                    className="aspect-[4/3] w-full object-cover"
+                  />
+                  <span className="block p-2">
+                    <span className="flex items-start gap-1 text-sm font-medium">
+                      {selected ? (
+                        <Check className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                      ) : null}
+                      <span>{option.label}</span>
+                    </span>
+                    <span className="mt-1 block text-xs text-foreground-muted">
+                      {option.description}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+      ) : null}
 
       <fieldset>
         <Legend
@@ -232,7 +291,7 @@ export function ProductVariantSelectors({
         </fieldset>
       )}
 
-      {headerOptions.length > 0 && variant.curtainHeader && (
+      {!showConfection && headerOptions.length > 0 && variant.curtainHeader && (
         <fieldset>
           <Legend label="Type de tête" value={HEADER_DESCRIPTIONS[variant.curtainHeader]} />
           <div className="mt-2 flex flex-wrap gap-2">
@@ -251,7 +310,7 @@ export function ProductVariantSelectors({
         </fieldset>
       )}
 
-      {eyeletOptions.length > 0 && variant.curtainHeader === "oeillets" && (
+      {!showConfection && eyeletOptions.length > 0 && variant.curtainHeader === "oeillets" && (
         <fieldset>
           <Legend
             label="Finition des œillets"

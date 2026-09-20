@@ -321,7 +321,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Remove an Admin member and revoke all access */
+        /** Permanently remove an Admin member and revoke all access */
         delete: operations["removeAdminUser"];
         options?: never;
         head?: never;
@@ -1832,6 +1832,11 @@ export interface components {
             attributes: {
                 [key: string]: unknown;
             };
+            confectionOptions: {
+                key: string;
+                label: string;
+                description: string;
+            }[];
             seo: {
                 title: string;
                 description: string;
@@ -3110,6 +3115,7 @@ export interface components {
             productName: string;
             productReference: string;
             variantId: string;
+            confectionKey: string | null;
             sku: string;
             quantity: number;
             unitPriceMinor: number;
@@ -3148,6 +3154,7 @@ export interface components {
                 productName: string;
                 productReference: string;
                 variantId: string;
+                confectionKey: string | null;
                 sku: string;
                 quantity: number;
                 unitPriceMinor: number;
@@ -3922,6 +3929,11 @@ export interface operations {
                             attributes: {
                                 [key: string]: unknown;
                             };
+                            confectionOptions: {
+                                key: string;
+                                label: string;
+                                description: string;
+                            }[];
                             seo: {
                                 title: string;
                                 description: string;
@@ -4099,6 +4111,11 @@ export interface operations {
                         attributes: {
                             [key: string]: unknown;
                         };
+                        confectionOptions: {
+                            key: string;
+                            label: string;
+                            description: string;
+                        }[];
                         seo: {
                             title: string;
                             description: string;
@@ -4252,6 +4269,11 @@ export interface operations {
                             attributes: {
                                 [key: string]: unknown;
                             };
+                            confectionOptions: {
+                                key: string;
+                                label: string;
+                                description: string;
+                            }[];
                             seo: {
                                 title: string;
                                 description: string;
@@ -4405,6 +4427,11 @@ export interface operations {
                         attributes: {
                             [key: string]: unknown;
                         };
+                        confectionOptions: {
+                            key: string;
+                            label: string;
+                            description: string;
+                        }[];
                         seo: {
                             title: string;
                             description: string;
@@ -4581,6 +4608,11 @@ export interface operations {
                         attributes: {
                             [key: string]: unknown;
                         };
+                        confectionOptions: {
+                            key: string;
+                            label: string;
+                            description: string;
+                        }[];
                         seo: {
                             title: string;
                             description: string;
@@ -17527,6 +17559,7 @@ export interface operations {
                             productName: string;
                             productReference: string;
                             variantId: string;
+                            confectionKey: string | null;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -17629,6 +17662,7 @@ export interface operations {
                             productName: string;
                             productReference: string;
                             variantId: string;
+                            confectionKey: string | null;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -17692,6 +17726,7 @@ export interface operations {
                 "application/json": {
                     productId: string;
                     variantId: string;
+                    confectionKey?: string;
                     quantity: number;
                 };
             };
@@ -17717,6 +17752,7 @@ export interface operations {
                             productName: string;
                             productReference: string;
                             variantId: string;
+                            confectionKey: string | null;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -17865,6 +17901,7 @@ export interface operations {
                             productName: string;
                             productReference: string;
                             variantId: string;
+                            confectionKey: string | null;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -17975,6 +18012,7 @@ export interface operations {
                             productName: string;
                             productReference: string;
                             variantId: string;
+                            confectionKey: string | null;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -18105,6 +18143,7 @@ export interface operations {
                             productName: string;
                             productReference: string;
                             variantId: string;
+                            confectionKey: string | null;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -18251,6 +18290,7 @@ export interface operations {
                             productName: string;
                             productReference: string;
                             variantId: string;
+                            confectionKey: string | null;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -18572,6 +18612,7 @@ export interface operations {
                     items: {
                         productId: string;
                         variantId: string;
+                        confectionKey?: string;
                         quantity: number;
                         expectedUnitPriceMinor: number;
                     }[];

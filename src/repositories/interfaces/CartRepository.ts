@@ -4,6 +4,7 @@ export interface AddCartItemInput {
   productId: string;
   variantId: string;
   quantity: number;
+  confectionKey?: string | undefined;
 }
 
 /**

@@ -11,7 +11,7 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "Supabase Auth access token. Admin mutations require an aal2 MFA session."
+        "description": "Supabase Auth access token. Admin mutations may require an aal2 MFA session when ADMIN_MFA_ENABLED is true."
       }
     },
     "schemas": {
@@ -378,6 +378,7 @@
           "colors",
           "details",
           "attributes",
+          "confectionOptions",
           "seo",
           "isThermal",
           "isNew",
@@ -724,6 +725,25 @@
           "attributes": {
             "type": "object",
             "additionalProperties": {}
+          },
+          "confectionOptions": {
+            "type": "array",
+            "items": {
+              "additionalProperties": false,
+              "type": "object",
+              "required": ["key", "label", "description"],
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "seo": {
             "type": "object",
@@ -7223,6 +7243,7 @@
           "productName",
           "productReference",
           "variantId",
+          "confectionKey",
           "sku",
           "quantity",
           "unitPriceMinor",
@@ -7262,6 +7283,16 @@
           },
           "variantId": {
             "type": "string"
+          },
+          "confectionKey": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "sku": {
             "type": "string"
@@ -7468,6 +7499,7 @@
                 "productName",
                 "productReference",
                 "variantId",
+                "confectionKey",
                 "sku",
                 "quantity",
                 "unitPriceMinor",
@@ -7507,6 +7539,16 @@
                 },
                 "variantId": {
                   "type": "string"
+                },
+                "confectionKey": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "sku": {
                   "type": "string"
@@ -10447,6 +10489,7 @@
                           "colors",
                           "details",
                           "attributes",
+                          "confectionOptions",
                           "seo",
                           "isThermal",
                           "isNew",
@@ -10794,6 +10837,25 @@
                             "type": "object",
                             "additionalProperties": {}
                           },
+                          "confectionOptions": {
+                            "type": "array",
+                            "items": {
+                              "additionalProperties": false,
+                              "type": "object",
+                              "required": ["key", "label", "description"],
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "label": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
                           "seo": {
                             "type": "object",
                             "required": ["title", "description"],
@@ -11116,6 +11178,7 @@
                       "colors",
                       "details",
                       "attributes",
+                      "confectionOptions",
                       "seo",
                       "isThermal",
                       "isNew",
@@ -11463,6 +11526,25 @@
                         "type": "object",
                         "additionalProperties": {}
                       },
+                      "confectionOptions": {
+                        "type": "array",
+                        "items": {
+                          "additionalProperties": false,
+                          "type": "object",
+                          "required": ["key", "label", "description"],
+                          "properties": {
+                            "key": {
+                              "type": "string"
+                            },
+                            "label": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
                       "seo": {
                         "type": "object",
                         "required": ["title", "description"],
@@ -11618,6 +11700,7 @@
                           "colors",
                           "details",
                           "attributes",
+                          "confectionOptions",
                           "seo",
                           "isThermal",
                           "isNew",
@@ -11965,6 +12048,25 @@
                             "type": "object",
                             "additionalProperties": {}
                           },
+                          "confectionOptions": {
+                            "type": "array",
+                            "items": {
+                              "additionalProperties": false,
+                              "type": "object",
+                              "required": ["key", "label", "description"],
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "label": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
                           "seo": {
                             "type": "object",
                             "required": ["title", "description"],
@@ -12116,6 +12218,7 @@
                     "colors",
                     "details",
                     "attributes",
+                    "confectionOptions",
                     "seo",
                     "isThermal",
                     "isNew",
@@ -12463,6 +12566,25 @@
                       "type": "object",
                       "additionalProperties": {}
                     },
+                    "confectionOptions": {
+                      "type": "array",
+                      "items": {
+                        "additionalProperties": false,
+                        "type": "object",
+                        "required": ["key", "label", "description"],
+                        "properties": {
+                          "key": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
                     "seo": {
                       "type": "object",
                       "required": ["title", "description"],
@@ -12687,6 +12809,7 @@
                       "colors",
                       "details",
                       "attributes",
+                      "confectionOptions",
                       "seo",
                       "isThermal",
                       "isNew",
@@ -13033,6 +13156,25 @@
                       "attributes": {
                         "type": "object",
                         "additionalProperties": {}
+                      },
+                      "confectionOptions": {
+                        "type": "array",
+                        "items": {
+                          "additionalProperties": false,
+                          "type": "object",
+                          "required": ["key", "label", "description"],
+                          "properties": {
+                            "key": {
+                              "type": "string"
+                            },
+                            "label": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            }
+                          }
+                        }
                       },
                       "seo": {
                         "type": "object",
@@ -16130,7 +16272,7 @@
     "/api/v1/admin/users/{id}": {
       "delete": {
         "operationId": "removeAdminUser",
-        "summary": "Remove an Admin member and revoke all access",
+        "summary": "Permanently remove an Admin member and revoke all access",
         "tags": ["admin-users"],
         "parameters": [
           {
@@ -57967,6 +58109,7 @@
                           "productName",
                           "productReference",
                           "variantId",
+                          "confectionKey",
                           "sku",
                           "quantity",
                           "unitPriceMinor",
@@ -58006,6 +58149,16 @@
                           },
                           "variantId": {
                             "type": "string"
+                          },
+                          "confectionKey": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "sku": {
                             "type": "string"
@@ -58433,6 +58586,7 @@
                           "productName",
                           "productReference",
                           "variantId",
+                          "confectionKey",
                           "sku",
                           "quantity",
                           "unitPriceMinor",
@@ -58472,6 +58626,16 @@
                           },
                           "variantId": {
                             "type": "string"
+                          },
+                          "confectionKey": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "sku": {
                             "type": "string"
@@ -58811,6 +58975,11 @@
                     "maxLength": 160,
                     "type": "string"
                   },
+                  "confectionKey": {
+                    "minLength": 1,
+                    "maxLength": 80,
+                    "type": "string"
+                  },
                   "quantity": {
                     "minimum": 1,
                     "maximum": 99,
@@ -58866,6 +59035,7 @@
                           "productName",
                           "productReference",
                           "variantId",
+                          "confectionKey",
                           "sku",
                           "quantity",
                           "unitPriceMinor",
@@ -58905,6 +59075,16 @@
                           },
                           "variantId": {
                             "type": "string"
+                          },
+                          "confectionKey": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "sku": {
                             "type": "string"
@@ -59493,6 +59673,7 @@
                           "productName",
                           "productReference",
                           "variantId",
+                          "confectionKey",
                           "sku",
                           "quantity",
                           "unitPriceMinor",
@@ -59532,6 +59713,16 @@
                           },
                           "variantId": {
                             "type": "string"
+                          },
+                          "confectionKey": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "sku": {
                             "type": "string"
@@ -60035,6 +60226,7 @@
                           "productName",
                           "productReference",
                           "variantId",
+                          "confectionKey",
                           "sku",
                           "quantity",
                           "unitPriceMinor",
@@ -60074,6 +60266,16 @@
                           },
                           "variantId": {
                             "type": "string"
+                          },
+                          "confectionKey": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "sku": {
                             "type": "string"
@@ -60522,6 +60724,7 @@
                           "productName",
                           "productReference",
                           "variantId",
+                          "confectionKey",
                           "sku",
                           "quantity",
                           "unitPriceMinor",
@@ -60561,6 +60764,16 @@
                           },
                           "variantId": {
                             "type": "string"
+                          },
+                          "confectionKey": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "sku": {
                             "type": "string"
@@ -61116,6 +61329,7 @@
                           "productName",
                           "productReference",
                           "variantId",
+                          "confectionKey",
                           "sku",
                           "quantity",
                           "unitPriceMinor",
@@ -61155,6 +61369,16 @@
                           },
                           "variantId": {
                             "type": "string"
+                          },
+                          "confectionKey": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "sku": {
                             "type": "string"
@@ -62134,6 +62358,11 @@
                         "variantId": {
                           "minLength": 1,
                           "maxLength": 160,
+                          "type": "string"
+                        },
+                        "confectionKey": {
+                          "minLength": 1,
+                          "maxLength": 80,
                           "type": "string"
                         },
                         "quantity": {
@@ -68151,7 +68380,7 @@
     },
     {
       "name": "admin-identity",
-      "description": "Authenticated Admin identity, roles and MFA state."
+      "description": "Authenticated Admin identity, roles and optional MFA state."
     },
     {
       "name": "admin-audit",

@@ -1,15 +1,18 @@
 import { ProductPurchaseActions } from "@/components/product/ProductPurchaseActions";
 import type { Product, ProductVariant } from "@/domain/product/product.types";
+import type { ConfectionKey } from "@/domain/product/confection";
 import { formatMoney } from "@/lib/money/money";
 
 export function ProductStickyBar({
   product,
   variant,
   quantity,
+  confectionKey,
 }: {
   product: Product;
   variant: ProductVariant;
   quantity: number;
+  confectionKey?: ConfectionKey | undefined;
 }) {
   return (
     <div
@@ -23,7 +26,13 @@ export function ProductStickyBar({
             {formatMoney(variant.price)} · {variant.widthCm} × {variant.heightCm} cm
           </p>
         </div>
-        <ProductPurchaseActions product={product} variant={variant} quantity={quantity} compact />
+        <ProductPurchaseActions
+          product={product}
+          variant={variant}
+          quantity={quantity}
+          confectionKey={confectionKey}
+          compact
+        />
       </div>
     </div>
   );

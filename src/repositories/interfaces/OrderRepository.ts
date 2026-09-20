@@ -10,6 +10,7 @@ import type { OrderTrackingResult } from "@/domain/order/order-tracking.types";
 export interface CreateOrderItemInput {
   productId: string;
   variantId: string;
+  confectionKey?: string;
   quantity: number;
   /** Prix unitaire affiché au client — sert uniquement au contrôle de cohérence. */
   expectedUnitPriceMinor: number;

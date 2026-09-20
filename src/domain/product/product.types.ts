@@ -294,6 +294,8 @@ export interface ProductVariant {
   imageIds: string[];
 }
 
+import type { ConfectionOption } from "@/domain/product/confection";
+
 export interface Product {
   id: string;
   slug: string;
@@ -355,6 +357,8 @@ export interface Product {
   details: ProductDetails;
   /** Attributs catalogue dynamiques renvoyés par l'API. */
   attributes?: Record<string, unknown>;
+  /** Options de confection héritées de la famille Rideaux & Voilages. */
+  confectionOptions?: readonly ConfectionOption[];
 
   seo: {
     title: string;

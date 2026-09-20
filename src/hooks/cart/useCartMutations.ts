@@ -20,8 +20,12 @@ export function useAddCartItemMutation() {
   const options = useCartMutationOptions();
   return useMutation({
     mutationKey: [...cartQueryKeys.all, "add"],
-    mutationFn: (input: { productId: string; variantId: string; quantity: number }) =>
-      getCartRepository().addItem(input),
+    mutationFn: (input: {
+      productId: string;
+      variantId: string;
+      quantity: number;
+      confectionKey?: string | undefined;
+    }) => getCartRepository().addItem(input),
     ...options,
   });
 }
