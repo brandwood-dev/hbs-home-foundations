@@ -56,6 +56,7 @@ export interface AdminVariant {
   colorLabel: string;
   widthCm: number;
   heightCm: number;
+  /** Champs historiques conservés pour relire les anciennes variantes. */
   curtainHeader: string;
   eyeletColor?: string;
   lining?: string;

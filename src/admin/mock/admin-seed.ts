@@ -1,7 +1,7 @@
 import { demoProducts } from "@/fixtures/products.fixture";
 import { TUNISIA_GOVERNORATES } from "@/fixtures/tunisia-governorates.fixture";
 import { storeConfig } from "@/config/store.config";
-import { HEADER_LABELS, MATERIAL_LABELS } from "@/domain/product/product.constants";
+import { MATERIAL_LABELS } from "@/domain/product/product.constants";
 import type {
   AdminAttribute,
   AdminAuditLog,
@@ -236,15 +236,6 @@ function buildAttributes(products: AdminProduct[]): AdminAttribute[] {
       "Obscurcissant",
       "Occultant",
     ]),
-    simple("attr_header", "Tête de rideau", "curtain_header", 5, HEADER_LABELS, {
-      variantAxis: true,
-    }),
-    simple("attr_eyelet", "Couleur des œillets", "eyelet_color", 6, ["Argent", "Doré", "Noir"], {
-      variantAxis: true,
-    }),
-    simple("attr_lining", "Doublure", "lining", 7, ["Sans doublure", "Thermique"], {
-      variantAxis: true,
-    }),
     {
       id: "attr_width",
       name: "Largeur",
@@ -252,7 +243,7 @@ function buildAttributes(products: AdminProduct[]): AdminAttribute[] {
       fieldType: "number",
       isFilterable: true,
       isVariantAxis: true,
-      order: 8,
+      order: 5,
       values: widths.map((width, index) => ({
         id: `width_${width}`,
         label: `${width} cm`,
@@ -268,7 +259,7 @@ function buildAttributes(products: AdminProduct[]): AdminAttribute[] {
       fieldType: "number",
       isFilterable: true,
       isVariantAxis: true,
-      order: 9,
+      order: 6,
       values: heights.map((height, index) => ({
         id: `height_${height}`,
         label: `${height} cm`,
@@ -277,9 +268,9 @@ function buildAttributes(products: AdminProduct[]): AdminAttribute[] {
         isActive: true,
       })),
     },
-    simple("attr_style", "Style", "style", 10, ["Contemporain", "Classique", "Bohème", "Minimal"]),
-    simple("attr_room", "Pièce", "room", 11, ["Salon", "Chambre", "Cuisine", "Bureau"]),
-    simple("attr_selling_mode", "Mode de vente", "selling_mode", 12, [
+    simple("attr_style", "Style", "style", 7, ["Contemporain", "Classique", "Bohème", "Minimal"]),
+    simple("attr_room", "Pièce", "room", 8, ["Salon", "Chambre", "Cuisine", "Bureau"]),
+    simple("attr_selling_mode", "Mode de vente", "selling_mode", 9, [
       "Panneau seul",
       "Paire",
       "Pack",
@@ -288,7 +279,7 @@ function buildAttributes(products: AdminProduct[]): AdminAttribute[] {
       "Sur devis",
       "Accessoire",
     ]),
-    simple("attr_availability", "Disponibilité", "availability", 13, [
+    simple("attr_availability", "Disponibilité", "availability", 10, [
       "En stock",
       "Stock faible",
       "Épuisé",

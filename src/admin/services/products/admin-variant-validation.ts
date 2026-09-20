@@ -108,16 +108,6 @@ export function validateVariant(
     errors["length"] = "La longueur maximale doit être supérieure à la longueur minimale.";
   }
 
-  if (
-    variant.eyeletColor &&
-    context.axes.includes("eyelet_color") &&
-    variant.curtainHeader !== "oeillets"
-  ) {
-    errors["eyeletColor"] = "La couleur d'œillets exige une tête « Œillets ».";
-  }
-  if (variant.lining && variant.lining !== "sans_doublure" && !context.axes.includes("lining")) {
-    errors["lining"] = "Cette catégorie ne gère pas la doublure.";
-  }
   if (options["orientation"] && !context.axes.includes("orientation")) {
     errors["orientation"] = "Cette catégorie ne gère pas l'orientation.";
   }

@@ -544,17 +544,23 @@ function remapVariantMediaAssociations(
 }
 
 function variantOptions(variant: AdminVariant): Record<string, unknown> {
-  return {
+  const options: Record<string, unknown> = {
     ...(variant.options ?? {}),
     colorId: variant.colorId,
     colorLabel: variant.colorLabel,
     widthCm: variant.widthCm,
     heightCm: variant.heightCm,
-    curtainHeader: variant.curtainHeader,
-    ...(variant.eyeletColor ? { eyeletColor: variant.eyeletColor } : {}),
-    ...(variant.lining ? { lining: variant.lining } : {}),
     ...(variant.packQuantity === undefined ? {} : { packQuantity: variant.packQuantity }),
   };
+
+  // Ces propriétés restent lues pour les anciennes variantes, mais ne sont
+  // plus générées par le formulaire. Ne pas envoyer de chaînes vides pour les
+  // nouvelles variantes : les 4 finitions de confection sont désormais
+  // proposées automatiquement côté boutique.
+  if (variant.curtainHeader.trim()) options["curtainHeader"] = variant.curtainHeader.trim();
+  if (variant.eyeletColor?.trim()) options["eyeletColor"] = variant.eyeletColor.trim();
+  if (variant.lining?.trim()) options["lining"] = variant.lining.trim();
+  return options;
 }
 
 function variantPayload(variant: AdminVariant): Record<string, unknown> {
