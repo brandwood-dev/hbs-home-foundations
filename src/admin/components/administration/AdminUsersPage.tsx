@@ -87,9 +87,14 @@ export function AdminUsersPage() {
   });
   const rows = useMemo(
     () =>
-      (query.data ?? []).filter((item) =>
-        `${item.fullName} ${item.email}`.toLowerCase().includes(search.toLowerCase()),
-      ),
+      (query.data ?? [])
+        // Keep the table safe even while an older API response is still in
+        // cache: revoked members are no longer team members and must not be
+        // displayed here.
+        .filter((item) => item.status !== "revoked")
+        .filter((item) =>
+          `${item.fullName} ${item.email}`.toLowerCase().includes(search.toLowerCase()),
+        ),
     [query.data, search],
   );
   if (query.isLoading) return <AdminSkeleton rows={6} />;
@@ -329,8 +334,8 @@ export function AdminUsersPage() {
         title="Retirer ce membre de l’équipe ?"
         description={
           pendingDelete
-            ? `« ${pendingDelete.fullName} » perdra définitivement son accès Admin et tous ses rôles seront révoqués. Son historique restera conservé pour l’audit.`
-            : "Cette action révoque définitivement l’accès Admin du membre."
+            ? `« ${pendingDelete.fullName} » sera définitivement supprimé de l’équipe et de l’accès Admin. Son historique d’audit restera conservé.`
+            : "Cette action supprime définitivement le membre de l’équipe et son accès Admin."
         }
         confirmLabel={removeMember.isPending ? "Suppression…" : "Supprimer le membre"}
         destructive
