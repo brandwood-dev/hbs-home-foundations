@@ -101,9 +101,20 @@ function attributeValues(value: unknown): Record<string, AdminAttributeValueInpu
 }
 
 function categoryKey(value: string | null): AdminProductCategoryKey | undefined {
-  return value && value in ADMIN_PRODUCT_CATEGORY_LABELS
-    ? (value as AdminProductCategoryKey)
-    : undefined;
+  if (!value) return undefined;
+  if (value in ADMIN_PRODUCT_CATEGORY_LABELS) return value as AdminProductCategoryKey;
+  const aliases: Record<string, AdminProductCategoryKey> = {
+    "rideaux-voilages": "rideaux",
+    "rideaux-et-voilages": "rideaux",
+    "galettes-de-chaise": "galettes_de_chaise",
+    mobilier: "mobilier_interieur",
+    "mobilier-interieur": "mobilier_interieur",
+    "mobilier-d-interieur": "mobilier_interieur",
+    plantes: "plantes_decoration",
+    "plantes-decoration": "plantes_decoration",
+    "plantes-et-decoration": "plantes_decoration",
+  };
+  return aliases[value];
 }
 
 function mapCategory(category: ApiCategory): AdminCategory {
@@ -331,7 +342,10 @@ function mapProduct(product: ApiProduct): AdminProduct {
     categoryKey(product.categorySlug ?? null) ??
     categoryKey(stringValue(payload["category"]) ?? null);
   const subCategoryId =
-    product.categoryId && product.categorySlug && category && product.categorySlug !== category
+    product.categoryId &&
+    product.categorySlug &&
+    category &&
+    categoryKey(product.categorySlug) !== category
       ? product.categoryId
       : undefined;
   const imageAssets = product.media.map(mapMedia);
@@ -393,6 +407,10 @@ function mapProduct(product: ApiProduct): AdminProduct {
 
 function productPayload(input: AdminProductInput): Record<string, unknown> {
   return {
+    // Keep the stable Admin family key in the JSON payload. The normalized
+    // catalogue root slug is sent separately to the API because editable
+    // category slugs may differ from these legacy business keys.
+    category: input.category,
     brand: input.brand,
     tags: input.tags,
     rooms: input.rooms,
@@ -421,7 +439,9 @@ function productBody(input: AdminProductInput): ProductCreateBody {
     categoryId: input.categoryId,
     material: input.material?.trim() ?? "",
     sellingMode: input.sellingMode,
-    ...(input.category ? { category: input.category } : {}),
+    ...((input.catalogCategorySlug ?? input.category)
+      ? { category: input.catalogCategorySlug ?? input.category }
+      : {}),
     ...(input.isNew === undefined ? {} : { isNew: input.isNew }),
     ...(input.isBestSeller === undefined ? {} : { isBestSeller: input.isBestSeller }),
     ...(input.isFeatured === undefined ? {} : { isFeatured: input.isFeatured }),
@@ -465,6 +485,7 @@ function productPatch(
     "isOnSale",
   ] as const)
     copyPayloadKey(key);
+  if (input.category !== undefined) payloadPatch["category"] = input.category;
   if (input.imageAssets !== undefined || input.images !== undefined)
     Object.assign(payloadPatch, mediaPayload);
   return {
@@ -474,7 +495,9 @@ function productPatch(
     ...(input.categoryId === undefined ? {} : { categoryId: input.categoryId }),
     ...(input.material === undefined ? {} : { material: input.material?.trim() ?? "" }),
     ...(input.sellingMode === undefined ? {} : { sellingMode: input.sellingMode }),
-    ...(input.category === undefined ? {} : { category: input.category }),
+    ...((input.catalogCategorySlug ?? input.category)
+      ? { category: input.catalogCategorySlug ?? input.category }
+      : {}),
     ...(input.isNew === undefined ? {} : { isNew: input.isNew }),
     ...(input.isBestSeller === undefined ? {} : { isBestSeller: input.isBestSeller }),
     ...(input.isFeatured === undefined ? {} : { isFeatured: input.isFeatured }),
