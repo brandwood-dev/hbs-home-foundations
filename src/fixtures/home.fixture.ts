@@ -122,20 +122,6 @@ export const featuredCollections: HomeCollection[] = [
     image: { src: colRideaux, alt: "Rideaux en velours devant une fenêtre" },
   },
   {
-    id: "voilages",
-    title: "Voilages",
-    description: "La lumière filtrée, en toute légèreté.",
-    href: "/voilages",
-    image: { src: colVoilages, alt: "Voilages blancs traversés par la lumière" },
-  },
-  {
-    id: "stores",
-    title: "Stores",
-    description: "Des solutions nettes pour chaque ouverture.",
-    href: "/stores",
-    image: { src: colStores, alt: "Store en fibres naturelles sur une fenêtre" },
-  },
-  {
     id: "coussins",
     title: "Coussins",
     description: "Matières douces et teintes chaleureuses.",
