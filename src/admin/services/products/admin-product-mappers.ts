@@ -246,9 +246,6 @@ export function variantSummary(variant: AdminVariant): string {
   const parts: string[] = [];
   if (variant.colorLabel) parts.push(variant.colorLabel);
   if (variant.widthCm || variant.heightCm) parts.push(`${variant.widthCm}×${variant.heightCm} cm`);
-  if (variant.curtainHeader) parts.push(variant.curtainHeader);
-  if (variant.eyeletColor) parts.push(`œillets ${variant.eyeletColor}`);
-  if (variant.lining && variant.lining !== "sans_doublure") parts.push(variant.lining);
   for (const [key, value] of Object.entries(variant.options ?? {})) {
     if (value === "" || value == null) continue;
     parts.push(`${key.replace(/_/g, " ")} ${String(value)}`);
