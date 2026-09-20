@@ -846,19 +846,6 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
         </AdminCard>
       ) : null}
 
-      {publicationIssues.length > 0 ? (
-        <AdminCard className="mb-4 border-amber-200 bg-amber-50">
-          <p className="text-sm font-medium text-amber-900">
-            Éléments requis avant publication ({publicationIssues.length})
-          </p>
-          <ul className="mt-1 list-disc pl-5 text-xs text-amber-800">
-            {publicationIssues.map((issue) => (
-              <li key={issue}>{issue}</li>
-            ))}
-          </ul>
-        </AdminCard>
-      ) : null}
-
       <AdminTabs
         tabs={[
           { value: "general", label: "Général", content: generalTab },
