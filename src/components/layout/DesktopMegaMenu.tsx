@@ -4,61 +4,94 @@ import type { MegaMenuColumn, NavMenuShortcut } from "@/types/navigation.types";
 interface DesktopMegaMenuProps {
   columns: MegaMenuColumn[];
   shortcuts?: NavMenuShortcut[] | undefined;
+  collectionHref?: string;
+  collectionLabel?: string;
   onNavigate?: () => void;
 }
 
-export function DesktopMegaMenu({ columns, shortcuts = [], onNavigate }: DesktopMegaMenuProps) {
+export function DesktopMegaMenu({
+  columns,
+  shortcuts = [],
+  collectionHref,
+  collectionLabel = "Voir toute la collection",
+  onNavigate,
+}: DesktopMegaMenuProps) {
   const hasShortcuts = shortcuts.length > 0;
+  const hasSingleShortcut = shortcuts.length === 1;
+  const hasSingleColumn = columns.length === 1;
 
   return (
     <div className="absolute left-0 right-0 top-full z-40 border-b border-border bg-surface shadow-soft">
       <div
-        className={`mx-auto grid max-w-7xl gap-8 px-6 py-8 ${
-          hasShortcuts ? "lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.78fr)]" : ""
+        className={`mx-auto grid max-w-7xl gap-6 px-6 py-6 ${
+          hasShortcuts ? "lg:grid-cols-[minmax(0,0.78fr)_minmax(30rem,1.22fr)]" : ""
         }`}
       >
-        <div
-          className={`grid gap-x-8 gap-y-7 ${
-            columns.length > 1 ? "sm:grid-cols-2 lg:grid-cols-3" : ""
-          }`}
-        >
-          {columns.map((column) => (
-            <div key={column.title}>
-              <h3 className="eyebrow mb-4">{column.title}</h3>
-              <ul className="space-y-2.5">
-                {column.links.map((link) => (
-                  <li key={link.label}>
-                    <AppLink
-                      href={link.href}
-                      onClick={onNavigate}
-                      className="text-sm text-foreground-muted transition-colors hover:text-accent-dark"
-                    >
-                      {link.label}
-                    </AppLink>
-                  </li>
-                ))}
-              </ul>
+        <div className="rounded-xl border border-border bg-surface-muted/45 px-5 py-5">
+          <div className="mb-4 flex items-start justify-between gap-4">
+            <div>
+              <p className="eyebrow mb-1">Explorer la collection</p>
+              <p className="text-sm text-foreground-muted">
+                Trouvez rapidement le style adapté à votre intérieur.
+              </p>
             </div>
-          ))}
+            {collectionHref ? (
+              <AppLink
+                href={collectionHref}
+                onClick={onNavigate}
+                className="shrink-0 text-xs font-semibold text-accent-dark underline-offset-4 transition-colors hover:underline"
+              >
+                {collectionLabel}
+              </AppLink>
+            ) : null}
+          </div>
+
+          <div
+            className={`grid gap-x-8 gap-y-6 ${
+              hasSingleColumn ? "" : "sm:grid-cols-2 lg:grid-cols-3"
+            }`}
+          >
+            {columns.map((column) => (
+              <div key={column.title}>
+                <h3 className="eyebrow mb-3">{column.title}</h3>
+                <ul className={hasSingleColumn ? "grid grid-cols-2 gap-x-8 gap-y-2" : "space-y-2"}>
+                  {column.links.map((link) => (
+                    <li key={link.label}>
+                      <AppLink
+                        href={link.href}
+                        onClick={onNavigate}
+                        className="group flex items-center gap-2 text-sm text-foreground-muted transition-colors hover:text-accent-dark"
+                      >
+                        <span className="h-px w-0 bg-accent transition-all duration-200 group-hover:w-3" />
+                        {link.label}
+                      </AppLink>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
         {hasShortcuts ? (
-          <div className="grid grid-cols-2 gap-4 border-l border-border pl-8">
+          <div className={`grid gap-4 ${hasSingleShortcut ? "grid-cols-1" : "sm:grid-cols-2"}`}>
             {shortcuts.slice(0, 2).map((shortcut) => (
               <AppLink
                 key={shortcut.href}
                 href={shortcut.href}
                 onClick={onNavigate}
-                className="group relative overflow-hidden rounded-md border border-border bg-surface-muted"
+                className={`group relative overflow-hidden rounded-xl border border-border bg-surface-muted ${
+                  hasSingleShortcut ? "aspect-[16/7]" : "aspect-[4/3]"
+                }`}
               >
                 <img
                   src={shortcut.imageUrl}
                   alt={shortcut.imageAlt}
                   loading="lazy"
                   decoding="async"
-                  className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  className="h-full w-full object-contain object-center p-2 transition-transform duration-500 group-hover:scale-[1.02]"
                 />
-                <span className="absolute inset-x-2 bottom-2 rounded-sm bg-surface/95 px-2 py-2 text-center text-xs font-medium text-foreground shadow-sm transition-colors group-hover:text-accent-dark">
+                <span className="absolute inset-x-3 bottom-3 rounded-md bg-surface/95 px-3 py-2.5 text-center text-sm font-medium text-foreground shadow-sm transition-colors group-hover:text-accent-dark">
                   {shortcut.label}
                 </span>
               </AppLink>
