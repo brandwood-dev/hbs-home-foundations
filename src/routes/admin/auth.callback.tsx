@@ -23,8 +23,7 @@ type AuthCallbackParams =
   | { kind: "token_hash"; tokenHash: string };
 
 type SessionRestoreResult =
-  | { success: true; session: Session }
-  | { success: false; message: string };
+  { success: true; session: Session } | { success: false; message: string };
 
 function validPassword(password: string): boolean {
   return (
