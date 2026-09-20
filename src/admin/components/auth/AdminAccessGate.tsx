@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { HbsApiClient, HbsApiError, type ApiAdminSession } from "@/api";
 import { useAdminAuth } from "@/admin/auth/AdminAuthProvider";
 import { AdminAuthorizationProvider } from "@/admin/auth/AdminAuthorizationContext";
-import { AdminMfaProvider } from "@/admin/auth/AdminMfaContext";
 import { AdminAuthPage } from "./AdminAuthPage";
 import { Button } from "@/components/ui/button";
 
@@ -15,6 +14,7 @@ type ApiState =
 
 export function AdminAccessGate({ children }: { children: ReactNode }) {
   const auth = useAdminAuth();
+  const { refreshSession, signOut } = auth;
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const api = useMemo(() => new HbsApiClient(), []);
   const [attempt, setAttempt] = useState(0);
@@ -23,14 +23,20 @@ export function AdminAccessGate({ children }: { children: ReactNode }) {
   // authenticated user remains the same. Keep the current Admin tree mounted
   // during that background validation so active forms are not destroyed.
   const lastValidatedUserIdRef = useRef<string | null>(null);
+  // A migrated or expired browser session can be rejected by the API even
+  // though Supabase still exposes it locally. Attempt one refresh per user
+  // before clearing that stale session and returning to the login screen.
+  const refreshAttemptedForUserRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!auth.session) {
       lastValidatedUserIdRef.current = null;
+      refreshAttemptedForUserRef.current = null;
       setApiState({ status: "loading" });
       return;
     }
     const controller = new AbortController();
+    const userId = auth.session.user.id;
     const sameValidatedUser = lastValidatedUserIdRef.current === auth.session.user.id;
     if (!sameValidatedUser) setApiState({ status: "loading" });
     void api
@@ -43,6 +49,19 @@ export function AdminAccessGate({ children }: { children: ReactNode }) {
       .catch((reason: unknown) => {
         if (controller.signal.aborted) return;
         lastValidatedUserIdRef.current = null;
+        const invalidToken =
+          reason instanceof HbsApiError && reason.problem?.code === "INVALID_ACCESS_TOKEN";
+        if (invalidToken && refreshAttemptedForUserRef.current !== userId) {
+          refreshAttemptedForUserRef.current = userId;
+          void refreshSession()
+            .then(() => {
+              if (!controller.signal.aborted) setAttempt((value) => value + 1);
+            })
+            .catch(() => {
+              if (!controller.signal.aborted) void signOut();
+            });
+          return;
+        }
         setApiState({
           status: "error",
           message:
@@ -53,7 +72,7 @@ export function AdminAccessGate({ children }: { children: ReactNode }) {
         });
       });
     return () => controller.abort();
-  }, [api, attempt, auth.session]);
+  }, [api, attempt, auth.session, refreshSession, signOut]);
 
   if (auth.status === "loading") return <AdminGateLoading />;
   if (auth.status === "unconfigured") {
@@ -124,19 +143,12 @@ export function AdminAccessGate({ children }: { children: ReactNode }) {
     <AdminAuthorizationProvider session={apiState.session}>{children}</AdminAuthorizationProvider>
   );
 
-  if (!auth.client) return authorizedTree;
-
-  return (
-    <AdminMfaProvider
-      client={auth.client}
-      onVerified={async () => {
-        await auth.refreshSession();
-        setAttempt((value) => value + 1);
-      }}
-    >
-      {authorizedTree}
-    </AdminMfaProvider>
-  );
+  // Admin access is intentionally password-only. The former MFA provider
+  // rendered a QR/TOTP step-up challenge whenever an API response contained
+  // MFA_REQUIRED, which made the back-office unusable even with MFA disabled
+  // in the API environment. Keep the authorized tree mounted directly; the
+  // API feature flag remains the single source of truth for any future policy.
+  return authorizedTree;
 }
 
 function permissionForPath(pathname: string): string | null {
