@@ -48,7 +48,13 @@ export interface PaginatedAdminItems<T> {
   pageCount: number;
 }
 
-export type AdminProductInput = Omit<AdminProduct, "id" | "createdAt" | "updatedAt">;
+export type AdminProductInput = Omit<AdminProduct, "id" | "createdAt" | "updatedAt"> & {
+  /**
+   * Slug of the editable catalogue root sent to the API. The legacy
+   * `category` field remains the stable business key used by Admin rules.
+   */
+  catalogCategorySlug?: string;
+};
 
 export interface AdminProductRepository extends CrudRepository<
   AdminProduct,

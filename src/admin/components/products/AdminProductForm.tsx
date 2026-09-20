@@ -52,6 +52,7 @@ import {
 } from "@/admin/services/products/admin-product-slug";
 import {
   catalogCategoryOptionsForFamily,
+  catalogFamilyOptionsForCategories,
   familyRootCategory,
 } from "@/admin/services/products/admin-product-taxonomy";
 import { resolveAdminColorOptions } from "@/admin/config/admin-color-options";
@@ -67,11 +68,6 @@ import {
   useUpdateAdminProduct,
 } from "@/admin/hooks/admin-catalog.mutations";
 import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
-
-const CATEGORY_OPTIONS = Object.entries(ADMIN_PRODUCT_CATEGORY_LABELS).map(([value, label]) => ({
-  value,
-  label,
-}));
 
 function hasProductAttributeValue(value: unknown): boolean {
   if (value === null || value === undefined) return false;
@@ -140,7 +136,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
   const { data: categories = [] } = useAdminCategories();
   const { data: attributes = [] } = useAdminAttributes();
   const productDraftState = useAdminDraftState(`hbs-admin-product-${product?.id ?? "new"}`, () =>
-    product ? productToForm(product) : emptyProductForm("rideaux", categories[0]?.id ?? ""),
+    product ? productToForm(product) : emptyProductForm("rideaux", ""),
   );
   const { value: values, setValue: setValues, restored, setPersist, clear } = productDraftState;
   const [dirty, setDirty] = useState(restored);
@@ -155,29 +151,48 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
   const isSaving = createProduct.isPending || updateProduct.isPending || setProductStatus.isPending;
 
   useEffect(() => {
-    if (product || values.categoryId || categories.length === 0) return;
+    if (categories.length === 0) return;
     setValues((current) => {
-      const matchingCategory = categories.find((category) => category.slug === current.category);
-      const selectedCategory = matchingCategory ?? categories[0];
-      if (!selectedCategory) return current;
-      const nextCategory = Object.prototype.hasOwnProperty.call(
-        ADMIN_PRODUCT_CATEGORY_LABELS,
-        selectedCategory.slug,
-      )
-        ? (selectedCategory.slug as AdminProductCategoryKey)
-        : current.category;
-      return { ...current, category: nextCategory, categoryId: selectedCategory.id };
+      const selectedRoot = familyRootCategory(categories, current.category, current.categoryId);
+      if (!selectedRoot) {
+        const fallbackFamily = catalogFamilyOptionsForCategories(categories)[0];
+        if (!fallbackFamily) return current;
+        return {
+          ...current,
+          category: fallbackFamily.value,
+          categoryId: fallbackFamily.rootId,
+          subCategoryId: undefined,
+        };
+      }
+      const selectedCategory = categories.find((category) => category.id === current.categoryId);
+      const nextCategoryId = selectedCategory?.isActive ? current.categoryId : selectedRoot.id;
+      if (current.categoryId === nextCategoryId) return current;
+      return {
+        ...current,
+        categoryId: nextCategoryId,
+        ...(nextCategoryId === selectedRoot.id ? { subCategoryId: undefined } : {}),
+      };
     });
-  }, [categories, product, setValues, values.category, values.categoryId]);
+  }, [categories, setValues, values.category, values.categoryId]);
 
   const config = adminProductCategoryConfigs[values.category];
+  const categoryOptions = useMemo(() => {
+    const options = catalogFamilyOptionsForCategories(
+      categories,
+      values.category,
+      values.categoryId,
+    );
+    return options.length > 0
+      ? options.map(({ value, label }) => ({ value, label }))
+      : Object.entries(ADMIN_PRODUCT_CATEGORY_LABELS).map(([value, label]) => ({ value, label }));
+  }, [categories, values.category, values.categoryId]);
   const selectedCatalogCategorySlug = useMemo(
     () => categories.find((category) => category.id === values.categoryId)?.slug,
     [categories, values.categoryId],
   );
   const catalogCategoryOptions = useMemo(
-    () => catalogCategoryOptionsForFamily(categories, values.category),
-    [categories, values.category],
+    () => catalogCategoryOptionsForFamily(categories, values.category, values.categoryId),
+    [categories, values.category, values.categoryId],
   );
   const catalogAttributes = useMemo(
     () =>
@@ -346,7 +361,11 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     )
       return;
 
-    const input = formToProductInput(next);
+    const rootSlug = familyRootCategory(categories, next.category, next.categoryId)?.slug;
+    const input = formToProductInput(
+      next,
+      rootSlug ? { catalogCategorySlug: rootSlug } : undefined,
+    );
     setValues(next);
     try {
       const saved = values.id
@@ -385,7 +404,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
             label="Famille produit"
             required
             value={values.category}
-            options={CATEGORY_OPTIONS}
+            options={categoryOptions}
             hint="Détermine les champs métier et les axes de variantes disponibles."
             onChange={(value) => {
               const category = value as AdminProductCategoryKey;
@@ -559,7 +578,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
 
   const specificTab = (
     <AdminFormSection
-      title={`Caractéristiques — ${ADMIN_PRODUCT_CATEGORY_LABELS[values.category]}`}
+      title={`Caractéristiques — ${categoryOptions.find((option) => option.value === values.category)?.label ?? ADMIN_PRODUCT_CATEGORY_LABELS[values.category]}`}
       description="Ces champs système sont gérés depuis Attributs et filtres ; leurs valeurs alimentent les filtres et la fiche produit publique."
     >
       <div className="grid items-start gap-4 md:grid-cols-2">

@@ -75,7 +75,10 @@ function paginateFallback<T>(
   };
 }
 
-type AdminQueryOptions<T> = ReturnType<typeof clientQuery<T>> & { enabled?: boolean };
+type AdminQueryOptions<T> = ReturnType<typeof clientQuery<T>> & {
+  enabled?: boolean;
+  refetchOnMount?: boolean | "always";
+};
 
 /**
  * Read endpoints that expose sensitive operational data may also require
@@ -150,9 +153,13 @@ export function useAdminProduct(id: string) {
 }
 
 export function useAdminCategories() {
-  return useAdminQuery(
-    clientQuery(adminKeys.categories(), () => adminRepositories.categories.list()),
-  );
+  return useAdminQuery({
+    ...clientQuery(adminKeys.categories(), () => adminRepositories.categories.list()),
+    // Category names/slugs are editable in another Admin screen. Always
+    // refresh on mount so product forms never keep a stale taxonomy label.
+    staleTime: 0,
+    refetchOnMount: "always",
+  });
 }
 
 export function useAdminAttributes() {

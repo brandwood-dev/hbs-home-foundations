@@ -140,7 +140,10 @@ function stringValue(value: AdminAttributeValueInput | undefined): string | unde
   return typeof value === "string" && value.trim() ? value : undefined;
 }
 
-export function formToProductInput(values: AdminProductFormValues): AdminProductInput {
+export function formToProductInput(
+  values: AdminProductFormValues,
+  options: { catalogCategorySlug?: string } = {},
+): AdminProductInput {
   const attributes: Record<string, AdminAttributeValueInput> = {};
   for (const [key, value] of Object.entries(values.fields)) {
     const field = ADMIN_PRODUCT_FIELDS[key];
@@ -188,6 +191,7 @@ export function formToProductInput(values: AdminProductFormValues): AdminProduct
     // without introducing a second image-selection workflow.
     seoOgImageUrl: primary?.url.trim() || values.seoOgImageUrl.trim(),
     category: values.category,
+    ...(options.catalogCategorySlug ? { catalogCategorySlug: options.catalogCategorySlug } : {}),
     attributes,
     publicSlug: values.slug.trim(),
     ...(values.sellingMode === "pack"
