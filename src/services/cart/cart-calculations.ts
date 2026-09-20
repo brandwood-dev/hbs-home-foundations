@@ -3,16 +3,24 @@ import { storeConfig } from "@/config/store.config";
 
 /** Toutes les fonctions travaillent en millimes entiers. */
 
-export function createCartLineId(productId: string, variantId: string): string {
-  return `${productId}:${variantId}`;
+export function createCartLineId(
+  productId: string,
+  variantId: string,
+  confectionKey?: string,
+): string {
+  return `${productId}:${variantId}:${confectionKey ?? ""}`;
 }
 
-export function parseCartLineId(lineId: string): { productId: string; variantId: string } | null {
-  const separator = lineId.indexOf(":");
-  if (separator <= 0) return null;
+export function parseCartLineId(
+  lineId: string,
+): { productId: string; variantId: string; confectionKey?: string } | null {
+  const parts = lineId.split(":");
+  if (parts.length < 2 || !parts[0] || !parts[1]) return null;
+  const confectionKey = parts.slice(2).join(":");
   return {
-    productId: lineId.slice(0, separator),
-    variantId: lineId.slice(separator + 1),
+    productId: parts[0],
+    variantId: parts[1],
+    ...(confectionKey ? { confectionKey } : {}),
   };
 }
 

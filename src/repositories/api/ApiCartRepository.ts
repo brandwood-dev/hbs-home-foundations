@@ -14,6 +14,7 @@ interface ApiCartLine {
   productName: string;
   productReference: string;
   variantId: string;
+  confectionKey: string | null;
   sku: string;
   quantity: number;
   unitPriceMinor: number;
@@ -127,6 +128,7 @@ function mapCart(response: ApiCartResponse): Cart {
       productName: item.productName,
       productReference: item.productReference,
       variantId: item.variantId,
+      ...(item.confectionKey ? { confectionKey: item.confectionKey } : {}),
       sku: item.sku,
       quantity: item.quantity,
       unitPriceMinor: item.unitPriceMinor,

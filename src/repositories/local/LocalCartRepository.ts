@@ -44,7 +44,13 @@ export class LocalCartRepository implements CartRepository {
     if (!product) throw new CartError("product_not_found", "Produit introuvable");
 
     const persisted = readPersistedCart();
-    const { items } = addItemToItems(persisted.items, product, input.variantId, input.quantity);
+    const { items } = addItemToItems(
+      persisted.items,
+      product,
+      input.variantId,
+      input.quantity,
+      input.confectionKey,
+    );
     const saved = writePersistedCart(items);
     const map = await this.productsById(saved.items.map((item) => item.productId));
     return buildCart(saved.items, map);

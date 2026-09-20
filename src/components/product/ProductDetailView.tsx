@@ -15,6 +15,11 @@ import {
   SELLING_MODE_LABELS,
 } from "@/domain/product/product.constants";
 import type { Product } from "@/domain/product/product.types";
+import {
+  confectionKeyForVariant,
+  confectionOptionsFor,
+  type ConfectionKey,
+} from "@/domain/product/confection";
 import { relatedProductsQuery } from "@/services/product/product.queries";
 import {
   changeAxis,
@@ -27,6 +32,10 @@ import { buildProductJsonLd } from "@/services/product/product.structured-data";
 
 export function ProductDetailView({ product }: { product: Product }) {
   const [variant, setVariant] = useState(() => getInitialVariant(product));
+  const [confectionKey, setConfectionKey] = useState<ConfectionKey | undefined>(() => {
+    const initial = confectionKeyForVariant(getInitialVariant(product));
+    return initial ?? confectionOptionsFor(product.category, product.confectionOptions)[0]?.key;
+  });
   const [quantity, setQuantity] = useState(1);
 
   const related = useQuery(relatedProductsQuery(product.slug, 4));
@@ -35,6 +44,18 @@ export function ProductDetailView({ product }: { product: Product }) {
     const next = changeAxis(product, variant, axis, value);
     setVariant(next);
     setQuantity((current) => Math.min(current, Math.max(1, next.availableQuantity || 1)));
+  };
+
+  const onConfectionChange = (value: ConfectionKey) => {
+    setConfectionKey(value);
+    const matching = product.variants.find(
+      (candidate) =>
+        confectionKeyForVariant(candidate) === value &&
+        candidate.colorId === variant.colorId &&
+        candidate.widthCm === variant.widthCm &&
+        candidate.heightCm === variant.heightCm,
+    );
+    if (matching) setVariant(matching);
   };
 
   const jsonLd = useMemo(() => buildProductJsonLd(product), [product]);
@@ -76,13 +97,20 @@ export function ProductDetailView({ product }: { product: Product }) {
               <p className="mt-1 text-xs text-foreground-muted">Référence {variant.sku}</p>
             </header>
 
-            <ProductVariantSelectors product={product} variant={variant} onChange={onAxisChange} />
+            <ProductVariantSelectors
+              product={product}
+              variant={variant}
+              onChange={onAxisChange}
+              selectedConfection={confectionKey}
+              onConfectionChange={onConfectionChange}
+            />
 
             <ProductPurchasePanel
               product={product}
               variant={variant}
               quantity={quantity}
               onQuantityChange={setQuantity}
+              confectionKey={confectionKey}
             />
 
             <ProductTrustPoints />
@@ -94,7 +122,12 @@ export function ProductDetailView({ product }: { product: Product }) {
         <RelatedProducts products={related.data ?? []} loading={related.isLoading} />
       </div>
 
-      <ProductStickyBar product={product} variant={variant} quantity={quantity} />
+      <ProductStickyBar
+        product={product}
+        variant={variant}
+        quantity={quantity}
+        confectionKey={confectionKey}
+      />
     </SiteLayout>
   );
 }

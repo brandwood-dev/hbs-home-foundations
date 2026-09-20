@@ -25,6 +25,7 @@ export function addItemToItems(
   product: Product,
   variantId: string,
   quantity: number,
+  confectionKey?: string,
   now: string = new Date().toISOString(),
 ): AddItemResult {
   const variant = product.variants.find((candidate) => candidate.id === variantId);
@@ -39,10 +40,10 @@ export function addItemToItems(
   }
 
   const max = maxQuantityForVariant(product, variantId);
-  const lineId = createCartLineId(product.id, variantId);
+  const lineId = createCartLineId(product.id, variantId, confectionKey);
   const next = [...items];
   const index = next.findIndex(
-    (item) => createCartLineId(item.productId, item.variantId) === lineId,
+    (item) => createCartLineId(item.productId, item.variantId, item.confectionKey) === lineId,
   );
 
   const existingQuantity = index >= 0 ? (next[index] as PersistedCartItem).quantity : 0;
@@ -56,6 +57,7 @@ export function addItemToItems(
     next.push({
       productId: product.id,
       variantId,
+      ...(confectionKey ? { confectionKey } : {}),
       quantity: finalQuantity,
       priceAtAddMinor: variant.price.amountMinor,
       addedAt: now,
@@ -72,7 +74,7 @@ export function updateItemQuantity(
   maxQuantity: number,
 ): PersistedCartItem[] {
   const index = items.findIndex(
-    (item) => createCartLineId(item.productId, item.variantId) === lineId,
+    (item) => createCartLineId(item.productId, item.variantId, item.confectionKey) === lineId,
   );
   if (index < 0) throw new CartError("line_not_found", "Ligne introuvable");
 
@@ -94,5 +96,7 @@ export function removeItemFromItems(
   items: PersistedCartItem[],
   lineId: string,
 ): PersistedCartItem[] {
-  return items.filter((item) => createCartLineId(item.productId, item.variantId) !== lineId);
+  return items.filter(
+    (item) => createCartLineId(item.productId, item.variantId, item.confectionKey) !== lineId,
+  );
 }

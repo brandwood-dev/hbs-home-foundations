@@ -35,6 +35,11 @@ import type {
   ProductMaterial,
   ProductPattern,
 } from "@/domain/product/product.types";
+import {
+  DEFAULT_CONFECTION_OPTIONS,
+  type ConfectionKey,
+  type ConfectionOption,
+} from "@/domain/product/confection";
 import { COLORS } from "@/domain/product/product-colors";
 import { HbsApiError, HbsApiClient } from "@/api/client";
 import type {
@@ -137,6 +142,11 @@ interface ApiProduct {
   colors: ApiProductColor[];
   details: Record<string, unknown>;
   attributes: Record<string, unknown>;
+  confectionOptions?: Array<{
+    key: string;
+    label: string;
+    description: string;
+  }>;
   seo: { title: string; description: string };
   isThermal: boolean;
   isNew: boolean;
@@ -669,6 +679,18 @@ export function mapProduct(input: ApiProduct): Product {
     .map((color) => mapProductColor(color))
     .filter((color): color is NonNullable<ReturnType<typeof mapProductColor>> => color !== null);
   const colors = colorsFromVariants(variants, declaredColors);
+  const confectionOptions = input.confectionOptions
+    ?.filter((option) =>
+      DEFAULT_CONFECTION_OPTIONS.some((candidate) => candidate.key === option.key),
+    )
+    .map((option) => ({
+      key: option.key as ConfectionKey,
+      label: asString(option.label),
+      description: asString(option.description),
+      imageUrl:
+        DEFAULT_CONFECTION_OPTIONS.find((candidate) => candidate.key === option.key)?.imageUrl ??
+        "",
+    })) as ConfectionOption[] | undefined;
 
   const product: Product = {
     id: asString(input.id),
@@ -688,6 +710,7 @@ export function mapProduct(input: ApiProduct): Product {
     colors,
     details: parseProductDetails(input.details),
     attributes: input.attributes,
+    ...(confectionOptions ? { confectionOptions } : {}),
     seo: {
       title: asString(input.seo?.title, asString(input.name)),
       description: asString(input.seo?.description, asString(input.shortDescription)),

@@ -9,6 +9,7 @@ import type {
 export interface PersistedCartItem {
   productId: string;
   variantId: string;
+  confectionKey?: string | undefined;
   quantity: number;
   /** Prix constaté lors de l'ajout, informatif uniquement. */
   priceAtAddMinor: number;
@@ -39,6 +40,7 @@ export interface ResolvedCartItem {
   productReference: string;
 
   variantId: string;
+  confectionKey?: string;
   sku: string;
 
   quantity: number;
