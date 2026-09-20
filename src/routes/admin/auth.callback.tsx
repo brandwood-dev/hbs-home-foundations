@@ -93,12 +93,19 @@ function AdminInviteCallbackPage() {
     }
 
     if (params.kind === "code") {
-      const { error } = await auth.client.auth.exchangeCodeForSession(params.code);
+      const { data, error } = await auth.client.auth.exchangeCodeForSession(params.code);
       if (error) {
         return {
           success: false,
           message:
             "Le lien de réinitialisation a expiré ou n’est pas valide. Demandez un nouveau lien.",
+        };
+      }
+      if (!data.session) {
+        return {
+          success: false,
+          message:
+            "La session de réinitialisation n’a pas pu être activée. Demandez un nouveau lien.",
         };
       }
     } else {
@@ -123,25 +130,9 @@ function AdminInviteCallbackPage() {
       }
     }
 
-    // Rafraîchit la session pour valider que le token restauré est bien actif.
-    try {
-      const refresh = await auth.client.auth.refreshSession();
-      if (refresh.data.session) {
-        return { success: true };
-      }
-    } catch {
-      // Certains flux de reprise peuvent ne pas émettre de refresh token immédiatement.
-      // On retombe sur getSession pour lire l'état réel côté client.
-    }
-
-    const { data } = await auth.client.auth.getSession();
-    if (!data.session) {
-      return {
-        success: false,
-        message: "La session n’a pas pu être rétablie. Demandez un nouveau lien de reset.",
-      };
-    }
-
+    // setSession/exchangeCodeForSession already validates the one-time recovery
+    // token. Do not refresh immediately: refresh-token rotation can invalidate
+    // a freshly issued recovery link before the password form is displayed.
     return { success: true };
   }, [auth.client, getAuthParamsFromLocation]);
 
