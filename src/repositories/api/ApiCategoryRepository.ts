@@ -20,6 +20,7 @@ interface ApiCategoryResponse {
 
 /** Keep legacy public routes working after an Admin taxonomy rename. */
 const CATEGORY_SLUG_ALIASES: Record<string, string> = {
+  mobilier_interieur: "mobilier",
   rideaux: "rideaux-voilages",
 };
 
