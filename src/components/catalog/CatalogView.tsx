@@ -70,10 +70,18 @@ export function CatalogView({
     : navigationQuery.data?.find(
         (item) => item.slug === config.group || item.slug === dynamicCategory?.slug,
       );
+  // The lightweight navigation endpoint may omit children for a root category.
+  // The detailed category response remains authoritative for its subcategory
+  // links, so use it whenever navigation has no children to display.
+  const navigationCategory = dynamicGroup?.children.length
+    ? dynamicGroup
+    : dynamicCategory?.children.length
+      ? dynamicCategory
+      : dynamicGroup;
   const subcategories = globalFilter
     ? []
-    : dynamicGroup
-      ? dynamicGroup.children.map((item) => ({
+    : navigationCategory
+      ? navigationCategory.children.map((item) => ({
           routeId: item.slug,
           label: item.name,
           path: item.path,
