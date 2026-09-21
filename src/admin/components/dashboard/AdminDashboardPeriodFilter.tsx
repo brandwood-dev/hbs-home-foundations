@@ -58,14 +58,14 @@ export function AdminDashboardPeriodFilter({
       className={cn(
         "flex w-full max-w-full rounded-lg border border-border bg-card sm:w-auto sm:items-center",
         value.preset === "custom"
-          ? "flex-col gap-1.5 p-1.5 sm:flex-row sm:flex-wrap"
+          ? "flex-col gap-2 p-2 lg:flex-row lg:flex-nowrap"
           : "h-8 flex-row items-center p-0",
       )}
     >
       <div
         className={cn(
-          "flex min-w-0 items-center gap-2",
-          value.preset === "custom" ? "px-1.5 sm:border-r sm:border-border sm:pr-2" : "px-2",
+          "flex shrink-0 items-center gap-2",
+          value.preset === "custom" ? "px-1 lg:border-r lg:border-border lg:pr-3" : "px-2",
         )}
       >
         <CalendarDays className="size-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -78,7 +78,10 @@ export function AdminDashboardPeriodFilter({
         >
           <SelectTrigger
             id="admin-dashboard-period"
-            className="h-8 min-w-40 border-0 bg-transparent px-1.5 shadow-none focus:ring-0"
+            className={cn(
+              "border-0 bg-transparent shadow-none focus:ring-0",
+              value.preset === "custom" ? "h-9 min-w-[188px] px-2" : "h-8 min-w-40 px-1.5",
+            )}
           >
             <SelectValue />
           </SelectTrigger>
@@ -93,24 +96,24 @@ export function AdminDashboardPeriodFilter({
       </div>
 
       {value.preset === "custom" ? (
-        <div className="flex min-w-0 flex-wrap items-center gap-1.5 px-1.5 sm:pl-1">
-          <label className="flex min-w-0 items-center gap-1 text-[11px] text-muted-foreground">
+        <div className="grid min-w-0 flex-1 grid-cols-1 gap-2 px-1 lg:flex lg:flex-none lg:items-center lg:gap-2 lg:pl-0">
+          <label className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground lg:flex-none lg:whitespace-nowrap">
             <span>Du</span>
             <Input
               type="date"
               value={draftFrom}
               onChange={(event) => setDraftFrom(event.target.value)}
-              className="h-8 w-[130px] min-w-0 px-2 text-xs"
+              className="h-9 min-w-0 flex-1 px-2.5 pr-8 text-sm sm:min-w-[148px] sm:flex-none sm:w-[148px] lg:w-[152px]"
               aria-label="Date de début"
             />
           </label>
-          <label className="flex min-w-0 items-center gap-1 text-[11px] text-muted-foreground">
+          <label className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground lg:flex-none lg:whitespace-nowrap">
             <span>au</span>
             <Input
               type="date"
               value={draftTo}
               onChange={(event) => setDraftTo(event.target.value)}
-              className="h-8 w-[130px] min-w-0 px-2 text-xs"
+              className="h-9 min-w-0 flex-1 px-2.5 pr-8 text-sm sm:min-w-[148px] sm:flex-none sm:w-[148px] lg:w-[152px]"
               aria-label="Date de fin"
             />
           </label>
@@ -119,9 +122,9 @@ export function AdminDashboardPeriodFilter({
             size="sm"
             onClick={applyCustom}
             disabled={!draftFrom || !draftTo || Boolean(customError)}
-            className="h-8 shrink-0"
+            className="h-9 w-full px-3 sm:col-span-2 lg:w-auto"
           >
-            <Check className="mr-1 size-4" /> Appliquer
+            <Check className="size-4" /> Appliquer
           </Button>
         </div>
       ) : null}
