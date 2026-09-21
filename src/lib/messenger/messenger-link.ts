@@ -6,7 +6,13 @@ function facebookPageRef(value: string): string {
 
   try {
     const url = new URL(normalized.match(/^https?:\/\//i) ? normalized : `https://${normalized}`);
-    if (url.hostname.endsWith("facebook.com") || url.hostname.endsWith("fb.com")) {
+    const isFacebookHost =
+      url.hostname === "facebook.com" ||
+      url.hostname.endsWith(".facebook.com") ||
+      url.hostname === "fb.com" ||
+      url.hostname.endsWith(".fb.com");
+
+    if (isFacebookHost) {
       return url.pathname.split("/").filter(Boolean)[0] || DEFAULT_FACEBOOK_PAGE;
     }
   } catch {
