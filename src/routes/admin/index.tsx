@@ -8,6 +8,9 @@ import {
 import { AdminPageHeader } from "@/admin/components/ui/AdminPageHeader";
 import { AdminSkeleton, AdminErrorState } from "@/admin/components/ui/AdminStates";
 import { useAdminDashboard } from "@/admin/hooks/admin.queries";
+import { AppLink } from "@/components/ui/app-link";
+import { Button } from "@/components/ui/button";
+import { Plus, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/admin/")({
@@ -30,8 +33,24 @@ function AdminDashboardPage() {
     <div className="mx-auto w-full max-w-[1400px]">
       <AdminPageHeader
         title="Tableau de bord"
-        description="Activité commerciale calculée à partir des commandes et du stock réels."
-        actions={<AdminDashboardPeriodFilter value={selection} onChange={setSelection} />}
+        description="Commandes, catalogue et stock sur la période sélectionnée."
+        actions={
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <Button asChild variant="outline" size="sm">
+              <AppLink href="/admin/produits/nouveau">
+                <Plus className="mr-1.5 size-4" aria-hidden="true" />
+                Nouveau produit
+              </AppLink>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <AppLink href="/admin/commandes">
+                <ShoppingCart className="mr-1.5 size-4" aria-hidden="true" />
+                Commandes
+              </AppLink>
+            </Button>
+            <AdminDashboardPeriodFilter value={selection} onChange={setSelection} />
+          </div>
+        }
       />
 
       {error ? (

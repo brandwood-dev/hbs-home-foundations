@@ -7,6 +7,7 @@ import {
   Menu as MenuIcon,
   PanelLeftClose,
   PanelLeftOpen,
+  Search,
   ShieldAlert,
 } from "lucide-react";
 import { useAdminAuth } from "@/admin/auth/AdminAuthProvider";
@@ -51,7 +52,7 @@ export function AdminSidebar({
     <nav
       aria-label="Navigation du back-office"
       className={cn(
-        "flex h-full flex-col gap-3 overflow-hidden p-3 lg:gap-2 lg:p-2.5",
+        "flex h-full flex-col gap-2 overflow-hidden p-2.5",
         collapsed ? "items-center" : "",
       )}
     >
@@ -59,7 +60,7 @@ export function AdminSidebar({
         href="/admin"
         onClick={onNavigate}
         className={cn(
-          "flex min-h-10 items-center gap-2 px-2 py-1 text-sm font-semibold tracking-widest text-foreground uppercase mb-5 lg:min-h-9",
+          "mb-4 flex min-h-9 items-center gap-2 px-2 py-1 text-sm font-semibold tracking-widest text-foreground uppercase",
           collapsed ? "justify-center" : "",
         )}
         title={collapsed ? "HBS HOME Admin" : undefined}
@@ -77,14 +78,14 @@ export function AdminSidebar({
 
       <div
         className={cn(
-          "min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain pr-1 lg:space-y-2",
+          "min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1",
           collapsed ? "w-full" : "",
         )}
       >
         {visibleGroups.map((group) => (
           <div key={group.title}>
             {!collapsed ? (
-              <p className="px-2 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase lg:pb-0.5">
+              <p className="px-2 pb-1 text-[10px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
                 {group.title}
               </p>
             ) : null}
@@ -105,7 +106,7 @@ export function AdminSidebar({
                         aria-current={active ? "page" : undefined}
                         title={collapsed ? item.label : undefined}
                         className={cn(
-                          "flex min-h-10 min-w-0 flex-1 items-center gap-2.5 rounded-md px-2.5 text-sm transition-colors lg:min-h-9",
+                          "flex min-h-9 min-w-0 flex-1 items-center gap-2 rounded-lg px-2 text-[13px] transition-colors",
                           collapsed ? "justify-center px-0" : "",
                           active
                             ? "bg-primary/10 font-medium text-primary"
@@ -154,7 +155,7 @@ export function AdminSidebar({
                                 onClick={onNavigate}
                                 aria-current={childIsActive ? "page" : undefined}
                                 className={cn(
-                                  "flex min-h-9 items-center gap-2 rounded-md px-2 text-[13px] transition-colors",
+                                  "flex min-h-8 items-center gap-2 rounded-md px-2 text-xs transition-colors",
                                   childIsActive
                                     ? "bg-primary/10 font-medium text-primary"
                                     : "text-foreground/75 hover:bg-muted",
@@ -179,7 +180,7 @@ export function AdminSidebar({
       <AppLink
         href="/"
         className={cn(
-          "flex min-h-10 shrink-0 items-center gap-2 rounded-md border-t border-border px-2.5 pt-2 text-sm text-muted-foreground hover:bg-muted lg:min-h-9",
+          "flex min-h-9 shrink-0 items-center gap-2 rounded-md border-t border-border px-2 pt-2 text-[13px] text-muted-foreground hover:bg-muted",
           collapsed ? "justify-center px-0" : "",
         )}
         title={collapsed ? "Voir le site public" : undefined}
@@ -228,7 +229,7 @@ export function AdminTopbar({
     .join("");
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:px-5">
       <Button
         variant="ghost"
         size="icon"
@@ -253,8 +254,20 @@ export function AdminTopbar({
         )}
       </Button>
 
-      <AppLink href="/admin" className="text-sm font-medium">
+      <AppLink href="/admin" className="shrink-0 text-sm font-medium">
         Back-office
+      </AppLink>
+
+      <AppLink
+        href="/admin/produits"
+        aria-label="Rechercher dans le catalogue"
+        className="group ml-1 hidden h-9 w-full max-w-sm items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 text-xs text-muted-foreground transition-colors hover:bg-muted md:flex"
+      >
+        <Search className="size-4 shrink-0" aria-hidden="true" />
+        <span className="truncate">Rechercher dans le catalogue</span>
+        <kbd className="ml-auto hidden rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground lg:inline">
+          ⌘K
+        </kbd>
       </AppLink>
 
       <div className="ml-auto flex items-center gap-3">
@@ -307,7 +320,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
       className="admin-theme min-h-screen bg-background text-foreground"
       style={
         {
-          "--admin-sidebar-width": sidebarCollapsed ? "72px" : "260px",
+          "--admin-sidebar-width": sidebarCollapsed ? "72px" : "232px",
         } as CSSProperties
       }
     >
@@ -321,7 +334,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         <aside
           className={cn(
             "hidden shrink-0 border-r border-border bg-background transition-[width] duration-200 lg:block",
-            sidebarCollapsed ? "w-[72px]" : "w-[260px]",
+            sidebarCollapsed ? "w-[72px]" : "w-[232px]",
           )}
         >
           <div className="sticky top-0 h-screen">
@@ -338,11 +351,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <main
             id="admin-main-content"
             tabIndex={-1}
-            className="min-w-0 flex-1 p-4 outline-none sm:p-5 lg:p-7"
+            className="min-w-0 flex-1 p-4 outline-none sm:p-5 lg:p-6"
           >
             {children}
           </main>
-          <footer className="border-t border-border bg-background px-4 py-3 text-xs text-muted-foreground">
+          <footer className="border-t border-border bg-background px-4 py-2.5 text-[11px] text-muted-foreground">
             Authentification et permissions connectées. Les modules intégrés utilisent l’API HBS
             HOME.
           </footer>

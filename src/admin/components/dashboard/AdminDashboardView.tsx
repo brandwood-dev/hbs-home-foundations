@@ -1,16 +1,7 @@
 import { useMemo } from "react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
-  XAxis,
-  YAxis,
-} from "recharts";
+import type { LucideIcon } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis } from "recharts";
+import { Banknote, PackageCheck, ShoppingCart, WalletCards } from "lucide-react";
 import { AdminCard, AdminStatusBadge } from "@/admin/components/ui/AdminStates";
 import type { DashboardMetrics } from "@/admin/repositories/interfaces";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_TONE } from "@/admin/services/order-status";
@@ -40,26 +31,31 @@ function KpiCard({
   label,
   value,
   hint,
-  emphasis = false,
+  icon: Icon,
 }: {
   label: string;
   value: string | number;
   hint?: string;
-  emphasis?: boolean;
+  icon: LucideIcon;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-5">
-      <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</p>
-      <p
-        className={cn(
-          "mt-2 font-semibold tabular-nums",
-          emphasis ? "text-3xl" : "text-2xl",
-          "text-foreground",
-        )}
-      >
+    <div className="rounded-lg border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary/30">
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[11px] font-medium tracking-[0.08em] text-muted-foreground uppercase">
+          {label}
+        </p>
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-primary">
+          <Icon className="size-4" aria-hidden="true" />
+        </span>
+      </div>
+      <p className="mt-3 text-2xl font-semibold tracking-tight tabular-nums text-foreground">
         {value}
       </p>
-      {hint ? <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{hint}</p> : null}
+      {hint ? (
+        <p className="mt-1 line-clamp-1 text-[11px] leading-relaxed text-muted-foreground">
+          {hint}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -76,9 +72,9 @@ function SectionCard({
   className?: string;
 }) {
   return (
-    <AdminCard className={cn("rounded-xl p-5", className)}>
-      <div className="mb-4">
-        <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
+    <AdminCard className={cn("rounded-lg p-4", className)}>
+      <div className="mb-3">
+        <h2 className="text-[15px] font-semibold tracking-tight">{title}</h2>
         {description ? <p className="mt-0.5 text-xs text-muted-foreground">{description}</p> : null}
       </div>
       {children}
@@ -138,30 +134,30 @@ export function AdminDashboardView({ data }: { data: DashboardMetrics }) {
   } satisfies ChartConfig;
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-5 sm:space-y-6">
       <section aria-labelledby="kpi-heading" className="space-y-3">
         <h2 id="kpi-heading" className="sr-only">
           Indicateurs clés
         </h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <KpiCard
             label="Chiffre d'affaires"
             value={formatMoney(data.revenueMinor)}
             hint="Sous-totaux produits des commandes livrées (hors livraison)."
-            emphasis
+            icon={Banknote}
           />
-          <KpiCard label="Total des commandes" value={data.totalOrders} emphasis />
+          <KpiCard label="Total des commandes" value={data.totalOrders} icon={ShoppingCart} />
           <KpiCard
             label="Panier moyen"
             value={formatMoney(data.averageOrderValueMinor)}
             hint="Commandes livrées, hors frais de livraison."
-            emphasis
+            icon={WalletCards}
           />
-          <KpiCard label="Commandes livrées" value={data.deliveredCount} emphasis />
+          <KpiCard label="Commandes livrées" value={data.deliveredCount} icon={PackageCheck} />
         </div>
       </section>
 
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="grid gap-3 xl:grid-cols-3">
         <SectionCard
           title="Ventes par jour"
           description="Chiffre d'affaires des commandes livrées, en milliers."
@@ -170,7 +166,7 @@ export function AdminDashboardView({ data }: { data: DashboardMetrics }) {
           {salesSeries.length === 0 ? (
             <p className="text-sm text-muted-foreground">{UNAVAILABLE}</p>
           ) : (
-            <ChartContainer config={revenueConfig} className="h-56 w-full">
+            <ChartContainer config={revenueConfig} className="h-52 w-full">
               <BarChart data={salesSeries} margin={{ left: 4, right: 4 }}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={11} />
@@ -204,7 +200,7 @@ export function AdminDashboardView({ data }: { data: DashboardMetrics }) {
             <p className="text-sm text-muted-foreground">{UNAVAILABLE}</p>
           ) : (
             <>
-              <ChartContainer config={countConfig} className="h-48 w-full">
+              <ChartContainer config={countConfig} className="h-44 w-full">
                 <PieChart>
                   <ChartTooltip content={<ChartTooltipContent nameKey="label" />} />
                   <Pie
@@ -240,16 +236,16 @@ export function AdminDashboardView({ data }: { data: DashboardMetrics }) {
         </SectionCard>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
+      <div className="grid gap-3 xl:grid-cols-2">
         <SectionCard
           title="Produits les plus commandés"
-          description="Quantités vendues sur la période fournie par l'API."
+          description="Quantités vendues sur la période sélectionnée."
         >
           {topProductsSeries.length === 0 ? (
             <p className="text-sm text-muted-foreground">{UNAVAILABLE}</p>
           ) : (
             <>
-              <ChartContainer config={quantityConfig} className="h-56 w-full">
+              <ChartContainer config={quantityConfig} className="h-52 w-full">
                 <BarChart data={topProductsSeries} layout="vertical" margin={{ left: 8 }}>
                   <CartesianGrid horizontal={false} strokeDasharray="3 3" />
                   <XAxis type="number" tickLine={false} axisLine={false} fontSize={11} />
@@ -279,43 +275,15 @@ export function AdminDashboardView({ data }: { data: DashboardMetrics }) {
           )}
         </SectionCard>
 
-        <SectionCard
-          title="Évolution des commandes livrées"
-          description="Courbe du chiffre d'affaires quotidien (milliers)."
-        >
-          {salesSeries.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{UNAVAILABLE}</p>
-          ) : (
-            <ChartContainer config={revenueConfig} className="h-56 w-full">
-              <LineChart data={salesSeries} margin={{ left: 4, right: 8 }}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={11} />
-                <YAxis tickLine={false} axisLine={false} width={36} fontSize={11} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Line
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="var(--color-revenue)"
-                  strokeWidth={2}
-                  dot={false}
-                  isAnimationActive={false}
-                />
-              </LineChart>
-            </ChartContainer>
-          )}
-        </SectionCard>
-      </div>
-
-      <div className="grid gap-4">
-        <SectionCard title="Dernières commandes">
+        <SectionCard title="Dernières commandes" description="Les commandes les plus récentes.">
           {data.recentOrders.length === 0 ? (
             <p className="text-sm text-muted-foreground">Aucune commande pour le moment.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[520px] text-sm">
+            <div className="max-h-64 overflow-auto">
+              <table className="w-full min-w-[500px] text-xs">
                 <caption className="sr-only">Dernières commandes enregistrées</caption>
-                <thead>
-                  <tr className="border-b border-border text-left text-xs text-muted-foreground uppercase">
+                <thead className="sticky top-0 bg-card">
+                  <tr className="border-b border-border text-left text-[10px] tracking-wide text-muted-foreground uppercase">
                     <th scope="col" className="py-2 pr-3 font-medium">
                       Commande
                     </th>
@@ -344,7 +312,7 @@ export function AdminDashboardView({ data }: { data: DashboardMetrics }) {
                           {order.orderNumber}
                         </AppLink>
                       </td>
-                      <td className="max-w-40 truncate py-2 pr-3 text-muted-foreground">
+                      <td className="max-w-32 truncate py-2 pr-3 text-muted-foreground">
                         {order.customerName}
                       </td>
                       <td className="py-2 pr-3 text-muted-foreground">
