@@ -77,7 +77,7 @@ export function DesktopMegaMenu({
                 key={shortcut.href}
                 href={shortcut.href}
                 onClick={onNavigate}
-                className={`group relative overflow-hidden rounded-2xl bg-surface-muted p-2 ${
+                className={`group relative overflow-hidden ${
                   hasSingleShortcut ? "aspect-[4/3] w-full max-w-sm" : "aspect-[4/3]"
                 }`}
               >
@@ -86,9 +86,9 @@ export function DesktopMegaMenu({
                   alt={shortcut.imageAlt}
                   loading="lazy"
                   decoding="async"
-                  className="h-full w-full rounded-lg object-contain object-center transition-transform duration-500 group-hover:scale-[1.02]"
+                  className="h-full w-full rounded-xl object-contain object-center transition-transform duration-500 group-hover:scale-[1.02]"
                 />
-                <span className="absolute inset-x-3 bottom-3 rounded-lg bg-surface/95 px-3 py-2.5 text-center text-sm font-medium text-foreground shadow-sm transition-colors group-hover:text-accent-dark">
+                <span className="absolute bottom-3 left-1/2 w-max max-w-[90%] -translate-x-1/2 rounded-lg bg-surface/95 px-4 py-2.5 text-center text-sm font-medium text-foreground shadow-sm transition-colors group-hover:text-accent-dark">
                   {shortcut.label}
                 </span>
               </AppLink>
