@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -50,18 +50,23 @@ function totalStock(product: AdminProduct): number {
   return product.variants.reduce((sum, variant) => sum + variant.stock, 0);
 }
 
-export function AdminProductsPage() {
+export function AdminProductsPage({ initialQuery = "" }: { initialQuery?: string }) {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const duplicateProduct = useDuplicateAdminProduct();
   const deleteProduct = useDeleteAdminProduct();
   const setStatus = useSetAdminProductStatus();
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialQuery);
   const [category, setCategory] = useState("all");
   const [status, setStatus_] = useState("all");
   const [stockFilter, setStockFilter] = useState("all");
   const [pendingDelete, setPendingDelete] = useState<AdminProduct | null>(null);
+  useEffect(() => {
+    setSearch(initialQuery);
+    setPage(1);
+  }, [initialQuery]);
+
   const params = useMemo(
     () => ({
       page,
