@@ -11,6 +11,10 @@ import type {
 import type { AdminProduct } from "@/admin/types/admin.types";
 
 const catalogKeys = [adminKeys.products(), adminKeys.inventory(), adminKeys.dashboard()];
+// Category edits affect the public menu, category pages, breadcrumbs and
+// product canonical URLs. Invalidate the shared public query namespace too so
+// an Admin session never keeps showing the pre-edit taxonomy.
+const publicCatalogKey = ["catalog"] as const;
 
 export function useCreateAdminProduct(onDone?: (product: AdminProduct) => void) {
   return useAdminMutation({
@@ -63,7 +67,7 @@ export function useSaveAdminCategory() {
         ? adminRepositories.categories.update(variables.id, variables.input)
         : adminRepositories.categories.create(variables.input),
     successMessage: "Catégorie enregistrée.",
-    invalidate: [adminKeys.categories(), adminKeys.products()],
+    invalidate: [adminKeys.categories(), adminKeys.products(), publicCatalogKey],
   });
 }
 
@@ -71,7 +75,7 @@ export function useDeleteAdminCategory() {
   return useAdminMutation({
     mutationFn: (id: string) => adminRepositories.categories.delete(id),
     successMessage: "Catégorie supprimée.",
-    invalidate: [adminKeys.categories()],
+    invalidate: [adminKeys.categories(), publicCatalogKey],
   });
 }
 
@@ -80,7 +84,7 @@ export function useMoveAdminCategory() {
     mutationFn: (variables: { id: string; direction: "up" | "down" }) =>
       adminRepositories.categories.move(variables.id, variables.direction),
     successMessage: "Ordre mis à jour.",
-    invalidate: [adminKeys.categories()],
+    invalidate: [adminKeys.categories(), publicCatalogKey],
   });
 }
 
