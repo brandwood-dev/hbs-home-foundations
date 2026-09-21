@@ -60,20 +60,24 @@ export function DesktopMegaMenu({
         </div>
 
         {hasShortcuts ? (
-          <div className={hasSingleShortcut ? "flex items-start" : "grid gap-4 sm:grid-cols-2"}>
+          <div
+            className={
+              hasSingleShortcut ? "flex items-start" : "grid items-start gap-4 sm:grid-cols-2"
+            }
+          >
             {shortcuts.slice(0, 2).map((shortcut) => (
               <AppLink
                 key={shortcut.href}
                 href={shortcut.href}
                 onClick={onNavigate}
-                className={`group relative w-full overflow-hidden rounded-xl ${hasSingleShortcut ? "max-w-sm" : ""}`}
+                className="group relative w-fit max-w-full overflow-hidden rounded-xl"
               >
                 <img
                   src={shortcut.imageUrl}
                   alt={shortcut.imageAlt}
                   loading="lazy"
                   decoding="async"
-                  className="block h-auto w-full rounded-xl transition-transform duration-500 group-hover:scale-[1.02]"
+                  className="block h-auto max-h-72 max-w-72 w-auto rounded-xl transition-transform duration-500 group-hover:scale-[1.02]"
                 />
                 <span className="absolute bottom-3 left-1/2 w-max max-w-[90%] -translate-x-1/2 rounded-lg bg-surface/95 px-4 py-2.5 text-center text-sm font-medium text-foreground shadow-sm transition-colors group-hover:text-accent-dark">
                   {shortcut.label}
