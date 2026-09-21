@@ -15,6 +15,7 @@ import {
   type DashboardPeriodPreset,
   type DashboardPeriodSelection,
 } from "@/admin/components/dashboard/admin-dashboard-period";
+import { cn } from "@/lib/utils";
 
 export function AdminDashboardPeriodFilter({
   value,
@@ -53,8 +54,17 @@ export function AdminDashboardPeriodFilter({
   }
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-lg border border-border bg-card p-2 sm:w-auto sm:flex-row sm:items-center">
-      <div className="flex min-w-0 items-center gap-2">
+    <div
+      className={cn(
+        "flex w-full rounded-lg border border-border bg-card sm:w-auto sm:items-center",
+        value.preset === "custom"
+          ? "flex-col gap-2 p-2 sm:flex-row"
+          : "h-8 flex-row items-center p-0",
+      )}
+    >
+      <div
+        className={cn("flex min-w-0 items-center gap-2", value.preset === "custom" ? "" : "px-2")}
+      >
         <CalendarDays className="size-4 shrink-0 text-muted-foreground" aria-hidden />
         <label htmlFor="admin-dashboard-period" className="sr-only">
           Période du tableau de bord
@@ -63,7 +73,10 @@ export function AdminDashboardPeriodFilter({
           value={value.preset}
           onValueChange={(next) => selectPreset(next as DashboardPeriodPreset)}
         >
-          <SelectTrigger id="admin-dashboard-period" className="min-w-48 border-0 shadow-none">
+          <SelectTrigger
+            id="admin-dashboard-period"
+            className="h-8 min-w-48 border-0 bg-transparent px-2 shadow-none focus:ring-0"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
