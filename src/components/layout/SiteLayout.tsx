@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { GlobalSearchPanel } from "@/components/search/GlobalSearchPanel";
+import { MessengerFloatingButton } from "@/components/MessengerFloatingButton";
 import { WhatsAppFloatingButton } from "@/components/WhatsAppFloatingButton";
 import { dataProvider } from "@/config/features.config";
 import { promoBanner as fallbackPromoBanner } from "@/fixtures/home.fixture";
@@ -44,6 +45,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <CartDrawer />
       <GlobalSearchPanel />
       <WhatsAppFloatingButton />
+      <MessengerFloatingButton />
     </div>
   );
 }

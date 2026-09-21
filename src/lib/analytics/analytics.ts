@@ -12,6 +12,7 @@ export type AnalyticsEventName =
   | "search_no_result"
   | "add_to_wishlist"
   | "remove_from_wishlist"
+  | "messenger_click"
   | "view_wishlist"
   | "select_search_result";
 
