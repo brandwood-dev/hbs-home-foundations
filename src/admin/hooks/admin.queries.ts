@@ -145,6 +145,36 @@ export function useAdminProductsPage(params: AdminProductListParams) {
   );
 }
 
+/**
+ * Lightweight product lookup used by the admin shell search. Keeping this
+ * query disabled until two characters are entered avoids loading the whole
+ * catalogue while the search field is idle.
+ */
+export function useAdminProductSearch(query: string) {
+  const normalizedQuery = query.trim();
+  return useAdminQuery({
+    ...clientQuery([...adminKeys.products(), "search", normalizedQuery], async () => {
+      const params: AdminProductListParams = {
+        page: 1,
+        pageSize: 5,
+        query: normalizedQuery,
+      };
+      if ("listPage" in adminRepositories.products && adminRepositories.products.listPage)
+        return adminRepositories.products.listPage(params);
+
+      let items = await adminRepositories.products.list();
+      const search = normalizedQuery.toLocaleLowerCase();
+      items = items.filter((item) =>
+        `${item.name} ${item.reference} ${item.slug} ${item.variants.map((v) => v.sku).join(" ")}`
+          .toLocaleLowerCase()
+          .includes(search),
+      );
+      return paginateFallback(items, params);
+    }),
+    enabled: normalizedQuery.length >= 2,
+  });
+}
+
 export function useAdminProduct(id: string) {
   return useAdminQuery({
     ...clientQuery(adminKeys.product(id), () => adminRepositories.products.getById(id)),

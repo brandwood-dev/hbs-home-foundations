@@ -1,9 +1,11 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import { useRouterState } from "@tanstack/react-router";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import {
+  ArrowRight,
   ExternalLink,
   ChevronDown,
   LogOut,
+  LoaderCircle,
   Menu as MenuIcon,
   PanelLeftClose,
   PanelLeftOpen,
@@ -14,8 +16,11 @@ import { useAdminAuth } from "@/admin/auth/AdminAuthProvider";
 import { useAdminAuthorization } from "@/admin/auth/AdminAuthorizationContext";
 import { ADMIN_NAV } from "@/admin/config/admin-nav";
 import { adminConfig } from "@/admin/config/admin.config";
+import { useAdminProductSearch } from "@/admin/hooks/admin.queries";
+import type { AdminProduct } from "@/admin/types/admin.types";
 import { AppLink } from "@/components/ui/app-link";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/brand/BrandLogo";
@@ -220,6 +225,61 @@ export function AdminTopbar({
 }) {
   const auth = useAdminAuth();
   const { session } = useAdminAuthorization();
+  const navigate = useNavigate();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const normalizedSearchQuery = searchQuery.trim();
+  const productSearch = useAdminProductSearch(debouncedSearchQuery);
+  const searchResults = productSearch.data?.items ?? [];
+  const isSearchable = normalizedSearchQuery.length >= 2;
+  const isSearchWaiting = isSearchable && debouncedSearchQuery !== normalizedSearchQuery;
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setDebouncedSearchQuery(normalizedSearchQuery), 250);
+    return () => window.clearTimeout(timeout);
+  }, [normalizedSearchQuery]);
+
+  useEffect(() => {
+    function handleShortcut(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearchOpen(true);
+        window.requestAnimationFrame(() => searchInputRef.current?.focus());
+      }
+      if (event.key === "Escape" && searchOpen) {
+        setSearchOpen(false);
+        searchInputRef.current?.blur();
+      }
+    }
+
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, [searchOpen]);
+
+  useEffect(() => {
+    function handleOutsideClick(event: PointerEvent) {
+      if (!searchContainerRef.current?.contains(event.target as Node)) setSearchOpen(false);
+    }
+
+    document.addEventListener("pointerdown", handleOutsideClick);
+    return () => document.removeEventListener("pointerdown", handleOutsideClick);
+  }, []);
+
+  function submitProductSearch() {
+    if (!isSearchable) return;
+    setSearchOpen(false);
+    void navigate({ to: "/admin/produits", search: { q: normalizedSearchQuery } });
+  }
+
+  function openProduct(product: AdminProduct) {
+    setSearchOpen(false);
+    setSearchQuery("");
+    void navigate({ to: "/admin/produits/$productId", params: { productId: product.id } });
+  }
+
   const label = session.user.displayName ?? session.user.email;
   const initials = label
     .split(/[\s@._-]+/)
@@ -258,17 +318,110 @@ export function AdminTopbar({
         Back-office
       </AppLink>
 
-      <AppLink
-        href="/admin/produits"
-        aria-label="Rechercher dans le catalogue"
-        className="group ml-1 hidden h-9 w-full max-w-sm items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 text-xs text-muted-foreground transition-colors hover:bg-muted md:flex"
-      >
-        <Search className="size-4 shrink-0" aria-hidden="true" />
-        <span className="truncate">Rechercher dans le catalogue</span>
-        <kbd className="ml-auto hidden rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground lg:inline">
-          ⌘K
-        </kbd>
-      </AppLink>
+      <div ref={searchContainerRef} className="relative ml-1 hidden w-full max-w-sm md:block">
+        <form
+          role="search"
+          onSubmit={(event) => {
+            event.preventDefault();
+            submitProductSearch();
+          }}
+        >
+          <Search
+            className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
+          <label htmlFor="admin-global-search" className="sr-only">
+            Rechercher dans le catalogue
+          </label>
+          <Input
+            ref={searchInputRef}
+            id="admin-global-search"
+            type="search"
+            value={searchQuery}
+            onChange={(event) => {
+              setSearchQuery(event.target.value);
+              setSearchOpen(true);
+            }}
+            onFocus={() => setSearchOpen(true)}
+            placeholder="Rechercher dans le catalogue"
+            autoComplete="off"
+            aria-autocomplete="list"
+            aria-controls="admin-global-search-results"
+            aria-expanded={searchOpen && isSearchable}
+            className="h-9 bg-muted/40 pr-14 pl-9 text-xs"
+          />
+          <kbd className="pointer-events-none absolute top-1/2 right-2.5 hidden -translate-y-1/2 rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground lg:inline">
+            ⌘K
+          </kbd>
+        </form>
+
+        {searchOpen && isSearchable ? (
+          <div
+            id="admin-global-search-results"
+            role="listbox"
+            aria-label="Résultats de recherche produits"
+            className="absolute top-[calc(100%+0.4rem)] left-0 right-0 z-50 overflow-hidden rounded-lg border border-border bg-background shadow-lg"
+          >
+            {isSearchWaiting || productSearch.isFetching ? (
+              <div className="flex items-center gap-2 px-3 py-3 text-xs text-muted-foreground">
+                <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
+                Recherche en cours…
+              </div>
+            ) : productSearch.isError ? (
+              <p className="px-3 py-3 text-xs text-destructive">
+                Recherche indisponible. Ouvrez le catalogue pour réessayer.
+              </p>
+            ) : searchResults.length > 0 ? (
+              <>
+                <div className="border-b border-border px-3 py-2 text-[11px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+                  Produits
+                </div>
+                {searchResults.map((product) => (
+                  <button
+                    key={product.id}
+                    type="button"
+                    role="option"
+                    aria-selected="false"
+                    onClick={() => openProduct(product)}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors hover:bg-muted"
+                  >
+                    {product.imageUrl ? (
+                      <img
+                        src={product.imageUrl}
+                        alt=""
+                        aria-hidden="true"
+                        className="size-8 shrink-0 rounded border border-border object-cover"
+                      />
+                    ) : (
+                      <span className="size-8 shrink-0 rounded border border-dashed border-border" />
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-medium">{product.name}</span>
+                      <span className="block truncate text-[11px] text-muted-foreground">
+                        {product.reference}
+                        {product.variants[0]?.sku ? ` · ${product.variants[0].sku}` : ""}
+                      </span>
+                    </span>
+                    <ArrowRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={submitProductSearch}
+                  className="flex w-full items-center justify-between border-t border-border px-3 py-2 text-xs font-medium text-primary hover:bg-muted"
+                >
+                  Voir tous les produits
+                  <ArrowRight className="size-3.5" aria-hidden="true" />
+                </button>
+              </>
+            ) : (
+              <div className="px-3 py-3 text-xs text-muted-foreground">
+                Aucun produit trouvé pour « {normalizedSearchQuery} ».
+              </div>
+            )}
+          </div>
+        ) : null}
+      </div>
 
       <div className="ml-auto flex items-center gap-3">
         {adminConfig.demoMode ? (
