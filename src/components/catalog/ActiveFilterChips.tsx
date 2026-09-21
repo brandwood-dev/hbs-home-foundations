@@ -37,7 +37,7 @@ function Chip({ label, onRemove }: { label: string; onRemove: () => void }) {
     <button
       type="button"
       onClick={onRemove}
-      className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-border bg-surface px-3 text-xs text-foreground transition-colors hover:border-accent hover:text-accent-dark"
+      className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full border border-border bg-surface px-3 text-xs text-foreground transition-colors hover:border-accent hover:text-accent-dark"
     >
       {label}
       <X className="h-3 w-3" aria-hidden="true" />
@@ -83,14 +83,14 @@ export function ActiveFilterChips({
   if (chips.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex max-w-full items-center gap-2 overflow-x-auto overscroll-x-contain pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
       {chips.map((chip, index) => (
         <Chip key={`${chip.label}-${index}`} label={chip.label} onRemove={chip.onRemove} />
       ))}
       <button
         type="button"
         onClick={onReset}
-        className="min-h-9 px-2 text-xs text-accent-dark underline underline-offset-4"
+        className="min-h-9 shrink-0 px-2 text-xs text-accent-dark underline underline-offset-4"
       >
         Tout effacer
       </button>

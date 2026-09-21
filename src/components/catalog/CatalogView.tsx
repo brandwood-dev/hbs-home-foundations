@@ -244,13 +244,16 @@ export function CatalogView({
         </header>
 
         {subcategories.length > 0 && (
-          <nav aria-label="Sous-catégories" className="mt-6 -mx-4 overflow-x-auto px-4">
-            <ul className="flex w-max gap-2 pb-1">
+          <nav
+            aria-label="Sous-catégories"
+            className="-mx-4 mt-6 max-w-full overflow-x-auto overscroll-x-contain px-4 pb-1"
+          >
+            <ul className="flex w-max min-w-full gap-2 pb-1">
               {subcategories.map((item) => (
                 <li key={item.routeId}>
                   <AppLink
                     href={item.path}
-                    className={`inline-flex min-h-9 items-center whitespace-nowrap rounded-full border px-3 text-xs transition-colors ${
+                    className={`inline-flex min-h-10 shrink-0 items-center whitespace-nowrap rounded-full border px-3 text-xs transition-colors ${
                       item.routeId === config.routeId
                         ? "border-accent bg-accent text-accent-foreground"
                         : "border-border text-foreground-muted hover:border-accent hover:text-accent-dark"
@@ -264,7 +267,7 @@ export function CatalogView({
           </nav>
         )}
 
-        <div className="mt-8 lg:grid lg:grid-cols-[260px_1fr] lg:gap-10">
+        <div className="mt-10 min-w-0 lg:grid lg:grid-cols-[260px_1fr] lg:gap-10">
           <aside className="hidden lg:block">
             <h2 className="eyebrow mb-2">Filtres</h2>
             {filtersNode}
@@ -281,7 +284,7 @@ export function CatalogView({
             />
 
             {activeFilterCount > 0 && facetsQuery.data && (
-              <div className="mt-4">
+              <div className="mt-4 min-w-0">
                 <ActiveFilterChips
                   facets={facetsQuery.data}
                   search={search}
@@ -292,7 +295,7 @@ export function CatalogView({
               </div>
             )}
 
-            <div className="mt-6">
+            <div className="mt-5 min-w-0">
               {listQuery.isError ? (
                 <CatalogErrorState onRetry={() => void listQuery.refetch()} />
               ) : listQuery.isPending ? (

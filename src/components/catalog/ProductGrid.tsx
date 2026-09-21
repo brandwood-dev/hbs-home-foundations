@@ -10,7 +10,7 @@ interface ProductGridProps {
 
 export function ProductGrid({ products, loading = false, skeletonCount = 12 }: ProductGridProps) {
   return (
-    <div className="grid grid-cols-2 gap-x-4 gap-y-9 sm:gap-x-5 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-12">
+    <div className="grid min-w-0 grid-cols-2 gap-x-4 gap-y-9 sm:gap-x-5 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-12">
       {loading
         ? Array.from({ length: skeletonCount }, (_, index) => <ProductCardSkeleton key={index} />)
         : products.map((product, index) => (
