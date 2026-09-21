@@ -85,6 +85,24 @@ describe("public catalogue API adapter", () => {
     });
   });
 
+  it("maps admin characteristic attributes into public product details", () => {
+    const mapped = mapProduct({
+      ...apiProduct,
+      details: {},
+      attributes: {
+        rooms: ["Salon", "Chambre"],
+        care: "Lavage en machine à 30 °C.",
+        installation: "Utiliser une tringle adaptée.",
+      },
+    });
+
+    expect(mapped.details).toMatchObject({
+      recommendedRooms: ["Salon", "Chambre"],
+      care: ["Lavage en machine à 30 °C."],
+      installationNotes: ["Utiliser une tringle adaptée."],
+    });
+  });
+
   it("reads the public product list without an Admin bearer token", async () => {
     const fetchImplementation = vi
       .fn<typeof fetch>()

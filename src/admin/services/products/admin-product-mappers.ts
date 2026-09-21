@@ -155,6 +155,9 @@ export function formToProductInput(
   const images = values.images.map((image, index) => ({ ...image, order: index + 1 }));
   const primary = images.find((image) => image.isPrimary) ?? images[0];
   const rooms = Array.isArray(values.fields["rooms"]) ? (values.fields["rooms"] as string[]) : [];
+  // Keep recommended rooms in the public attribute bag as well as the legacy
+  // payload field. The public catalogue does not expose the admin payload.
+  attributes["rooms"] = rooms;
 
   return {
     name: values.name.trim().replace(/\s+/g, " "),

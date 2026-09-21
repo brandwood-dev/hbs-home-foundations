@@ -508,10 +508,13 @@ function asOptionalBoolean(value: unknown): boolean | undefined {
 }
 
 function asStringList(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .map((entry) => asStringOptional(entry))
-    .filter((entry): entry is string => entry !== undefined);
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => asStringOptional(entry))
+      .filter((entry): entry is string => entry !== undefined);
+  }
+  const text = asStringOptional(value);
+  return text ? [text] : [];
 }
 
 function asMoneyAmount(value: unknown): number {
@@ -519,16 +522,32 @@ function asMoneyAmount(value: unknown): number {
   return Math.max(0, amount);
 }
 
-function parseProductDetails(input: unknown) {
+function parseProductDetails(input: unknown, fallbackInput: unknown = undefined) {
   const details = asRecord(input);
-  const composition = asStringOptional(details["composition"]);
-  const weightGsm = asOptionalNumber(details["weightGsm"]);
-  const originNote = asStringOptional(details["originNote"]);
+  const fallback = asRecord(fallbackInput);
+  const valueFor = (...keys: string[]) => {
+    for (const key of keys) {
+      const value = details[key];
+      if (Array.isArray(value) && value.length > 0) return value;
+      if (typeof value === "string" && value.trim().length > 0) return value;
+    }
+    for (const key of keys) {
+      const value = fallback[key];
+      if (Array.isArray(value) && value.length > 0) return value;
+      if (typeof value === "string" && value.trim().length > 0) return value;
+    }
+    return undefined;
+  };
+  const composition = asStringOptional(valueFor("composition"));
+  const weightGsm = asOptionalNumber(valueFor("weightGsm"));
+  const originNote = asStringOptional(valueFor("originNote"));
+  const recommendedRooms = asStringList(valueFor("recommendedRooms", "rooms"));
 
   return {
-    care: asStringList(details["care"]),
-    features: asStringList(details["features"]),
-    installationNotes: asStringList(details["installationNotes"]),
+    care: asStringList(valueFor("care")),
+    features: asStringList(valueFor("features")),
+    installationNotes: asStringList(valueFor("installationNotes", "installation")),
+    ...(recommendedRooms.length > 0 ? { recommendedRooms } : {}),
     ...(composition ? { composition } : {}),
     ...(weightGsm !== undefined ? { weightGsm } : {}),
     ...(originNote ? { originNote } : {}),
@@ -733,7 +752,7 @@ export function mapProduct(input: ApiProduct): Product {
     images,
     variants,
     colors,
-    details: parseProductDetails(input.details),
+    details: parseProductDetails(input.details, input.attributes),
     attributes: input.attributes,
     ...(confectionOptions ? { confectionOptions } : {}),
     seo: {

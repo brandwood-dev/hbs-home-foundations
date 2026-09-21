@@ -19,7 +19,9 @@ function List({ items }: { items: readonly string[] }) {
   return (
     <ul className="list-disc space-y-1.5 pl-5 text-sm text-foreground-muted">
       {visibleItems.map((item) => (
-        <li key={item}>{item}</li>
+        <li key={item} className="whitespace-pre-line">
+          {item}
+        </li>
       ))}
     </ul>
   );
@@ -111,6 +113,15 @@ export function ProductDetailsAccordion({
           <AccordionTrigger className="text-base">Caractéristiques</AccordionTrigger>
           <AccordionContent>
             <List items={details.features} />
+          </AccordionContent>
+        </AccordionItem>
+      ) : null}
+
+      {details.recommendedRooms && details.recommendedRooms.length > 0 ? (
+        <AccordionItem value="rooms">
+          <AccordionTrigger className="text-base">Pièces recommandées</AccordionTrigger>
+          <AccordionContent>
+            <List items={details.recommendedRooms} />
           </AccordionContent>
         </AccordionItem>
       ) : null}

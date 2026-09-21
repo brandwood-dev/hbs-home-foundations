@@ -227,6 +227,8 @@ export interface ProductDetails {
   care: string[];
   features: string[];
   installationNotes: string[];
+  /** Pièces dans lesquelles le produit est particulièrement recommandé. */
+  recommendedRooms?: string[];
   originNote?: string;
 }
 
