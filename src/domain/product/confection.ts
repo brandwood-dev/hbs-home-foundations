@@ -48,12 +48,9 @@ function normalizeCategoryToken(category: string): string {
 }
 
 export function isCurtainFamily(category: ProductCategory | string): boolean {
-  return [
-    "rideaux",
-    "voilages",
-    "rideaux-voilages",
-    "rideaux-et-voilages",
-  ].includes(normalizeCategoryToken(category));
+  return ["rideaux", "voilages", "rideaux-voilages", "rideaux-et-voilages"].includes(
+    normalizeCategoryToken(category),
+  );
 }
 
 export function confectionOptionsFor(
