@@ -20,18 +20,18 @@ export function CatalogToolbar({
   onOpenFilters,
 }: CatalogToolbarProps) {
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-border pb-3">
-      <p className="text-sm text-foreground-muted" aria-live="polite">
+    <div className="flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
+      <p className="shrink-0 text-sm text-foreground-muted" aria-live="polite">
         {total} produit{total > 1 ? "s" : ""}
       </p>
 
-      <div className="flex items-center gap-2">
+      <div className="grid w-full min-w-0 grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center">
         <button
           type="button"
           onClick={onOpenFilters}
           aria-expanded={filtersOpen}
           aria-controls="catalog-mobile-filters-dialog"
-          className="inline-flex min-h-11 items-center gap-2 rounded-md border border-border px-3 text-sm lg:hidden"
+          className="inline-flex min-h-11 w-full min-w-0 items-center justify-center gap-2 rounded-md border border-border px-2 text-sm lg:hidden"
         >
           <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
           Filtrer
@@ -42,12 +42,13 @@ export function CatalogToolbar({
           )}
         </button>
 
-        <label className="flex items-center gap-2 text-sm">
+        <label className="flex min-w-0 items-center gap-2 text-sm">
           <span className="sr-only sm:not-sr-only sm:text-foreground-muted">Trier par</span>
           <select
+            aria-label="Trier les produits"
             value={sort}
             onChange={(event) => onSortChange(event.target.value as CatalogSort)}
-            className="min-h-11 rounded-md border border-border bg-surface px-3 text-sm text-foreground"
+            className="min-h-11 w-full min-w-0 max-w-full truncate rounded-md border border-border bg-surface px-2 text-sm text-foreground sm:w-auto sm:min-w-[12rem] sm:px-3"
           >
             {SORT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>

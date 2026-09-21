@@ -97,18 +97,14 @@ export function ProductDetailView({ product }: { product: Product }) {
         />
 
         <div className="mt-6 grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-12">
-          <div className="min-w-0 space-y-8">
+          <div className="min-w-0 lg:col-start-1 lg:row-start-1">
             <ProductGallery
               images={getVariantImages(product, variant)}
               activeImageId={variant.imageIds[0]}
             />
-
-            <section aria-label="Informations sur le produit">
-              <ProductDetailsAccordion product={product} variant={variant} />
-            </section>
           </div>
 
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6 lg:col-start-2 lg:row-start-1 lg:row-span-2">
             <header>
               <p className="eyebrow">
                 {MATERIAL_LABELS[product.material]}
@@ -144,6 +140,13 @@ export function ProductDetailView({ product }: { product: Product }) {
 
             <ProductTrustPoints />
           </div>
+
+          <section
+            aria-label="Informations sur le produit"
+            className="min-w-0 lg:col-start-1 lg:row-start-2"
+          >
+            <ProductDetailsAccordion product={product} variant={variant} />
+          </section>
         </div>
 
         <RelatedProducts products={related.data ?? []} loading={related.isLoading} />

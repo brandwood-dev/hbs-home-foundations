@@ -59,7 +59,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 
   return (
     <article
-      className="group relative flex flex-col"
+      className="group relative flex min-w-0 flex-col"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -106,7 +106,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           {product.opacityLevel ? ` · ${OPACITY_LABELS[product.opacityLevel]}` : null}
         </p>
 
-        <h3 className="mt-1 text-base leading-snug sm:text-lg">
+        <h3 className="mt-1 min-w-0 break-words text-base leading-snug sm:text-lg">
           <AppLink href={getProductPath(product)} className="hover:text-accent-dark">
             {product.name}
           </AppLink>
