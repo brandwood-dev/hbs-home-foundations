@@ -7,7 +7,7 @@ import type { StatusTone } from "@/admin/services/order-status";
 
 export function AdminCard({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <section className={cn("rounded-xl border border-border bg-card p-4 shadow-soft", className)}>
+    <section className={cn("rounded-lg border border-border bg-card p-4 shadow-sm", className)}>
       {children}
     </section>
   );
@@ -32,7 +32,7 @@ export function AdminKpiCard({
     danger: "text-red-700",
   };
   return (
-    <div className="rounded-xl border border-border bg-card p-4 shadow-soft">
+    <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
       <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</p>
       <p className={cn("mt-1 text-2xl font-semibold tabular-nums", toneClass[tone])}>{value}</p>
       {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
