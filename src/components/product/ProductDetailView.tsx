@@ -79,11 +79,17 @@ export function ProductDetailView({ product }: { product: Product }) {
           ]}
         />
 
-        <div className="mt-6 grid gap-8 lg:grid-cols-2 lg:gap-12">
-          <ProductGallery
-            images={getVariantImages(product, variant)}
-            activeImageId={variant.imageIds[0]}
-          />
+        <div className="mt-6 grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-12">
+          <div className="min-w-0 space-y-8">
+            <ProductGallery
+              images={getVariantImages(product, variant)}
+              activeImageId={variant.imageIds[0]}
+            />
+
+            <section aria-label="Informations sur le produit">
+              <ProductDetailsAccordion product={product} variant={variant} />
+            </section>
+          </div>
 
           <div className="space-y-6">
             <header>
@@ -114,8 +120,6 @@ export function ProductDetailView({ product }: { product: Product }) {
             />
 
             <ProductTrustPoints />
-
-            <ProductDetailsAccordion product={product} variant={variant} />
           </div>
         </div>
 
