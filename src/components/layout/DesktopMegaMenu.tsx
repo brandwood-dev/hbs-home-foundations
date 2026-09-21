@@ -18,16 +18,15 @@ export function DesktopMegaMenu({
 }: DesktopMegaMenuProps) {
   const hasShortcuts = shortcuts.length > 0;
   const hasSingleShortcut = shortcuts.length === 1;
-  const hasSingleColumn = columns.length === 1;
 
   return (
-    <div className="absolute left-0 right-0 top-full z-40 border-b border-border bg-surface shadow-soft">
+    <div className="absolute left-0 right-0 top-full z-40 bg-surface">
       <div
-        className={`mx-auto grid max-w-7xl gap-6 px-6 py-6 ${
+        className={`mx-auto grid max-w-7xl gap-8 px-6 py-6 ${
           hasShortcuts ? "lg:grid-cols-[minmax(0,0.78fr)_minmax(30rem,1.22fr)]" : ""
         }`}
       >
-        <div className="rounded-xl border border-border bg-surface-muted/45 px-5 py-5">
+        <div className="px-1 py-1">
           <div className="mb-4 flex items-start justify-between gap-4">
             <div>
               <p className="eyebrow mb-1">Explorer la collection</p>
@@ -47,14 +46,12 @@ export function DesktopMegaMenu({
           </div>
 
           <div
-            className={`grid gap-x-8 gap-y-6 ${
-              hasSingleColumn ? "" : "sm:grid-cols-2 lg:grid-cols-3"
-            }`}
+            className={`grid gap-x-8 gap-y-6 ${columns.length > 1 ? "sm:grid-cols-2 lg:grid-cols-3" : ""}`}
           >
             {columns.map((column) => (
               <div key={column.title}>
                 <h3 className="eyebrow mb-3">{column.title}</h3>
-                <ul className={hasSingleColumn ? "grid grid-cols-2 gap-x-8 gap-y-2" : "space-y-2"}>
+                <ul className="space-y-2">
                   {column.links.map((link) => (
                     <li key={link.label}>
                       <AppLink
@@ -74,14 +71,14 @@ export function DesktopMegaMenu({
         </div>
 
         {hasShortcuts ? (
-          <div className={`grid gap-4 ${hasSingleShortcut ? "grid-cols-1" : "sm:grid-cols-2"}`}>
+          <div className={hasSingleShortcut ? "flex items-start" : "grid gap-4 sm:grid-cols-2"}>
             {shortcuts.slice(0, 2).map((shortcut) => (
               <AppLink
                 key={shortcut.href}
                 href={shortcut.href}
                 onClick={onNavigate}
-                className={`group relative overflow-hidden rounded-xl border border-border bg-surface-muted ${
-                  hasSingleShortcut ? "aspect-[16/7]" : "aspect-[4/3]"
+                className={`group relative overflow-hidden rounded-lg bg-surface-muted/35 ${
+                  hasSingleShortcut ? "aspect-[4/3] w-full max-w-sm" : "aspect-[4/3]"
                 }`}
               >
                 <img
