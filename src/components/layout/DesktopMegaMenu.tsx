@@ -4,16 +4,14 @@ import type { MegaMenuColumn, NavMenuShortcut } from "@/types/navigation.types";
 interface DesktopMegaMenuProps {
   columns: MegaMenuColumn[];
   shortcuts?: NavMenuShortcut[] | undefined;
-  collectionHref?: string;
-  collectionLabel?: string;
+  sectionTitle?: string;
   onNavigate?: () => void;
 }
 
 export function DesktopMegaMenu({
   columns,
   shortcuts = [],
-  collectionHref,
-  collectionLabel = "Voir toute la collection",
+  sectionTitle = "À découvrir",
   onNavigate,
 }: DesktopMegaMenuProps) {
   const hasShortcuts = shortcuts.length > 0;
@@ -27,22 +25,11 @@ export function DesktopMegaMenu({
         }`}
       >
         <div className="px-1 py-1">
-          <div className="mb-4 flex items-start justify-between gap-4">
-            <div>
-              <p className="eyebrow mb-1">Explorer la collection</p>
-              <p className="text-sm text-foreground-muted">
-                Trouvez rapidement le style adapté à votre intérieur.
-              </p>
-            </div>
-            {collectionHref ? (
-              <AppLink
-                href={collectionHref}
-                onClick={onNavigate}
-                className="shrink-0 text-xs font-semibold text-accent-dark underline-offset-4 transition-colors hover:underline"
-              >
-                {collectionLabel}
-              </AppLink>
-            ) : null}
+          <div className="mb-4">
+            <p className="eyebrow mb-1">Explorer la collection</p>
+            <p className="text-sm text-foreground-muted">
+              Trouvez rapidement le style adapté à votre intérieur.
+            </p>
           </div>
 
           <div
@@ -50,7 +37,9 @@ export function DesktopMegaMenu({
           >
             {columns.map((column) => (
               <div key={column.title}>
-                <h3 className="eyebrow mb-3">{column.title}</h3>
+                <h3 className="eyebrow mb-3">
+                  {column.title.toLowerCase() === "sous-catégories" ? sectionTitle : column.title}
+                </h3>
                 <ul className="space-y-2">
                   {column.links.map((link) => (
                     <li key={link.label}>
@@ -77,16 +66,14 @@ export function DesktopMegaMenu({
                 key={shortcut.href}
                 href={shortcut.href}
                 onClick={onNavigate}
-                className={`group relative overflow-hidden ${
-                  hasSingleShortcut ? "aspect-[4/3] w-full max-w-sm" : "aspect-[4/3]"
-                }`}
+                className={`group relative w-full overflow-hidden rounded-xl ${hasSingleShortcut ? "max-w-sm" : ""}`}
               >
                 <img
                   src={shortcut.imageUrl}
                   alt={shortcut.imageAlt}
                   loading="lazy"
                   decoding="async"
-                  className="h-full w-full rounded-xl object-contain object-center transition-transform duration-500 group-hover:scale-[1.02]"
+                  className="block h-auto w-full rounded-xl transition-transform duration-500 group-hover:scale-[1.02]"
                 />
                 <span className="absolute bottom-3 left-1/2 w-max max-w-[90%] -translate-x-1/2 rounded-lg bg-surface/95 px-4 py-2.5 text-center text-sm font-medium text-foreground shadow-sm transition-colors group-hover:text-accent-dark">
                   {shortcut.label}

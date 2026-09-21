@@ -15,6 +15,14 @@ import { catalogNavigationQuery } from "@/services/catalog/catalog-category.quer
 import { mergeCatalogNavigation } from "@/services/catalog/catalog-navigation";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 
+const megaMenuSectionTitles: Record<string, string> = {
+  "Rideaux & Voilages": "Styles de rideaux",
+  Coussins: "Collections de coussins",
+  Accessoires: "Essentiels pour vos fenêtres",
+  "Mobilier d'intérieur": "Pièces pour votre intérieur",
+  "Plantes & déco": "Univers végétal",
+};
+
 export function SiteHeader() {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -179,8 +187,7 @@ export function SiteHeader() {
                 key={item.id}
                 columns={item.megaMenu}
                 shortcuts={item.menuShortcuts}
-                collectionHref={item.href}
-                collectionLabel={`Voir ${item.label.toLowerCase()}`}
+                sectionTitle={megaMenuSectionTitles[item.label] ?? "À découvrir"}
                 onNavigate={() => setOpenMenuId(null)}
               />
             ) : null,
