@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CatalogBreadcrumbs } from "@/components/catalog/CatalogBreadcrumbs";
 import { ProductDetailsAccordion } from "@/components/product/ProductDetailsAccordion";
 import { ProductGallery } from "@/components/product/ProductGallery";
+import { ProductAvailabilityBadge } from "@/components/product/ProductAvailabilityBadge";
 import { ProductPrice } from "@/components/product/ProductPrice";
 import { ProductPurchasePanel } from "@/components/product/ProductPurchasePanel";
 import { ProductStickyBar } from "@/components/product/ProductStickyBar";
@@ -117,6 +118,9 @@ export function ProductDetailView({ product }: { product: Product }) {
               <h1 className="mt-2 text-3xl sm:text-4xl">{product.name}</h1>
               <div className="mt-4" aria-label="Prix du produit">
                 <ProductPrice variant={variant} />
+              </div>
+              <div className="mt-2">
+                <ProductAvailabilityBadge variant={variant} />
               </div>
               <p className="mt-2 text-sm text-foreground-muted">{product.shortDescription}</p>
               <p className="mt-1 text-xs text-foreground-muted">Référence {variant.sku}</p>
