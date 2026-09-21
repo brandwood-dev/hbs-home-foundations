@@ -1,6 +1,5 @@
 import { Minus, Plus } from "lucide-react";
 import { ProductAvailabilityBadge } from "@/components/product/ProductAvailabilityBadge";
-import { ProductPrice } from "@/components/product/ProductPrice";
 import { ProductPurchaseActions } from "@/components/product/ProductPurchaseActions";
 import { ProductShippingNotice } from "@/components/product/ProductShippingNotice";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
@@ -27,7 +26,6 @@ export function ProductPurchasePanel({
 
   return (
     <div className="space-y-4">
-      <ProductPrice variant={variant} />
       <ProductAvailabilityBadge variant={variant} />
 
       <div className="flex flex-wrap items-start gap-3">
