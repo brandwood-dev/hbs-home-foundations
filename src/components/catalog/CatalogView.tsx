@@ -15,6 +15,7 @@ import { AppLink } from "@/components/ui/app-link";
 import { DEFAULT_PAGE_SIZE } from "@/domain/product/product.constants";
 import type { CatalogSort } from "@/domain/product/product.types";
 import { dataProvider } from "@/config/features.config";
+import { getProductRepository } from "@/repositories/repositoryFactory";
 import {
   catalogGroups,
   getCatalogSubcategories,
@@ -38,9 +39,16 @@ interface CatalogViewProps {
   search: CatalogSearch;
   onSearchChange: (next: CatalogSearch) => void;
   groupOverride?: CatalogGroup;
+  globalFilter?: "new" | "discounted";
 }
 
-export function CatalogView({ config, search, onSearchChange, groupOverride }: CatalogViewProps) {
+export function CatalogView({
+  config,
+  search,
+  onSearchChange,
+  groupOverride,
+  globalFilter,
+}: CatalogViewProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const apiCatalog = dataProvider === "api";
 
@@ -48,20 +56,41 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
     groupOverride ??
     catalogGroups.find((item) => item.id === config.group) ??
     ({ id: config.group, label: config.title, path: config.path } as CatalogGroup);
-  const categoryQuery = useQuery(catalogCategoryQuery(config.routeId));
-  const navigationQuery = useQuery(catalogNavigationQuery());
-  const dynamicCategory = categoryQuery.data ?? undefined;
-  const dynamicGroup = navigationQuery.data?.find((item) => item.slug === config.group);
-  const subcategories = dynamicGroup
-    ? dynamicGroup.children.map((item) => ({
-        routeId: item.slug,
-        label: item.name,
-        path: item.path,
-      }))
-    : navigationQuery.data === undefined && catalogGroups.some((item) => item.id === config.group)
-      ? getCatalogSubcategories(config.group)
-      : [];
+  const categoryQuery = useQuery({
+    ...catalogCategoryQuery(config.routeId),
+    enabled: !globalFilter,
+  });
+  const navigationQuery = useQuery({
+    ...catalogNavigationQuery(),
+    enabled: !globalFilter,
+  });
+  const dynamicCategory = globalFilter ? undefined : (categoryQuery.data ?? undefined);
+  const dynamicGroup = globalFilter
+    ? undefined
+    : navigationQuery.data?.find(
+        (item) => item.slug === config.group || item.slug === dynamicCategory?.slug,
+      );
+  // The lightweight navigation endpoint may omit children for a root category.
+  // The detailed category response remains authoritative for its subcategory
+  // links, so use it whenever navigation has no children to display.
+  const navigationCategory = dynamicGroup?.children.length
+    ? dynamicGroup
+    : dynamicCategory?.children.length
+      ? dynamicCategory
+      : dynamicGroup;
+  const subcategories = globalFilter
+    ? []
+    : navigationCategory
+      ? navigationCategory.children.map((item) => ({
+          routeId: item.slug,
+          label: item.name,
+          path: item.path,
+        }))
+      : navigationQuery.data === undefined && catalogGroups.some((item) => item.id === config.group)
+        ? getCatalogSubcategories(config.group)
+        : [];
   const dynamicScope = useMemo(() => {
+    if (globalFilter) return undefined;
     if (!dynamicCategory) return config.scope;
     const slugs: string[] = [];
     const pending = [dynamicCategory];
@@ -75,14 +104,41 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
     // a legacy file-based route (for example `/rideaux/lin`). This prevents
     // fixture filters from narrowing or changing the Admin-managed category.
     return { categorySlugs: slugs };
-  }, [config.scope, dynamicCategory]);
-  const params = toListParams(search, dynamicScope, DEFAULT_PAGE_SIZE);
+  }, [config.scope, dynamicCategory, globalFilter]);
+  const baseParams = toListParams(search, dynamicScope, DEFAULT_PAGE_SIZE);
+  const params =
+    globalFilter === "new"
+      ? {
+          ...baseParams,
+          onlyNew: true,
+          sort: search.sort === "recommended" ? "newest" : search.sort,
+        }
+      : globalFilter === "discounted"
+        ? {
+            ...baseParams,
+            onlyDiscounted: true,
+            sort: search.sort === "recommended" ? "discount" : search.sort,
+          }
+        : baseParams;
   // Once the API is configured, an unpublished/missing category must not
   // silently fall back to the legacy fixture scope. Wait for the category
   // query first, then fetch products and facets using only the API taxonomy.
-  const categoryReady = !apiCatalog || (categoryQuery.isSuccess && dynamicCategory !== undefined);
+  const categoryReady =
+    Boolean(globalFilter) ||
+    !apiCatalog ||
+    (categoryQuery.isSuccess && dynamicCategory !== undefined);
   const listQuery = useQuery({
     ...catalogListQuery(params),
+    queryFn: async () => {
+      const repository = getProductRepository();
+      const result = await repository.list(params);
+
+      if (globalFilter === "new" && search.page === 1 && result.items.length === 0) {
+        return repository.list({ ...params, onlyNew: undefined, sort: "newest" });
+      }
+
+      return result;
+    },
     enabled: categoryReady,
     placeholderData: keepPreviousData,
   });
@@ -116,7 +172,7 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
 
   const resetFilters = () => onSearchChange({ ...EMPTY_SEARCH, sort: search.sort });
 
-  if (apiCatalog && categoryQuery.isPending) {
+  if (apiCatalog && !globalFilter && categoryQuery.isPending) {
     return (
       <SiteLayout>
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-10" aria-busy="true">
@@ -126,7 +182,7 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
     );
   }
 
-  if (apiCatalog && categoryQuery.isError) {
+  if (apiCatalog && !globalFilter && categoryQuery.isError) {
     return (
       <SiteLayout>
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-10">
@@ -136,7 +192,7 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
     );
   }
 
-  if (apiCatalog && categoryQuery.isSuccess && dynamicCategory === undefined) {
+  if (apiCatalog && !globalFilter && categoryQuery.isSuccess && dynamicCategory === undefined) {
     return (
       <SiteLayout>
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-10">
@@ -164,15 +220,17 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
         <CatalogBreadcrumbs
           items={[
             { label: "Accueil", href: "/" },
-            ...(config.routeId === config.group
-              ? [{ label: dynamicCategory?.name ?? group.label }]
-              : [
-                  {
-                    label: dynamicGroup?.name ?? group.label,
-                    href: dynamicGroup?.path ?? group.path,
-                  },
-                  { label: dynamicCategory?.name ?? config.title },
-                ]),
+            ...(globalFilter
+              ? [{ label: config.title }]
+              : config.routeId === config.group
+                ? [{ label: dynamicCategory?.name ?? group.label }]
+                : [
+                    {
+                      label: dynamicGroup?.name ?? group.label,
+                      href: dynamicGroup?.path ?? group.path,
+                    },
+                    { label: dynamicCategory?.name ?? config.title },
+                  ]),
           ]}
         />
 
@@ -185,24 +243,26 @@ export function CatalogView({ config, search, onSearchChange, groupOverride }: C
           </p>
         </header>
 
-        <nav aria-label="Sous-catégories" className="mt-6 -mx-4 overflow-x-auto px-4">
-          <ul className="flex w-max gap-2 pb-1">
-            {subcategories.map((item) => (
-              <li key={item.routeId}>
-                <AppLink
-                  href={item.path}
-                  className={`inline-flex min-h-9 items-center whitespace-nowrap rounded-full border px-3 text-xs transition-colors ${
-                    item.routeId === config.routeId
-                      ? "border-accent bg-accent text-accent-foreground"
-                      : "border-border text-foreground-muted hover:border-accent hover:text-accent-dark"
-                  }`}
-                >
-                  {item.label}
-                </AppLink>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        {subcategories.length > 0 && (
+          <nav aria-label="Sous-catégories" className="mt-6 -mx-4 overflow-x-auto px-4">
+            <ul className="flex w-max gap-2 pb-1">
+              {subcategories.map((item) => (
+                <li key={item.routeId}>
+                  <AppLink
+                    href={item.path}
+                    className={`inline-flex min-h-9 items-center whitespace-nowrap rounded-full border px-3 text-xs transition-colors ${
+                      item.routeId === config.routeId
+                        ? "border-accent bg-accent text-accent-foreground"
+                        : "border-border text-foreground-muted hover:border-accent hover:text-accent-dark"
+                    }`}
+                  >
+                    {item.label}
+                  </AppLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
 
         <div className="mt-8 lg:grid lg:grid-cols-[260px_1fr] lg:gap-10">
           <aside className="hidden lg:block">

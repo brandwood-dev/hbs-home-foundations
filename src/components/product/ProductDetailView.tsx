@@ -10,6 +10,7 @@ import { ProductTrustPoints } from "@/components/product/ProductTrustPoints";
 import { RelatedProducts } from "@/components/product/RelatedProducts";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { getCatalogGroup } from "@/fixtures/catalog-pages.fixture";
+import { catalogCategoryQuery } from "@/services/catalog/catalog-category.queries";
 import {
   MATERIAL_LABELS,
   OPACITY_LABELS,
@@ -30,6 +31,7 @@ import {
 } from "@/services/product/product-variants";
 import { ProductVariantSelectors } from "@/components/product/ProductVariantSelectors";
 import { buildProductJsonLd } from "@/services/product/product.structured-data";
+import { getProductTaxonomyPath } from "@/services/product/product-breadcrumbs";
 
 export function ProductDetailView({ product }: { product: Product }) {
   const [variant, setVariant] = useState(() => getInitialVariant(product));
@@ -40,6 +42,18 @@ export function ProductDetailView({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
 
   const related = useQuery(relatedProductsQuery(product.slug, 4));
+  const fallbackGroup = getCatalogGroup(product.category);
+  const { rootSlug, subcategorySlug } = getProductTaxonomyPath(product);
+  const rootCategoryQuery = useQuery(catalogCategoryQuery(rootSlug));
+  const subcategoryQuery = useQuery({
+    ...catalogCategoryQuery(subcategorySlug ?? ""),
+    enabled: Boolean(subcategorySlug),
+  });
+  const rootCategory = rootCategoryQuery.data;
+  const subcategory =
+    (subcategorySlug
+      ? rootCategory?.children.find((candidate) => candidate.slug === subcategorySlug)
+      : undefined) ?? subcategoryQuery.data;
 
   const onAxisChange = (axis: VariantAxis, value: string) => {
     const next = changeAxis(product, variant, axis, value);
@@ -73,9 +87,10 @@ export function ProductDetailView({ product }: { product: Product }) {
           items={[
             { label: "Accueil", href: "/" },
             {
-              label: getCatalogGroup(product.category).label,
-              href: getCatalogGroup(product.category).path,
+              label: rootCategory?.name ?? fallbackGroup.label,
+              href: rootCategory?.path ?? fallbackGroup.path,
             },
+            ...(subcategory ? [{ label: subcategory.name, href: subcategory.path }] : []),
             { label: product.name },
           ]}
         />

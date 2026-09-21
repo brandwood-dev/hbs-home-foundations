@@ -37,6 +37,7 @@ import type {
 } from "@/domain/product/product.types";
 import {
   DEFAULT_CONFECTION_OPTIONS,
+  isCurtainFamily,
   type ConfectionKey,
   type ConfectionOption,
 } from "@/domain/product/confection";
@@ -203,6 +204,24 @@ const PRODUCT_CATEGORIES: readonly ProductCategory[] = [
   "mobilier_interieur",
   "plantes_decoration",
 ];
+
+function productCategoryFor(value: unknown): ProductCategory {
+  const raw = asString(value)?.trim() ?? "";
+  const normalized = raw
+    .toLocaleLowerCase()
+    .replace(/&/g, "et")
+    .replace(/[\s_]+/g, "-")
+    .replace(/-+/g, "-");
+  if (
+    normalized === "rideaux" ||
+    normalized === "rideaux-voilages" ||
+    normalized === "rideaux-et-voilages"
+  ) {
+    return "rideaux";
+  }
+  if (normalized === "voilages") return "voilages";
+  return asEnumOrDefault(raw, PRODUCT_CATEGORIES, "mobilier_interieur");
+}
 
 const PRODUCT_MATERIALS: readonly ProductMaterial[] = [
   "velours",
@@ -675,11 +694,12 @@ function colorsFromVariants(
 export function mapProduct(input: ApiProduct): Product {
   const images = input.images.map((image) => mapProductImage(image));
   const variants = input.variants.map((variant) => mapProductVariant(variant));
+  const category = productCategoryFor(input.category);
   const declaredColors = input.colors
     .map((color) => mapProductColor(color))
     .filter((color): color is NonNullable<ReturnType<typeof mapProductColor>> => color !== null);
   const colors = colorsFromVariants(variants, declaredColors);
-  const confectionOptions = input.confectionOptions
+  const declaredConfectionOptions = input.confectionOptions
     ?.filter((option) =>
       DEFAULT_CONFECTION_OPTIONS.some((candidate) => candidate.key === option.key),
     )
@@ -691,6 +711,11 @@ export function mapProduct(input: ApiProduct): Product {
         DEFAULT_CONFECTION_OPTIONS.find((candidate) => candidate.key === option.key)?.imageUrl ??
         "",
     })) as ConfectionOption[] | undefined;
+  const confectionOptions = isCurtainFamily(category)
+    ? declaredConfectionOptions && declaredConfectionOptions.length > 0
+      ? declaredConfectionOptions
+      : DEFAULT_CONFECTION_OPTIONS
+    : declaredConfectionOptions;
 
   const product: Product = {
     id: asString(input.id),
@@ -698,7 +723,7 @@ export function mapProduct(input: ApiProduct): Product {
     name: asString(input.name),
     reference: asString(input.reference, "N/A"),
     ...(input.canonicalPath?.trim() ? { canonicalPath: input.canonicalPath.trim() } : {}),
-    category: asEnumOrDefault(input.category, PRODUCT_CATEGORIES, "mobilier_interieur"),
+    category,
     material: asEnumOrDefault(input.material, PRODUCT_MATERIALS, "textile"),
     sellingMode: asEnumOrDefault(input.sellingMode, CURTAINS_SELLING_MODE, "ready_made"),
     isLargeWidth: asBoolean(input.isLargeWidth, false),
