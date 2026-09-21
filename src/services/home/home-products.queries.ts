@@ -22,7 +22,22 @@ export function homeSelectionQuery(filter: ProductSelectionFilter, pageSize: num
   return queryOptions({
     queryKey: ["home", "selection", filter, pageSize],
     queryFn: async () => {
-      const result = await getProductRepository().list(buildSelectionParams(filter, pageSize));
+      const repository = getProductRepository();
+      const result = await repository.list(buildSelectionParams(filter, pageSize));
+
+      // Keep the home selection useful before Admin has explicitly marked a
+      // product as new. The latest published products are a deterministic
+      // fallback, while the explicit best-seller and promotion filters remain
+      // authoritative.
+      if (filter === "new" && result.items.length === 0) {
+        const fallback = await repository.list({
+          page: 1,
+          pageSize,
+          sort: "newest",
+        });
+        return fallback.items;
+      }
+
       return result.items;
     },
     staleTime: 5 * 60_000,

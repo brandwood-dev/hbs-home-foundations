@@ -18,6 +18,11 @@ interface ApiCategoryResponse {
   children: ApiCategoryResponse[];
 }
 
+/** Keep legacy public routes working after an Admin taxonomy rename. */
+const CATEGORY_SLUG_ALIASES: Record<string, string> = {
+  rideaux: "rideaux-voilages",
+};
+
 function mapCategory(category: ApiCategoryResponse): PublicCategory {
   return {
     ...category,
@@ -42,10 +47,11 @@ export class ApiCategoryRepository implements CategoryRepository {
   }
 
   async getBySlug(slug: string): Promise<PublicCategory | null> {
+    const resolvedSlug = CATEGORY_SLUG_ALIASES[slug] ?? slug;
     try {
       return mapCategory(
         await this.apiClient.get<ApiCategoryResponse>(
-          `/api/v1/catalog/categories/${encodeURIComponent(slug)}`,
+          `/api/v1/catalog/categories/${encodeURIComponent(resolvedSlug)}`,
         ),
       );
     } catch (error) {
