@@ -64,6 +64,19 @@ describe("public catalogue API adapter", () => {
     expect(mapProduct(apiProduct)).toMatchObject({ id: "product-1", isDemo: false });
   });
 
+  it("normalizes the editable Rideaux & Voilages root to the curtain family", () => {
+    const mapped = mapProduct({ ...apiProduct, category: "rideaux-voilages" });
+
+    expect(mapped.category).toBe("rideaux");
+    expect(mapped.confectionOptions).toHaveLength(4);
+    expect(mapped.confectionOptions?.map((option) => option.key)).toEqual([
+      "oeillets_argent",
+      "oeillets_dore",
+      "galon_fronceur",
+      "wave",
+    ]);
+  });
+
   it("does not invent product detail placeholders when the API omits optional fields", () => {
     expect(mapProduct({ ...apiProduct, details: {} }).details).toEqual({
       care: [],
