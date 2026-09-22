@@ -64,6 +64,19 @@ describe("public catalogue API adapter", () => {
     expect(mapProduct(apiProduct)).toMatchObject({ id: "product-1", isDemo: false });
   });
 
+  it("normalizes public variant dimensions to ascending order", () => {
+    const mapped = mapProduct({
+      ...apiProduct,
+      variants: [
+        { ...apiProduct.variants[0]!, id: "large", widthCm: 600 },
+        { ...apiProduct.variants[0]!, id: "small", widthCm: 150 },
+        { ...apiProduct.variants[0]!, id: "medium", widthCm: 300 },
+      ],
+    });
+
+    expect(mapped.variants.map((variant) => variant.widthCm)).toEqual([150, 300, 600]);
+  });
+
   it("normalizes the editable Rideaux & Voilages root to the curtain family", () => {
     const mapped = mapProduct({ ...apiProduct, category: "rideaux-voilages" });
 

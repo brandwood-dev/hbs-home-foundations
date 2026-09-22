@@ -89,6 +89,34 @@ describe("Admin catalog API adapters", () => {
     ]);
   });
 
+  it("uses dimensions as a fallback when legacy variants share the same sort order", () => {
+    const mapped = mapProduct({
+      ...product,
+      variants: [
+        {
+          ...product.variants[0]!,
+          id: "variant-large",
+          options: { colorId: "beige", widthCm: 600, heightCm: 280 },
+          sortOrder: 0,
+        },
+        {
+          ...product.variants[0]!,
+          id: "variant-small",
+          options: { colorId: "beige", widthCm: 150, heightCm: 280 },
+          sortOrder: 0,
+        },
+        {
+          ...product.variants[0]!,
+          id: "variant-medium",
+          options: { colorId: "beige", widthCm: 300, heightCm: 280 },
+          sortOrder: 0,
+        },
+      ],
+    });
+
+    expect(mapped.variants.map((variant) => variant.widthCm)).toEqual([150, 300, 600]);
+  });
+
   it("keeps the product family when the API category is a child category", () => {
     const mapped = mapProduct({
       ...product,

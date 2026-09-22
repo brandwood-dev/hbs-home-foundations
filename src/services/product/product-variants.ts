@@ -13,6 +13,7 @@ import type {
   Product,
   ProductVariant,
 } from "@/domain/product/product.types";
+import { sortVariantsByDimensions } from "@/domain/product/variant-order";
 
 /**
  * Moteur de variantes : pur, sans état React ni accès réseau.
@@ -107,7 +108,7 @@ export interface VariantOption {
   variant: ProductVariant;
 }
 
-/** Valeurs proposables sur un axe, dans l'ordre d'apparition des variantes. */
+/** Valeurs proposables sur un axe, dans l'ordre métier des variantes. */
 export function getAxisOptions(
   variants: ProductVariant[],
   axis: VariantAxis,
@@ -115,8 +116,9 @@ export function getAxisOptions(
 ): VariantOption[] {
   const others = VARIANT_AXES.filter((item) => item !== axis);
   const options = new Map<string, VariantOption>();
+  const orderedVariants = axis === "sizeKey" ? sortVariantsByDimensions(variants) : variants;
 
-  for (const variant of variants) {
+  for (const variant of orderedVariants) {
     const value = axisValue(variant, axis);
     if (value === undefined) continue;
 

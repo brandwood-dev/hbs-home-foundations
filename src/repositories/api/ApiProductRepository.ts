@@ -35,6 +35,7 @@ import type {
   ProductMaterial,
   ProductPattern,
 } from "@/domain/product/product.types";
+import { sortVariantsByDimensions } from "@/domain/product/variant-order";
 import {
   DEFAULT_CONFECTION_OPTIONS,
   isCurtainFamily,
@@ -712,7 +713,9 @@ function colorsFromVariants(
 
 export function mapProduct(input: ApiProduct): Product {
   const images = input.images.map((image) => mapProductImage(image));
-  const variants = input.variants.map((variant) => mapProductVariant(variant));
+  const variants = sortVariantsByDimensions(
+    input.variants.map((variant) => mapProductVariant(variant)),
+  );
   const category = productCategoryFor(input.category);
   const declaredColors = input.colors
     .map((color) => mapProductColor(color))

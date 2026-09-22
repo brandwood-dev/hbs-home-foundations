@@ -293,6 +293,7 @@ function mapVariant(variant: ApiVariant): AdminVariant {
   const trackInventory = merged["trackInventory"];
   return {
     id: variant.id,
+    ...(variant.sortOrder === undefined ? {} : { sortOrder: variant.sortOrder }),
     sku: variant.sku,
     colorId: stringValue(merged["colorId"]) ?? "",
     colorLabel: stringValue(merged["colorLabel"]) ?? "",
@@ -381,7 +382,14 @@ function mapProduct(product: ApiProduct): AdminProduct {
     ...(primary ? { imageUrl: primary.url } : {}),
     images,
     ...(imageAssets.length > 0 ? { imageAssets } : {}),
-    variants: product.variants.map(mapVariant),
+    variants: product.variants
+      .map(mapVariant)
+      .sort(
+        (left, right) =>
+          (left.sortOrder ?? 0) - (right.sortOrder ?? 0) ||
+          left.widthCm - right.widthCm ||
+          left.heightCm - right.heightCm,
+      ),
     seoTitle: stringValue(payload["seoTitle"]) ?? product.name,
     seoDescription: stringValue(payload["seoDescription"]) ?? product.shortDescription ?? "",
     ...(category ? { category } : {}),
@@ -573,7 +581,7 @@ function variantPayload(variant: AdminVariant): Record<string, unknown> {
   };
 }
 
-function variantBody(variant: AdminVariant): VariantCreateBody {
+function variantBody(variant: AdminVariant, sortOrder = variant.sortOrder ?? 0): VariantCreateBody {
   return {
     ...(variant.sku.trim() ? { sku: variant.sku.trim() } : {}),
     title: variant.curtainHeader.trim() || null,
@@ -585,7 +593,7 @@ function variantBody(variant: AdminVariant): VariantCreateBody {
     options: variantOptions(variant),
     payload: variantPayload(variant),
     isDefault: variant.isDefault ?? variant.id.endsWith("-default"),
-    sortOrder: 0,
+    sortOrder,
   };
 }
 
@@ -599,12 +607,16 @@ function stableValue(value: unknown): unknown {
   );
 }
 
-function variantFingerprint(variant: AdminVariant): string {
-  return JSON.stringify(stableValue(variantBody(variant)));
+function variantFingerprint(variant: AdminVariant, sortOrder = variant.sortOrder ?? 0): string {
+  return JSON.stringify(stableValue(variantBody(variant, sortOrder)));
 }
 
-function variantPatch(variant: AdminVariant, expectedVersion: number): VariantPatchBody {
-  return { ...variantBody(variant), expectedVersion };
+function variantPatch(
+  variant: AdminVariant,
+  expectedVersion: number,
+  sortOrder = variant.sortOrder ?? 0,
+): VariantPatchBody {
+  return { ...variantBody(variant, sortOrder), expectedVersion };
 }
 
 function isProductVersionConflict(error: unknown): boolean {
@@ -616,17 +628,26 @@ async function updateVariantWithFreshVersion(
   productId: string,
   variantId: string,
   variant: AdminVariant,
+  sortOrder: number,
 ): Promise<ApiProduct> {
   let latest = await api.getProduct(productId);
   try {
-    return await api.updateVariant(productId, variantId, variantPatch(variant, latest.version));
+    return await api.updateVariant(
+      productId,
+      variantId,
+      variantPatch(variant, latest.version, sortOrder),
+    );
   } catch (error) {
     if (!isProductVersionConflict(error)) throw error;
     // A concurrent product update (or an intermediary cache) may have made
     // the first read stale. Re-read once and retry with the authoritative
     // version while preserving optimistic locking on the API.
     latest = await api.getProduct(productId);
-    return api.updateVariant(productId, variantId, variantPatch(variant, latest.version));
+    return api.updateVariant(
+      productId,
+      variantId,
+      variantPatch(variant, latest.version, sortOrder),
+    );
   }
 }
 
@@ -969,9 +990,9 @@ export class ApiAdminProductRepository implements AdminProductRepository {
           };
     let dto = await this.api.createProduct(productBody(initialInput));
     const persistedVariantIds = new Map<string, string>();
-    for (const variant of input.variants) {
+    for (const [sortOrder, variant] of input.variants.entries()) {
       const before = new Set(dto.variants.map((item) => item.id));
-      dto = await this.api.createVariant(dto.id, variantBody(variant));
+      dto = await this.api.createVariant(dto.id, variantBody(variant, sortOrder));
       const created = dto.variants.find((item) => !before.has(item.id));
       if (!created) throw new Error("La variante créée n'a pas été retournée par l'API.");
       persistedVariantIds.set(variant.id, created.id);
@@ -994,7 +1015,7 @@ export class ApiAdminProductRepository implements AdminProductRepository {
             imageAssets: withoutVariantMediaAssociations(input.imageAssets, existingVariantIds)!,
           };
     let dto = await this.api.updateProduct(id, productPatch(initialInput, current.version));
-    const variants = input.variants;
+    const variants = input.variants?.map((variant, sortOrder) => ({ ...variant, sortOrder }));
     if (variants === undefined) return mapProduct(dto);
 
     // The product PATCH already bumps the product version. Refresh each
@@ -1010,11 +1031,21 @@ export class ApiAdminProductRepository implements AdminProductRepository {
       const existing = current.variants.find((item) => item.id === variant.id);
       if (existing) {
         seen.add(existing.id);
-        if (variantFingerprint(variant) === variantFingerprint(mapVariant(existing))) continue;
-        dto = await updateVariantWithFreshVersion(this.api, id, existing.id, variant);
+        if (
+          variantFingerprint(variant, variant.sortOrder) ===
+          variantFingerprint(mapVariant(existing), existing.sortOrder)
+        )
+          continue;
+        dto = await updateVariantWithFreshVersion(
+          this.api,
+          id,
+          existing.id,
+          variant,
+          variant.sortOrder,
+        );
       } else {
         const before = new Set(dto.variants.map((item) => item.id));
-        dto = await this.api.createVariant(id, variantBody(variant));
+        dto = await this.api.createVariant(id, variantBody(variant, variant.sortOrder));
         const created = dto.variants.find((item) => !before.has(item.id));
         if (!created) throw new Error("La variante créée n'a pas été retournée par l'API.");
         persistedVariantIds.set(variant.id, created.id);
