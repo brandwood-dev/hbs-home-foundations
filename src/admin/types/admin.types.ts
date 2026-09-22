@@ -51,6 +51,8 @@ export type AdminAvailability = "in_stock" | "low_stock" | "out_of_stock" | "mad
 
 export interface AdminVariant {
   id: string;
+  /** Ordre de présentation/persistance dans l’éditeur de variantes. */
+  sortOrder?: number;
   sku: string;
   colorId: string;
   colorLabel: string;
