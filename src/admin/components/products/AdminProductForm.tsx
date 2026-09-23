@@ -162,13 +162,14 @@ function sanitizeVariantsForCategory(
     return variants;
   }
   const removedKeys = new Set(["accessory_finish", "diameter", "length", "pack_quantity"]);
-  return variants.map((variant) => ({
-    ...variant,
-    packQuantity: undefined,
-    options: Object.fromEntries(
+  return variants.map((variant) => {
+    const next = { ...variant };
+    delete next.packQuantity;
+    next.options = Object.fromEntries(
       Object.entries(variant.options ?? {}).filter(([key]) => !removedKeys.has(key)),
-    ),
-  }));
+    );
+    return next;
+  });
 }
 
 export function AdminProductForm({ product }: { product?: AdminProduct }) {
