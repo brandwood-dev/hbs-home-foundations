@@ -335,12 +335,53 @@ export const adminProductCategoryConfigs: Record<
   ),
 };
 
+/**
+ * Les catégories de catalogue sont éditables indépendamment de la famille
+ * métier.  Certaines sous-catégories ont donc un formulaire plus précis que
+ * la configuration par défaut de leur famille.
+ */
+export const TRINGLES_CATEGORY_SLUG = "accessoires-tringles";
+
+function normalizeCatalogSlug(value: string | undefined): string {
+  return (value ?? "")
+    .trim()
+    .toLocaleLowerCase("fr")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/_/g, "-");
+}
+
+export function isTringlesCategorySlug(categorySlug: string | undefined): boolean {
+  return normalizeCatalogSlug(categorySlug) === TRINGLES_CATEGORY_SLUG;
+}
+
+/** Configuration effective pour une famille + une sous-catégorie donnée. */
+export function adminProductConfigForCategory(
+  category: AdminProductCategoryKey,
+  categorySlug?: string,
+): AdminProductCategoryConfig {
+  const base = adminProductCategoryConfigs[category];
+  if (category !== "accessoires" || !isTringlesCategorySlug(categorySlug)) return base;
+
+  return {
+    ...base,
+    // Les données historiques peuvent rester en base, mais ne sont plus
+    // éditables ni envoyées pour les nouvelles tringles.
+    productFields: base.productFields.filter(
+      (key) => !["compatibilities", "finish", "diameter_mm"].includes(key),
+    ),
+    // Une tringle est caractérisée par son coloris et son type de fixation.
+    variantAxes: ["color", "mounting"],
+  };
+}
+
 /** Champs réellement affichés : certaines valeurs dépendent d'un autre champ. */
 export function visibleProductFields(
   category: AdminProductCategoryKey,
   values: Record<string, unknown>,
+  categorySlug?: string,
 ): AdminProductField[] {
-  const config = adminProductCategoryConfigs[category];
+  const config = adminProductConfigForCategory(category, categorySlug);
   const nature = values["plant_nature"];
   return config.productFields
     .map((key) => ADMIN_PRODUCT_FIELDS[key])

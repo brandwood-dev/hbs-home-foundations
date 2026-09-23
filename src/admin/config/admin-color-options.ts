@@ -16,6 +16,14 @@ export const DEFAULT_ADMIN_COLOR_OPTIONS: AdminColorOption[] = Object.values(COL
   }),
 );
 
+/** Coloris métier proposés exclusivement pour les tringles à rideaux. */
+export const TRINGLES_ADMIN_COLOR_OPTIONS: AdminColorOption[] = [
+  { value: "c-bronze", label: "Bronze", hex: "#8b5a3c" },
+  { value: "c-dore", label: "Doré", hex: COLORS.dore.hex },
+  { value: "c-argent", label: "Argenté", hex: COLORS.argent.hex },
+  { value: "c-noir", label: "Noir", hex: COLORS.noir.hex },
+];
+
 /**
  * Résout les choix affichés par le formulaire produit.
  *

@@ -9,6 +9,7 @@ import {
   AdminMoneyField,
   AdminMultiSelectField,
   AdminNumberField,
+  AdminRichTextField,
   AdminSelectField,
   AdminSwitchField,
 } from "@/admin/components/ui/AdminForm";
@@ -29,6 +30,8 @@ import {
   SELLING_MODE_HINTS,
   SELLING_MODE_LABELS,
   adminProductCategoryConfigs,
+  adminProductConfigForCategory,
+  isTringlesCategorySlug,
   visibleProductFields,
 } from "@/admin/config/admin-product-fields.config";
 import {
@@ -55,7 +58,10 @@ import {
   catalogFamilyOptionsForCategories,
   familyRootCategory,
 } from "@/admin/services/products/admin-product-taxonomy";
-import { resolveAdminColorOptions } from "@/admin/config/admin-color-options";
+import {
+  resolveAdminColorOptions,
+  TRINGLES_ADMIN_COLOR_OPTIONS,
+} from "@/admin/config/admin-color-options";
 import { MATERIAL_LABELS } from "@/domain/product/product.constants";
 import {
   useAdminAttributes,
@@ -130,6 +136,41 @@ function filterFieldsForCatalogCategory(
   );
 }
 
+function filterFieldsForProductConfig(
+  fields: AdminProductFormValues["fields"],
+  category: AdminProductCategoryKey,
+  categorySlug: string | undefined,
+  attributes: readonly AdminAttribute[],
+): AdminProductFormValues["fields"] {
+  const catalogFields = filterFieldsForCatalogCategory(fields, categorySlug, category, attributes);
+  const visibleStaticKeys = new Set(
+    adminProductConfigForCategory(category, categorySlug).productFields,
+  );
+  return Object.fromEntries(
+    Object.entries(catalogFields).filter(
+      ([key]) => !ADMIN_PRODUCT_FIELDS[key] || visibleStaticKeys.has(key),
+    ),
+  );
+}
+
+function sanitizeVariantsForCategory(
+  variants: AdminProductFormValues["variants"],
+  category: AdminProductCategoryKey,
+  categorySlug: string | undefined,
+): AdminProductFormValues["variants"] {
+  if (category !== "accessoires" || !isTringlesCategorySlug(categorySlug)) {
+    return variants;
+  }
+  const removedKeys = new Set(["accessory_finish", "diameter", "length", "pack_quantity"]);
+  return variants.map((variant) => ({
+    ...variant,
+    packQuantity: undefined,
+    options: Object.fromEntries(
+      Object.entries(variant.options ?? {}).filter(([key]) => !removedKeys.has(key)),
+    ),
+  }));
+}
+
 export function AdminProductForm({ product }: { product?: AdminProduct }) {
   const navigate = useNavigate();
   const { data: products = [] } = useAdminProducts();
@@ -175,7 +216,6 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     });
   }, [categories, setValues, values.category, values.categoryId]);
 
-  const config = adminProductCategoryConfigs[values.category];
   const categoryOptions = useMemo(() => {
     const options = catalogFamilyOptionsForCategories(
       categories,
@@ -190,6 +230,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     () => categories.find((category) => category.id === values.categoryId)?.slug,
     [categories, values.categoryId],
   );
+  const config = adminProductConfigForCategory(values.category, selectedCatalogCategorySlug);
   const catalogCategoryOptions = useMemo(
     () => catalogCategoryOptionsForFamily(categories, values.category, values.categoryId),
     [categories, values.category, values.categoryId],
@@ -249,7 +290,13 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           { value: "bureau", label: "Bureau" },
         ];
   }, [catalogAttributes]);
-  const colorOptions = useMemo(() => resolveAdminColorOptions(attributes), [attributes]);
+  const colorOptions = useMemo(
+    () =>
+      isTringlesCategorySlug(selectedCatalogCategorySlug)
+        ? TRINGLES_ADMIN_COLOR_OPTIONS
+        : resolveAdminColorOptions(attributes),
+    [attributes, selectedCatalogCategorySlug],
+  );
   const others = useMemo(
     () => products.filter((item) => item.id !== values.id),
     [products, values.id],
@@ -344,10 +391,23 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
   async function save(status: AdminProduct["status"]) {
     if (isSaving) return;
     setSubmitted(true);
+    const catalogCategorySlug = categories.find(
+      (category) => category.id === values.categoryId,
+    )?.slug;
     const next = {
       ...values,
       status,
-      variants: generatedVariants(values.variants, values.reference),
+      fields: filterFieldsForProductConfig(
+        values.fields,
+        values.category,
+        catalogCategorySlug,
+        attributes,
+      ),
+      variants: sanitizeVariantsForCategory(
+        generatedVariants(values.variants, values.reference),
+        values.category,
+        catalogCategorySlug,
+      ),
       seoTitle: values.seoTitle || generateProductSeo(values.name, values.shortDescription).title,
       seoDescription:
         values.seoDescription ||
@@ -436,11 +496,16 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
               patch({
                 categoryId: value,
                 ...(selected?.parentId ? { subCategoryId: value } : { subCategoryId: undefined }),
-                fields: filterFieldsForCatalogCategory(
+                fields: filterFieldsForProductConfig(
                   values.fields,
-                  categorySlug,
                   values.category,
+                  categorySlug,
                   attributes,
+                ),
+                variants: sanitizeVariantsForCategory(
+                  values.variants,
+                  values.category,
+                  categorySlug,
                 ),
               });
             }}
@@ -458,20 +523,18 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           />
         </div>
 
-        <AdminField
+        <AdminRichTextField
           label="Description courte"
           required
-          multiline
-          rows={2}
           value={values.shortDescription}
           onChange={handleShortDescriptionChange}
+          hint="Conservez les paragraphes, listes, emojis et liens : ils seront rendus sur la fiche produit."
         />
-        <AdminField
+        <AdminRichTextField
           label="Description longue"
-          multiline
-          rows={6}
           value={values.longDescription}
           onChange={(value) => patch({ longDescription: value })}
+          hint="Utilisez la barre de mise en forme pour les listes et les espacements."
         />
 
         <div className="grid gap-2 border-t border-border pt-4">
@@ -582,97 +645,99 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
       description="Ces champs système sont gérés depuis Attributs et filtres ; leurs valeurs alimentent les filtres et la fiche produit publique."
     >
       <div className="grid items-start gap-4 md:grid-cols-2">
-        {visibleProductFields(values.category, values.fields).map((field) => {
-          const raw = values.fields[field.key];
-          const definition = attributesByKey.get(field.key);
-          const definitionOptions = definition?.values
-            .filter((value) => value.isActive !== false)
-            .map((value) => ({ value: value.slug, label: value.label }));
-          const label = definition?.name ?? field.label;
-          const required = definition?.isRequired ?? config.requiredFields.includes(field.key);
-          if (field.key === "rooms") {
-            return (
-              <AdminMultiSelectField
-                key={field.key}
-                label={label}
-                value={Array.isArray(raw) ? raw : []}
-                options={roomOptions}
-                onChange={(next) => patchField(field.key, next)}
-              />
-            );
-          }
-          if (field.kind === "boolean") {
-            return (
-              <AdminSwitchField
-                key={field.key}
-                label={label}
-                {...(field.hint ? { description: field.hint } : {})}
-                checked={raw === true}
-                onChange={(checked) => patchField(field.key, checked)}
-              />
-            );
-          }
-          if (field.kind === "select") {
-            return (
-              <AdminSelectField
-                key={field.key}
-                label={label}
-                required={required}
-                value={typeof raw === "string" ? raw : ""}
-                options={
-                  field.key === "material"
-                    ? materialOptions
-                    : definitionOptions && definitionOptions.length > 0
-                      ? definitionOptions
-                      : (field.options ?? [])
-                }
-                {...(field.hint ? { hint: field.hint } : {})}
-                onChange={(value) => patchField(field.key, value)}
-              />
-            );
-          }
-          if (field.kind === "number") {
-            return (
-              <AdminNumberField
-                key={field.key}
-                label={label}
-                value={typeof raw === "number" ? raw : 0}
-                onChange={(value) => patchField(field.key, value)}
-              />
-            );
-          }
-          if (field.kind === "tags") {
+        {visibleProductFields(values.category, values.fields, selectedCatalogCategorySlug).map(
+          (field) => {
+            const raw = values.fields[field.key];
+            const definition = attributesByKey.get(field.key);
+            const definitionOptions = definition?.values
+              .filter((value) => value.isActive !== false)
+              .map((value) => ({ value: value.slug, label: value.label }));
+            const label = definition?.name ?? field.label;
+            const required = definition?.isRequired ?? config.requiredFields.includes(field.key);
+            if (field.key === "rooms") {
+              return (
+                <AdminMultiSelectField
+                  key={field.key}
+                  label={label}
+                  value={Array.isArray(raw) ? raw : []}
+                  options={roomOptions}
+                  onChange={(next) => patchField(field.key, next)}
+                />
+              );
+            }
+            if (field.kind === "boolean") {
+              return (
+                <AdminSwitchField
+                  key={field.key}
+                  label={label}
+                  {...(field.hint ? { description: field.hint } : {})}
+                  checked={raw === true}
+                  onChange={(checked) => patchField(field.key, checked)}
+                />
+              );
+            }
+            if (field.kind === "select") {
+              return (
+                <AdminSelectField
+                  key={field.key}
+                  label={label}
+                  required={required}
+                  value={typeof raw === "string" ? raw : ""}
+                  options={
+                    field.key === "material"
+                      ? materialOptions
+                      : definitionOptions && definitionOptions.length > 0
+                        ? definitionOptions
+                        : (field.options ?? [])
+                  }
+                  {...(field.hint ? { hint: field.hint } : {})}
+                  onChange={(value) => patchField(field.key, value)}
+                />
+              );
+            }
+            if (field.kind === "number") {
+              return (
+                <AdminNumberField
+                  key={field.key}
+                  label={label}
+                  value={typeof raw === "number" ? raw : 0}
+                  onChange={(value) => patchField(field.key, value)}
+                />
+              );
+            }
+            if (field.kind === "tags") {
+              return (
+                <AdminField
+                  key={field.key}
+                  label={label}
+                  hint={field.hint ?? "Séparez les valeurs par une virgule."}
+                  value={Array.isArray(raw) ? raw.join(", ") : ""}
+                  onChange={(value) =>
+                    patchField(
+                      field.key,
+                      value
+                        .split(",")
+                        .map((item) => item.trim())
+                        .filter(Boolean),
+                    )
+                  }
+                />
+              );
+            }
             return (
               <AdminField
                 key={field.key}
                 label={label}
-                hint={field.hint ?? "Séparez les valeurs par une virgule."}
-                value={Array.isArray(raw) ? raw.join(", ") : ""}
-                onChange={(value) =>
-                  patchField(
-                    field.key,
-                    value
-                      .split(",")
-                      .map((item) => item.trim())
-                      .filter(Boolean),
-                  )
-                }
+                required={required}
+                multiline={field.kind === "textarea"}
+                rows={3}
+                {...(field.hint ? { hint: field.hint } : {})}
+                value={typeof raw === "string" ? raw : ""}
+                onChange={(value) => patchField(field.key, value)}
               />
             );
-          }
-          return (
-            <AdminField
-              key={field.key}
-              label={label}
-              required={required}
-              multiline={field.kind === "textarea"}
-              rows={3}
-              {...(field.hint ? { hint: field.hint } : {})}
-              value={typeof raw === "string" ? raw : ""}
-              onChange={(value) => patchField(field.key, value)}
-            />
-          );
-        })}
+          },
+        )}
       </div>
       {dynamicAttributes.length > 0 ? (
         <div className="mt-6 grid gap-4 border-t border-border pt-5">
