@@ -55,7 +55,7 @@ type DialogState =
   | { kind: "refund" }
   | null;
 
-function OrderItemThumbnail({ src }: { src?: string }) {
+function OrderItemThumbnail({ src }: { src: string | undefined }) {
   const [failed, setFailed] = useState(false);
   const hasImage = Boolean(src?.trim()) && !failed;
 
