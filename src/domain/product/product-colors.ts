@@ -63,6 +63,13 @@ export const COLORS = {
   },
   prune: { id: "c-prune", name: "Prune", slug: "prune", family: "purple", hex: "#5F3E63" },
   dore: { id: "c-dore", name: "Doré", slug: "dore", family: "metallic", hex: "#B99B63" },
+  bronze: {
+    id: "c-bronze",
+    name: "Bronze",
+    slug: "bronze",
+    family: "metallic",
+    hex: "#8B5A3C",
+  },
   argent: { id: "c-argent", name: "Argent", slug: "argent", family: "metallic", hex: "#C9CBCC" },
   bois: {
     id: "c-bois",

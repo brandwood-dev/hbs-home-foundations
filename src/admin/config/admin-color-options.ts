@@ -8,21 +8,42 @@ export interface AdminColorOption {
 }
 
 /** Coloris standards disponibles même si l'API n'a pas encore provisionné l'attribut. */
-export const DEFAULT_ADMIN_COLOR_OPTIONS: AdminColorOption[] = Object.values(COLORS).map(
-  (color) => ({
+export const BRONZE_ADMIN_COLOR_OPTION: AdminColorOption = {
+  value: COLORS.bronze.id,
+  label: COLORS.bronze.name,
+  hex: COLORS.bronze.hex,
+};
+
+export const DEFAULT_ADMIN_COLOR_OPTIONS: AdminColorOption[] = Object.values(COLORS)
+  .filter((color) => color.id !== BRONZE_ADMIN_COLOR_OPTION.value)
+  .map((color) => ({
     value: color.id,
     label: color.name,
     hex: color.hex,
-  }),
-);
+  }));
 
 /** Coloris métier proposés exclusivement pour les tringles à rideaux. */
 export const TRINGLES_ADMIN_COLOR_OPTIONS: AdminColorOption[] = [
-  { value: "c-bronze", label: "Bronze", hex: "#8b5a3c" },
+  BRONZE_ADMIN_COLOR_OPTION,
   { value: "c-dore", label: "Doré", hex: COLORS.dore.hex },
   { value: "c-argent", label: "Argenté", hex: COLORS.argent.hex },
   { value: "c-noir", label: "Noir", hex: COLORS.noir.hex },
 ];
+
+/** Ajoute le bronze uniquement aux familles qui le proposent explicitement. */
+export function ensureBronzeAdminColorOption(
+  options: readonly AdminColorOption[],
+): AdminColorOption[] {
+  const hasBronze = options.some((option) => {
+    const token = `${option.value} ${option.label}`
+      .trim()
+      .toLocaleLowerCase("fr")
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "");
+    return token.includes("c-bronze") || token.split(/\s+/).includes("bronze");
+  });
+  return hasBronze ? [...options] : [...options, BRONZE_ADMIN_COLOR_OPTION];
+}
 
 /**
  * Résout les choix affichés par le formulaire produit.

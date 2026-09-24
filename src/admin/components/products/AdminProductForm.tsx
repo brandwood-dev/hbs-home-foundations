@@ -59,6 +59,7 @@ import {
   familyRootCategory,
 } from "@/admin/services/products/admin-product-taxonomy";
 import {
+  ensureBronzeAdminColorOption,
   resolveAdminColorOptions,
   TRINGLES_ADMIN_COLOR_OPTIONS,
 } from "@/admin/config/admin-color-options";
@@ -291,13 +292,15 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           { value: "bureau", label: "Bureau" },
         ];
   }, [catalogAttributes]);
-  const colorOptions = useMemo(
-    () =>
-      isTringlesCategorySlug(selectedCatalogCategorySlug)
-        ? TRINGLES_ADMIN_COLOR_OPTIONS
-        : resolveAdminColorOptions(attributes),
-    [attributes, selectedCatalogCategorySlug],
-  );
+  const colorOptions = useMemo(() => {
+    if (isTringlesCategorySlug(selectedCatalogCategorySlug)) {
+      return TRINGLES_ADMIN_COLOR_OPTIONS;
+    }
+    const resolved = resolveAdminColorOptions(attributes);
+    return values.category === "rideaux" || values.category === "voilages"
+      ? ensureBronzeAdminColorOption(resolved)
+      : resolved;
+  }, [attributes, selectedCatalogCategorySlug, values.category]);
   const others = useMemo(
     () => products.filter((item) => item.id !== values.id),
     [products, values.id],
