@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,8 +22,12 @@ import {
   useUpdateOrderStatus,
 } from "@/admin/hooks/admin-sales.mutations";
 import type { AdminOrder, AdminOrderStatus } from "@/admin/types/admin.types";
-import { ORDER_STATUS_LABELS, ORDER_STATUS_TONE } from "@/admin/services/order-status";
-import { getOrderActions } from "@/admin/services/orders/admin-order-transitions";
+import {
+  ORDER_STATUS_LABELS,
+  ORDER_STATUS_OPTIONS,
+  ORDER_STATUS_TONE,
+} from "@/admin/services/order-status";
+import { transitionRequiresReason } from "@/admin/services/orders/admin-order-transitions";
 import {
   PAYMENT_STATUS_LABELS,
   PAYMENT_STATUS_TONE,
@@ -68,6 +72,13 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
   const [trackingNumber, setTrackingNumber] = useState("");
   const [shippingFee, setShippingFee] = useState("");
   const [note, setNote] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState<AdminOrderStatus | "">("");
+  const orderStatus = order?.status;
+  const orderIdentifier = order?.id;
+
+  useEffect(() => {
+    if (orderStatus) setSelectedStatus(orderStatus);
+  }, [orderIdentifier, orderStatus]);
 
   if (isLoading) return <AdminSkeleton />;
   if (error) {
@@ -94,9 +105,12 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
 
   const shipment = getShipment(order);
   const total = calculateOrderTotalMinor(order);
-  const actions = getOrderActions(order);
   const paymentTransitions = getAllowedPaymentTransitions(order);
   const editable = canEditOrderDetails(order);
+  const statusOptions = ORDER_STATUS_OPTIONS.includes(order.status)
+    ? ORDER_STATUS_OPTIONS
+    : [order.status, ...ORDER_STATUS_OPTIONS];
+  const statusChanged = selectedStatus !== "" && selectedStatus !== order.status;
 
   return (
     <div className="space-y-4">
@@ -293,24 +307,43 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
           <AdminCard>
             <h2 className="mb-3 text-sm font-semibold">Actions</h2>
             <div className="flex flex-col gap-2">
-              {actions.map((action) => (
-                <Button
-                  key={action.to}
-                  size="sm"
-                  variant={action.critical ? "destructive" : "default"}
-                  onClick={() =>
-                    setDialog(
-                      action.to === "cancelled"
-                        ? { kind: "cancel" }
-                        : action.to === "return_requested"
-                          ? { kind: "return", action: "request" }
-                          : { kind: "status", status: action.to },
-                    )
-                  }
-                >
-                  {action.label}
-                </Button>
-              ))}
+              <div className="space-y-1.5">
+                <Label htmlFor="order-status">Statut de la commande</Label>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <select
+                    id="order-status"
+                    value={selectedStatus}
+                    onChange={(event) => setSelectedStatus(event.target.value as AdminOrderStatus)}
+                    className="h-10 min-w-0 flex-1 rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus:ring-2 focus:ring-ring"
+                    aria-describedby="order-status-help"
+                  >
+                    {statusOptions.map((status) => (
+                      <option key={status} value={status}>
+                        {ORDER_STATUS_LABELS[status]}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    size="sm"
+                    disabled={!statusChanged || updateStatus.isPending || cancelOrder.isPending}
+                    variant={selectedStatus === "cancelled" ? "destructive" : "default"}
+                    onClick={() => {
+                      if (!statusChanged) return;
+                      setDialog(
+                        selectedStatus === "cancelled"
+                          ? { kind: "cancel" }
+                          : { kind: "status", status: selectedStatus },
+                      );
+                    }}
+                  >
+                    Mettre à jour
+                  </Button>
+                </div>
+                <p id="order-status-help" className="text-xs text-muted-foreground">
+                  Le statut peut être corrigé à tout moment. Les retours en arrière et statuts
+                  sensibles demandent un motif conservé dans l'historique.
+                </p>
+              </div>
               {order.returnInfo?.status === "requested" ? (
                 <>
                   <Button
@@ -345,11 +378,6 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
                   Rembourser
                 </Button>
               ) : null}
-              {actions.length === 0 && paymentTransitions.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  Aucune action disponible pour ce statut.
-                </p>
-              ) : null}
             </div>
           </AdminCard>
 
@@ -382,6 +410,9 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
             : ""
         }
         confirmLabel="Confirmer"
+        requireReason={
+          dialog?.kind === "status" && transitionRequiresReason(order.status, dialog.status)
+        }
         isPending={updateStatus.isPending}
         extra={
           dialog?.kind === "status" && dialog.status === "shipped" ? (
