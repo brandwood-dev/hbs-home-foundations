@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Printer } from "lucide-react";
+import { ImageOff, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,6 +54,30 @@ type DialogState =
   | { kind: "return"; action: "request" | "accept" | "refuse" }
   | { kind: "refund" }
   | null;
+
+function OrderItemThumbnail({ src }: { src?: string }) {
+  const [failed, setFailed] = useState(false);
+  const hasImage = Boolean(src?.trim()) && !failed;
+
+  return (
+    <div
+      className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-muted/40"
+      aria-hidden="true"
+    >
+      {hasImage ? (
+        <img
+          src={src}
+          alt=""
+          loading="lazy"
+          className="size-full object-cover"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <ImageOff className="size-4 text-muted-foreground" />
+      )}
+    </div>
+  );
+}
 
 export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
   const { data: order, isLoading, error, refetch } = useAdminOrder(orderId);
@@ -150,7 +174,7 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
           <AdminCard>
             <h2 className="mb-3 text-sm font-semibold">Articles</h2>
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[560px] text-sm">
+              <table className="w-full min-w-[600px] text-sm">
                 <thead>
                   <tr className="border-b border-border text-left text-xs text-muted-foreground uppercase">
                     <th className="py-2">Produit</th>
@@ -167,11 +191,16 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
                       className="border-b border-border last:border-0"
                     >
                       <td className="py-2">
-                        <p className="font-medium">{item.productName}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {item.selectedOptions?.map((option) => option.value).join(" · ") ||
-                            item.variantLabel}
-                        </p>
+                        <div className="flex min-w-0 items-center gap-3">
+                          <OrderItemThumbnail src={item.imageUrl} />
+                          <div className="min-w-0">
+                            <p className="font-medium">{item.productName}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {item.selectedOptions?.map((option) => option.value).join(" · ") ||
+                                item.variantLabel}
+                            </p>
+                          </div>
+                        </div>
                       </td>
                       <td className="py-2 text-xs">{item.sku}</td>
                       <td className="py-2 text-right tabular-nums">{item.quantity}</td>
