@@ -5,7 +5,6 @@ import {
   canConfirmWithoutShippingFee,
   isShippingToConfirm,
 } from "@/admin/services/orders/admin-order-shipping";
-import { getShipment } from "@/admin/services/orders/admin-order-shipping";
 
 export const ORDER_NOTE_MAX_LENGTH = 1000;
 
@@ -34,23 +33,19 @@ export function assertStatusTransition(
   if (transitionRequiresReason(order.status, next) && !reason?.trim()) {
     throw new Error("Un motif est obligatoire pour cette transition.");
   }
-  if (next === "confirmed" && isShippingToConfirm(order) && !canConfirmWithoutShippingFee(order)) {
+  if (
+    next === "confirmed" &&
+    order.status === "pending_confirmation" &&
+    isShippingToConfirm(order) &&
+    !canConfirmWithoutShippingFee(order)
+  ) {
     throw new Error(
       "Les frais de livraison doivent être définis avant de confirmer cette commande.",
     );
   }
-  if (next === "shipped" && order.status !== "preparing") {
-    throw new Error("La commande doit être en préparation avant d'être expédiée.");
-  }
-  if (next === "delivered" && order.status === "preparing") {
-    if (order.deliveryMethod !== "store_pickup") {
-      throw new Error("Une commande doit être expédiée avant d'être livrée.");
-    }
-  }
-  if (next === "delivered" && order.status === "shipped" && !getShipment(order).shippedAt) {
-    // Tolérance : les commandes de démonstration expédiées avant Admin 3
-    // n'ont pas de date d'expédition. Aucune erreur bloquante.
-  }
+  // Les corrections de statut sont permises à tout moment. Les informations
+  // transport/livraison restent enrichies lorsqu'elles sont disponibles, mais
+  // ne bloquent pas une correction administrative tracée.
 }
 
 const TUNISIAN_PHONE = /^(?:\+216)?[2-59]\d{7}$/;

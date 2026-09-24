@@ -4,6 +4,7 @@ import {
   ORDER_STATUS_TONE,
   allowedTransitions,
   canTransition,
+  transitionRequiresReason,
   transitionError,
 } from "@/admin/services/order-status";
 
@@ -20,13 +21,7 @@ export function isTerminalStatus(status: AdminOrderStatus): boolean {
 }
 
 /** Transitions exigeant un motif explicite. */
-export function transitionRequiresReason(from: AdminOrderStatus, to: AdminOrderStatus): boolean {
-  if (to === "cancelled") return true;
-  if (to === "return_requested") return true;
-  if (to === "returned") return true;
-  if (from === "return_requested" && to === "delivered") return true;
-  return false;
-}
+export { transitionRequiresReason };
 
 export interface TransitionAction {
   to: AdminOrderStatus;
