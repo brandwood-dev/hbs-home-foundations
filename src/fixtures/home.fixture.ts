@@ -11,6 +11,10 @@ import catVelours from "@/assets/catalog/rideau-velours.jpg";
 import catLin from "@/assets/catalog/rideau-lin.jpg";
 import catOccultant from "@/assets/catalog/rideau-occultant.jpg";
 import catJacquard from "@/assets/catalog/rideau-jacquard.jpg";
+import needsLight from "@/assets/needs/needs-light.png";
+import needsPrivacy from "@/assets/needs/needs-privacy.png";
+import needsSatin from "@/assets/needs/needs-satin.png";
+import needsVelours from "@/assets/needs/needs-velours.png";
 import textureVelours from "@/assets/product/texture-velours.jpg";
 import type {
   AccessoriesEditorialContent,
@@ -178,29 +182,29 @@ export const shopByNeed: ShopByNeedContent = {
       id: "light",
       title: "Faire entrer la lumière",
       text: "Des voilages légers pour préserver la luminosité naturelle.",
-      href: "/voilages",
-      image: { src: colVoilages, alt: "Voilage léger laissant passer la lumière du jour" },
+      href: "/rideaux-voilages/voilages",
+      image: { src: needsLight, alt: "Voilages blancs laissant entrer la lumière dans un salon" },
     },
     {
       id: "privacy",
       title: "Préserver son intimité",
       text: "Des rideaux tamisants pour adoucir la lumière sans assombrir la pièce.",
-      href: "/rideaux/tamisants",
-      image: { src: catLin, alt: "Rideau tamisant en lin devant une fenêtre de salon" },
+      href: "/rideaux-voilages/rideaux-lins",
+      image: { src: needsPrivacy, alt: "Rideaux en lin beige dans un salon lumineux" },
     },
     {
       id: "blackout",
       title: "Dormir dans l'obscurité",
       text: "Des rideaux occultants pour limiter efficacement la lumière extérieure.",
-      href: "/rideaux/occultants",
-      image: { src: catOccultant, alt: "Rideau occultant sombre dans une chambre" },
+      href: "/rideaux-voilages/rideaux-satins",
+      image: { src: needsSatin, alt: "Rideaux satin marron dans une chambre élégante" },
     },
     {
       id: "comfort",
       title: "Améliorer le confort",
       text: "Des tissus épais et thermiques pour créer un intérieur plus confortable.",
-      href: "/rideaux/thermiques",
-      image: { src: catJacquard, alt: "Rideau épais en jacquard près d'une fenêtre" },
+      href: "/rideaux-voilages/rideaux-velours",
+      image: { src: needsVelours, alt: "Rideaux velours bordeaux dans un salon chaleureux" },
     },
   ],
 };
