@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/accordion";
 import {
   FURNITURE_ASSEMBLY_LABELS,
-  FURNITURE_ROOM_LABELS,
   FURNITURE_STYLE_LABELS,
   FURNITURE_TYPE_LABELS,
   MATERIAL_LABELS,
