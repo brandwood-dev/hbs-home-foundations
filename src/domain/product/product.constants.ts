@@ -24,6 +24,7 @@ import type {
   ProductMaterial,
   ProductPattern,
   FurnitureAssembly,
+  FurnitureOrientation,
   FurnitureRoom,
   FurnitureStyle,
   FurnitureType,
@@ -380,6 +381,12 @@ export const FURNITURE_ASSEMBLY_LABELS: Record<FurnitureAssembly, string> = {
   livre_monte: "Livré monté",
   montage_simple: "Montage simple",
   montage_requis: "Montage requis",
+};
+
+export const FURNITURE_ORIENTATION_LABELS: Record<FurnitureOrientation, string> = {
+  gauche: "Angle gauche",
+  droite: "Angle droite",
+  reversible: "Réversible",
 };
 
 export const PLANT_NATURE_LABELS: Record<PlantNature, string> = {

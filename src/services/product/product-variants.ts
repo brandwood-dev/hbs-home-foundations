@@ -12,6 +12,7 @@ import type {
   EyeletColor,
   Product,
   ProductVariant,
+  FurnitureOrientation,
 } from "@/domain/product/product.types";
 import { sortVariantsByDimensions } from "@/domain/product/variant-order";
 
@@ -35,6 +36,7 @@ export interface VariantSelection {
   chairPadFastening?: ChairPadFastening | undefined;
   accessoryFinish?: AccessoryFinish | undefined;
   accessoryMountingType?: AccessoryMountingType | undefined;
+  orientation?: FurnitureOrientation | undefined;
 }
 
 export type VariantAxis = keyof VariantSelection;
@@ -53,6 +55,7 @@ export const VARIANT_AXES: VariantAxis[] = [
   "chairPadFastening",
   "accessoryFinish",
   "accessoryMountingType",
+  "orientation",
 ];
 
 export function sizeKeyOf(variant: ProductVariant): string {
@@ -80,6 +83,7 @@ export function selectionOf(variant: ProductVariant): VariantSelection {
     chairPadFastening: variant.chairPadFastening,
     accessoryFinish: variant.accessoryFinish,
     accessoryMountingType: variant.accessoryMountingType,
+    orientation: variant.orientation,
   };
 }
 

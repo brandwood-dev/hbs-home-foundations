@@ -140,6 +140,9 @@ export type FurnitureStyle =
 
 export type FurnitureAssembly = "livre_monte" | "montage_simple" | "montage_requis";
 
+/** Orientation d'une variante de mobilier (ex. méridienne gauche/droite). */
+export type FurnitureOrientation = "gauche" | "droite" | "reversible";
+
 /** Plantes et décoration végétale. */
 export type PlantNature = "artificielle" | "naturelle" | "stabilisee";
 
@@ -276,6 +279,7 @@ export interface ProductVariant {
   /** Axes mobilier. */
   depthCm?: number;
   seatCount?: number;
+  orientation?: FurnitureOrientation;
   /** Axes plantes : hauteur du sujet et diamètre du pot livré. */
   plantHeightCm?: number;
   potDiameterCm?: number;

@@ -13,6 +13,7 @@ import {
   EYELET_COLOR_SWATCHES,
   HEADER_DESCRIPTIONS,
   HEADER_LABELS,
+  FURNITURE_ORIENTATION_LABELS,
   LINING_DESCRIPTIONS,
   LINING_LABELS,
 } from "@/domain/product/product.constants";
@@ -26,6 +27,7 @@ import type {
   CurtainHeader,
   CurtainLining,
   EyeletColor,
+  FurnitureOrientation,
   Product,
   ProductVariant,
 } from "@/domain/product/product.types";
@@ -90,6 +92,7 @@ export function ProductVariantSelectors({
     "accessoryMountingType",
     selection,
   );
+  const orientationOptions = getAxisOptions(product.variants, "orientation", selection);
 
   const sizeLabels = new Map<string, string>();
   for (const item of product.variants) {
@@ -98,6 +101,7 @@ export function ProductVariantSelectors({
   const labelForSize = (key: string) => sizeLabels.get(key) ?? `${key.replace("x", " × ")} cm`;
   const confectionOptions = confectionOptionsFor(product.category, product.confectionOptions);
   const showConfection = isCurtainFamily(product.category) && confectionOptions.length > 0;
+  const isFurniture = product.category === "mobilier_interieur";
 
   const activeColor = product.colors.find((color) => color.id === variant.colorId);
   const sizeFieldLabel =
@@ -108,6 +112,7 @@ export function ProductVariantSelectors({
         : product.category === "coussins" || product.category === "galettes_de_chaise"
           ? "Format"
           : "Dimensions (l × h)";
+  const dimensionsLabel = variant.sizeLabel ?? `${variant.widthCm} × ${variant.heightCm} cm`;
 
   return (
     <div className="space-y-6">
@@ -145,6 +150,36 @@ export function ProductVariantSelectors({
           })}
         </div>
       </fieldset>
+
+      {orientationOptions.length > 1 && (
+        <fieldset>
+          <Legend
+            label="Orientation"
+            value={
+              variant.orientation
+                ? FURNITURE_ORIENTATION_LABELS[variant.orientation]
+                : "Choisissez une orientation"
+            }
+          />
+          <div className="mt-2 flex flex-wrap gap-2">
+            {orientationOptions.map((option) => {
+              const value = option.value as FurnitureOrientation;
+              const selected = value === variant.orientation;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onChange("orientation", value)}
+                  aria-pressed={selected}
+                  className={optionClass(selected, option.available)}
+                >
+                  {FURNITURE_ORIENTATION_LABELS[value] ?? value}
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+      )}
 
       {showConfection && onConfectionChange ? (
         <fieldset>
@@ -194,25 +229,29 @@ export function ProductVariantSelectors({
         </fieldset>
       ) : null}
 
-      <fieldset>
-        <Legend
-          label={sizeFieldLabel}
-          value={variant.sizeLabel ?? `${variant.widthCm} × ${variant.heightCm} cm`}
-        />
-        <div className="mt-2 flex flex-wrap gap-2">
-          {sizeOptions.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => onChange("sizeKey", option.value)}
-              aria-pressed={option.value === sizeKeyOf(variant)}
-              className={optionClass(option.value === sizeKeyOf(variant), option.available)}
-            >
-              {labelForSize(option.value)}
-            </button>
-          ))}
+      {isFurniture && sizeOptions.length <= 1 ? (
+        <div>
+          <Legend label={sizeFieldLabel} value={dimensionsLabel} />
+          <p className="mt-2 text-sm text-foreground-muted">Dimensions fixes pour ce modèle.</p>
         </div>
-      </fieldset>
+      ) : (
+        <fieldset>
+          <Legend label={sizeFieldLabel} value={dimensionsLabel} />
+          <div className="mt-2 flex flex-wrap gap-2">
+            {sizeOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => onChange("sizeKey", option.value)}
+                aria-pressed={option.value === sizeKeyOf(variant)}
+                className={optionClass(option.value === sizeKeyOf(variant), option.available)}
+              >
+                {labelForSize(option.value)}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      )}
 
       {contentOptions.length > 1 && variant.cushionContent && (
         <fieldset>
