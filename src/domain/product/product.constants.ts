@@ -162,6 +162,28 @@ export const SELLING_MODE_LABELS: Record<CurtainSellingMode, string> = {
   ready_made: "Prêt à poser",
 };
 
+/**
+ * Libellés affichables pour les modes de vente renvoyés par l'API.
+ *
+ * Le catalogue public utilise quatre modes historiques, tandis que les
+ * commandes peuvent aussi contenir les modes administratifs et des valeurs
+ * legacy (`piece`, `panel`). On garde les codes stables dans les payloads et
+ * on traduit uniquement au dernier moment, avant le rendu utilisateur.
+ */
+export const SELLING_MODE_VALUE_LABELS: Readonly<Record<string, string>> = {
+  ...SELLING_MODE_LABELS,
+  per_meter: "Au mètre",
+  custom_quote: "Sur devis",
+  accessory: "Accessoire",
+  piece: "Pièce",
+  panel: "Panneau",
+};
+
+export function getSellingModeLabel(value: string | null | undefined): string {
+  if (!value) return "";
+  return SELLING_MODE_VALUE_LABELS[value] ?? value;
+}
+
 export const AVAILABILITY_LABELS: Record<ProductAvailability, string> = {
   in_stock: "En stock",
   low_stock: "Faible stock",

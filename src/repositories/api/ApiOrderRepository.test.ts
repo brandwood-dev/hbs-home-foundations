@@ -83,6 +83,7 @@ describe("ApiOrderRepository", () => {
     expect(order.items[0]).toMatchObject({
       imageUrl: "https://cdn.example.test/rideau.jpg",
       imageAlt: "Rideau lin naturel",
+      sellingUnitLabel: "Pièce",
     });
     expect(order.isDemo).toBe(false);
   });

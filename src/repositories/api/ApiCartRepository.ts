@@ -1,4 +1,5 @@
 import type { Cart, CartItemStatus, ResolvedCartItem } from "@/domain/cart/cart.types";
+import { getSellingModeLabel } from "@/domain/product/product.constants";
 import type {
   ProductAvailability,
   ProductCategory,
@@ -145,7 +146,7 @@ function mapCart(response: ApiCartResponse): Cart {
       ...(item.widthCm !== null ? { widthCm: item.widthCm } : {}),
       ...(item.heightCm !== null ? { heightCm: item.heightCm } : {}),
       ...(item.selectedOptions.length > 0 ? { selectedOptions: item.selectedOptions } : {}),
-      sellingUnitLabel: item.sellingUnitLabel,
+      sellingUnitLabel: getSellingModeLabel(item.sellingUnitLabel),
       ...(profile ? { shippingProfile: profile } : {}),
       availability: availability(item.availability),
       availableQuantity: item.availableQuantity,

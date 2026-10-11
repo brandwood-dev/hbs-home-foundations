@@ -1,6 +1,7 @@
 import type { components } from "@/api/generated/hbs-home-api";
 import { HbsApiClient, HbsApiError } from "@/api/client";
 import type { ProductCategory, ShippingProfile } from "@/domain/product/product.types";
+import { getSellingModeLabel } from "@/domain/product/product.constants";
 import type { OrderTrackingResult } from "@/domain/order/order-tracking.types";
 import type { Order, OrderItemSnapshot } from "@/domain/order/order.types";
 import { OrderError, type OrderErrorCode } from "@/domain/order/order.errors";
@@ -57,7 +58,7 @@ function mapItem(item: ApiOrder["items"][number]): OrderItemSnapshot {
     ...(item.eyeletColorLabel ? { eyeletColorLabel: item.eyeletColorLabel } : {}),
     ...(item.liningLabel ? { liningLabel: item.liningLabel } : {}),
     ...(item.selectedOptions.length > 0 ? { selectedOptions: item.selectedOptions } : {}),
-    sellingUnitLabel: item.sellingUnitLabel,
+    sellingUnitLabel: getSellingModeLabel(item.sellingUnitLabel),
     ...(profile ? { shippingProfile: profile } : {}),
     quantity: item.quantity,
     unitPriceMinor: item.unitPriceMinor,
