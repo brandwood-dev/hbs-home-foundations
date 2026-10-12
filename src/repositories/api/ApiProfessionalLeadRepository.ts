@@ -14,13 +14,11 @@ type ApiProfessionalLeadResponse = {
 export class ApiProfessionalLeadRepository implements ProfessionalLeadRepository {
   constructor(private readonly client = new HbsApiClient()) {}
 
-  async submit(
-    request: ProfessionalLeadRequest,
-  ): Promise<ProfessionalLeadSubmissionResult> {
-    const response = await this.client.post<ApiProfessionalLeadResponse>(
-      "/api/v1/custom-quotes",
-      { requestType: "professionnels", ...request },
-    );
+  async submit(request: ProfessionalLeadRequest): Promise<ProfessionalLeadSubmissionResult> {
+    const response = await this.client.post<ApiProfessionalLeadResponse>("/api/v1/custom-quotes", {
+      requestType: "professionnels",
+      ...request,
+    });
     return {
       reference: response.reference,
       submittedAt: response.createdAt,

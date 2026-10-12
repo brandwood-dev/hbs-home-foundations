@@ -99,12 +99,8 @@ describe("admin mobilier fields", () => {
 
   it("also suppresses legacy furniture attributes returned by the catalogue", () => {
     expect(isAdminAttributeEnabledForCategory("mobilier_interieur", "depth_cm")).toBe(false);
-    expect(isAdminAttributeEnabledForCategory("mobilier_interieur", "package_count")).toBe(
-      false,
-    );
-    expect(isAdminAttributeEnabledForCategory("mobilier_interieur", "frame_material")).toBe(
-      true,
-    );
+    expect(isAdminAttributeEnabledForCategory("mobilier_interieur", "package_count")).toBe(false);
+    expect(isAdminAttributeEnabledForCategory("mobilier_interieur", "frame_material")).toBe(true);
     expect(isAdminAttributeEnabledForCategory("rideaux", "depth_cm")).toBe(true);
   });
 });

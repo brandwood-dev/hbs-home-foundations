@@ -65,10 +65,7 @@ import {
   resolveAdminColorOptions,
   TRINGLES_ADMIN_COLOR_OPTIONS,
 } from "@/admin/config/admin-color-options";
-import {
-  FURNITURE_ROOM_LABELS,
-  MATERIAL_LABELS,
-} from "@/domain/product/product.constants";
+import { FURNITURE_ROOM_LABELS, MATERIAL_LABELS } from "@/domain/product/product.constants";
 import {
   useAdminAttributes,
   useAdminCategories,
@@ -114,9 +111,7 @@ function validatePublicationWithAttributes(
 ) {
   const issues = validateProductForPublication(formToProductDraft(values));
   const requiredAttributeKeys = new Set(
-    catalogAttributes
-      .filter((attribute) => attribute.isRequired)
-      .map((attribute) => attribute.key),
+    catalogAttributes.filter((attribute) => attribute.isRequired).map((attribute) => attribute.key),
   );
   for (const attribute of catalogAttributes) {
     if (attribute.isRequired && !hasProductAttributeValue(values.fields[attribute.key])) {
@@ -278,9 +273,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
                 categorySlug === selectedCatalogCategorySlug || categorySlug === values.category,
             ),
         )
-        .filter((attribute) =>
-          isAdminAttributeEnabledForCategory(values.category, attribute.key),
-        )
+        .filter((attribute) => isAdminAttributeEnabledForCategory(values.category, attribute.key))
         .sort((left, right) => left.order - right.order || left.name.localeCompare(right.name)),
     [attributes, selectedCatalogCategorySlug, values.category],
   );
@@ -355,10 +348,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     setValues((current) => ({ ...current, ...next }));
   }
 
-  function patchField(
-    key: string,
-    value: string | number | boolean | string[] | undefined,
-  ) {
+  function patchField(key: string, value: string | number | boolean | string[] | undefined) {
     setDirty(true);
     setValues((current) => {
       const fields = { ...current.fields };
@@ -702,7 +692,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
     const definitionOptions = definition?.values
       .filter((value) => value.isActive !== false)
       .map((value) => ({ value: value.slug, label: value.label }));
-    const label = field.key === "material" ? field.label : definition?.name ?? field.label;
+    const label = field.key === "material" ? field.label : (definition?.name ?? field.label);
     const required = definition?.isRequired === true || config.requiredFields.includes(field.key);
     if (field.key === "rooms") {
       return (
@@ -810,7 +800,9 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
       <div className="grid gap-7">
         <div>
           <h3 className="mb-3 text-sm font-semibold">Informations produit</h3>
-          <div className="grid items-start gap-4 md:grid-cols-2">{coreFields.map(renderSpecificField)}</div>
+          <div className="grid items-start gap-4 md:grid-cols-2">
+            {coreFields.map(renderSpecificField)}
+          </div>
         </div>
         {advancedFields.length > 0 ? (
           <div className="border-t border-border pt-5">
@@ -902,8 +894,8 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
         />
       );
     }
-            if (attribute.fieldType === "number" || attribute.fieldType === "measurement") {
-              return (
+    if (attribute.fieldType === "number" || attribute.fieldType === "measurement") {
+      return (
         <AdminOptionalNumberField
           key={attribute.id}
           label={required ? `${attribute.name} *` : attribute.name}

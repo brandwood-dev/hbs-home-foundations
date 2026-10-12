@@ -248,7 +248,10 @@ export function useAdminCustomQuotes(
 ) {
   return useAdminQuery(
     clientQuery([...adminKeys.customQuotes(), "list", params, search ?? ""], () =>
-      adminRepositories.customQuotes.list({ ...params, ...(search?.trim() ? { query: search } : {}) }),
+      adminRepositories.customQuotes.list({
+        ...params,
+        ...(search?.trim() ? { query: search } : {}),
+      }),
     ),
   );
 }

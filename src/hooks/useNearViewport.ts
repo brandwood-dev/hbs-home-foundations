@@ -7,10 +7,7 @@ import { useEffect, useState, type RefObject } from "react";
  * l'hydratation. Les navigateurs sans IntersectionObserver chargent le contenu
  * immédiatement, ce qui garantit la compatibilité et l'accessibilité.
  */
-export function useNearViewport(
-  ref: RefObject<Element | null>,
-  rootMargin = "800px 0px",
-): boolean {
+export function useNearViewport(ref: RefObject<Element | null>, rootMargin = "800px 0px"): boolean {
   const [isNearViewport, setIsNearViewport] = useState(false);
 
   useEffect(() => {
