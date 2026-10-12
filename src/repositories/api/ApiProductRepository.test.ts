@@ -89,7 +89,6 @@ describe("public catalogue API adapter", () => {
 
     expect(mapped.variants.map((variant) => variant.orientation)).toEqual(["gauche", "droite"]);
   });
-
   it("normalizes the editable Rideaux & Voilages root to the curtain family", () => {
     const mapped = mapProduct({ ...apiProduct, category: "rideaux-voilages" });
 

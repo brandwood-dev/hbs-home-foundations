@@ -286,6 +286,15 @@ export function ProductDetailsAccordion({
         </AccordionItem>
       ) : null}
 
+      {details.recommendedRooms && details.recommendedRooms.length > 0 ? (
+        <AccordionItem value="rooms">
+          <AccordionTrigger className="text-base">Pièces recommandées</AccordionTrigger>
+          <AccordionContent>
+            <List items={details.recommendedRooms} />
+          </AccordionContent>
+        </AccordionItem>
+      ) : null}
+
       {details.installationNotes.length > 0 ? (
         <AccordionItem value="install">
           <AccordionTrigger className="text-base">Pose et mesures</AccordionTrigger>
