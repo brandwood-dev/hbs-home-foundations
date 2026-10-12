@@ -2,6 +2,7 @@ import type { GlobalSearchParams } from "@/domain/search/search.types";
 
 export const searchQueryKeys = {
   all: ["search"] as const,
+  popular: () => ["search", "popular"] as const,
   suggestions: (query: string) => ["search", "suggestions", query] as const,
   results: (params: GlobalSearchParams) =>
     [

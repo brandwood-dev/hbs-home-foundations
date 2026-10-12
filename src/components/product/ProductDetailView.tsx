@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CatalogBreadcrumbs } from "@/components/catalog/CatalogBreadcrumbs";
 import { ProductDetailsAccordion } from "@/components/product/ProductDetailsAccordion";
@@ -33,6 +33,9 @@ import {
 import { ProductVariantSelectors } from "@/components/product/ProductVariantSelectors";
 import { buildProductJsonLd } from "@/services/product/product.structured-data";
 import { getProductTaxonomyPath } from "@/services/product/product-breadcrumbs";
+import { RichTextRenderer } from "@/lib/content/rich-text";
+import { trackEvent } from "@/lib/analytics/analytics";
+import { getMetaTrackingConsent, META_CONSENT_EVENT } from "@/lib/analytics/consent";
 
 export function ProductDetailView({ product }: { product: Product }) {
   const [variant, setVariant] = useState(() => getInitialVariant(product));
@@ -41,6 +44,10 @@ export function ProductDetailView({ product }: { product: Product }) {
     return initial ?? confectionOptionsFor(product.category, product.confectionOptions)[0]?.key;
   });
   const [quantity, setQuantity] = useState(1);
+  // A product can render before the visitor makes a privacy choice. Keep the
+  // consent state in the dependency list so accepting the banner replays the
+  // ViewContent event for the product that is already visible.
+  const [metaConsent, setMetaConsent] = useState(() => getMetaTrackingConsent());
 
   const related = useQuery(relatedProductsQuery(product.slug, 4));
   const fallbackGroup = getCatalogGroup(product.category);
@@ -75,6 +82,31 @@ export function ProductDetailView({ product }: { product: Product }) {
   };
 
   const jsonLd = useMemo(() => buildProductJsonLd(product), [product]);
+
+  useEffect(() => {
+    const onConsent = () => setMetaConsent(getMetaTrackingConsent());
+    window.addEventListener(META_CONSENT_EVENT, onConsent);
+    return () => window.removeEventListener(META_CONSENT_EVENT, onConsent);
+  }, []);
+
+  useEffect(() => {
+    trackEvent("view_content", {
+      content_ids: [variant.sku],
+      contents: [{ id: variant.sku, quantity: 1 }],
+      content_name: product.name,
+      content_category: product.category,
+      content_type: "product",
+      value: variant.price.amountMinor / 1000,
+      currency: "TND",
+    });
+  }, [
+    metaConsent,
+    product.category,
+    product.name,
+    product.id,
+    variant.price.amountMinor,
+    variant.sku,
+  ]);
 
   return (
     <SiteLayout>
@@ -118,7 +150,10 @@ export function ProductDetailView({ product }: { product: Product }) {
               <div className="mt-2">
                 <ProductAvailabilityBadge variant={variant} />
               </div>
-              <p className="mt-2 text-sm text-foreground-muted">{product.shortDescription}</p>
+              <RichTextRenderer
+                value={product.shortDescription}
+                className="mt-2 text-sm text-foreground-muted"
+              />
               <p className="mt-1 text-xs text-foreground-muted">Référence {variant.sku}</p>
             </header>
 

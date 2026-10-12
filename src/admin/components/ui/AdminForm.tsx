@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { formatMoney } from "@/lib/money/money";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import type { AdminColorOption } from "@/admin/config/admin-color-options";
 
 export function AdminFormSection({
@@ -135,6 +136,34 @@ export function AdminField({
           onChange={(event) => onChange(event.target.value)}
         />
       )}
+    </FieldWrapper>
+  );
+}
+
+/** Éditeur riche contrôlé, partagé par les contenus produits et éditoriaux. */
+export function AdminRichTextField({
+  value,
+  onChange,
+  placeholder,
+  disabled,
+  ...base
+}: BaseFieldProps & {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
+}) {
+  const id = useId();
+  return (
+    <FieldWrapper {...base} id={id}>
+      <RichTextEditor
+        id={id}
+        value={value}
+        onChange={onChange}
+        {...(placeholder ? { placeholder } : {})}
+        {...(disabled === undefined ? {} : { disabled })}
+        {...(base.error ? { className: "border-red-600" } : {})}
+      />
     </FieldWrapper>
   );
 }
@@ -380,6 +409,42 @@ export function AdminNumberField({
         disabled={disabled}
         className="h-10 bg-background"
         onChange={(event) => onChange(Number(event.target.value))}
+      />
+    </FieldWrapper>
+  );
+}
+
+/** Champ numérique optionnel : vide tant qu'aucune valeur n'est renseignée. */
+export function AdminOptionalNumberField({
+  value,
+  onChange,
+  min = 0,
+  placeholder = "—",
+  disabled,
+  ...base
+}: BaseFieldProps & {
+  value: number | undefined;
+  onChange: (value: number | undefined) => void;
+  min?: number;
+  placeholder?: string;
+  disabled?: boolean;
+}) {
+  const id = useId();
+  return (
+    <FieldWrapper {...base} id={id}>
+      <Input
+        id={id}
+        type="number"
+        min={min}
+        value={typeof value === "number" && Number.isFinite(value) ? value : ""}
+        placeholder={placeholder}
+        disabled={disabled}
+        className="h-10 bg-background"
+        aria-invalid={Boolean(base.error)}
+        onChange={(event) => {
+          const raw = event.target.value.trim();
+          onChange(raw === "" ? undefined : Number(raw));
+        }}
       />
     </FieldWrapper>
   );

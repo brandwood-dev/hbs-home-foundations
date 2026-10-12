@@ -77,6 +77,18 @@ describe("public catalogue API adapter", () => {
     expect(mapped.variants.map((variant) => variant.widthCm)).toEqual([150, 300, 600]);
   });
 
+  it("maps furniture orientation variants from the public API", () => {
+    const mapped = mapProduct({
+      ...apiProduct,
+      category: "mobilier_interieur",
+      variants: [
+        { ...apiProduct.variants[0]!, orientation: "gauche" },
+        { ...apiProduct.variants[0]!, id: "variant-2", orientation: "droite" },
+      ],
+    });
+
+    expect(mapped.variants.map((variant) => variant.orientation)).toEqual(["gauche", "droite"]);
+  });
   it("normalizes the editable Rideaux & Voilages root to the curtain family", () => {
     const mapped = mapProduct({ ...apiProduct, category: "rideaux-voilages" });
 

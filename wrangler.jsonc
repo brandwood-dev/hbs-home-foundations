@@ -26,5 +26,8 @@
   ],
   "vars": {
     "APP_ENVIRONMENT": "staging",
+    "BREVO_NEWSLETTER_LIST_ID": "3",
+    "BREVO_CLIENTS_LIST_ID": "4",
+    "BREVO_MESSAGING_LIST_ID": "5",
   },
 }

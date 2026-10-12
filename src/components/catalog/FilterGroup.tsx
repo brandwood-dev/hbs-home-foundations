@@ -22,7 +22,7 @@ export function FilterGroup({
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className="flex min-h-11 w-full items-center justify-between text-left text-sm font-medium"
+        className="flex min-h-11 w-full items-center justify-between text-left text-sm font-medium transition-colors hover:text-accent-dark"
       >
         <span className="flex items-center gap-2">
           {title}
@@ -33,11 +33,11 @@ export function FilterGroup({
           )}
         </span>
         <ChevronDown
-          className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
           aria-hidden="true"
         />
       </button>
-      {open && <div className="pb-2 pt-1">{children}</div>}
+      {open && <div className="filter-group-content pb-2 pt-1">{children}</div>}
     </div>
   );
 }

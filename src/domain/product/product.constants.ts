@@ -24,6 +24,7 @@ import type {
   ProductMaterial,
   ProductPattern,
   FurnitureAssembly,
+  FurnitureOrientation,
   FurnitureRoom,
   FurnitureStyle,
   FurnitureType,
@@ -160,6 +161,28 @@ export const SELLING_MODE_LABELS: Record<CurtainSellingMode, string> = {
   pack: "Pack",
   ready_made: "Prêt à poser",
 };
+
+/**
+ * Libellés affichables pour les modes de vente renvoyés par l'API.
+ *
+ * Le catalogue public utilise quatre modes historiques, tandis que les
+ * commandes peuvent aussi contenir les modes administratifs et des valeurs
+ * legacy (`piece`, `panel`). On garde les codes stables dans les payloads et
+ * on traduit uniquement au dernier moment, avant le rendu utilisateur.
+ */
+export const SELLING_MODE_VALUE_LABELS: Readonly<Record<string, string>> = {
+  ...SELLING_MODE_LABELS,
+  per_meter: "Au mètre",
+  custom_quote: "Sur devis",
+  accessory: "Accessoire",
+  piece: "Pièce",
+  panel: "Panneau",
+};
+
+export function getSellingModeLabel(value: string | null | undefined): string {
+  if (!value) return "";
+  return SELLING_MODE_VALUE_LABELS[value] ?? value;
+}
 
 export const AVAILABILITY_LABELS: Record<ProductAvailability, string> = {
   in_stock: "En stock",
@@ -380,6 +403,12 @@ export const FURNITURE_ASSEMBLY_LABELS: Record<FurnitureAssembly, string> = {
   livre_monte: "Livré monté",
   montage_simple: "Montage simple",
   montage_requis: "Montage requis",
+};
+
+export const FURNITURE_ORIENTATION_LABELS: Record<FurnitureOrientation, string> = {
+  gauche: "Angle gauche",
+  droite: "Angle droite",
+  reversible: "Réversible",
 };
 
 export const PLANT_NATURE_LABELS: Record<PlantNature, string> = {

@@ -42,6 +42,8 @@ export const adminKeys = {
   settings: () => ["admin", "settings"] as const,
   users: () => ["admin", "users"] as const,
   audit: () => ["admin", "audit"] as const,
+  customQuotes: () => ["admin", "custom-quotes"] as const,
+  customQuote: (id: string) => ["admin", "custom-quotes", id] as const,
 };
 
 /**
@@ -236,6 +238,27 @@ export function useAdminCustomers(params: AdminCustomerListParams, search?: stri
 export function useAdminCustomer(id: string) {
   return useAdminQuery({
     ...clientQuery(adminKeys.customer(id), () => adminRepositories.customers.getById(id)),
+    enabled: Boolean(id),
+  });
+}
+
+export function useAdminCustomQuotes(
+  params: import("@/admin/repositories/interfaces").AdminCustomQuoteListParams,
+  search?: string,
+) {
+  return useAdminQuery(
+    clientQuery([...adminKeys.customQuotes(), "list", params, search ?? ""], () =>
+      adminRepositories.customQuotes.list({
+        ...params,
+        ...(search?.trim() ? { query: search } : {}),
+      }),
+    ),
+  );
+}
+
+export function useAdminCustomQuote(id: string) {
+  return useAdminQuery({
+    ...clientQuery(adminKeys.customQuote(id), () => adminRepositories.customQuotes.getById(id)),
     enabled: Boolean(id),
   });
 }

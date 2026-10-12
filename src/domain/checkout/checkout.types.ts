@@ -26,6 +26,8 @@ export interface CheckoutFormValues {
   deliveryMethod: DeliveryMethod;
   shippingAddress?: CheckoutAddress;
   paymentMethod: PaymentMethod;
+  marketingEmailOptIn: boolean;
+  messagingMarketingOptIn: boolean;
   acceptedTerms: boolean;
 }
 

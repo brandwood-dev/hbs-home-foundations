@@ -1,4 +1,5 @@
-import heroImage from "@/assets/hero-rideaux.jpg";
+import heroImage from "@/assets/hero-salon-beige.webp";
+import heroMobileImage from "@/assets/hero-salon-beige-mobile.webp";
 import colRideaux from "@/assets/col-rideaux.jpg";
 import colVoilages from "@/assets/col-voilages.jpg";
 import colStores from "@/assets/col-stores.jpg";
@@ -11,7 +12,13 @@ import catVelours from "@/assets/catalog/rideau-velours.jpg";
 import catLin from "@/assets/catalog/rideau-lin.jpg";
 import catOccultant from "@/assets/catalog/rideau-occultant.jpg";
 import catJacquard from "@/assets/catalog/rideau-jacquard.jpg";
+import needsLight from "@/assets/needs/needs-light.png";
+import needsPrivacy from "@/assets/needs/needs-privacy.png";
+import needsSatin from "@/assets/needs/needs-satin.png";
+import needsVelours from "@/assets/needs/needs-velours.png";
 import textureVelours from "@/assets/product/texture-velours.jpg";
+import editorialSurMesure from "@/assets/editorial-sur-mesure.png";
+import editorialProjetsProfessionnels from "@/assets/editorial-projets-professionnels.png";
 import type {
   AccessoriesEditorialContent,
   ComposeWindowContent,
@@ -38,11 +45,15 @@ export const homeSections: HomeSectionConfig[] = [
   { key: "collections", isEnabled: true, order: 3 },
   { key: "product_selection", isEnabled: true, order: 4 },
   { key: "shop_by_need", isEnabled: true, order: 5 },
-  { key: "material_focus", isEnabled: true, order: 6 },
+  // Retired from the homepage: keep the key for backwards-compatible content
+  // payloads, but never expose this legacy editorial block publicly.
+  { key: "material_focus", isEnabled: false, order: 6 },
   { key: "compose_window", isEnabled: true, order: 7 },
-  { key: "measurement_guide", isEnabled: true, order: 8 },
-  { key: "shop_the_look", isEnabled: true, order: 9 },
-  { key: "accessories", isEnabled: true, order: 10 },
+  // Retired from the public homepage; retained for backwards-compatible CMS payloads.
+  { key: "accessories", isEnabled: false, order: 8 },
+  // Retired from the public homepage; retained for backwards-compatible CMS payloads.
+  { key: "measurement_guide", isEnabled: false, order: 9 },
+  { key: "shop_the_look", isEnabled: true, order: 10 },
   { key: "custom_professional", isEnabled: true, order: 11 },
   { key: "testimonials", isEnabled: false, order: 12 },
   { key: "advice", isEnabled: true, order: 13 },
@@ -58,7 +69,11 @@ export const homeHero: HomeHeroContent = {
   secondaryCta: { label: "Voir les nouveautés", href: "/nouveautes" },
   image: {
     src: heroImage,
-    alt: "Salon lumineux habillé de rideaux en lin devant une grande fenêtre",
+    alt: "Salon lumineux habillé de rideaux beiges et de voilages blancs devant une grande fenêtre",
+  },
+  mobileImage: {
+    src: heroMobileImage,
+    alt: "Salon lumineux habillé de rideaux beiges et de voilages blancs devant une grande fenêtre",
   },
 };
 
@@ -178,29 +193,35 @@ export const shopByNeed: ShopByNeedContent = {
       id: "light",
       title: "Faire entrer la lumière",
       text: "Des voilages légers pour préserver la luminosité naturelle.",
-      href: "/voilages",
-      image: { src: colVoilages, alt: "Voilage léger laissant passer la lumière du jour" },
+      href: "/rideaux-voilages/voilages",
+      image: { src: needsLight, alt: "Voilages blancs laissant entrer la lumière dans un salon" },
     },
     {
       id: "privacy",
       title: "Préserver son intimité",
       text: "Des rideaux tamisants pour adoucir la lumière sans assombrir la pièce.",
-      href: "/rideaux/tamisants",
-      image: { src: catLin, alt: "Rideau tamisant en lin devant une fenêtre de salon" },
+      href: "/rideaux-voilages/rideaux-lins",
+      image: { src: needsPrivacy, alt: "Rideaux en lin beige dans un salon lumineux" },
     },
     {
       id: "blackout",
       title: "Dormir dans l'obscurité",
       text: "Des rideaux occultants pour limiter efficacement la lumière extérieure.",
-      href: "/rideaux/occultants",
-      image: { src: catOccultant, alt: "Rideau occultant sombre dans une chambre" },
+      href: "/rideaux-voilages/rideaux-satins",
+      image: {
+        src: needsSatin,
+        alt: "Rideaux occultants brun chocolat dans une chambre chaleureuse",
+      },
     },
     {
       id: "comfort",
       title: "Améliorer le confort",
       text: "Des tissus épais et thermiques pour créer un intérieur plus confortable.",
-      href: "/rideaux/thermiques",
-      image: { src: catJacquard, alt: "Rideau épais en jacquard près d'une fenêtre" },
+      href: "/rideaux-voilages/rideaux-velours",
+      image: {
+        src: needsVelours,
+        alt: "Rideaux en velours taupe dans un salon chaleureux",
+      },
     },
   ],
 };
@@ -312,6 +333,10 @@ export const customProfessional: CustomProfessionalContent = {
       title: "Des rideaux adaptés à votre intérieur",
       text: "Dimensions particulières, finitions spécifiques ou besoin de conseil : préparez votre demande de sur-mesure.",
       cta: { label: "Découvrir le sur-mesure", href: "/sur-mesure" },
+      image: {
+        src: editorialSurMesure,
+        alt: "Salon lumineux avec des rideaux sur mesure en lin autour d'une baie vitrée",
+      },
     },
     {
       id: "pro",
@@ -319,6 +344,10 @@ export const customProfessional: CustomProfessionalContent = {
       title: "Un accompagnement pour vos projets professionnels",
       text: "HBS HOME accompagne les projets en volume avec des solutions adaptées aux espaces professionnels.",
       cta: { label: "Espace professionnels", href: "/professionnels" },
+      image: {
+        src: editorialProjetsProfessionnels,
+        alt: "Salon d'hôtel élégant avec des rideaux en velours uni à œillets",
+      },
     },
   ],
 };

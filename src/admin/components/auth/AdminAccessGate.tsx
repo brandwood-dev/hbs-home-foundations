@@ -14,7 +14,7 @@ type ApiState =
 
 export function AdminAccessGate({ children }: { children: ReactNode }) {
   const auth = useAdminAuth();
-  const { refreshSession, signOut } = auth;
+  const { refreshSession } = auth;
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const api = useMemo(() => new HbsApiClient(), []);
   const [attempt, setAttempt] = useState(0);
@@ -24,8 +24,10 @@ export function AdminAccessGate({ children }: { children: ReactNode }) {
   // during that background validation so active forms are not destroyed.
   const lastValidatedUserIdRef = useRef<string | null>(null);
   // A migrated or expired browser session can be rejected by the API even
-  // though Supabase still exposes it locally. Attempt one refresh per user
-  // before clearing that stale session and returning to the login screen.
+  // though Supabase still exposes it locally. Attempt one refresh per user.
+  // Never clear the local session automatically: duplicate browser windows
+  // share storage, and one window's transient refresh failure must not sign
+  // the other window out as well.
   const refreshAttemptedForUserRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -53,12 +55,22 @@ export function AdminAccessGate({ children }: { children: ReactNode }) {
           reason instanceof HbsApiError && reason.problem?.code === "INVALID_ACCESS_TOKEN";
         if (invalidToken && refreshAttemptedForUserRef.current !== userId) {
           refreshAttemptedForUserRef.current = userId;
-          void refreshSession()
+          void refreshAdminSessionWithRetry(refreshSession)
             .then(() => {
               if (!controller.signal.aborted) setAttempt((value) => value + 1);
             })
             .catch(() => {
-              if (!controller.signal.aborted) void signOut();
+              if (controller.signal.aborted) return;
+              // Keep the session in place so another tab can finish its
+              // refresh and propagate the new session through storage.
+              // Reset the guard to let the visible retry button try again.
+              refreshAttemptedForUserRef.current = null;
+              setApiState({
+                status: "error",
+                message:
+                  "La session Admin n’a pas pu être actualisée. Une autre fenêtre vient peut-être de renouveler la session ; cliquez sur Réessayer.",
+                code: "INVALID_ACCESS_TOKEN",
+              });
             });
           return;
         }
@@ -72,7 +84,7 @@ export function AdminAccessGate({ children }: { children: ReactNode }) {
         });
       });
     return () => controller.abort();
-  }, [api, attempt, auth.session, refreshSession, signOut]);
+  }, [api, attempt, auth.session, refreshSession]);
 
   if (auth.status === "loading") return <AdminGateLoading />;
   if (auth.status === "unconfigured") {
@@ -149,6 +161,24 @@ export function AdminAccessGate({ children }: { children: ReactNode }) {
   // in the API environment. Keep the authorized tree mounted directly; the
   // API feature flag remains the single source of truth for any future policy.
   return authorizedTree;
+}
+
+async function refreshAdminSessionWithRetry(refreshSession: () => Promise<void>): Promise<void> {
+  try {
+    await refreshSession();
+    return;
+  } catch (firstError) {
+    // Two windows can briefly observe the same refresh token while the other
+    // window is rotating it. Give Supabase's cross-tab storage event time to
+    // publish the new session before attempting one final refresh.
+    await new Promise((resolve) => window.setTimeout(resolve, 350));
+    try {
+      await refreshSession();
+      return;
+    } catch {
+      throw firstError;
+    }
+  }
 }
 
 function permissionForPath(pathname: string): string | null {

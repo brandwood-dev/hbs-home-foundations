@@ -55,4 +55,54 @@ describe("ApiCartRepository promotions", () => {
       { method: "DELETE", url: "https://api-preview.hbs-home.com/api/v1/cart/promotion" },
     ]);
   });
+
+  it("traduit les codes de mode de vente renvoyés par l'API", async () => {
+    const client = new HbsApiClient({
+      baseUrl: "https://api-preview.hbs-home.com",
+      fetch: async () =>
+        Response.json(
+          {
+            ...cartResponse,
+            items: [
+              {
+                lineId: "line-1",
+                productId: "product-1",
+                productSlug: "rideau-lin",
+                productName: "Rideau lin",
+                productReference: "RID-001",
+                variantId: "variant-1",
+                confectionKey: null,
+                sku: "RID-001-140",
+                quantity: 1,
+                unitPriceMinor: 12000,
+                compareAtPriceMinor: null,
+                lineTotalMinor: 12000,
+                priceAtAddMinor: 12000,
+                priceChanged: false,
+                imageUrl: "https://cdn.example.test/rideau.jpg",
+                imageAlt: "Rideau lin",
+                category: "rideaux",
+                colorLabel: null,
+                widthCm: 140,
+                heightCm: 250,
+                selectedOptions: [],
+                sellingUnitLabel: "ready_made",
+                shippingProfile: null,
+                availability: "in_stock",
+                availableQuantity: 2,
+                status: "available",
+                canPurchase: true,
+              },
+            ],
+            itemCount: 1,
+            lineCount: 1,
+          },
+          { status: 200 },
+        ),
+    });
+
+    const cart = await new ApiCartRepository(client).getCart();
+
+    expect(cart.items[0]?.sellingUnitLabel).toBe("Prêt à poser");
+  });
 });

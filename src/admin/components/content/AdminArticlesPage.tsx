@@ -14,7 +14,7 @@ import {
   AdminSearchInput,
   type AdminColumn,
 } from "@/admin/components/ui/AdminDataTable";
-import { AdminField, AdminSelectField } from "@/admin/components/ui/AdminForm";
+import { AdminField, AdminRichTextField, AdminSelectField } from "@/admin/components/ui/AdminForm";
 import { AdminStatusBadge } from "@/admin/components/ui/AdminStates";
 import {
   useAdminArticleCategories,
@@ -373,14 +373,13 @@ export function AdminArticlesPage() {
                 setDraft({ ...draft, categoryId: value === "__none" ? "" : value })
               }
             />
-            <AdminField
+            <AdminRichTextField
               label="Extrait"
               required
               value={draft.excerpt}
-              multiline
-              rows={3}
               disabled={draft.status === "published"}
               onChange={(value) => setDraft({ ...draft, excerpt: value })}
+              hint="Le formatage, les emojis et les retours à la ligne sont conservés dans l’aperçu et la fiche article."
             />
             <AdminSelectField
               label="Image de couverture"
@@ -391,12 +390,10 @@ export function AdminArticlesPage() {
                 setDraft({ ...draft, coverMediaAssetId: value === "__none" ? "" : value })
               }
             />
-            <AdminField
+            <AdminRichTextField
               label="Contenu"
               required
               value={draft.body}
-              multiline
-              rows={12}
               hint="Le texte est enregistré comme bloc éditorial sécurisé."
               disabled={draft.status === "published"}
               onChange={(value) => setDraft({ ...draft, body: value })}

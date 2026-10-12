@@ -42,7 +42,7 @@ export function NewsletterSection({ content }: { content: NewsletterContent }) {
 
   return (
     <section className="border-t border-border bg-surface" aria-labelledby="home-newsletter">
-      <div className="mx-auto max-w-3xl px-6 py-16 text-center lg:py-24">
+      <div className="mx-auto max-w-3xl px-6 py-12 text-center lg:py-16">
         <p className="eyebrow">Newsletter</p>
         <h2 id="home-newsletter" className="section-title mt-3">
           {content.title}
@@ -69,7 +69,7 @@ export function NewsletterSection({ content }: { content: NewsletterContent }) {
             <button
               type="submit"
               disabled={subscription.isPending}
-              className="min-h-[48px] rounded-sm bg-accent px-6 text-sm text-accent-foreground transition-colors hover:bg-accent-dark disabled:opacity-60"
+              className="min-h-[48px] rounded-sm bg-accent px-6 text-sm text-accent-foreground transition-all duration-200 motion-safe:hover:-translate-y-0.5 hover:bg-accent-dark disabled:cursor-wait disabled:opacity-60"
             >
               {subscription.isPending ? "Inscription…" : content.ctaLabel}
             </button>

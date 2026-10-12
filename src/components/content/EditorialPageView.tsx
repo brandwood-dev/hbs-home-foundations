@@ -3,22 +3,11 @@ import { SiteLayout } from "@/components/layout/SiteLayout";
 import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
 import { AppLink } from "@/components/ui/app-link";
 import type { EditorialPage, EditorialPageBlock } from "@/domain/content/editorial-page.types";
+import { RichTextRenderer } from "@/lib/content/rich-text";
 
 function payloadText(block: EditorialPageBlock, key: string): string | null {
   const value = block.payload[key];
   return typeof value === "string" && value.trim() ? value.trim() : null;
-}
-
-function RichText({ text }: { text: string }) {
-  return (
-    <div className="grid gap-4 text-base leading-8 text-foreground-muted">
-      {text.split(/\n{2,}/).map((paragraph, index) => (
-        <p key={`${index}-${paragraph.slice(0, 16)}`} className="whitespace-pre-line">
-          {paragraph}
-        </p>
-      ))}
-    </div>
-  );
 }
 
 function BlockActions({ block }: { block: EditorialPageBlock }) {
@@ -97,7 +86,7 @@ function EditorialBlock({ block }: { block: EditorialPageBlock }) {
           </span>
         </summary>
         <div className="mt-4 border-t border-border pt-4">
-          <RichText text={answer} />
+          <RichTextRenderer value={answer} className="text-base leading-8 text-foreground-muted" />
         </div>
       </details>
     );
@@ -108,7 +97,9 @@ function EditorialBlock({ block }: { block: EditorialPageBlock }) {
     return (
       <section className="grid gap-4">
         {heading ? <h2 className="section-title">{heading}</h2> : null}
-        {text ? <RichText text={text} /> : null}
+        {text ? (
+          <RichTextRenderer value={text} className="text-base leading-8 text-foreground-muted" />
+        ) : null}
         <BlockActions block={block} />
       </section>
     );
@@ -130,7 +121,8 @@ function EditorialBlock({ block }: { block: EditorialPageBlock }) {
     );
   }
 
-  if (text) return <RichText text={text} />;
+  if (text)
+    return <RichTextRenderer value={text} className="text-base leading-8 text-foreground-muted" />;
   return null;
 }
 
@@ -144,9 +136,10 @@ export function EditorialPageView({ page }: { page: EditorialPage }) {
           <p className="eyebrow">HBS HOME</p>
           <h1 className="hero-title mt-4">{page.title}</h1>
           {page.body ? (
-            <p className="mt-5 max-w-2xl whitespace-pre-line leading-7 text-foreground-muted">
-              {page.body}
-            </p>
+            <RichTextRenderer
+              value={page.body}
+              className="mt-5 max-w-2xl leading-7 text-foreground-muted"
+            />
           ) : null}
         </header>
         {blocks.length > 0 ? (

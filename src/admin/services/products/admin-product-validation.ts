@@ -1,6 +1,7 @@
 import type { AdminProduct } from "@/admin/types/admin.types";
 import { normalizeKey } from "@/admin/utils/admin.utils";
 import { variantCombinationKey } from "@/admin/services/products/admin-variant-validation";
+import { hasRichTextContent } from "@/lib/content/rich-text";
 
 export interface ProductIdentityContext {
   /** Autres produits de la base (pour l'unicité). */
@@ -57,7 +58,8 @@ export function validateProductForPublication(product: AdminProduct): string[] {
   if (!product.slug.trim()) blocking.push("Le slug est manquant.");
   if (!product.reference.trim()) blocking.push("La référence est manquante.");
   if (!product.categoryId || !product.category) blocking.push("La catégorie est manquante.");
-  if (!product.shortDescription.trim()) blocking.push("La description courte est manquante.");
+  if (!hasRichTextContent(product.shortDescription))
+    blocking.push("La description courte est manquante.");
 
   const images = product.imageAssets ?? [];
   const primary = images.find((image) => image.isPrimary) ?? images[0];
@@ -74,7 +76,8 @@ export function validateProductForPublication(product: AdminProduct): string[] {
     if (!product.customQuoteEnabled) {
       blocking.push("Activez la demande de devis pour un produit sur devis.");
     }
-    if (!product.longDescription.trim()) blocking.push("La description longue est manquante.");
+    if (!hasRichTextContent(product.longDescription))
+      blocking.push("La description longue est manquante.");
     return blocking;
   }
 

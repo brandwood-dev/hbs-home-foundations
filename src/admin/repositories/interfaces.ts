@@ -4,6 +4,7 @@ import type {
   AdminCategory,
   AdminContent,
   AdminCustomer,
+  AdminCustomQuote,
   AdminCustomerAddress,
   AdminEditorialPage,
   AdminArticle,
@@ -310,6 +311,25 @@ export interface AdminCustomerRepository {
   mergeCustomers(input: MergeAdminCustomersInput): Promise<AdminCustomer>;
 }
 
+export interface AdminCustomQuoteListParams extends AdminPageParams {
+  query?: string;
+  unreadOnly?: boolean;
+  includeArchived?: boolean;
+  requestType?: "particulier" | "professionnels";
+}
+
+export interface PaginatedAdminCustomQuotes extends PaginatedAdminItems<AdminCustomQuote> {
+  unread: number;
+}
+
+export interface AdminCustomQuoteRepository {
+  list(params: AdminCustomQuoteListParams): Promise<PaginatedAdminCustomQuotes>;
+  getById(id: string): Promise<AdminCustomQuote | null>;
+  markRead(id: string): Promise<AdminCustomQuote>;
+  archive(id: string): Promise<AdminCustomQuote>;
+  convertToCustomer(id: string): Promise<AdminCustomQuote>;
+}
+
 export type AdminPromotionInput = Omit<AdminPromotion, "id" | "usageCount">;
 export type AdminPromotionRepository = CrudRepository<
   AdminPromotion,
@@ -551,7 +571,16 @@ export interface DashboardMetrics {
   lowStockCount: number;
   statusBreakdown: Array<{ status: AdminOrderStatus; count: number }>;
   recentOrders: AdminOrder[];
-  topProducts: Array<{ productId: string; name: string; quantity: number; revenueMinor: number }>;
+  topProducts: Array<{
+    productId: string;
+    name: string;
+    quantity: number;
+    revenueMinor: number;
+    imageUrl?: string;
+    productSlug?: string;
+  }>;
+  /** Commandes agrégées par gouvernorat pour la période sélectionnée. */
+  governorateBreakdown?: Array<{ governorate: string; count: number }>;
   lowStockRows: InventoryRow[];
   salesByDay: Array<{ date: string; revenueMinor: number }>;
 }

@@ -93,9 +93,35 @@ export const LIST_FILTER_KEYS = [
 export type ListFilterKey = (typeof LIST_FILTER_KEYS)[number];
 
 function parseList(value: unknown): string[] {
-  if (Array.isArray(value)) return value.map(String).filter(Boolean);
-  if (typeof value === "string" && value.length > 0) return value.split(",").filter(Boolean);
-  return [];
+  if (Array.isArray(value)) {
+    return value.flatMap((entry) => parseList(entry));
+  }
+
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? [String(value)] : [];
+  }
+  if (typeof value !== "string") return [];
+
+  const normalized = value.trim();
+  if (!normalized) return [];
+
+  // TanStack Router serializes array search params as JSON strings (for
+  // example `[]` or `["lin"]`). Decode that representation before falling
+  // back to the legacy comma-separated format used by shared links.
+  if (normalized.startsWith("[") && normalized.endsWith("]")) {
+    try {
+      const decoded: unknown = JSON.parse(normalized);
+      if (Array.isArray(decoded)) return decoded.flatMap((entry) => parseList(entry));
+    } catch {
+      // Keep accepting comma-separated values when a malformed JSON-like
+      // value is supplied in a manually edited URL.
+    }
+  }
+
+  return normalized
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
 }
 
 function parseNumberList(value: unknown): number[] {

@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import { Toaster } from "@/components/ui/sonner";
 import { AdminAuthProvider } from "@/admin/auth/AdminAuthProvider";
+import { MetaPixelTracker } from "@/components/analytics/MetaPixelTracker";
 
 import appCss from "../styles.css?url";
 
@@ -154,6 +155,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AdminAuthProvider>
+        <MetaPixelTracker />
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <Toaster position="bottom-center" />

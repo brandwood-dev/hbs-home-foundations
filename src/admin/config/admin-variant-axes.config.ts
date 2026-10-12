@@ -137,7 +137,7 @@ export const ADMIN_VARIANT_AXES_BY_CATEGORY: Record<
   coussins: ["color", "dimensions", "cushion_content", "closure", "pack_quantity"],
   galettes_de_chaise: ["color", "dimensions", "fastening", "thickness", "pack_quantity"],
   accessoires: ["accessory_finish", "length", "diameter", "mounting", "pack_quantity"],
-  mobilier_interieur: ["color", "upholstery", "orientation", "dimensions", "pack_quantity"],
+  mobilier_interieur: ["color", "orientation", "dimensions", "pack_quantity"],
   plantes_decoration: [
     "plant_size",
     "dimensions",

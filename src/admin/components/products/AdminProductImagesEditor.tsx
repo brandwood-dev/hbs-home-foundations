@@ -87,7 +87,7 @@ export function AdminProductImagesEditor({
   return (
     <AdminFormSection
       title="Médias"
-      description="La première image est utilisée comme visuel principal. Un texte alternatif est requis pour publier."
+      description="La première image est utilisée comme visuel principal. Un texte alternatif est requis pour publier. Pour Meta et un affichage homogène, utilisez des images nettes d’au moins 800 × 800 px (idéalement 1200 × 1600 px, cadrage portrait 3:4)."
     >
       {images.length === 0 ? (
         <AdminEmptyState

@@ -1,3 +1,4 @@
+import { dataProvider } from "@/config/features.config";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 function buildWhatsAppUrl(numberValue: string): string {
@@ -11,7 +12,12 @@ function buildWhatsAppUrl(numberValue: string): string {
 }
 
 export function WhatsAppFloatingButton() {
-  const { data: storeSettings } = useStoreSettings();
+  const { data: storeSettings, isSuccess } = useStoreSettings();
+  // In API-backed environments the fallback settings are only a shell value.
+  // Do not render from them while the request is pending (or after an error),
+  // otherwise a disabled WhatsApp button briefly flashes during page refresh.
+  if (dataProvider === "api" && !isSuccess) return null;
+
   const number = storeSettings.contact.whatsapp.replace(/\D/g, "");
   if (!number) return null;
 

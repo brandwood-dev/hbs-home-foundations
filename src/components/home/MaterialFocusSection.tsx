@@ -5,7 +5,7 @@ import type { MaterialFocusContent } from "@/domain/content/home-content.types";
 export function MaterialFocusSection({ content }: { content: MaterialFocusContent }) {
   return (
     <section
-      className="mx-auto max-w-7xl px-6 py-16 lg:py-24"
+      className="mx-auto max-w-7xl px-6 py-10 lg:py-14"
       aria-labelledby="home-material-focus"
     >
       <div className="grid items-center gap-8 lg:grid-cols-12 lg:gap-12">

@@ -1,4 +1,5 @@
 import { slugify } from "@/admin/utils/admin.utils";
+import { richTextToPlainText } from "@/lib/content/rich-text";
 
 /** Slug produit canonique : minuscules, sans accents, sans doublons de tirets. */
 export function generateProductSlug(name: string, existingSlugs: string[] = []): string {
@@ -30,7 +31,7 @@ export function generateProductSeo(
   const fallback = cleanName
     ? `Découvrez ${cleanName} chez HBS HOME, avec une qualité pensée pour votre intérieur.`
     : "Découvrez les collections HBS HOME pour votre intérieur.";
-  const description = (shortDescription.trim() || fallback).slice(0, 160);
+  const description = (richTextToPlainText(shortDescription) || fallback).slice(0, 160);
   return { title, description };
 }
 

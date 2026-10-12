@@ -19,6 +19,7 @@ import type {
   CushionShape,
   EyeletColor,
   FurnitureAssembly,
+  FurnitureOrientation,
   FurnitureRoom,
   FurnitureStyle,
   FurnitureType,
@@ -88,6 +89,7 @@ interface ApiProductVariant {
   plantHeightCm?: number;
   potDiameterCm?: number;
   plantSize?: string;
+  orientation?: string;
   packQuantity?: number;
   price: { amountMinor: number; currency: "TND" };
   compareAtPrice?: { amountMinor: number; currency: "TND" };
@@ -396,6 +398,7 @@ const FURNITURE_ASSEMBLY: readonly FurnitureAssembly[] = [
   "montage_simple",
   "montage_requis",
 ];
+const FURNITURE_ORIENTATIONS: readonly FurnitureOrientation[] = ["gauche", "droite", "reversible"];
 
 const PLANT_NATURES: readonly PlantNature[] = ["artificielle", "naturelle", "stabilisee"];
 const PLANT_TYPES: readonly PlantType[] = [
@@ -555,10 +558,20 @@ function parseProductDetails(input: unknown, fallbackInput: unknown = undefined)
   };
 }
 
+const PRODUCT_PLACEHOLDER_IMAGE = "/images/placeholder-product.svg";
+
+function isPlaceholderImageUrl(value: string): boolean {
+  const normalized = value.trim().toLowerCase();
+  return (
+    normalized.includes("/images/placeholder.jpg") ||
+    normalized.includes("/images/placeholder-product.")
+  );
+}
+
 function mapProductImage(image: ApiProductImage) {
   const mapped = {
     id: asString(image.id),
-    url: asString(image.url, "/images/placeholder-product.webp"),
+    url: asString(image.url, PRODUCT_PLACEHOLDER_IMAGE),
     alt: asString(image.alt, "Image produit"),
     type: asEnum(image.type, IMAGE_TYPES) ?? "front",
   };
@@ -568,7 +581,9 @@ function mapProductImage(image: ApiProductImage) {
 }
 
 function mapProductVariant(variant: ApiProductVariant) {
-  const imageUrl = asString(variant.imageUrl, "/images/placeholder-product.webp");
+  const rawImageUrl = asStringOptional(variant.imageUrl);
+  const imageUrl =
+    rawImageUrl && !isPlaceholderImageUrl(rawImageUrl) ? rawImageUrl : PRODUCT_PLACEHOLDER_IMAGE;
   const secondaryImageUrl = asStringOptional(variant.secondaryImageUrl);
   const mapped: Product["variants"][number] = {
     id: asString(variant.id),
@@ -655,6 +670,9 @@ function mapProductVariant(variant: ApiProductVariant) {
   const plantSize = asEnum(variant.plantSize, PLANT_SIZES);
   if (plantSize) mapped.plantSize = plantSize;
 
+  const orientation = asEnum(variant.orientation, FURNITURE_ORIENTATIONS);
+  if (orientation) mapped.orientation = orientation;
+
   const packQuantity = asOptionalNumber(variant.packQuantity);
   if (packQuantity !== undefined) mapped.packQuantity = packQuantity;
 
@@ -713,9 +731,17 @@ function colorsFromVariants(
 
 export function mapProduct(input: ApiProduct): Product {
   const images = input.images.map((image) => mapProductImage(image));
+  const imageById = new Map(images.map((image) => [image.id, image]));
+  const primaryImage = images.find((image) => image.type === "front") ?? images[0];
   const variants = sortVariantsByDimensions(
     input.variants.map((variant) => mapProductVariant(variant)),
-  );
+  ).map((variant) => {
+    if (!isPlaceholderImageUrl(variant.imageUrl)) return variant;
+
+    const linkedImage =
+      variant.imageIds.map((imageId) => imageById.get(imageId)).find(Boolean) ?? primaryImage;
+    return linkedImage ? { ...variant, imageUrl: linkedImage.url } : variant;
+  });
   const category = productCategoryFor(input.category);
   const declaredColors = input.colors
     .map((color) => mapProductColor(color))

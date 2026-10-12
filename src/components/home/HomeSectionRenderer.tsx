@@ -13,7 +13,9 @@ import { ShopTheLookSection } from "@/components/home/ShopTheLookSection";
 import { SocialSection } from "@/components/home/SocialSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { TrustStrip } from "@/components/home/TrustStrip";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { HomePageContent, HomeSectionKey } from "@/domain/content/home-content.types";
+import type { ReactNode } from "react";
 
 /** Rend une section à partir de sa clé — l'ordre est piloté par la donnée. */
 export function HomeSectionRenderer({
@@ -23,38 +25,59 @@ export function HomeSectionRenderer({
   sectionKey: HomeSectionKey;
   content: HomePageContent;
 }) {
+  let section: ReactNode;
+
   switch (sectionKey) {
     case "hero":
-      return <HomeHero content={content.hero} />;
+      section = <HomeHero content={content.hero} />;
+      break;
     case "trust":
-      return <TrustStrip items={content.trustItems} />;
+      section = <TrustStrip items={content.trustItems} />;
+      break;
     case "collections":
-      return <FeaturedCollections collections={content.collections} />;
+      section = <FeaturedCollections collections={content.collections} />;
+      break;
     case "product_selection":
-      return <ProductSelectionSection content={content.productSelection} />;
+      section = <ProductSelectionSection content={content.productSelection} />;
+      break;
     case "shop_by_need":
-      return <ShopByNeedSection content={content.shopByNeed} />;
+      section = <ShopByNeedSection content={content.shopByNeed} />;
+      break;
     case "material_focus":
-      return <MaterialFocusSection content={content.materialFocus} />;
+      section = <MaterialFocusSection content={content.materialFocus} />;
+      break;
     case "compose_window":
-      return <ComposeWindowSection content={content.composeWindow} />;
+      section = <ComposeWindowSection content={content.composeWindow} />;
+      break;
     case "measurement_guide":
-      return <MeasurementGuideSection content={content.measurementGuide} />;
+      section = <MeasurementGuideSection content={content.measurementGuide} />;
+      break;
     case "shop_the_look":
-      return <ShopTheLookSection content={content.shopTheLook} />;
+      section = <ShopTheLookSection content={content.shopTheLook} />;
+      break;
     case "accessories":
-      return <AccessoriesEditorialSection content={content.accessories} />;
+      section = <AccessoriesEditorialSection content={content.accessories} />;
+      break;
     case "custom_professional":
-      return <CustomAndProfessionalSection content={content.customProfessional} />;
+      section = <CustomAndProfessionalSection content={content.customProfessional} />;
+      break;
     case "testimonials":
-      return <TestimonialsSection testimonials={content.testimonials} />;
+      section = <TestimonialsSection testimonials={content.testimonials} />;
+      break;
     case "advice":
-      return <AdviceSection articles={content.adviceArticles} />;
+      section = <AdviceSection articles={content.adviceArticles} />;
+      break;
     case "social":
-      return <SocialSection content={content.social} />;
+      section = <SocialSection content={content.social} />;
+      break;
     case "newsletter":
-      return <NewsletterSection content={content.newsletter} />;
+      section = <NewsletterSection content={content.newsletter} />;
+      break;
     default:
       return null;
   }
+
+  if (!section) return null;
+
+  return sectionKey === "hero" ? section : <ScrollReveal>{section}</ScrollReveal>;
 }

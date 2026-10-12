@@ -1,77 +1,93 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { HomeSectionHeading } from "@/components/home/HomeSectionStates";
 import { ShopTheLookHotspot } from "@/components/home/ShopTheLookHotspot";
 import { AppLink } from "@/components/ui/app-link";
-import type {
-  ShopTheLookContent,
-  ShopTheLookHotspot as Hotspot,
-} from "@/domain/content/home-content.types";
-import type { Product } from "@/domain/product/product.types";
-import { formatMoney, getProductStartingPrice } from "@/lib/money/money";
+import type { ShopTheLookContent } from "@/domain/content/home-content.types";
+import { resolveHotspots } from "@/components/home/shop-the-look-resolver";
+import { richTextToPlainText } from "@/lib/content/rich-text";
 import { homeProductsByIdsQuery } from "@/services/home/home-products.queries";
-import { getProductPath } from "@/services/product/product-url";
+import { useNearViewport } from "@/hooks/useNearViewport";
+import { useShopTheLookImageRatio } from "@/components/home/shop-the-look-image";
 
-export interface ResolvedHotspot {
-  hotspot: Hotspot;
-  label: string;
-  href: string;
-  imageSrc?: string;
-  priceLabel?: string;
-}
+function SafeProductImage({
+  src,
+  alt,
+  className,
+  width,
+  height,
+}: {
+  src: string | undefined;
+  alt: string;
+  className: string;
+  width: number;
+  height: number;
+}) {
+  const [failed, setFailed] = useState(false);
 
-/** Résolution produit → lien affichable. Fonction pure, testable. */
-export function resolveHotspots(hotspots: Hotspot[], products: Product[]): ResolvedHotspot[] {
-  return hotspots
-    .map((hotspot) => {
-      const product = hotspot.productId
-        ? products.find((entry) => entry.id === hotspot.productId)
-        : undefined;
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
 
-      if (product) {
-        const imageSrc = product.variants[0]?.imageUrl;
-        return {
-          hotspot,
-          label: product.name,
-          href: getProductPath(product),
-          ...(imageSrc ? { imageSrc } : {}),
-          priceLabel: formatMoney(getProductStartingPrice(product)),
-        } satisfies ResolvedHotspot;
-      }
-
-      if (hotspot.title && hotspot.href) {
-        return { hotspot, label: hotspot.title, href: hotspot.href } satisfies ResolvedHotspot;
-      }
-
-      return null;
-    })
-    .filter((entry): entry is ResolvedHotspot => entry !== null);
+  return (
+    <img
+      src={failed ? "/images/placeholder-product.svg" : src || "/images/placeholder-product.svg"}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      width={width}
+      height={height}
+      onError={() => setFailed(true)}
+      className={className}
+    />
+  );
 }
 
 export function ShopTheLookSection({ content }: { content: ShopTheLookContent }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const isNearViewport = useNearViewport(sectionRef);
   const ids = content.hotspots
     .map((hotspot) => hotspot.productId)
     .filter((id): id is string => Boolean(id));
-  const { data: products = [] } = useQuery(homeProductsByIdsQuery(ids));
-  const resolved = resolveHotspots(content.hotspots, products);
+  const { data: products = [] } = useQuery({
+    ...homeProductsByIdsQuery(ids),
+    enabled: isNearViewport && ids.length > 0,
+  });
+  const resolved = useMemo(
+    () => resolveHotspots(content.hotspots, products),
+    [content.hotspots, products],
+  );
+  const { aspectRatio, onImageLoad } = useShopTheLookImageRatio(content.image.src);
 
   const [activeId, setActiveId] = useState<string | null>(null);
   const active = resolved.find((entry) => entry.hotspot.id === activeId) ?? null;
+  const firstHotspotId = resolved[0]?.hotspot.id ?? null;
 
   useEffect(() => {
-    if (!activeId) return;
+    setActiveId((current) => {
+      if (current && resolved.some((entry) => entry.hotspot.id === current)) return current;
+      return firstHotspotId;
+    });
+  }, [firstHotspotId, resolved]);
+
+  useEffect(() => {
+    if (!firstHotspotId) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setActiveId(null);
+      if (event.key === "Escape") setActiveId(firstHotspotId);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeId]);
+  }, [firstHotspotId]);
 
-  if (resolved.length === 0) return null;
+  if (resolved.length === 0 && content.hotspots.length === 0 && isNearViewport) return null;
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-16 lg:py-24" aria-labelledby="home-shop-the-look">
+    <section
+      ref={sectionRef}
+      className="mx-auto max-w-7xl px-6 py-10 lg:py-14"
+      aria-labelledby="home-shop-the-look"
+    >
       <HomeSectionHeading
         id="home-shop-the-look"
         eyebrow="Shop the look"
@@ -79,110 +95,132 @@ export function ShopTheLookSection({ content }: { content: ShopTheLookContent })
         subtitle={content.subtitle}
       />
 
-      <div className="mt-10 grid gap-8 lg:grid-cols-12">
-        <div className="relative lg:col-span-8">
-          <img
-            src={content.image.src}
-            alt={content.image.alt}
-            loading="lazy"
-            decoding="async"
-            width={1400}
-            height={1000}
-            className="h-[280px] w-full rounded-sm object-cover sm:h-[420px] lg:h-[560px]"
-          />
+      {!isNearViewport ? (
+        <div
+          className="mt-8 animate-pulse rounded-sm bg-surface-muted"
+          style={{ aspectRatio }}
+          aria-label="Chargement de l’inspiration"
+          role="status"
+        />
+      ) : (
+        <div className="mt-8 grid gap-8 lg:grid-cols-12">
+          <div
+            className="relative overflow-hidden rounded-sm bg-surface-muted lg:col-span-8"
+            style={{ aspectRatio }}
+          >
+            <img
+              src={content.image.src}
+              alt={content.image.alt}
+              loading="lazy"
+              decoding="async"
+              width={1672}
+              height={941}
+              onLoad={onImageLoad}
+              className="absolute inset-0 h-full w-full object-contain"
+            />
 
-          {/* Points interactifs — desktop uniquement, zones tactiles trop petites sur mobile */}
-          <div className="pointer-events-none absolute inset-0 hidden lg:block">
-            <div className="pointer-events-auto absolute inset-0">
-              {resolved.map((entry) => (
-                <ShopTheLookHotspot
-                  key={entry.hotspot.id}
-                  label={entry.label}
-                  xPercent={entry.hotspot.xPercent}
-                  yPercent={entry.hotspot.yPercent}
-                  isActive={activeId === entry.hotspot.id}
-                  controls="shop-the-look-panel"
-                  onToggle={() =>
-                    setActiveId((current) =>
-                      current === entry.hotspot.id ? null : entry.hotspot.id,
-                    )
-                  }
-                />
-              ))}
+            {/* Points interactifs — desktop uniquement, zones tactiles trop petites sur mobile */}
+            <div className="pointer-events-none absolute inset-0 hidden lg:block">
+              <div className="pointer-events-auto absolute inset-0">
+                {resolved.map((entry) => (
+                  <ShopTheLookHotspot
+                    key={entry.hotspot.id}
+                    label={entry.label}
+                    xPercent={entry.hotspot.xPercent}
+                    yPercent={entry.hotspot.yPercent}
+                    isActive={activeId === entry.hotspot.id}
+                    controls="shop-the-look-panel"
+                    onToggle={() => setActiveId(entry.hotspot.id)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="lg:col-span-4">
-          <div
-            id="shop-the-look-panel"
-            aria-live="polite"
-            className="hidden rounded-sm border border-border bg-surface p-5 lg:block"
-          >
-            {active ? (
-              <>
-                {active.imageSrc && (
-                  <img
-                    src={active.imageSrc}
-                    alt=""
-                    loading="lazy"
-                    width={400}
-                    height={520}
-                    className="h-40 w-full rounded-sm object-cover"
-                  />
-                )}
-                <p className="mt-4 text-lg">{active.label}</p>
-                {active.priceLabel && (
-                  <p className="mt-1 text-sm text-foreground-muted">{active.priceLabel}</p>
-                )}
-                <AppLink
-                  href={active.href}
-                  className="mt-4 inline-flex min-h-[44px] items-center gap-2 text-sm text-accent-dark"
-                >
-                  Voir le produit
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </AppLink>
-              </>
-            ) : (
-              <p className="text-sm text-foreground-muted">
-                Sélectionnez un point sur l'image pour découvrir le produit associé.
-              </p>
-            )}
-          </div>
+          <div className="lg:col-span-4">
+            <div
+              id="shop-the-look-panel"
+              aria-live="polite"
+              className="hidden rounded-sm border border-border bg-surface p-5 lg:block"
+            >
+              {active ? (
+                <>
+                  <div className="media-frame-product w-full overflow-hidden rounded-sm bg-surface-muted">
+                    <SafeProductImage
+                      src={active.imageSrc}
+                      alt={active.imageAlt ?? active.label}
+                      width={600}
+                      height={800}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <h3 className="mt-4 text-lg leading-snug">
+                    <AppLink href={active.href} className="hover:text-accent-dark">
+                      {active.label}
+                    </AppLink>
+                  </h3>
+                  {active.description && (
+                    <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-foreground-muted">
+                      {richTextToPlainText(active.description)}
+                    </p>
+                  )}
+                  <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    {active.priceLabel && <p className="text-sm">Dès {active.priceLabel}</p>}
+                    {active.availabilityLabel && (
+                      <p className="text-xs text-foreground-muted">{active.availabilityLabel}</p>
+                    )}
+                  </div>
+                  <AppLink
+                    href={active.href}
+                    className="mt-5 inline-flex min-h-[44px] items-center gap-2 text-sm text-accent-dark"
+                  >
+                    Voir le produit
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </AppLink>
+                </>
+              ) : (
+                <p role="status" className="text-sm text-foreground-muted">
+                  Chargement du produit associé…
+                </p>
+              )}
+            </div>
 
-          {/* Alternative mobile : liste tactile complète */}
-          <ul className="grid gap-3 lg:hidden">
-            {resolved.map((entry) => (
-              <li key={entry.hotspot.id}>
-                <AppLink
-                  href={entry.href}
-                  className="flex min-h-[64px] items-center gap-4 rounded-sm border border-border bg-surface p-3"
-                >
-                  {entry.imageSrc && (
-                    <img
+            {/* Alternative mobile : liste tactile complète */}
+            <ul className="grid gap-3 lg:hidden">
+              {resolved.map((entry) => (
+                <li key={entry.hotspot.id}>
+                  <AppLink
+                    href={entry.href}
+                    className="flex min-h-[64px] items-center gap-4 rounded-sm border border-border bg-surface p-3"
+                  >
+                    <SafeProductImage
                       src={entry.imageSrc}
-                      alt=""
-                      loading="lazy"
+                      alt={entry.imageAlt ?? entry.label}
                       width={120}
                       height={120}
-                      className="h-14 w-14 rounded-sm object-cover"
+                      className="h-14 w-14 shrink-0 rounded-sm object-cover"
                     />
-                  )}
-                  <span className="flex-1">
-                    <span className="block text-sm">{entry.label}</span>
-                    {entry.priceLabel && (
-                      <span className="block text-xs text-foreground-muted">
-                        {entry.priceLabel}
-                      </span>
-                    )}
-                  </span>
-                  <ArrowRight className="h-4 w-4 text-accent-dark" aria-hidden="true" />
-                </AppLink>
-              </li>
-            ))}
-          </ul>
+                    <span className="flex-1">
+                      <span className="block text-sm">{entry.label}</span>
+                      {entry.description && (
+                        <span className="mt-0.5 block line-clamp-2 text-xs text-foreground-muted">
+                          {richTextToPlainText(entry.description)}
+                        </span>
+                      )}
+                      {entry.priceLabel && (
+                        <span className="mt-1 block text-xs text-foreground-muted">
+                          Dès {entry.priceLabel}
+                        </span>
+                      )}
+                    </span>
+                    <ArrowRight className="h-4 w-4 text-accent-dark" aria-hidden="true" />
+                  </AppLink>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }

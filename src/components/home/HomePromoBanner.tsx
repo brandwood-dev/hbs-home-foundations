@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { AppLink } from "@/components/ui/app-link";
+import { RichTextInlineRenderer } from "@/lib/content/rich-text";
 import type {
   HomePromoBannerContent,
   HomePromoBannerMessage,
@@ -24,7 +25,7 @@ function PromoMessage({
   const content = (
     <span className="inline-flex items-center gap-2">
       {message.label ? <span className="font-medium">{message.label}</span> : null}
-      <span>{message.text}</span>
+      <RichTextInlineRenderer value={message.text} />
       {message.href ? <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" /> : null}
     </span>
   );

@@ -13,6 +13,7 @@ import {
   MockAdminPromotionRepository,
   MockAdminSettingsRepository,
   MockAdminUserRepository,
+  MockAdminCustomQuoteRepository,
 } from "@/admin/repositories/mock/admin-mock-repositories";
 import {
   ApiAdminAttributeRepository,
@@ -24,6 +25,7 @@ import { ApiAdminDashboardRepository } from "@/admin/repositories/api/admin-dash
 import { ApiAdminPromotionRepository } from "@/admin/repositories/api/admin-promotion-api-repository";
 import { ApiAdminOrderRepository } from "@/admin/repositories/api/admin-order-api-repository";
 import { ApiAdminCustomerRepository } from "@/admin/repositories/api/admin-customer-api-repository";
+import { ApiAdminCustomQuoteRepository } from "@/admin/repositories/api/admin-custom-quote-api-repository";
 import { ApiAdminMediaRepository } from "@/admin/repositories/api/admin-content-api-repository";
 import { ApiAdminEditorialPageRepository } from "@/admin/repositories/api/admin-editorial-page-api-repository";
 import { ApiAdminArticleRepository } from "@/admin/repositories/api/admin-article-api-repository";
@@ -70,6 +72,10 @@ export const adminRepositories = {
     adminConfig.customerDataProvider === "api"
       ? new ApiAdminCustomerRepository()
       : new MockAdminCustomerRepository(),
+  customQuotes:
+    adminConfig.customQuoteDataProvider === "api"
+      ? new ApiAdminCustomQuoteRepository()
+      : new MockAdminCustomQuoteRepository(),
   promotions:
     adminConfig.promotionDataProvider === "api"
       ? new ApiAdminPromotionRepository()

@@ -10,10 +10,10 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
   if (testimonials.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-16 lg:py-24" aria-labelledby="home-testimonials">
+    <section className="mx-auto max-w-7xl px-6 py-10 lg:py-14" aria-labelledby="home-testimonials">
       <HomeSectionHeading id="home-testimonials" eyebrow="Avis" title="Ils nous font confiance" />
 
-      <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {testimonials.map((testimonial) => (
           <li key={testimonial.id} className="rounded-sm border border-border bg-surface p-6">
             <p

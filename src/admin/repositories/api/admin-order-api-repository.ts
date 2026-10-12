@@ -1,6 +1,7 @@
 import type { components, operations } from "@/api/generated/hbs-home-api";
 import { HbsApiClient, HbsApiError } from "@/api";
 import { getSupabaseBrowserClient } from "@/auth/supabase-browser";
+import { getSellingModeLabel } from "@/domain/product/product.constants";
 import type {
   AdminOrderRepository,
   AdminOrderListParams,
@@ -91,7 +92,9 @@ function mapItem(item: ApiOrder["items"][number]): AdminOrder["items"][number] {
     ...(item.selectedOptions.length
       ? { selectedOptions: item.selectedOptions as AdminOrderItemOption[] }
       : {}),
-    ...(item.sellingUnitLabel ? { sellingUnitLabel: item.sellingUnitLabel } : {}),
+    ...(item.sellingUnitLabel
+      ? { sellingUnitLabel: getSellingModeLabel(item.sellingUnitLabel) }
+      : {}),
     ...(shippingProfile ? { shippingProfile } : {}),
   } satisfies AdminOrder["items"][number];
 }

@@ -15,7 +15,7 @@ export function CartCountBadge({ className = "" }: { className?: string }) {
   const { count } = useCartCount();
   if (count <= 0) return null;
   return (
-    <span aria-hidden="true" className={className}>
+    <span key={count} aria-hidden="true" className={`count-badge-pop ${className}`}>
       {count > 99 ? "99+" : count}
     </span>
   );

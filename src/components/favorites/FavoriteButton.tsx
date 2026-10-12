@@ -15,8 +15,8 @@ export function FavoriteButton({
   variant = "overlay",
   className = "",
 }: FavoriteButtonProps) {
-  const { isFavorite, toggleFavorite, hydrated, pendingProductId } = useToggleFavorite();
-  const active = hydrated && isFavorite(productId);
+  const { isFavorite, toggleFavorite, hydrated, pendingProductId } = useToggleFavorite(productId);
+  const active = hydrated && isFavorite();
   const pending = pendingProductId === productId;
 
   const base =
@@ -37,10 +37,10 @@ export function FavoriteButton({
         active ? `Retirer ${productName} des favoris` : `Ajouter ${productName} aux favoris`
       }
       disabled={pending}
-      className={`${base} ${className}`}
+      className={`${base} transition-all duration-200 hover:scale-105 active:scale-95 disabled:cursor-wait disabled:opacity-70 ${className}`}
     >
       <Heart
-        className={`h-5 w-5 transition-colors ${active ? "fill-accent text-accent" : ""}`}
+        className={`h-5 w-5 transition-colors ${active ? "fill-accent text-accent favorite-pop" : ""}`}
         aria-hidden="true"
       />
       {variant === "inline" ? (

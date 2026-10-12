@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  BRONZE_ADMIN_COLOR_OPTION,
   DEFAULT_ADMIN_COLOR_OPTIONS,
+  ensureBronzeAdminColorOption,
   resolveAdminColorOptions,
 } from "@/admin/config/admin-color-options";
 import type { AdminAttribute } from "@/admin/types/admin.types";
@@ -57,5 +59,15 @@ describe("resolveAdminColorOptions", () => {
     ]);
 
     expect(options).toEqual(DEFAULT_ADMIN_COLOR_OPTIONS);
+  });
+
+  it("adds bronze for curtain families without duplicating an API-provided option", () => {
+    expect(ensureBronzeAdminColorOption([{ value: "c-beige", label: "Beige sable" }])).toEqual([
+      { value: "c-beige", label: "Beige sable" },
+      BRONZE_ADMIN_COLOR_OPTION,
+    ]);
+    expect(
+      ensureBronzeAdminColorOption([{ value: "c-bronze", label: "Bronze", hex: "#8B5A3C" }]),
+    ).toEqual([{ value: "c-bronze", label: "Bronze", hex: "#8B5A3C" }]);
   });
 });

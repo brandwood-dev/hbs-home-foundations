@@ -7,10 +7,10 @@ export function SocialSection({ content }: { content: SocialContent }) {
   if (content.items.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-16 lg:py-24" aria-labelledby="home-social">
+    <section className="mx-auto max-w-7xl px-6 py-10 lg:py-14" aria-labelledby="home-social">
       <HomeSectionHeading id="home-social" eyebrow="Communauté" title={content.title} />
 
-      <ul className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+      <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {content.items.map((item) => (
           <li key={item.id} className="overflow-hidden rounded-sm bg-surface-muted">
             {item.href ? (

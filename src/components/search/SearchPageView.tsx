@@ -12,6 +12,7 @@ import { SEARCH_MIN_QUERY_LENGTH } from "@/domain/search/search.constants";
 import type { ProductCategory } from "@/domain/product/product.types";
 import type { SearchSort } from "@/domain/search/search.types";
 import { useSearchHistory } from "@/hooks/search/useSearchHistory";
+import { usePopularSearches } from "@/hooks/search/usePopularSearches";
 import { useSearchResults } from "@/hooks/search/useSearchResults";
 import { trackEvent } from "@/lib/analytics/analytics";
 import { isSearchableQuery } from "@/services/search/normalize-search-query";
@@ -25,6 +26,7 @@ export function SearchPageView() {
   const params = toGlobalSearchParams(search);
   const [draft, setDraft] = useState(search.q);
   const { addSearch } = useSearchHistory();
+  const { popularSearches } = usePopularSearches();
 
   useEffect(() => setDraft(search.q), [search.q]);
 
@@ -87,7 +89,11 @@ export function SearchPageView() {
             ))}
           </div>
         ) : !results || results.totalProducts === 0 ? (
-          <SearchEmptyState query={search.q} onSuggestionClick={(value) => submit(value)} />
+          <SearchEmptyState
+            query={search.q}
+            onSuggestionClick={(value) => submit(value)}
+            popularSearches={popularSearches}
+          />
         ) : (
           <div className="mt-8">
             <SearchResultsToolbar

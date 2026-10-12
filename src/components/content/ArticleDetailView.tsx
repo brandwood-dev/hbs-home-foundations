@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import type { Article, ArticleBlock } from "@/domain/content/article.types";
+import { RichTextRenderer } from "@/lib/content/rich-text";
 
 function text(block: ArticleBlock, key: string): string | null {
   const value = block[key];
@@ -15,14 +16,14 @@ function ArticleBlockView({ block }: { block: ArticleBlock }) {
   if (block.type === "paragraph") {
     const value = text(block, "text") ?? text(block, "body");
     return value ? (
-      <p className="leading-8 text-foreground-muted whitespace-pre-line">{value}</p>
+      <RichTextRenderer value={value} className="leading-8 text-foreground-muted" />
     ) : null;
   }
   if (block.type === "quote") {
     const value = text(block, "text");
     return value ? (
       <blockquote className="border-l-2 border-accent pl-6 text-xl italic leading-8">
-        {value}
+        <RichTextRenderer value={value} />
       </blockquote>
     ) : null;
   }
@@ -90,9 +91,10 @@ export function ArticleDetailView({ article }: { article: Article }) {
             {article.category.name} · {article.readingTimeMinutes} min de lecture
           </p>
           <h1 className="mt-4 text-4xl leading-tight sm:text-5xl">{article.title}</h1>
-          <p className="mx-auto mt-5 max-w-2xl leading-7 text-foreground-muted">
-            {article.excerpt}
-          </p>
+          <RichTextRenderer
+            value={article.excerpt}
+            className="mx-auto mt-5 max-w-2xl leading-7 text-foreground-muted"
+          />
           <p className="mt-4 text-sm text-foreground-muted">
             Par {article.authorName} · {publishedDate}
           </p>

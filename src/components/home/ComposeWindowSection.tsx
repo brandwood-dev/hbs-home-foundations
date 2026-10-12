@@ -8,7 +8,7 @@ export function ComposeWindowSection({ content }: { content: ComposeWindowConten
 
   return (
     <section className="border-y border-border bg-surface" aria-labelledby="home-compose-window">
-      <div className="mx-auto max-w-7xl px-6 py-16 lg:py-24">
+      <div className="mx-auto max-w-7xl px-6 py-10 lg:py-14">
         <HomeSectionHeading
           id="home-compose-window"
           eyebrow="Méthode"
@@ -16,7 +16,7 @@ export function ComposeWindowSection({ content }: { content: ComposeWindowConten
           subtitle={content.subtitle}
         />
 
-        <ol className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {content.steps.map((step, index) => (
             <li key={step.id} className="relative">
               <span
@@ -36,7 +36,7 @@ export function ComposeWindowSection({ content }: { content: ComposeWindowConten
 
         <AppLink
           href={content.cta.href}
-          className="mt-10 inline-flex min-h-[48px] items-center gap-2 rounded-sm bg-accent px-6 text-sm text-accent-foreground transition-colors hover:bg-accent-dark"
+          className="mt-8 inline-flex min-h-[48px] items-center gap-2 rounded-sm bg-accent px-6 text-sm text-accent-foreground transition-colors hover:bg-accent-dark"
         >
           {content.cta.label}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />

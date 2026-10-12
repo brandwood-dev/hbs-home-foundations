@@ -165,6 +165,7 @@ export interface CustomProfessionalColumn {
   title: string;
   text: string;
   cta: HomeCta;
+  image: HomeImage;
 }
 
 export interface CustomProfessionalContent {

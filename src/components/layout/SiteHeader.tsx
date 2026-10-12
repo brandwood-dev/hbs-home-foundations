@@ -40,9 +40,12 @@ export function SiteHeader() {
   );
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur">
+    <header
+      data-header-compact="false"
+      className="border-b border-border bg-surface/95 backdrop-blur"
+    >
       {/* Mobile */}
-      <div className="flex items-center justify-between px-3 py-2 lg:hidden">
+      <div className="flex min-h-16 items-center justify-between px-3 py-2 lg:hidden">
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
@@ -74,8 +77,9 @@ export function SiteHeader() {
             <Heart className="h-5 w-5" aria-hidden="true" />
             {favoritesCount > 0 ? (
               <span
+                key={favoritesCount}
                 aria-hidden="true"
-                className="absolute right-1 top-1 min-w-4 rounded-full bg-accent px-1 text-center text-[10px] leading-4 text-accent-foreground"
+                className="count-badge-pop absolute right-1 top-1 min-w-4 rounded-full bg-accent px-1 text-center text-[10px] leading-4 text-accent-foreground"
               >
                 {favoritesCount > 99 ? "99+" : favoritesCount}
               </span>
@@ -91,8 +95,9 @@ export function SiteHeader() {
             <ShoppingBag className="h-5 w-5" aria-hidden="true" />
             {cartCount > 0 ? (
               <span
+                key={cartCount}
                 aria-hidden="true"
-                className="absolute right-1 top-1 min-w-4 rounded-full bg-accent px-1 text-center text-[10px] leading-4 text-accent-foreground"
+                className="count-badge-pop absolute right-1 top-1 min-w-4 rounded-full bg-accent px-1 text-center text-[10px] leading-4 text-accent-foreground"
               >
                 {cartCount > 99 ? "99+" : cartCount}
               </span>
@@ -103,7 +108,7 @@ export function SiteHeader() {
 
       {/* Desktop */}
       <div className="hidden lg:block" onMouseLeave={() => setOpenMenuId(null)}>
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-8 px-6 py-4">
+        <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-8 px-6 py-4">
           <Link to="/" aria-label={`${storeConfig.brandName} — Accueil`}>
             <BrandLogo className="h-12 w-[5.1rem]" />
           </Link>
@@ -126,8 +131,9 @@ export function SiteHeader() {
               Favoris
               {favoritesCount > 0 ? (
                 <span
+                  key={favoritesCount}
                   aria-hidden="true"
-                  className="rounded-full bg-accent px-1.5 text-[11px] leading-5 text-accent-foreground"
+                  className="count-badge-pop rounded-full bg-accent px-1.5 text-[11px] leading-5 text-accent-foreground"
                 >
                   {favoritesCount > 99 ? "99+" : favoritesCount}
                 </span>
@@ -151,8 +157,9 @@ export function SiteHeader() {
               Panier
               {cartCount > 0 ? (
                 <span
+                  key={cartCount}
                   aria-hidden="true"
-                  className="rounded-full bg-accent px-1.5 text-[11px] leading-5 text-accent-foreground"
+                  className="count-badge-pop rounded-full bg-accent px-1.5 text-[11px] leading-5 text-accent-foreground"
                 >
                   {cartCount > 99 ? "99+" : cartCount}
                 </span>
@@ -162,24 +169,29 @@ export function SiteHeader() {
         </div>
 
         <nav aria-label="Navigation principale" className="relative border-t border-border">
-          <ul className="mx-auto flex max-w-7xl items-center gap-1 px-6">
-            {navigation.map((item) => (
-              <li key={item.id} onMouseEnter={() => setOpenMenuId(item.megaMenu ? item.id : null)}>
-                <AppLink
-                  href={item.href}
-                  onFocus={() => setOpenMenuId(item.megaMenu ? item.id : null)}
-                  aria-haspopup={item.megaMenu ? "true" : undefined}
-                  aria-expanded={item.megaMenu ? openMenuId === item.id : undefined}
-                  activeProps={{ className: "text-accent-dark" }}
-                  className={`inline-flex items-center px-3 py-3 text-sm tracking-wide transition-colors hover:text-accent-dark ${
-                    item.highlight ? "text-accent-dark" : "text-foreground"
-                  }`}
+          <div className="mx-auto max-w-7xl px-6">
+            <ul className="flex min-h-11 flex-nowrap items-center justify-center gap-x-1 overflow-x-auto overscroll-contain">
+              {navigation.map((item) => (
+                <li
+                  key={item.id}
+                  onMouseEnter={() => setOpenMenuId(item.megaMenu ? item.id : null)}
                 >
-                  {item.label}
-                </AppLink>
-              </li>
-            ))}
-          </ul>
+                  <AppLink
+                    href={item.href}
+                    onFocus={() => setOpenMenuId(item.megaMenu ? item.id : null)}
+                    aria-haspopup={item.megaMenu ? "true" : undefined}
+                    aria-expanded={item.megaMenu ? openMenuId === item.id : undefined}
+                    activeProps={{ className: "text-accent-dark" }}
+                    className={`inline-flex min-h-11 items-center whitespace-nowrap px-3 py-3 text-sm tracking-wide transition-colors hover:text-accent-dark ${
+                      item.highlight ? "text-accent-dark" : "text-foreground"
+                    }`}
+                  >
+                    {item.label}
+                  </AppLink>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           {navigation.map((item) =>
             item.megaMenu && openMenuId === item.id ? (

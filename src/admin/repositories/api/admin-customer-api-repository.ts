@@ -1,6 +1,7 @@
 import type { components, operations } from "@/api/generated/hbs-home-api";
 import { HbsApiClient, HbsApiError } from "@/api";
 import { getSupabaseBrowserClient } from "@/auth/supabase-browser";
+import { getSellingModeLabel } from "@/domain/product/product.constants";
 import type {
   AdminCustomerRepository,
   AdminCustomerListParams,
@@ -123,7 +124,7 @@ function mapOrder(order: ApiOrder): AdminOrder {
       productSlug: item.productSlug,
       imageUrl: item.imageUrl,
       selectedOptions: item.selectedOptions as AdminOrderItemOption[],
-      sellingUnitLabel: item.sellingUnitLabel,
+      sellingUnitLabel: getSellingModeLabel(item.sellingUnitLabel),
       ...(item.shippingProfile &&
       ["standard", "fragile", "bulky", "oversized"].includes(item.shippingProfile)
         ? { shippingProfile: item.shippingProfile as AdminShippingProfile }
