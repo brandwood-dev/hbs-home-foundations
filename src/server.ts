@@ -2,6 +2,7 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
+import { toMetaCatalogPlainText } from "./services/marketing/meta-catalog";
 import { getMarketingRuntimeEnv } from "./services/marketing/brevo";
 
 type ServerEntry = {
@@ -261,8 +262,9 @@ async function handleMetaCatalogFeed(request: Request): Promise<Response | null>
     for (const product of products) {
       const name = asTrimmedString(product["name"]);
       const reference = asTrimmedString(product["reference"]);
-      const description =
-        asTrimmedString(product["shortDescription"]) || asTrimmedString(product["longDescription"]);
+      const description = toMetaCatalogPlainText(
+        asTrimmedString(product["shortDescription"]) || asTrimmedString(product["longDescription"]),
+      );
       const variants = Array.isArray(product["variants"])
         ? product["variants"].filter((item): item is Record<string, unknown> => {
             return typeof item === "object" && item !== null;
