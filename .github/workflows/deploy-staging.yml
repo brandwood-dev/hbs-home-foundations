@@ -37,6 +37,9 @@ jobs:
           VITE_HBS_API_BASE_URL: https://api-preview.hbs-home.com
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_META_PIXEL_ID: "1291821648742747"
+          VITE_META_CATALOG_ID: "2267753347359429"
+          VITE_META_SITE_ID: hbs_home_preview
           VITE_RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
         run: bun run deploy:staging
       - name: Verify the published release
