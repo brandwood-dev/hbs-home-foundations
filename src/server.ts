@@ -253,6 +253,7 @@ async function handleMetaCatalogFeed(request: Request): Promise<Response | null>
         "additional_image_link",
         "brand",
         "item_group_id",
+        "custom_label_0",
       ],
     ];
 
@@ -266,6 +267,15 @@ async function handleMetaCatalogFeed(request: Request): Promise<Response | null>
             return typeof item === "object" && item !== null;
           })
         : [];
+      const heroVariant =
+        variants.find((variant) => {
+          const sku = asTrimmedString(variant["sku"]);
+          const image = catalogImageUrls(variant, product, url.origin).primary;
+          return Boolean(sku && image && catalogAvailability(variant) !== "out of stock");
+        }) ??
+        variants.find((variant) => Boolean(asTrimmedString(variant["sku"]))) ??
+        null;
+      const heroSku = heroVariant ? asTrimmedString(heroVariant["sku"]) : "";
       const link = absoluteCatalogUrl(catalogProductPath(product), url.origin);
 
       for (const variant of variants) {
@@ -292,6 +302,7 @@ async function handleMetaCatalogFeed(request: Request): Promise<Response | null>
           imageLinks.additional.join(","),
           "HBS HOME",
           reference || asTrimmedString(product["id"]),
+          sku === heroSku ? "hero" : "variant",
         ];
         rows.push(row);
       }
