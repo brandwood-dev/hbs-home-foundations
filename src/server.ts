@@ -253,6 +253,7 @@ async function handleMetaCatalogFeed(request: Request): Promise<Response | null>
         "additional_image_link",
         "brand",
         "item_group_id",
+        "product_type",
         "custom_label_0",
       ],
     ];
@@ -302,6 +303,7 @@ async function handleMetaCatalogFeed(request: Request): Promise<Response | null>
           imageLinks.additional.join(","),
           "HBS HOME",
           reference || asTrimmedString(product["id"]),
+          sku === heroSku ? "hbs_home_hero" : "hbs_home_variant",
           sku === heroSku ? "hero" : "variant",
         ];
         rows.push(row);
