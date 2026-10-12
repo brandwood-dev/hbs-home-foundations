@@ -5,10 +5,11 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
-import { getSupabaseBrowserClient } from "@/auth/supabase-browser";
+import { getSupabaseBrowserClient, withSupabaseAuthLock } from "@/auth/supabase-browser";
 
 type AdminAuthStatus = "loading" | "authenticated" | "unauthenticated" | "unconfigured";
 
@@ -28,6 +29,9 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [client, setClient] = useState<SupabaseClient | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [status, setStatus] = useState<AdminAuthStatus>("loading");
+  // A refresh token is single-use. Keep concurrent callers in this tab on
+  // the same request so a background validation cannot rotate it twice.
+  const refreshPromiseRef = useRef<Promise<Session | null> | null>(null);
 
   const hydrateSessionFromHash = useCallback(async (supabase: SupabaseClient) => {
     if (typeof window === "undefined") return;
@@ -107,7 +111,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         );
       }
 
-      const { data, error } = await supabase.auth.getSession();
+      const { data, error } = await withSupabaseAuthLock(() => supabase.auth.getSession());
       if (!active) return;
       if (error) {
         setSession(null);
@@ -153,9 +157,26 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   }, [requireClient]);
 
   const refreshSession = useCallback(async () => {
-    const { data, error } = await requireClient().auth.refreshSession();
-    if (error) throw error;
-    setSession(data.session);
+    const inFlight = refreshPromiseRef.current;
+    if (inFlight) {
+      await inFlight;
+      return;
+    }
+
+    const request = (async () => {
+      const { data, error } = await withSupabaseAuthLock(() =>
+        requireClient().auth.refreshSession(),
+      );
+      if (error) throw error;
+      setSession(data.session);
+      return data.session;
+    })();
+    refreshPromiseRef.current = request;
+    try {
+      await request;
+    } finally {
+      if (refreshPromiseRef.current === request) refreshPromiseRef.current = null;
+    }
   }, [requireClient]);
 
   const updatePassword = useCallback(

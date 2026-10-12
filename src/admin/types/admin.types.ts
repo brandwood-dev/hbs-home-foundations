@@ -410,6 +410,53 @@ export interface AdminCustomer {
   updatedAt?: string;
 }
 
+export type AdminCustomQuoteProductType = "rideaux" | "voilages" | "stores" | "ensemble_fenetre";
+export type AdminCustomQuoteRequestType = "particulier" | "professionnels";
+
+export interface AdminCustomQuoteOpening {
+  id: string;
+  label: string;
+  openingType: string;
+  widthCm: number;
+  heightCm: number;
+  quantity: number;
+  installationType?: string;
+}
+
+export interface AdminCustomQuote {
+  id: string;
+  reference: string;
+  requestType: AdminCustomQuoteRequestType;
+  professionalDetails?: {
+    companyName: string;
+    activity: string;
+    taxId?: string;
+    projectVolume: string;
+    desiredDeadline?: string;
+    message: string;
+  };
+  productType: AdminCustomQuoteProductType;
+  openings: AdminCustomQuoteOpening[];
+  preferences: { wantsAccessories: boolean; notes?: string } & Record<string, unknown>;
+  contact: {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email?: string;
+    governorate: string;
+    city: string;
+    preferredContact: "phone" | "whatsapp" | "email";
+  };
+  attachmentMetadata: Array<{ id: string; name: string; size: number; type: string }>;
+  createdAt: string;
+  readAt: string | null;
+  archivedAt: string | null;
+  emailSentAt: string | null;
+  customerId: string | null;
+  convertedAt: string | null;
+  convertedBy: string | null;
+}
+
 export type PromotionType = "automatic" | "coupon";
 export type DiscountType = "percentage" | "fixed_amount" | "free_shipping";
 

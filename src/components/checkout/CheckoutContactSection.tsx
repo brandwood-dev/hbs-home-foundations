@@ -76,6 +76,26 @@ export function CheckoutContactSection({
           {...register("customer.email")}
         />
       </CheckoutField>
+
+      <div className="space-y-3 rounded-sm border border-border bg-surface-muted p-4">
+        <p className="text-sm font-medium text-foreground">Rester informé (facultatif)</p>
+        <label className="flex items-start gap-3 text-sm text-foreground-muted">
+          <input
+            type="checkbox"
+            className="mt-0.5 size-4 accent-accent"
+            {...register("marketingEmailOptIn")}
+          />
+          <span>Recevoir les nouveautés et offres HBS HOME par e-mail.</span>
+        </label>
+        <label className="flex items-start gap-3 text-sm text-foreground-muted">
+          <input
+            type="checkbox"
+            className="mt-0.5 size-4 accent-accent"
+            {...register("messagingMarketingOptIn")}
+          />
+          <span>Recevoir ponctuellement nos offres par SMS ou WhatsApp.</span>
+        </label>
+      </div>
     </section>
   );
 }

@@ -3,6 +3,8 @@ export const FAVORITES_VERSION = 1 as const;
 /** Garde-fou : un utilisateur n'accumule pas plus de 200 favoris en local. */
 export const FAVORITES_MAX_ITEMS = 200;
 export const FAVORITES_QUERY_KEY = ["favorites"] as const;
+/** État local éphémère utilisé pour rendre le bouton instantané pendant la mutation. */
+export const FAVORITES_OPTIMISTIC_QUERY_KEY = ["favorites", "optimistic"] as const;
 export const FAVORITES_UPDATED_EVENT = "hbs-home:favorites-updated";
 /** Storage-only signal used to invalidate API-backed favorites in other tabs. */
 export const FAVORITES_SYNC_STORAGE_KEY = "hbs-home-favorites-sync-v1";

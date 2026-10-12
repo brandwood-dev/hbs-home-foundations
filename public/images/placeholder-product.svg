@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Image produit indisponible</title>
+  <desc id="desc">Visuel neutre HBS HOME utilisé lorsqu'une image produit n'est pas disponible.</desc>
+  <rect width="800" height="1000" fill="#f4f0eb"/>
+  <path d="M185 680h430v-32H185zm0 64h300v-24H185z" fill="#b1795b" opacity=".5"/>
+  <text x="400" y="470" text-anchor="middle" fill="#8a6f5d" font-family="Georgia, serif" font-size="74" letter-spacing="7">HBS</text>
+  <text x="400" y="525" text-anchor="middle" fill="#8a6f5d" font-family="Arial, sans-serif" font-size="24" letter-spacing="8">HOME</text>
+</svg>

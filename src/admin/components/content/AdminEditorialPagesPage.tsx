@@ -13,7 +13,7 @@ import {
   AdminSearchInput,
   type AdminColumn,
 } from "@/admin/components/ui/AdminDataTable";
-import { AdminField, AdminSelectField } from "@/admin/components/ui/AdminForm";
+import { AdminField, AdminRichTextField, AdminSelectField } from "@/admin/components/ui/AdminForm";
 import { AdminStatusBadge } from "@/admin/components/ui/AdminStates";
 import { useAdminEditorialPages } from "@/admin/hooks/admin.queries";
 import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
@@ -301,13 +301,12 @@ export function AdminEditorialPagesPage() {
               hint="Ex. a-propos ou conditions-livraison"
               onChange={(value) => setDraft({ ...draft, slug: value })}
             />
-            <AdminField
+            <AdminRichTextField
               label="Corps de la page"
               value={draft.body}
-              multiline
-              rows={8}
               disabled={draft.status === "published"}
               onChange={(value) => setDraft({ ...draft, body: value })}
+              hint="Paragraphes, listes, emojis et liens sont affichés avec leur mise en page sur le site public."
             />
             <AdminField
               label="Titre SEO"

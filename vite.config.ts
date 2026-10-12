@@ -11,5 +11,8 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+    // Keep non-critical route components out of the initial client bundle. TanStack Start
+    // keeps loaders and route matching critical while loading page components on demand.
+    router: { autoCodeSplitting: true },
   },
 });

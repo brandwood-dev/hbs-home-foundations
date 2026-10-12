@@ -30,6 +30,7 @@ import {
   CHAIR_PAD_SHAPE_LABELS,
 } from "@/domain/product/product.constants";
 import type { Product } from "@/domain/product/product.types";
+import { richTextToPlainText } from "@/lib/content/rich-text";
 import { normalizeSearchQuery } from "@/services/search/normalize-search-query";
 
 /** Document indexé pour un produit — uniquement des données catalogue publiques. */
@@ -260,7 +261,7 @@ export function buildProductSearchDoc(product: Product): ProductSearchDoc {
     colorTerms: [...new Set(colorTerms)],
     attributeTerms: [...new Set(attributeTerms)],
     measurementTerms: [...new Set(measurementTerms.filter(Boolean))],
-    description: norm(product.shortDescription),
+    description: norm(richTextToPlainText(product.shortDescription)),
   };
 }
 

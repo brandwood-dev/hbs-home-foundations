@@ -25,7 +25,18 @@ export function ProductGallery({ images, activeImageId }: ProductGalleryProps) {
 
   const total = images.length;
   const current = images[Math.min(index, total - 1)];
-  if (!current) return null;
+  const [visibleImage, setVisibleImage] = useState<ProductImage | null>(images[0] ?? null);
+  const [outgoingImage, setOutgoingImage] = useState<ProductImage | null>(null);
+
+  useEffect(() => {
+    if (!current || (visibleImage?.id === current.id && visibleImage.url === current.url)) return;
+    setOutgoingImage(visibleImage);
+    setVisibleImage(current);
+    const timeout = window.setTimeout(() => setOutgoingImage(null), 280);
+    return () => window.clearTimeout(timeout);
+  }, [current, visibleImage]);
+
+  if (!current || !visibleImage) return null;
 
   const go = (delta: number) => setIndex((prev) => (prev + delta + total) % total);
 
@@ -72,15 +83,28 @@ export function ProductGallery({ images, activeImageId }: ProductGalleryProps) {
           }
         }}
       >
-        <div className="aspect-[3/4] w-full">
+        <div className="media-frame-product relative w-full">
+          {outgoingImage && (
+            <img
+              key={`outgoing-${outgoingImage.id}`}
+              src={outgoingImage.url}
+              alt=""
+              width={1024}
+              height={1365}
+              decoding="async"
+              aria-hidden="true"
+              className="gallery-image-out absolute inset-0 h-full w-full object-cover"
+            />
+          )}
           <img
-            src={current.url}
-            alt={current.alt}
+            key={visibleImage.id}
+            src={visibleImage.url}
+            alt={visibleImage.alt}
             width={1024}
             height={1365}
             decoding="async"
             onClick={() => setZoomed((value) => !value)}
-            className={`h-full w-full object-cover transition-transform duration-500 ${
+            className={`gallery-image-in absolute inset-0 h-full w-full object-cover transition-transform duration-500 ${
               zoomed ? "scale-150 cursor-zoom-out" : "cursor-zoom-in"
             }`}
           />

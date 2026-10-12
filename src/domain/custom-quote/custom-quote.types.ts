@@ -72,5 +72,5 @@ export interface CustomQuoteRequest {
 export interface CustomQuoteSubmissionResult {
   reference: string;
   submittedAt: string;
-  isDemo: boolean;
+  isDemo?: boolean;
 }

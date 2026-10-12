@@ -1,5 +1,6 @@
 const baseUrl = process.env.SMOKE_BASE_URL?.trim();
 const expectedSha = process.env.EXPECTED_GIT_SHA?.trim();
+const requireMetaCapi = process.env.REQUIRE_META_CAPI === "1";
 
 if (!baseUrl) {
   throw new Error("SMOKE_BASE_URL is required.");
@@ -48,7 +49,32 @@ for (let attempt = 1; attempt <= Math.max(1, maxAttempts); attempt += 1) {
 }
 
 if (successResult) {
-  console.log(JSON.stringify(successResult));
+  const metaHealthUrl = new URL("/api/meta/health", baseUrl);
+  const metaResponse = await fetch(metaHealthUrl, {
+    headers: { ...headers, accept: "application/json" },
+    cache: "no-store",
+  });
+  if (!metaResponse.ok) {
+    throw new Error(`Meta configuration smoke failed with HTTP ${metaResponse.status}.`);
+  }
+  const metaHealth = await metaResponse.json();
+  if (metaHealth.success !== true || metaHealth.pixelConfigured !== true) {
+    throw new Error("Meta Pixel is not configured on the staging Worker.");
+  }
+  if (requireMetaCapi && metaHealth.conversionsApiConfigured !== true) {
+    throw new Error("Meta Conversions API is not configured on the staging Worker.");
+  }
+  console.log(
+    JSON.stringify({
+      ...successResult,
+      meta: {
+        pixelConfigured: metaHealth.pixelConfigured,
+        conversionsApiConfigured: metaHealth.conversionsApiConfigured,
+        datasetId: metaHealth.datasetId,
+        catalogId: metaHealth.catalogId,
+      },
+    }),
+  );
 } else {
   throw new Error(`Expected release ${expectedSha}, received ${lastRelease ?? "none"}.`);
 }

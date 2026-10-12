@@ -15,6 +15,8 @@ export const adminConfig = {
   orderDataProvider: "api" as AdminDataProvider,
   /** Les fiches clients persistées suivent les commandes en Phase 6E. */
   customerDataProvider: "api" as AdminDataProvider,
+  /** Les demandes de devis sur mesure sont persistées dans Supabase. */
+  customQuoteDataProvider: "api" as AdminDataProvider,
   /** La médiathèque éditoriale est migrée dans la phase 9C. */
   mediaDataProvider: "api" as AdminDataProvider,
   /** Les pages éditoriales sont migrées dans la phase 9C.2. */

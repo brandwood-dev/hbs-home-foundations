@@ -8,7 +8,7 @@ import {
   type AdminColumn,
 } from "@/admin/components/ui/AdminDataTable";
 import { AdminFormDrawer, AdminTabs } from "@/admin/components/ui/AdminOverlays";
-import { AdminKpiCard, AdminStatusBadge } from "@/admin/components/ui/AdminStates";
+import { AdminStatusBadge } from "@/admin/components/ui/AdminStates";
 import { AdminField, AdminNumberField, AdminSelectField } from "@/admin/components/ui/AdminForm";
 import { useAdminInventory, useAdminStockMovements } from "@/admin/hooks/admin.queries";
 import { useAdjustStock, useUpdateStockSettings } from "@/admin/hooks/admin-catalog.mutations";
@@ -173,12 +173,6 @@ export function AdminInventoryPage() {
         breadcrumbs={[{ label: "Catalogue" }, { label: "Stock" }]}
       />
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-3">
-        <AdminKpiCard label="Unités en stock" value={`${totalUnits}`} />
-        <AdminKpiCard label="Stock faible" value={`${lowCount}`} />
-        <AdminKpiCard label="Ruptures" value={`${outCount}`} />
-      </div>
-
       <AdminTabs
         tabs={[
           {
@@ -195,6 +189,14 @@ export function AdminInventoryPage() {
                 emptyTitle="Aucune variante"
                 toolbar={
                   <>
+                    <div className="flex flex-wrap items-center gap-2 text-sm sm:order-last sm:ml-auto">
+                      <span className="font-semibold tabular-nums text-foreground">
+                        {totalUnits}
+                      </span>
+                      <span className="text-muted-foreground">unité(s)</span>
+                      <AdminStatusBadge label={`${lowCount} stock(s) faible(s)`} tone="warning" />
+                      <AdminStatusBadge label={`${outCount} rupture(s)`} tone="danger" />
+                    </div>
                     <AdminSearchInput
                       value={search}
                       onChange={setSearch}

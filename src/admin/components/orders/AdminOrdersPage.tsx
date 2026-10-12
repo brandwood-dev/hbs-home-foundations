@@ -10,7 +10,7 @@ import {
   AdminSortSelect,
   type AdminColumn,
 } from "@/admin/components/ui/AdminDataTable";
-import { AdminKpiCard, AdminStatusBadge } from "@/admin/components/ui/AdminStates";
+import { AdminStatusBadge } from "@/admin/components/ui/AdminStates";
 import { useAdminOrders } from "@/admin/hooks/admin.queries";
 import { useBulkUpdateOrderStatus } from "@/admin/hooks/admin-sales.mutations";
 import type { AdminOrderListParams, AdminOrderSort } from "@/admin/repositories/interfaces";
@@ -158,25 +158,6 @@ export function AdminOrdersPage() {
         breadcrumbs={[{ label: "Commandes" }]}
       />
 
-      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <AdminKpiCard label="Commandes" value={counters?.total ?? 0} />
-        <AdminKpiCard
-          label="À confirmer"
-          value={counters?.pendingConfirmation ?? 0}
-          tone="warning"
-        />
-        <AdminKpiCard
-          label="Frais à confirmer"
-          value={counters?.shippingToConfirm ?? 0}
-          tone="warning"
-        />
-        <AdminKpiCard
-          label="Paiement en attente"
-          value={counters?.paymentPending ?? 0}
-          tone="info"
-        />
-      </div>
-
       <AdminDataTable
         rows={rows}
         columns={columns}
@@ -189,6 +170,22 @@ export function AdminOrdersPage() {
         emptyDescription="Ajustez les filtres ou la recherche pour élargir les résultats."
         toolbar={
           <>
+            <div className="flex flex-wrap items-center gap-2 text-sm sm:order-last sm:ml-auto">
+              <span className="font-semibold tabular-nums text-foreground">{data?.total ?? 0}</span>
+              <span className="text-muted-foreground">commande(s)</span>
+              {(counters?.pendingConfirmation ?? 0) > 0 ? (
+                <AdminStatusBadge
+                  label={`${counters?.pendingConfirmation} à confirmer`}
+                  tone="warning"
+                />
+              ) : null}
+              {(counters?.paymentPending ?? 0) > 0 ? (
+                <AdminStatusBadge
+                  label={`${counters?.paymentPending} paiement(s) en attente`}
+                  tone="info"
+                />
+              ) : null}
+            </div>
             <AdminSearchInput
               value={search}
               onChange={(value) => {

@@ -4,7 +4,6 @@ import {
   FAVORITES_QUERY_KEY,
   FAVORITES_SYNC_STORAGE_KEY,
   FAVORITES_STORAGE_KEY,
-  FAVORITES_UPDATED_EVENT,
 } from "@/domain/favorites/favorites.constants";
 import type { ResolvedFavorites } from "@/domain/favorites/favorites.types";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
@@ -16,7 +15,7 @@ export const emptyFavorites: ResolvedFavorites = {
   count: 0,
 };
 
-/** Favoris résolus + synchronisation entre onglets et entre composants. */
+/** Favoris résolus + synchronisation entre onglets. */
 export function useFavorites() {
   const hydrated = useIsHydrated();
   const queryClient = useQueryClient();
@@ -36,10 +35,8 @@ export function useFavorites() {
       invalidate();
     };
     window.addEventListener("storage", onStorage);
-    window.addEventListener(FAVORITES_UPDATED_EVENT, invalidate);
     return () => {
       window.removeEventListener("storage", onStorage);
-      window.removeEventListener(FAVORITES_UPDATED_EVENT, invalidate);
     };
   }, [queryClient]);
 
@@ -47,7 +44,10 @@ export function useFavorites() {
     queryKey: FAVORITES_QUERY_KEY,
     queryFn: () => getFavoritesRepository().get(),
     enabled: hydrated,
-    staleTime: 0,
+    // Les mutations mettent à jour le cache localement. Une durée courte évite
+    // de relancer une résolution catalogue à chaque remontée de composant.
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
     retry: false,
   });
 

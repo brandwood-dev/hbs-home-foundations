@@ -4,6 +4,7 @@ import { ApiOrderRepository } from "@/repositories/api/ApiOrderRepository";
 import { MockContentRepository } from "@/repositories/mock/MockContentRepository";
 import { ApiContentRepository } from "@/repositories/api/ApiContentRepository";
 import { MockNewsletterRepository } from "@/repositories/mock/MockNewsletterRepository";
+import { ApiNewsletterRepository } from "@/repositories/api/ApiNewsletterRepository";
 import { LocalCartRepository } from "@/repositories/local/LocalCartRepository";
 import { LocalFavoritesRepository } from "@/repositories/local/LocalFavoritesRepository";
 import { LocalSearchHistoryRepository } from "@/repositories/local/LocalSearchHistoryRepository";
@@ -11,7 +12,9 @@ import { MockSearchRepository } from "@/repositories/mock/MockSearchRepository";
 import { ApiSearchRepository } from "@/repositories/api/ApiSearchRepository";
 import { MockMeasurementRulesRepository } from "@/repositories/mock/MockMeasurementRulesRepository";
 import { MockCustomQuoteRepository } from "@/repositories/mock/MockCustomQuoteRepository";
+import { ApiCustomQuoteRepository } from "@/repositories/api/ApiCustomQuoteRepository";
 import { MockProfessionalLeadRepository } from "@/repositories/mock/MockProfessionalLeadRepository";
+import { ApiProfessionalLeadRepository } from "@/repositories/api/ApiProfessionalLeadRepository";
 import { ApiProductRepository } from "@/repositories/api/ApiProductRepository";
 import { ApiCategoryRepository } from "@/repositories/api/ApiCategoryRepository";
 import { MockCategoryRepository } from "@/repositories/mock/MockCategoryRepository";
@@ -96,9 +99,12 @@ export function getContentRepository(): ContentRepository {
   return contentRepository;
 }
 
-/** Newsletter : MockNewsletterRepository aujourd'hui, ApiNewsletterRepository demain. */
+/** Newsletter : Brevo en staging/production, mock en développement isolé. */
 export function getNewsletterRepository(): NewsletterRepository {
-  if (!newsletterRepository) newsletterRepository = new MockNewsletterRepository();
+  if (!newsletterRepository) {
+    newsletterRepository =
+      dataProvider === "api" ? new ApiNewsletterRepository() : new MockNewsletterRepository();
+  }
   return newsletterRepository;
 }
 
@@ -137,15 +143,22 @@ export function getMeasurementRulesRepository(): MeasurementRulesRepository {
   return measurementRulesRepository;
 }
 
-/** Demandes sur mesure : mock sans persistance, POST /api/v1/custom-quotes demain. */
+/** Demandes sur mesure : API en préproduction/production, mock en développement isolé. */
 export function getCustomQuoteRepository(): CustomQuoteRepository {
-  if (!customQuoteRepository) customQuoteRepository = new MockCustomQuoteRepository();
+  if (!customQuoteRepository) {
+    customQuoteRepository =
+      dataProvider === "api" ? new ApiCustomQuoteRepository() : new MockCustomQuoteRepository();
+  }
   return customQuoteRepository;
 }
 
-/** Prospects professionnels : mock sans persistance, POST /api/v1/professional-leads demain. */
+/** Prospects professionnels : API en préproduction/production, mock en développement isolé. */
 export function getProfessionalLeadRepository(): ProfessionalLeadRepository {
-  if (!professionalLeadRepository)
-    professionalLeadRepository = new MockProfessionalLeadRepository();
+  if (!professionalLeadRepository) {
+    professionalLeadRepository =
+      dataProvider === "api"
+        ? new ApiProfessionalLeadRepository()
+        : new MockProfessionalLeadRepository();
+  }
   return professionalLeadRepository;
 }

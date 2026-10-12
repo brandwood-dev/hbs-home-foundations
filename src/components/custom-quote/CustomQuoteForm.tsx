@@ -98,7 +98,7 @@ export function CustomQuoteForm() {
     onSuccess: (result) => {
       setConfirmation(result);
       trackEvent("generate_lead", { form: "custom_quote", productType });
-      toast.success("Votre demande de devis a bien été enregistrée (démo).");
+      toast.success("Votre demande de devis a bien été enregistrée.");
     },
     onError: () => {
       toast.error("L'envoi a échoué. Réessayez dans un instant.");
@@ -150,7 +150,8 @@ export function CustomQuoteForm() {
           Notre atelier revient vers vous sous 48 heures ouvrées.
         </p>
         <p className="mt-2 text-xs text-foreground-muted">
-          Démonstration : aucune donnée n'a été transmise ni conservée.
+          Notre équipe vous recontactera selon le canal choisi. Une confirmation a été envoyée à
+          notre équipe.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <AppLink
@@ -336,7 +337,7 @@ export function CustomQuoteForm() {
           id="quote-files"
           label="Photos de vos fenêtres"
           optional
-          hint="Démonstration : seuls les noms de fichiers sont conservés localement, aucun envoi n'est réalisé."
+          hint="Pour l'instant, seuls le nom et les informations du fichier sont joints à la demande."
         >
           <input
             id="quote-files"
@@ -505,12 +506,13 @@ export function CustomQuoteForm() {
         <button
           type="submit"
           disabled={mutation.isPending}
-          className="min-h-[48px] rounded-sm bg-accent px-6 text-sm text-accent-foreground hover:bg-accent-dark disabled:opacity-60"
+          className="min-h-[48px] rounded-sm bg-accent px-6 text-sm text-accent-foreground transition-all duration-200 motion-safe:hover:-translate-y-0.5 hover:bg-accent-dark disabled:cursor-wait disabled:opacity-60"
         >
           {mutation.isPending ? "Envoi en cours…" : "Envoyer ma demande"}
         </button>
         <p className="text-xs text-foreground-muted">
-          Réponse sous 48 heures ouvrées. Démonstration : aucune donnée n'est transmise.
+          Réponse sous 48 heures ouvrées. Vos informations sont transmises de manière sécurisée à
+          notre équipe.
         </p>
       </div>
     </form>

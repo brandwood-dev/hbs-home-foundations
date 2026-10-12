@@ -140,6 +140,15 @@ body:has(.admin-theme) {
   --foreground-muted: oklch(0.445 0.006 67.4);
   --border: oklch(0.89 0.008 74.6);
 
+  /* Dashboard data palette: distinct semantic accents that remain on-brand. */
+  --admin-chart-revenue: oklch(0.601 0.078 46.1);
+  --admin-chart-orders: oklch(0.55 0.078 220);
+  --admin-chart-average: oklch(0.56 0.075 305);
+  --admin-chart-delivered: oklch(0.518 0.093 158.7);
+  --admin-chart-pending: oklch(0.67 0.12 78);
+  --admin-chart-cancelled: oklch(0.58 0.14 25);
+  --admin-chart-grid: oklch(0.84 0.012 74.6 / 72%);
+
   --card: var(--surface);
   --card-foreground: var(--foreground);
   --popover: var(--surface);
@@ -209,6 +218,34 @@ body:has(.admin-theme) {
   text-wrap: balance;
 }
 
+/*
+ * Media-ratio tokens. Keep image geometry semantic instead of relying on
+ * breakpoint-specific fixed heights (which change the perceived card format
+ * when a grid column gets wider or narrower).
+ */
+:root {
+  --media-ratio-product: 3 / 4;
+  --media-ratio-editorial: 4 / 3;
+  --media-ratio-square: 1 / 1;
+  --media-ratio-shop-the-look: 16 / 9;
+}
+
+@utility media-frame-product {
+  aspect-ratio: var(--media-ratio-product);
+}
+
+@utility media-frame-editorial {
+  aspect-ratio: var(--media-ratio-editorial);
+}
+
+@utility media-frame-square {
+  aspect-ratio: var(--media-ratio-square);
+}
+
+@utility media-frame-shop-the-look {
+  aspect-ratio: var(--media-ratio-shop-the-look);
+}
+
 @utility marquee-track {
   animation: hbs-marquee 28s linear infinite;
   will-change: transform;
@@ -228,6 +265,337 @@ body:has(.admin-theme) {
   }
 }
 
+/* Lightweight motion primitives for the public storefront. */
+.motion-reveal-ready {
+  opacity: 0;
+  transform: translate3d(0, 1rem, 0);
+  transition:
+    opacity 500ms ease,
+    transform 500ms ease;
+}
+
+/* Les sections sous le hero restent dans le DOM pour le SEO/accessibilité,
+ * mais le navigateur peut différer leur layout et leur peinture hors écran. */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 720px;
+}
+
+.motion-reveal-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.hero-image-drift {
+  animation: hbs-hero-image-drift 18s ease-in-out infinite alternate;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.hero-content-enter > * {
+  animation: hbs-hero-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-content-enter > :nth-child(2) {
+  animation-delay: 100ms;
+}
+
+.hero-content-enter > :nth-child(3) {
+  animation-delay: 180ms;
+}
+
+.hero-content-enter > :nth-child(4) {
+  animation-delay: 260ms;
+}
+
+@keyframes hbs-hero-image-drift {
+  from {
+    transform: scale(1.01);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes hbs-hero-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.count-badge-pop {
+  animation: hbs-cart-badge-pop 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: center;
+}
+
+.search-panel-backdrop {
+  animation: hbs-search-backdrop 180ms ease-out both;
+}
+
+.search-panel-surface {
+  animation: hbs-search-panel 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: top center;
+}
+
+.favorite-pop {
+  animation: hbs-favorite-pop 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: center;
+}
+
+@keyframes hbs-cart-badge-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hbs-search-backdrop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hbs-search-panel {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -0.5rem, 0) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes hbs-favorite-pop {
+  0% {
+    transform: scale(0.86);
+  }
+  65% {
+    transform: scale(1.14);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Phase 3 motion: mobile navigation, catalog filters and product image transitions. */
+.mobile-menu-backdrop,
+.catalog-filter-backdrop {
+  animation: hbs-menu-backdrop-in 220ms ease-out both;
+}
+
+.mobile-menu-backdrop.mobile-menu-closing,
+.catalog-filter-backdrop.catalog-filter-closing {
+  animation-name: hbs-menu-backdrop-out;
+}
+
+.mobile-menu-panel {
+  animation: hbs-menu-panel-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.mobile-menu-panel.mobile-menu-closing {
+  animation-name: hbs-menu-panel-out;
+}
+
+.catalog-filter-panel {
+  animation: hbs-filter-panel-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.catalog-filter-panel.catalog-filter-closing {
+  animation-name: hbs-filter-panel-out;
+}
+
+.mobile-menu-submenu,
+.filter-group-content {
+  animation: hbs-submenu-in 220ms ease-out both;
+  transform-origin: top;
+}
+
+.product-card-image {
+  transition:
+    opacity 450ms ease,
+    transform 500ms ease;
+}
+
+.gallery-image-in {
+  animation: hbs-gallery-image-in 280ms ease-out both;
+}
+
+.gallery-image-out {
+  animation: hbs-gallery-image-out 280ms ease-out both;
+}
+
+@keyframes hbs-menu-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hbs-menu-backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes hbs-menu-panel-in {
+  from {
+    opacity: 0;
+    transform: translate3d(-1rem, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hbs-menu-panel-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(-1rem, 0, 0);
+  }
+}
+
+@keyframes hbs-filter-panel-in {
+  from {
+    opacity: 0;
+    transform: translate3d(1rem, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hbs-filter-panel-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(1rem, 0, 0);
+  }
+}
+
+@keyframes hbs-submenu-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -0.25rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hbs-gallery-image-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hbs-gallery-image-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Shared semantic rendering for content authored in the admin rich editor. */
+.rich-text {
+  overflow-wrap: anywhere;
+}
+
+.rich-text > :first-child {
+  margin-top: 0;
+}
+
+.rich-text > :last-child {
+  margin-bottom: 0;
+}
+
+.rich-text p,
+.rich-text h2,
+.rich-text h3,
+.rich-text blockquote,
+.rich-text ul,
+.rich-text ol {
+  margin-block: 0.75em;
+}
+
+.rich-text p:empty {
+  min-height: 1em;
+}
+
+.rich-text h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.rich-text h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.rich-text ul {
+  list-style: disc;
+  padding-left: 1.35rem;
+}
+
+.rich-text ol {
+  list-style: decimal;
+  padding-left: 1.35rem;
+}
+
+.rich-text li + li {
+  margin-top: 0.35em;
+}
+
+.rich-text blockquote {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 1rem;
+  font-style: italic;
+}
+
+.rich-text a {
+  color: var(--color-accent-dark);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.rich-text-editor:focus {
+  box-shadow: inset 0 0 0 2px var(--color-ring);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -240,6 +608,34 @@ body:has(.admin-theme) {
 
   .marquee-track {
     animation: none;
+  }
+
+  .motion-reveal-ready {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .hero-image-drift,
+  .hero-content-enter > *,
+  .count-badge-pop,
+  .search-panel-backdrop,
+  .search-panel-surface,
+  .favorite-pop,
+  .mobile-menu-backdrop,
+  .mobile-menu-panel,
+  .mobile-menu-submenu,
+  .catalog-filter-backdrop,
+  .catalog-filter-panel,
+  .filter-group-content,
+  .gallery-image-in,
+  .gallery-image-out {
+    animation: none;
+    transform: none;
+  }
+
+  .product-card-image {
+    transition: none;
   }
 }
 

@@ -15,6 +15,7 @@ import type {
   AdminEditorialPage,
   AdminMedia,
   AdminCustomer,
+  AdminCustomQuote,
   AdminCustomerAddress,
   AdminMockDatabase,
   AdminOrder,
@@ -47,6 +48,8 @@ import type {
   AdminCustomerDetail,
   AdminCustomerListParams,
   AdminCustomerRepository,
+  AdminCustomQuoteRepository,
+  PaginatedAdminCustomQuotes,
   AdminCustomerRow,
   AdminDashboardPeriod,
   AdminDashboardRepository,
@@ -1339,6 +1342,28 @@ export class MockAdminCustomerRepository implements AdminCustomerRepository {
   }
 }
 
+export class MockAdminCustomQuoteRepository implements AdminCustomQuoteRepository {
+  async list(): Promise<PaginatedAdminCustomQuotes> {
+    return { items: [], total: 0, unread: 0, page: 1, pageSize: 20, pageCount: 1 };
+  }
+
+  async getById(_id: string): Promise<AdminCustomQuote | null> {
+    return null;
+  }
+
+  async markRead(_id: string): Promise<AdminCustomQuote> {
+    throw new Error("Les demandes de devis ne sont pas disponibles en mode démo.");
+  }
+
+  async archive(_id: string): Promise<AdminCustomQuote> {
+    throw new Error("Les demandes de devis ne sont pas disponibles en mode démo.");
+  }
+
+  async convertToCustomer(_id: string): Promise<AdminCustomQuote> {
+    throw new Error("Les demandes de devis ne sont pas disponibles en mode démo.");
+  }
+}
+
 export class MockAdminPromotionRepository implements AdminPromotionRepository {
   async list(): Promise<AdminPromotion[]> {
     return delay(clone(getDb().promotions));
@@ -1680,13 +1705,24 @@ export class MockAdminDashboardRepository implements AdminDashboardRepository {
       "returned",
     ];
 
-    const sold = new Map<string, { name: string; quantity: number; revenueMinor: number }>();
+    const sold = new Map<
+      string,
+      {
+        name: string;
+        quantity: number;
+        revenueMinor: number;
+        imageUrl?: string;
+        productSlug?: string;
+      }
+    >();
     for (const order of delivered) {
       for (const item of order.items) {
         const entry = sold.get(item.productId) ?? {
           name: item.productName,
           quantity: 0,
           revenueMinor: 0,
+          ...(item.imageUrl ? { imageUrl: item.imageUrl } : {}),
+          ...(item.productSlug ? { productSlug: item.productSlug } : {}),
         };
         entry.quantity += item.quantity;
         entry.revenueMinor += item.lineTotalMinor;
@@ -1702,6 +1738,12 @@ export class MockAdminDashboardRepository implements AdminDashboardRepository {
     for (const order of delivered) {
       const day = order.createdAt.slice(0, 10);
       byDay.set(day, (byDay.get(day) ?? 0) + order.subtotalMinor);
+    }
+
+    const byGovernorate = new Map<string, number>();
+    for (const order of orders) {
+      const governorate = order.governorate.trim();
+      if (governorate) byGovernorate.set(governorate, (byGovernorate.get(governorate) ?? 0) + 1);
     }
 
     return delay({
@@ -1722,11 +1764,13 @@ export class MockAdminDashboardRepository implements AdminDashboardRepository {
         .map(([productId, value]) => ({ productId, ...value }))
         .sort((a, b) => b.quantity - a.quantity)
         .slice(0, 6),
+      governorateBreakdown: [...byGovernorate.entries()]
+        .map(([governorate, count]) => ({ governorate, count }))
+        .sort((a, b) => b.count - a.count),
       lowStockRows: lowStockRows.slice(0, 8),
       salesByDay: [...byDay.entries()]
         .map(([date, value]) => ({ date, revenueMinor: value }))
-        .sort((a, b) => a.date.localeCompare(b.date))
-        .slice(-14),
+        .sort((a, b) => a.date.localeCompare(b.date)),
     });
   }
 }

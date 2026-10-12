@@ -75,6 +75,8 @@ export const checkoutFormSchema = z
     deliveryMethod: deliveryMethodSchema,
     shippingAddress: checkoutAddressSchema.partial().optional(),
     paymentMethod: paymentMethodSchema,
+    marketingEmailOptIn: z.boolean().default(false),
+    messagingMarketingOptIn: z.boolean().default(false),
     acceptedTerms: z.literal(true, {
       errorMap: () => ({ message: "Vous devez accepter les conditions générales de vente." }),
     }),

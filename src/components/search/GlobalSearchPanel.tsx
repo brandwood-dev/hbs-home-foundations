@@ -8,6 +8,7 @@ import { SearchEmptyState } from "@/components/search/SearchEmptyState";
 import { SEARCH_MIN_QUERY_LENGTH } from "@/domain/search/search.constants";
 import { useSearchHistory } from "@/hooks/search/useSearchHistory";
 import { useSearchPanel } from "@/hooks/search/useSearchPanel";
+import { usePopularSearches } from "@/hooks/search/usePopularSearches";
 import { useSearchSuggestions } from "@/hooks/search/useSearchSuggestions";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { trackEvent } from "@/lib/analytics/analytics";
@@ -23,6 +24,7 @@ export function GlobalSearchPanel() {
   const panelRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { recentSearches, addSearch, removeSearch, clearHistory } = useSearchHistory();
+  const { popularSearches } = usePopularSearches(isOpen);
   const { suggestions, isFetching, isTyping, debouncedQuery, isEmpty } = useSearchSuggestions(
     query,
     isOpen,
@@ -73,7 +75,7 @@ export function GlobalSearchPanel() {
         type="button"
         aria-label="Fermer la recherche"
         onClick={close}
-        className="absolute inset-0 h-full w-full cursor-default bg-foreground/40"
+        className="search-panel-backdrop absolute inset-0 h-full w-full cursor-default bg-foreground/40"
       />
       <div
         ref={panelRef}
@@ -81,7 +83,7 @@ export function GlobalSearchPanel() {
         aria-modal="true"
         aria-label="Recherche"
         tabIndex={-1}
-        className="relative mx-auto max-h-[85vh] w-full overflow-y-auto bg-surface shadow-lg sm:max-w-2xl sm:rounded-b-lg"
+        className="search-panel-surface relative mx-auto max-h-[85vh] w-full overflow-y-auto bg-surface shadow-lg sm:max-w-2xl sm:rounded-b-lg"
       >
         <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-border bg-surface p-3">
           <div className="flex-1">
@@ -98,7 +100,7 @@ export function GlobalSearchPanel() {
             type="button"
             onClick={close}
             aria-label="Fermer la recherche"
-            className="flex h-11 w-11 items-center justify-center rounded-md hover:bg-surface-muted"
+            className="flex h-11 w-11 items-center justify-center rounded-md transition-colors hover:bg-surface-muted"
           >
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
@@ -114,6 +116,7 @@ export function GlobalSearchPanel() {
               }}
               onRemove={removeSearch}
               onClear={clearHistory}
+              popularSearches={popularSearches}
             />
           ) : isEmpty ? (
             <SearchEmptyState
@@ -123,6 +126,7 @@ export function GlobalSearchPanel() {
                 setQuery(value);
                 submit(value);
               }}
+              popularSearches={popularSearches}
             />
           ) : (
             <>
@@ -137,7 +141,7 @@ export function GlobalSearchPanel() {
                 <button
                   type="button"
                   onClick={() => submit(query)}
-                  className="w-full rounded-md bg-accent px-4 py-3 text-sm font-semibold text-accent-foreground hover:bg-accent-dark"
+                  className="w-full rounded-md bg-accent px-4 py-3 text-sm font-semibold text-accent-foreground transition-all duration-200 motion-safe:hover:-translate-y-0.5 hover:bg-accent-dark"
                 >
                   Voir tous les résultats pour « {debouncedQuery} »
                 </button>

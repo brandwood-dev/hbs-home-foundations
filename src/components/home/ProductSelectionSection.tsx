@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import {
-  HomeSectionEmptyState,
   HomeSectionErrorState,
   HomeSectionHeading,
   HomeSectionSkeleton,
@@ -15,93 +14,101 @@ import type {
 } from "@/domain/content/home-content.types";
 import { trackEvent } from "@/lib/analytics/analytics";
 import { homeSelectionQuery } from "@/services/home/home-products.queries";
+import { useNearViewport } from "@/hooks/useNearViewport";
 
-export function ProductSelectionSection({ content }: { content: ProductSelectionContent }) {
-  const tabs = content.tabs;
-  const [activeId, setActiveId] = useState<ProductSelectionFilter>(tabs[0]?.id ?? "new");
-  const activeTab = tabs.find((tab) => tab.id === activeId) ?? tabs[0];
+type SelectionSectionCopy = {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  ctaLabel: string;
+};
 
-  const query = useQuery(homeSelectionQuery(activeId, content.pageSize));
+const SELECTION_COPY: Record<ProductSelectionFilter, SelectionSectionCopy> = {
+  new: {
+    eyebrow: "NOUVEAUTÉS",
+    title: "Découvrez nos nouveautés",
+    subtitle: "Les dernières collections HBS HOME pour renouveler votre intérieur.",
+    ctaLabel: "Voir toutes les nouveautés",
+  },
+  best_sellers: {
+    eyebrow: "LES PLUS AIMÉES",
+    title: "Nos meilleures ventes",
+    subtitle: "Les pièces préférées de nos clients pour habiller chaque pièce.",
+    ctaLabel: "Voir toutes les meilleures ventes",
+  },
+  discounted: {
+    eyebrow: "OFFRES DU MOMENT",
+    title: "Profitez de nos promotions",
+    subtitle: "Des prix avantageux sur une sélection de produits HBS HOME.",
+    ctaLabel: "Voir toutes les promotions",
+  },
+};
+
+const DEFAULT_CTA_HREFS: Record<ProductSelectionFilter, string> = {
+  new: "/nouveautes",
+  best_sellers: "/rideaux",
+  discounted: "/promotions",
+};
+
+function ProductSelectionBlock({
+  filter,
+  pageSize,
+  ctaHref,
+}: {
+  filter: ProductSelectionFilter;
+  pageSize: number;
+  ctaHref: string;
+}) {
+  const copy = SELECTION_COPY[filter];
+  const sectionRef = useRef<HTMLElement>(null);
+  const isNearViewport = useNearViewport(sectionRef);
+  const query = useQuery({
+    ...homeSelectionQuery(filter, pageSize),
+    enabled: isNearViewport,
+  });
   const products = query.data ?? [];
+  const headingId = `home-selection-${filter}`;
 
   useEffect(() => {
     if (products.length > 0) {
-      trackEvent("view_item_list", { list_id: `home_${activeId}`, items: products.length });
+      trackEvent("view_item_list", { list_id: `home_${filter}`, items: products.length });
     }
-  }, [activeId, products.length]);
+  }, [filter, products.length]);
 
-  if (!activeTab) return null;
-
-  const onTabKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
-    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
-    event.preventDefault();
-    const delta = event.key === "ArrowRight" ? 1 : -1;
-    const next = tabs[(index + delta + tabs.length) % tabs.length];
-    if (!next) return;
-    setActiveId(next.id);
-    const element = document.getElementById(`home-tab-${next.id}`);
-    element?.focus();
-  };
+  // Hide empty selections so the homepage does not leave a large blank gap.
+  if (!query.isPending && !query.isError && products.length === 0) return null;
 
   return (
     <section
-      className="mx-auto max-w-7xl px-6 py-16 lg:py-24"
-      aria-labelledby="home-product-selection"
+      ref={sectionRef}
+      className="mx-auto max-w-7xl px-6 py-10 first:pt-12 lg:py-14"
+      aria-labelledby={headingId}
     >
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-6">
         <HomeSectionHeading
-          id="home-product-selection"
-          eyebrow="Sélection"
-          title={content.title}
-          {...(content.subtitle ? { subtitle: content.subtitle } : {})}
+          id={headingId}
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          subtitle={copy.subtitle}
         />
 
-        <div
-          role="tablist"
-          aria-label="Filtrer la sélection"
-          className="flex flex-wrap gap-2 border-b border-border pb-1"
+        <AppLink
+          href={ctaHref}
+          aria-label={copy.ctaLabel}
+          className="group inline-flex min-h-[44px] items-center gap-2 self-start text-xs font-medium uppercase tracking-[0.18em] text-accent transition-colors hover:text-accent-dark hover:underline hover:underline-offset-4 md:mb-1 md:self-end"
         >
-          {tabs.map((tab, index) => {
-            const selected = tab.id === activeId;
-            return (
-              <button
-                key={tab.id}
-                id={`home-tab-${tab.id}`}
-                role="tab"
-                type="button"
-                aria-selected={selected}
-                aria-controls="home-tabpanel"
-                tabIndex={selected ? 0 : -1}
-                onClick={() => setActiveId(tab.id)}
-                onKeyDown={(event) => onTabKeyDown(event, index)}
-                className={`min-h-[44px] rounded-sm px-4 text-sm transition-colors ${
-                  selected
-                    ? "bg-accent text-accent-foreground"
-                    : "text-foreground-muted hover:text-foreground"
-                }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
+          <span aria-hidden="true">Voir tout</span>
+          <ArrowRight
+            className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+            aria-hidden="true"
+          />
+        </AppLink>
       </div>
 
-      <div
-        id="home-tabpanel"
-        role="tabpanel"
-        aria-labelledby={`home-tab-${activeId}`}
-        className="mt-10"
-      >
+      <div className="mt-8">
         {query.isPending && <HomeSectionSkeleton count={4} />}
 
         {query.isError && <HomeSectionErrorState onRetry={() => void query.refetch()} />}
-
-        {!query.isPending && !query.isError && products.length === 0 && (
-          <HomeSectionEmptyState>
-            Aucun produit dans cette sélection pour le moment.
-          </HomeSectionEmptyState>
-        )}
 
         {!query.isPending && !query.isError && products.length > 0 && (
           <>
@@ -128,16 +135,27 @@ export function ProductSelectionSection({ content }: { content: ProductSelection
           </>
         )}
       </div>
-
-      <div className="mt-10">
-        <AppLink
-          href={activeTab.ctaHref}
-          className="inline-flex min-h-[48px] items-center gap-2 rounded-sm border border-taupe/50 px-6 text-sm transition-colors hover:border-accent hover:text-accent-dark"
-        >
-          {content.ctaLabel}
-          <ArrowRight className="h-4 w-4" aria-hidden="true" />
-        </AppLink>
-      </div>
     </section>
+  );
+}
+
+export function ProductSelectionSection({ content }: { content: ProductSelectionContent }) {
+  // Keep the homepage compact: four cards expose each selection, with the
+  // dedicated CTA leading to the full catalogue page.
+  const pageSize = Math.max(1, Math.min(content.pageSize || 4, 4));
+  const tabsById = new Map(content.tabs.map((tab) => [tab.id, tab]));
+  const filters: ProductSelectionFilter[] = ["new", "best_sellers", "discounted"];
+
+  return (
+    <div>
+      {filters.map((filter) => (
+        <ProductSelectionBlock
+          key={filter}
+          filter={filter}
+          pageSize={pageSize}
+          ctaHref={tabsById.get(filter)?.ctaHref ?? DEFAULT_CTA_HREFS[filter]}
+        />
+      ))}
+    </div>
   );
 }

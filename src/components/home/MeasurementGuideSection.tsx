@@ -51,7 +51,7 @@ function WindowMeasureIllustration() {
 export function MeasurementGuideSection({ content }: { content: MeasurementGuideContent }) {
   return (
     <section
-      className="mx-auto max-w-7xl px-6 py-16 lg:py-24"
+      className="mx-auto max-w-7xl px-6 py-10 lg:py-14"
       aria-labelledby="home-measurement-guide"
     >
       <div className="grid items-center gap-10 rounded-sm border border-border bg-surface p-6 sm:p-10 lg:grid-cols-2">

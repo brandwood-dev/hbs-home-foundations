@@ -1,6 +1,7 @@
 import {
   BarChart3,
   Boxes,
+  ClipboardList,
   FileText,
   Image,
   LayoutDashboard,
@@ -68,7 +69,10 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         href: "/admin/attributs",
         icon: SlidersHorizontal,
         requiredPermission: "categories.read",
-        available: true,
+        // Temporarily hidden: category-specific attributes are managed from
+        // the product creation form. Keep the route and API for a future
+        // version where centralized attribute management is needed again.
+        available: false,
       },
       {
         label: "Stock",
@@ -94,6 +98,13 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         href: "/admin/clients",
         icon: Users,
         requiredPermission: "customers.read",
+        available: true,
+      },
+      {
+        label: "Demandes sur mesure",
+        href: "/admin/demandes-sur-mesure",
+        icon: ClipboardList,
+        requiredPermission: "quotes.read",
         available: true,
       },
       {

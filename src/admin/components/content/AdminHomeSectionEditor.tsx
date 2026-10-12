@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HomePromoBanner } from "@/components/home/HomePromoBanner";
+import { useShopTheLookImageRatio } from "@/components/home/shop-the-look-image";
 import { promoBanner as fallbackPromoBanner } from "@/fixtures/home.fixture";
 import {
   promoBannerPayload,
@@ -19,10 +20,12 @@ import {
   type HomePromoBannerMessage,
 } from "@/domain/content/promo-banner";
 import { AdminPageHeader } from "@/admin/components/ui/AdminPageHeader";
+import { richTextToPlainText } from "@/lib/content/rich-text";
 import { AdminConfirmDialog } from "@/admin/components/ui/AdminOverlays";
 import {
   AdminField,
   AdminFormSection,
+  AdminRichTextField,
   AdminNumberField,
   AdminSelectField,
   AdminSwitchField,
@@ -525,13 +528,12 @@ export function AdminHomeSectionEditor({ sectionKey }: { sectionKey: AdminHomeSe
                   disabled={!canWrite}
                 />
               </div>
-              <AdminField
+              <AdminRichTextField
                 label="Description"
-                multiline
-                rows={3}
                 value={stringValue(draft.payload, "description")}
                 onChange={(value) => updatePayload("description", value)}
                 disabled={!canWrite}
+                hint="La mise en forme et les retours à la ligne sont conservés sur la page d’accueil."
               />
               <div className="grid gap-4 md:grid-cols-2">
                 <AdminField
@@ -648,7 +650,7 @@ export function AdminHomeSectionEditor({ sectionKey }: { sectionKey: AdminHomeSe
                             #{index + 1}
                           </span>
                           <span className="text-sm font-medium">
-                            {message.text || "Message sans texte"}
+                            {richTextToPlainText(message.text) || "Message sans texte"}
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
@@ -685,12 +687,13 @@ export function AdminHomeSectionEditor({ sectionKey }: { sectionKey: AdminHomeSe
                         </div>
                       </div>
                       <div className="grid gap-3 md:grid-cols-2">
-                        <AdminField
+                        <AdminRichTextField
                           label="Message"
                           required
                           value={message.text}
                           onChange={(value) => updatePromoMessage(message.id, { text: value })}
                           disabled={!canWrite}
+                          hint="La banderole reste sur une ligne ; le gras, l’italique et les emojis sont conservés."
                         />
                         <AdminField
                           label="Libellé (optionnel)"
@@ -741,13 +744,12 @@ export function AdminHomeSectionEditor({ sectionKey }: { sectionKey: AdminHomeSe
                 onChange={(value) => updatePayload("title", value)}
                 disabled={!canWrite}
               />
-              <AdminField
+              <AdminRichTextField
                 label="Description"
-                multiline
-                rows={2}
                 value={stringValue(draft.payload, "description")}
                 onChange={(value) => updatePayload("description", value)}
                 disabled={!canWrite}
+                hint="La mise en forme est conservée dans la section publique."
               />
               <MediaSelector
                 section={draft}
@@ -923,6 +925,8 @@ function ShopTheLookEditor({
   onRemove: (id: string) => void;
   disabled: boolean;
 }) {
+  const { aspectRatio, onImageLoad } = useShopTheLookImageRatio(section.mediaUrl);
+
   return (
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -939,6 +943,7 @@ function ShopTheLookEditor({
       {section.mediaUrl ? (
         <div
           className={`relative overflow-hidden rounded-md border border-border bg-muted ${activeHotspotId ? "cursor-crosshair" : ""}`}
+          style={{ aspectRatio }}
           onClick={onPosition}
           role="img"
           aria-label="Image Shop the Look — cliquez pour positionner le point sélectionné"
@@ -946,8 +951,9 @@ function ShopTheLookEditor({
           <img
             src={section.mediaUrl}
             alt={section.mediaAlt}
-            className="block max-h-[420px] w-full object-contain"
+            className="absolute inset-0 h-full w-full object-contain"
             loading="lazy"
+            onLoad={onImageLoad}
           />
           {section.hotspots.map((hotspot, index) => (
             <button

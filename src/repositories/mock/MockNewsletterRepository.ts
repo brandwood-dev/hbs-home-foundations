@@ -1,5 +1,8 @@
 import type { NewsletterSubscriptionResult } from "@/domain/content/home-content.types";
-import type { NewsletterRepository } from "@/repositories/interfaces/NewsletterRepository";
+import type {
+  NewsletterOrderSyncInput,
+  NewsletterRepository,
+} from "@/repositories/interfaces/NewsletterRepository";
 import {
   isValidEmail,
   NEWSLETTER_DEMO_SUCCESS_MESSAGE,
@@ -18,5 +21,9 @@ export class MockNewsletterRepository implements NewsletterRepository {
     }
 
     return { success: true, message: NEWSLETTER_DEMO_SUCCESS_MESSAGE, isDemo: true };
+  }
+
+  async syncOrder(_input: NewsletterOrderSyncInput): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, 120));
   }
 }

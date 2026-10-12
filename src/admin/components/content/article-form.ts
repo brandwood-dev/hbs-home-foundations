@@ -1,4 +1,5 @@
 import type { AdminArticleInput } from "@/admin/repositories/interfaces";
+import { richTextToPlainText } from "@/lib/content/rich-text";
 
 const ARTICLE_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -54,9 +55,11 @@ export function prepareArticleInput(
   const title = draft.title.trim();
   const excerpt = draft.excerpt.trim();
   const body = draft.body.trim();
+  const excerptText = richTextToPlainText(excerpt);
+  const bodyText = richTextToPlainText(body);
   const slug = normalizeArticleSlug(draft.slug || title);
 
-  if (!title || !excerpt || !body || !draft.categoryId) {
+  if (!title || !excerptText || !bodyText || !draft.categoryId) {
     return {
       error: "Le titre, le slug, l'extrait, la catégorie et le contenu sont obligatoires.",
     };
@@ -66,7 +69,7 @@ export function prepareArticleInput(
   }
   if (slug.length > 160) return { error: "Le slug ne peut pas dépasser 160 caractères." };
   if (title.length > 240) return { error: "Le titre ne peut pas dépasser 240 caractères." };
-  if (excerpt.length > 600) return { error: "L'extrait ne peut pas dépasser 600 caractères." };
+  if (excerptText.length > 600) return { error: "L'extrait ne peut pas dépasser 600 caractères." };
   if (JSON.stringify({ type: "paragraph", text: body }).length > 64_000) {
     return { error: "Le contenu est trop volumineux (64 000 caractères maximum)." };
   }

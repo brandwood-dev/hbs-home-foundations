@@ -1,5 +1,11 @@
 import type { AdminProductCategoryKey, AdminSellingMode } from "@/admin/types/admin.types";
 import {
+  FURNITURE_ASSEMBLY_LABELS,
+  FURNITURE_STYLE_LABELS,
+  FURNITURE_TYPE_LABELS,
+  SHIPPING_PROFILE_LABELS,
+} from "@/domain/product/product.constants";
+import {
   ADMIN_VARIANT_AXES_BY_CATEGORY,
   type AdminVariantAxisKey,
 } from "@/admin/config/admin-variant-axes.config";
@@ -11,14 +17,58 @@ export interface AdminProductField {
   kind: "text" | "textarea" | "number" | "boolean" | "select" | "tags";
   options?: Array<{ value: string; label: string }>;
   hint?: string;
+  /** Affiche le champ uniquement lorsque le type de mobilier le justifie. */
+  visibleWhen?: (values: Record<string, unknown>) => boolean;
   /** Champ mappé sur une propriété racine de `AdminProduct` (sinon `attributes`). */
   mappedTo?: "material" | "opacityLevel" | "style" | "rooms";
 }
 
 const opt = (value: string, label: string) => ({ value, label });
 
+const furnitureTypeOptions = Object.entries(FURNITURE_TYPE_LABELS).map(([value, label]) =>
+  opt(value, label),
+);
+const furnitureStyleOptions = Object.entries(FURNITURE_STYLE_LABELS).map(([value, label]) =>
+  opt(value, label),
+);
+const furnitureAssemblyOptions = Object.entries(FURNITURE_ASSEMBLY_LABELS).map(([value, label]) =>
+  opt(value, label),
+);
+const shippingProfileOptions = Object.entries(SHIPPING_PROFILE_LABELS).map(([value, label]) =>
+  opt(value, label),
+);
+
+const upholsteredFurnitureTypes = new Set([
+  "canape",
+  "fauteuil",
+  "meridienne",
+  "chaise",
+  "pouf",
+  "banc",
+  "tete_de_lit",
+]);
+const storageFurnitureTypes = new Set(["meuble_tv", "buffet", "etagere", "console"]);
+
+function selectedFurnitureType(values: Record<string, unknown>): string {
+  return typeof values["furniture_type"] === "string" ? values["furniture_type"] : "";
+}
+
+function isUpholsteredFurniture(values: Record<string, unknown>): boolean {
+  return upholsteredFurnitureTypes.has(selectedFurnitureType(values));
+}
+
+function isStorageFurniture(values: Record<string, unknown>): boolean {
+  return storageFurnitureTypes.has(selectedFurnitureType(values));
+}
+
 const FIELDS: AdminProductField[] = [
-  { key: "material", label: "Matière", kind: "select", mappedTo: "material" },
+  {
+    key: "material",
+    label: "Matière principale",
+    kind: "select",
+    mappedTo: "material",
+    hint: "Utilisée pour le catalogue, les filtres et la fiche produit publique.",
+  },
   {
     key: "opacity",
     label: "Niveau de lumière",
@@ -31,7 +81,13 @@ const FIELDS: AdminProductField[] = [
       opt("occultant", "Occultant"),
     ],
   },
-  { key: "style", label: "Style", kind: "text", mappedTo: "style" },
+  {
+    key: "style",
+    label: "Style",
+    kind: "select",
+    mappedTo: "style",
+    options: furnitureStyleOptions,
+  },
   { key: "rooms", label: "Pièces recommandées", kind: "tags", mappedTo: "rooms" },
   { key: "care", label: "Entretien", kind: "textarea" },
   { key: "installation", label: "Installation", kind: "textarea" },
@@ -93,58 +149,116 @@ const FIELDS: AdminProductField[] = [
     key: "furniture_type",
     label: "Type de mobilier",
     kind: "select",
+    options: furnitureTypeOptions,
+  },
+  {
+    key: "upholstery",
+    label: "Revêtement",
+    kind: "select",
+    visibleWhen: isUpholsteredFurniture,
     options: [
-      opt("canape", "Canapé"),
-      opt("fauteuil", "Fauteuil"),
-      opt("meridienne", "Méridienne"),
-      opt("chaise", "Chaise"),
-      opt("table", "Table"),
-      opt("pouf", "Pouf"),
-      opt("banc", "Banc"),
-      opt("rangement", "Rangement"),
-      opt("tete_de_lit", "Tête de lit"),
+      opt("lin", "Lin"),
+      opt("velours", "Velours"),
+      opt("boucle", "Bouclette"),
+      opt("coton", "Coton"),
+      opt("polyester", "Polyester"),
+      opt("cuir", "Cuir ou simili cuir"),
+      opt("cannage", "Cannage"),
+      opt("sans_revetement", "Sans revêtement"),
+      opt("autre", "Autre"),
     ],
   },
-  { key: "upholstery", label: "Revêtement", kind: "text" },
-  { key: "frame_material", label: "Matière de structure", kind: "text" },
-  { key: "leg_material", label: "Matière des pieds", kind: "text" },
-  { key: "features", label: "Fonctionnalités", kind: "tags" },
-  { key: "seat_comfort", label: "Confort d'assise", kind: "text" },
-  { key: "number_of_seats", label: "Nombre de places", kind: "number" },
+  {
+    key: "frame_material",
+    label: "Matière de structure",
+    kind: "select",
+    options: [
+      opt("bois_massif", "Bois massif"),
+      opt("bois_et_metal", "Bois et métal"),
+      opt("metal", "Métal"),
+      opt("acier_laque", "Acier laqué"),
+      opt("panneaux_mdf", "Panneaux MDF ou aggloméré"),
+      opt("rotin", "Rotin ou cannage"),
+      opt("autre", "Autre"),
+    ],
+  },
+  {
+    key: "leg_material",
+    label: "Matière des pieds",
+    kind: "select",
+    options: [
+      opt("bois", "Bois"),
+      opt("metal", "Métal"),
+      opt("plastique", "Plastique"),
+      opt("mixte", "Bois et métal"),
+      opt("sans_pieds", "Sans pieds"),
+      opt("autre", "Autre"),
+    ],
+  },
+  {
+    key: "features",
+    label: "Fonctionnalités",
+    kind: "tags",
+    options: [
+      opt("housse_dehoussable", "Housse déhoussable"),
+      opt("assise_haute_resilience", "Assise haute résilience"),
+      opt("accoudoir_reversible", "Accoudoir réversible"),
+      opt("rangement_integre", "Rangement intégré"),
+      opt("portes", "Portes"),
+      opt("tiroirs", "Tiroirs"),
+      opt("empilable", "Empilable"),
+      opt("pliable", "Pliable"),
+      opt("fixation_murale", "Fixation murale"),
+      opt("livre_monte", "Livré monté"),
+      opt("autre", "Autre"),
+    ],
+  },
+  {
+    key: "seat_comfort",
+    label: "Confort d'assise",
+    kind: "select",
+    visibleWhen: isUpholsteredFurniture,
+    options: [
+      opt("ferme", "Ferme"),
+      opt("equilibre", "Équilibré"),
+      opt("moelleux", "Moelleux"),
+      opt("tres_moelleux", "Très moelleux"),
+      opt("autre", "Autre"),
+    ],
+  },
+  {
+    key: "number_of_seats",
+    label: "Nombre de places",
+    kind: "number",
+    visibleWhen: isUpholsteredFurniture,
+  },
   {
     key: "assembly_level",
     label: "Montage",
     kind: "select",
-    options: [
-      opt("aucun", "Aucun montage"),
-      opt("simple", "Montage simple"),
-      opt("complet", "Montage complet"),
-    ],
+    options: furnitureAssemblyOptions,
   },
-  { key: "assembly_time", label: "Temps de montage (min)", kind: "number" },
+  {
+    key: "assembly_time",
+    label: "Temps de montage (min)",
+    kind: "number",
+    visibleWhen: (values) =>
+      typeof values["assembly_level"] !== "string" || values["assembly_level"] !== "livre_monte",
+  },
   {
     key: "shipping_profile",
     label: "Profil de livraison",
     kind: "select",
-    options: [
-      opt("standard", "Standard"),
-      opt("volumineux", "Volumineux"),
-      opt("sur_devis", "Livraison sur devis"),
-    ],
+    options: shippingProfileOptions,
   },
-  { key: "free_shipping_eligible", label: "Éligible livraison offerte", kind: "boolean" },
   { key: "width_cm", label: "Largeur (cm)", kind: "number" },
-  { key: "depth_cm", label: "Profondeur (cm)", kind: "number" },
   { key: "height_cm", label: "Hauteur totale (cm)", kind: "number" },
-  { key: "seat_width_cm", label: "Largeur d'assise (cm)", kind: "number" },
-  { key: "seat_depth_cm", label: "Profondeur d'assise (cm)", kind: "number" },
-  { key: "seat_height_cm", label: "Hauteur d'assise (cm)", kind: "number" },
-  { key: "back_height_cm", label: "Hauteur du dossier (cm)", kind: "number" },
-  { key: "armrest_height_cm", label: "Hauteur des accoudoirs (cm)", kind: "number" },
-  { key: "weight_kg", label: "Poids (kg)", kind: "number" },
-  { key: "max_load_kg", label: "Charge maximale (kg)", kind: "number" },
-  { key: "storage_volume_l", label: "Volume de rangement (L)", kind: "number" },
-  { key: "package_count", label: "Nombre de colis", kind: "number" },
+  {
+    key: "storage_volume_l",
+    label: "Volume de rangement (L)",
+    kind: "number",
+    visibleWhen: isStorageFurniture,
+  },
   {
     key: "plant_nature",
     label: "Nature",
@@ -191,6 +305,30 @@ export interface AdminProductCategoryConfig {
   supportsCustomQuote: boolean;
   sellingModes: AdminSellingMode[];
   requiredFields: string[];
+}
+
+/** Legacy furniture attributes retained in the catalogue but removed from the admin editor. */
+export const MOBILIER_REMOVED_ATTRIBUTE_KEYS = [
+  "free_shipping_eligible",
+  "depth_cm",
+  "seat_width_cm",
+  "seat_depth_cm",
+  "seat_height_cm",
+  "back_height_cm",
+  "armrest_height_cm",
+  "weight_kg",
+  "max_load_kg",
+  "package_count",
+] as const;
+
+export function isAdminAttributeEnabledForCategory(
+  category: AdminProductCategoryKey,
+  key: string,
+): boolean {
+  return !(
+    category === "mobilier_interieur" &&
+    (MOBILIER_REMOVED_ATTRIBUTE_KEYS as readonly string[]).includes(key)
+  );
 }
 
 const TEXTILE_MODES: AdminSellingMode[] = [
@@ -278,8 +416,10 @@ export const adminProductCategoryConfigs: Record<
   mobilier_interieur: config(
     "mobilier_interieur",
     [
+      "material",
       "furniture_type",
       "rooms",
+      "style",
       "upholstery",
       "frame_material",
       "leg_material",
@@ -291,21 +431,14 @@ export const adminProductCategoryConfigs: Record<
       "assembly_time",
       "care",
       "shipping_profile",
-      "free_shipping_eligible",
       "width_cm",
-      "depth_cm",
       "height_cm",
-      "seat_width_cm",
-      "seat_depth_cm",
-      "seat_height_cm",
-      "back_height_cm",
-      "armrest_height_cm",
-      "weight_kg",
-      "max_load_kg",
       "storage_volume_l",
-      "package_count",
     ],
-    { sellingModes: ["ready_made", "custom_quote", "pack"], requiredFields: ["furniture_type"] },
+    {
+      sellingModes: ["ready_made", "custom_quote", "pack"],
+      requiredFields: ["furniture_type", "material"],
+    },
   ),
   plantes_decoration: config(
     "plantes_decoration",
@@ -386,6 +519,7 @@ export function visibleProductFields(
   return config.productFields
     .map((key) => ADMIN_PRODUCT_FIELDS[key])
     .filter((field): field is AdminProductField => Boolean(field))
+    .filter((field) => field.visibleWhen?.(values) ?? true)
     .filter((field) => {
       if (category !== "plantes_decoration") return true;
       if (nature === "artificielle") {

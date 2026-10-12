@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
@@ -24,6 +24,10 @@ import {
   calculateDiscountedSubtotal,
 } from "@/services/checkout/checkout-calculations";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
+import { getNewsletterRepository } from "@/repositories/repositoryFactory";
+import { trackEvent } from "@/lib/analytics/analytics";
+import { sendMetaServerEvent } from "@/lib/analytics/meta";
+import { hasMetaTrackingConsent } from "@/lib/analytics/consent";
 
 const defaultValues: CheckoutFormInput = {
   customer: { firstName: "", lastName: "", phone: "", email: "" },
@@ -37,6 +41,8 @@ const defaultValues: CheckoutFormInput = {
     deliveryNote: "",
   },
   paymentMethod: "cash_on_delivery",
+  marketingEmailOptIn: false,
+  messagingMarketingOptIn: false,
   acceptedTerms: false as unknown as true,
 };
 
@@ -85,6 +91,18 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
 
   const busy = isSubmitting || createOrder.isPending;
 
+  useEffect(() => {
+    if (cart.items.length === 0) return;
+    trackEvent("begin_checkout", {
+      content_ids: cart.items.map((item) => item.sku),
+      contents: cart.items.map((item) => ({ id: item.sku, quantity: item.quantity })),
+      content_type: "product",
+      num_items: cart.itemCount,
+      value: totalMinor / 1000,
+      currency: "TND",
+    });
+  }, [cart.items, cart.itemCount, totalMinor]);
+
   const onSubmit = handleSubmit(async (raw) => {
     const values = raw as unknown as CheckoutFormOutput;
     const customer = values.customer;
@@ -120,6 +138,59 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
       items: toOrderItemInputs(cart),
       ...(discountMinor > 0 ? { discountMinor } : {}),
     });
+
+    // Marketing sync is deliberately best-effort: it must never block a
+    // confirmed order when Brevo is temporarily unavailable.
+    if (customer.email || customer.phone) {
+      try {
+        await getNewsletterRepository().syncOrder({
+          orderNumber: order.orderNumber,
+          customer: {
+            firstName: customer.firstName,
+            lastName: customer.lastName,
+            phone: customer.phone,
+            ...(customer.email ? { email: customer.email } : {}),
+          },
+          emailMarketingOptIn: values.marketingEmailOptIn,
+          messagingMarketingOptIn: values.messagingMarketingOptIn,
+        });
+      } catch {
+        // The order is already persisted by the commerce API. A later retry
+        // or an admin reconciliation can recover the marketing sync.
+      }
+    }
+
+    if (hasMetaTrackingConsent()) {
+      const eventId = trackEvent("purchase", {
+        event_id: `purchase-${order.orderNumber}`,
+        content_ids: order.items.map((item) => item.sku),
+        contents: order.items.map((item) => ({ id: item.sku, quantity: item.quantity })),
+        content_type: "product",
+        num_items: order.items.reduce((sum, item) => sum + item.quantity, 0),
+        value: order.totals.totalMinor / 1000,
+        currency: "TND",
+        order_id: order.orderNumber,
+      });
+      const eventSourceUrl = typeof window !== "undefined" ? window.location.href : undefined;
+      void sendMetaServerEvent({
+        eventName: "Purchase",
+        eventId,
+        ...(eventSourceUrl ? { eventSourceUrl } : {}),
+        userData: {
+          ...(customer.email ? { email: customer.email } : {}),
+          phone: customer.phone,
+        },
+        customData: {
+          content_ids: order.items.map((item) => item.sku),
+          contents: order.items.map((item) => ({ id: item.sku, quantity: item.quantity })),
+          content_type: "product",
+          num_items: order.items.reduce((sum, item) => sum + item.quantity, 0),
+          value: order.totals.totalMinor / 1000,
+          currency: "TND",
+          order_id: order.orderNumber,
+        },
+      });
+    }
 
     void order;
     await navigate({ to: "/commande/confirmation" });

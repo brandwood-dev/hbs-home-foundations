@@ -17,4 +17,14 @@ describe("admin curtain variant axes", () => {
       adminProductConfigForCategory("accessoires", "accessoires-tringles").variantAxes,
     ).toEqual(["color", "mounting"]);
   });
+
+  it("does not expose upholstery as a mobilier variant axis", () => {
+    expect(ADMIN_VARIANT_AXES_BY_CATEGORY.mobilier_interieur).toEqual([
+      "color",
+      "orientation",
+      "dimensions",
+      "pack_quantity",
+    ]);
+    expect(ADMIN_VARIANT_AXES_BY_CATEGORY.mobilier_interieur).not.toContain("upholstery");
+  });
 });

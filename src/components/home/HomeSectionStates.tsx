@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { RichTextRenderer } from "@/lib/content/rich-text";
 
 export function HomeSectionSkeleton({ count = 4 }: { count?: number }) {
   return (
@@ -10,7 +11,7 @@ export function HomeSectionSkeleton({ count = 4 }: { count?: number }) {
     >
       {Array.from({ length: count }).map((_, index) => (
         <div key={index} className="animate-pulse">
-          <div className="aspect-[3/4] w-full rounded-md bg-surface-muted" />
+          <div className="media-frame-product w-full rounded-md bg-surface-muted" />
           <div className="mt-3 h-3 w-1/2 rounded bg-surface-muted" />
           <div className="mt-2 h-4 w-3/4 rounded bg-surface-muted" />
           <div className="mt-2 h-3 w-1/3 rounded bg-surface-muted" />
@@ -63,7 +64,9 @@ export function HomeSectionHeading({
       <h2 id={id} className="section-title mt-3">
         {title}
       </h2>
-      {subtitle && <p className="mt-3 text-base text-foreground-muted">{subtitle}</p>}
+      {subtitle ? (
+        <RichTextRenderer value={subtitle} className="mt-3 text-base text-foreground-muted" />
+      ) : null}
     </div>
   );
 }

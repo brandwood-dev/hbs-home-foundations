@@ -8,7 +8,7 @@ export function AccessoriesEditorialSection({ content }: { content: AccessoriesE
 
   return (
     <section className="border-y border-border bg-surface" aria-labelledby="home-accessories">
-      <div className="mx-auto max-w-7xl px-6 py-16 lg:py-24">
+      <div className="mx-auto max-w-7xl px-6 py-10 lg:py-14">
         <HomeSectionHeading
           id="home-accessories"
           eyebrow="Accessoires"
@@ -16,10 +16,10 @@ export function AccessoriesEditorialSection({ content }: { content: AccessoriesE
           {...(content.subtitle ? { subtitle: content.subtitle } : {})}
         />
 
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {content.cards.map((card) => (
             <AppLink key={card.id} href={card.href} className="group flex flex-col">
-              <div className="overflow-hidden rounded-sm bg-surface-muted">
+              <div className="media-frame-editorial overflow-hidden rounded-sm bg-surface-muted">
                 <img
                   src={card.image.src}
                   alt={card.image.alt}
@@ -27,7 +27,7 @@ export function AccessoriesEditorialSection({ content }: { content: AccessoriesE
                   decoding="async"
                   width={800}
                   height={600}
-                  className="h-40 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] sm:h-48"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                 />
               </div>
               <h3 className="mt-4 text-lg">{card.title}</h3>

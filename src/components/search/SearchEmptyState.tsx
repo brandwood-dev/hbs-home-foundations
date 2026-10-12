@@ -1,9 +1,10 @@
 import { AppLink } from "@/components/ui/app-link";
-import { popularSearches } from "@/fixtures/search.fixture";
+import type { PopularSearch } from "@/domain/search/search.types";
 
 interface SearchEmptyStateProps {
   query: string;
   onSuggestionClick?: (query: string) => void;
+  popularSearches: PopularSearch[];
   compact?: boolean;
 }
 
@@ -17,6 +18,7 @@ const HELP_LINKS = [
 export function SearchEmptyState({
   query,
   onSuggestionClick,
+  popularSearches,
   compact = false,
 }: SearchEmptyStateProps) {
   return (
@@ -28,18 +30,20 @@ export function SearchEmptyState({
         Vérifiez l'orthographe, essayez un terme plus général ou explorez nos catégories.
       </p>
 
-      <div className={`mt-5 flex flex-wrap gap-2 ${compact ? "" : "justify-center"}`}>
-        {popularSearches.slice(0, 4).map((item) => (
-          <button
-            key={item.query}
-            type="button"
-            onClick={() => onSuggestionClick?.(item.query)}
-            className="rounded-full border border-border px-3 py-1.5 text-sm hover:border-accent hover:text-accent-dark"
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
+      {popularSearches.length > 0 ? (
+        <div className={`mt-5 flex flex-wrap gap-2 ${compact ? "" : "justify-center"}`}>
+          {popularSearches.slice(0, 4).map((item) => (
+            <button
+              key={item.query}
+              type="button"
+              onClick={() => onSuggestionClick?.(item.query)}
+              className="rounded-full border border-border px-3 py-1.5 text-sm hover:border-accent hover:text-accent-dark"
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       <div className={`mt-6 flex flex-wrap gap-3 text-sm ${compact ? "" : "justify-center"}`}>
         {HELP_LINKS.map((link) => (

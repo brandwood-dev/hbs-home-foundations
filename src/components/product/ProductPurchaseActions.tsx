@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { ShoppingBag } from "lucide-react";
+import { Check, ShoppingBag } from "lucide-react";
 import { getCartErrorMessage } from "@/domain/cart/cart.errors";
 import type { Product, ProductVariant } from "@/domain/product/product.types";
 import type { ConfectionKey } from "@/domain/product/confection";
 import { useAddCartItemMutation } from "@/hooks/cart/useCartMutations";
 import { openCartDrawer } from "@/hooks/cart/useCartDrawer";
+import { trackEvent } from "@/lib/analytics/analytics";
 
 interface ProductPurchaseActionsProps {
   product: Product;
@@ -32,6 +33,7 @@ export function ProductPurchaseActions({
   const addItem = useAddCartItemMutation();
   const [error, setError] = useState<string | null>(null);
   const [announcement, setAnnouncement] = useState("");
+  const [added, setAdded] = useState(false);
 
   const unavailable = variant?.availability === "out_of_stock";
   const maxQuantity = variant ? Math.max(1, variant.availableQuantity || 1) : 0;
@@ -52,17 +54,30 @@ export function ProductPurchaseActions({
         ? "Indisponible"
         : addItem.isPending
           ? "Ajout en cours…"
-          : compact
-            ? "Ajouter"
-            : "Ajouter au panier";
+          : added
+            ? "Ajouté au panier"
+            : compact
+              ? "Ajouter"
+              : "Ajouter au panier";
 
   const onAdd = () => {
     if (!variant || !canAdd) return;
     setError(null);
+    setAdded(false);
     addItem.mutate(
       { productId: product.id, variantId: variant.id, quantity, confectionKey },
       {
         onSuccess: () => {
+          trackEvent("add_to_cart", {
+            content_ids: [variant.sku],
+            contents: [{ id: variant.sku, quantity }],
+            content_name: product.name,
+            content_category: product.category,
+            content_type: "product",
+            value: (variant.price.amountMinor * quantity) / 1000,
+            currency: "TND",
+          });
+          setAdded(true);
           setAnnouncement(`${product.name} ajouté au panier, quantité ${quantity}.`);
           openCartDrawer();
         },
@@ -80,11 +95,15 @@ export function ProductPurchaseActions({
         onClick={onAdd}
         disabled={!canAdd}
         aria-disabled={!canAdd}
-        className={`flex min-h-[48px] items-center justify-center gap-2 rounded-sm bg-accent text-sm font-medium text-accent-foreground transition-colors hover:bg-accent-dark disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-foreground-muted ${
-          compact ? "px-5" : "w-full px-6"
-        }`}
+        className={`flex min-h-[48px] items-center justify-center gap-2 rounded-sm text-sm font-medium text-accent-foreground transition-all duration-200 motion-safe:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-foreground-muted ${
+          added ? "bg-success" : "bg-accent hover:bg-accent-dark"
+        } ${compact ? "px-5" : "w-full px-6"}`}
       >
-        <ShoppingBag className="h-4 w-4" aria-hidden="true" />
+        {added ? (
+          <Check className="h-4 w-4 favorite-pop" aria-hidden="true" />
+        ) : (
+          <ShoppingBag className="h-4 w-4" aria-hidden="true" />
+        )}
         {label}
       </button>
 

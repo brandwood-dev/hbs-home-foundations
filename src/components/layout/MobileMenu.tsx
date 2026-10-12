@@ -15,6 +15,7 @@ interface MobileMenuProps {
 
 export function MobileMenu({ open, onClose, navigation }: MobileMenuProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [rendered, setRendered] = useState(open);
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const hydrated = useIsHydrated();
@@ -27,6 +28,15 @@ export function MobileMenu({ open, onClose, navigation }: MobileMenuProps) {
   });
 
   useEffect(() => {
+    if (open) {
+      setRendered(true);
+      return;
+    }
+    const timeout = window.setTimeout(() => setRendered(false), 240);
+    return () => window.clearTimeout(timeout);
+  }, [open]);
+
+  useEffect(() => {
     if (!open || !hydrated) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -35,15 +45,19 @@ export function MobileMenu({ open, onClose, navigation }: MobileMenuProps) {
     };
   }, [open, hydrated]);
 
-  if (!open || !hydrated) return null;
+  if (!rendered || !hydrated) return null;
+
+  const closing = !open;
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] lg:hidden">
+    <div
+      className={`mobile-menu-shell fixed inset-0 z-[100] lg:hidden${closing ? " mobile-menu-closing" : ""}`}
+    >
       <button
         type="button"
         aria-label="Fermer le menu"
         onClick={onClose}
-        className="absolute inset-0 bg-foreground/60"
+        className={`mobile-menu-backdrop absolute inset-0 bg-foreground/60${closing ? " mobile-menu-closing" : ""}`}
       />
       <div
         ref={panelRef}
@@ -52,7 +66,7 @@ export function MobileMenu({ open, onClose, navigation }: MobileMenuProps) {
         aria-modal="true"
         aria-labelledby="mobile-navigation-title"
         tabIndex={-1}
-        className="absolute inset-y-0 left-0 flex h-full w-[88%] max-w-sm flex-col bg-surface opacity-100 shadow-2xl outline-none"
+        className={`mobile-menu-panel absolute inset-y-0 left-0 flex h-full w-[88%] max-w-sm flex-col bg-surface opacity-100 shadow-2xl outline-none${closing ? " mobile-menu-closing" : ""}`}
         style={{ backgroundColor: "var(--surface)" }}
       >
         <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3">
@@ -104,7 +118,7 @@ export function MobileMenu({ open, onClose, navigation }: MobileMenuProps) {
                         </button>
                       </div>
                       {isOpen && (
-                        <div className="bg-surface-muted/60 pb-3">
+                        <div className="mobile-menu-submenu bg-surface-muted/60 pb-3">
                           {item.megaMenu?.map((column) => (
                             <div key={column.title} className="px-3 pt-2">
                               <p className="eyebrow mb-1">{column.title}</p>

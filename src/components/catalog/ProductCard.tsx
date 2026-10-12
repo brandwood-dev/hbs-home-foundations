@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { AppLink } from "@/components/ui/app-link";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import {
@@ -9,7 +9,10 @@ import {
   SELLING_MODE_LABELS,
 } from "@/domain/product/product.constants";
 import type { Product } from "@/domain/product/product.types";
-import { getProductCardImage } from "@/components/catalog/product-card-image";
+import {
+  getProductCardImage,
+  getProductCardSecondaryImage,
+} from "@/components/catalog/product-card-image";
 import { getProductPath } from "@/services/product/product-url";
 import {
   formatMoney,
@@ -18,6 +21,7 @@ import {
   getProductStartingPrice,
   hasMultiplePrices,
 } from "@/lib/money/money";
+import { richTextToPlainText } from "@/lib/content/rich-text";
 
 interface ProductCardProps {
   product: Product;
@@ -42,17 +46,24 @@ function Badge({ children, tone }: { children: string; tone: "accent" | "neutral
 
 export function ProductCard({ product, priority = false }: ProductCardProps) {
   const [hovered, setHovered] = useState(false);
+  const [secondaryLoaded, setSecondaryLoaded] = useState(false);
 
   const startingPrice = getProductStartingPrice(product);
   const compareAt = getProductCompareAtPrice(product);
   const discount = getDiscountPercentage(product);
-  const cheapest = [...product.variants].sort(
-    (a, b) => a.price.amountMinor - b.price.amountMinor,
-  )[0];
+  const cheapest = useMemo(
+    () =>
+      product.variants.reduce<(typeof product.variants)[number] | undefined>(
+        (current, variant) =>
+          !current || variant.price.amountMinor < current.price.amountMinor ? variant : current,
+        undefined,
+      ),
+    [product],
+  );
   const availability = cheapest?.availability ?? "in_stock";
   const primaryImage = getProductCardImage(product);
-  const secondaryImage = cheapest?.secondaryImageUrl;
-  const displayedImage = hovered && secondaryImage ? secondaryImage : primaryImage;
+  const secondaryImage = getProductCardSecondaryImage(product, cheapest);
+  const hasSecondary = Boolean(secondaryImage && secondaryImage !== primaryImage);
 
   const uniqueColors = product.colors.slice(0, 5);
   const extraColors = product.colors.length - uniqueColors.length;
@@ -65,18 +76,33 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
     >
       <AppLink
         href={getProductPath(product)}
+        onFocus={() => setHovered(true)}
+        onBlur={() => setHovered(false)}
         className="relative block overflow-hidden rounded-md bg-surface-muted"
       >
-        <div className="aspect-[3/4] w-full">
+        <div className="media-frame-product relative w-full">
           <img
-            src={displayedImage}
+            src={primaryImage}
             alt={product.imageAlt}
             loading={priority ? "eager" : "lazy"}
             decoding="async"
             width={600}
             height={800}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            className={`product-card-image absolute inset-0 h-full w-full object-cover group-hover:scale-[1.03] ${hovered && secondaryLoaded ? "opacity-0" : "opacity-100"}`}
           />
+          {hasSecondary && (
+            <img
+              src={secondaryImage}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              width={600}
+              height={800}
+              aria-hidden="true"
+              onLoad={() => setSecondaryLoaded(true)}
+              className={`product-card-image absolute inset-0 h-full w-full object-cover group-hover:scale-[1.03] ${hovered && secondaryLoaded ? "opacity-100" : "opacity-0"}`}
+            />
+          )}
         </div>
 
         <div className="pointer-events-none absolute left-2 top-2 flex flex-wrap gap-1.5">
@@ -113,7 +139,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         </h3>
 
         <p className="mt-1 line-clamp-2 text-sm text-foreground-muted">
-          {product.shortDescription}
+          {richTextToPlainText(product.shortDescription)}
         </p>
 
         <div className="mt-2 flex items-center gap-1.5" aria-label="Coloris disponibles">

@@ -9,7 +9,7 @@ import {
   AdminSortSelect,
   type AdminColumn,
 } from "@/admin/components/ui/AdminDataTable";
-import { AdminKpiCard, AdminStatusBadge } from "@/admin/components/ui/AdminStates";
+import { AdminStatusBadge } from "@/admin/components/ui/AdminStates";
 import { useAdminCustomers } from "@/admin/hooks/admin.queries";
 import type {
   AdminCustomerListParams,
@@ -55,7 +55,6 @@ export function AdminCustomersPage() {
   const { data, isLoading, error, refetch } = useAdminCustomers(params, search);
   const rows = data?.rows ?? [];
 
-  const totalSpentMinor = rows.reduce((total, row) => total + row.metrics.totalSpentMinor, 0);
   const duplicateCount = rows.filter((row) => row.hasPotentialDuplicate).length;
 
   const columns: AdminColumn<AdminCustomerRow>[] = [
@@ -137,21 +136,6 @@ export function AdminCustomersPage() {
         breadcrumbs={[{ label: "Clients" }]}
       />
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <AdminKpiCard label="Clients" value={data?.total ?? 0} />
-        <AdminKpiCard label="Page courante" value={rows.length} />
-        <AdminKpiCard
-          label="CA cumulé (page)"
-          value={formatMoney(totalSpentMinor)}
-          tone="success"
-        />
-        <AdminKpiCard
-          label="Doublons possibles (page)"
-          value={duplicateCount}
-          tone={duplicateCount > 0 ? "warning" : "neutral"}
-        />
-      </div>
-
       <AdminDataTable
         rows={rows}
         columns={columns}
@@ -164,6 +148,16 @@ export function AdminCustomersPage() {
         emptyDescription="Ajustez vos filtres ou votre recherche."
         toolbar={
           <>
+            <div className="flex flex-wrap items-center gap-2 text-sm sm:order-last sm:ml-auto">
+              <span className="font-semibold tabular-nums text-foreground">{data?.total ?? 0}</span>
+              <span className="text-muted-foreground">client(s)</span>
+              {duplicateCount > 0 ? (
+                <AdminStatusBadge
+                  label={`${duplicateCount} doublon(s) sur la page`}
+                  tone="warning"
+                />
+              ) : null}
+            </div>
             <AdminSearchInput
               value={search}
               onChange={(value) => {

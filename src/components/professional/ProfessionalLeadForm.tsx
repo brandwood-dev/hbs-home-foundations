@@ -74,7 +74,11 @@ export function ProfessionalLeadForm() {
     onSuccess: (result) => {
       setConfirmation(result);
       trackEvent("generate_lead", { form: "professional", activity, projectVolume });
-      toast.success("Votre demande professionnelle a bien été enregistrée (démo).");
+      toast.success(
+        result.isDemo
+          ? "Votre demande professionnelle a bien été enregistrée (démo)."
+          : "Votre demande professionnelle a bien été envoyée.",
+      );
     },
     onError: () => toast.error("L'envoi a échoué. Réessayez dans un instant."),
   });
@@ -109,9 +113,11 @@ export function ProfessionalLeadForm() {
           Référence : <span className="font-semibold">{confirmation.reference}</span>. Un
           interlocuteur dédié vous contacte sous 48 heures ouvrées.
         </p>
-        <p className="mt-2 text-xs text-foreground-muted">
-          Démonstration : aucune donnée n'a été transmise ni conservée.
-        </p>
+        {confirmation.isDemo ? (
+          <p className="mt-2 text-xs text-foreground-muted">
+            Démonstration : aucune donnée n'a été transmise ni conservée.
+          </p>
+        ) : null}
         <AppLink
           href="/"
           className="mt-6 inline-flex min-h-[48px] items-center rounded-sm bg-accent px-5 text-sm text-accent-foreground hover:bg-accent-dark"
@@ -308,7 +314,7 @@ export function ProfessionalLeadForm() {
       <button
         type="submit"
         disabled={mutation.isPending}
-        className="min-h-[48px] rounded-sm bg-accent px-6 text-sm text-accent-foreground hover:bg-accent-dark disabled:opacity-60"
+        className="min-h-[48px] rounded-sm bg-accent px-6 text-sm text-accent-foreground transition-all duration-200 motion-safe:hover:-translate-y-0.5 hover:bg-accent-dark disabled:cursor-wait disabled:opacity-60"
       >
         {mutation.isPending ? "Envoi en cours…" : "Demander un contact professionnel"}
       </button>

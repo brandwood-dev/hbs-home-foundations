@@ -70,15 +70,20 @@ export function DesktopMegaMenu({
                 key={shortcut.href}
                 href={shortcut.href}
                 onClick={onNavigate}
-                className="group relative w-fit max-w-full overflow-hidden rounded-xl"
+                className={`group relative block w-full overflow-hidden rounded-xl ${
+                  hasSingleShortcut ? "max-w-72" : ""
+                }`}
               >
-                <img
-                  src={shortcut.imageUrl}
-                  alt={shortcut.imageAlt}
-                  loading="lazy"
-                  decoding="async"
-                  className="block h-auto max-h-72 max-w-72 w-auto rounded-xl transition-transform duration-500 group-hover:scale-[1.02]"
-                />
+                <div className="media-frame-editorial w-full overflow-hidden rounded-xl bg-surface-muted">
+                  <img
+                    src={shortcut.imageUrl}
+                    alt={shortcut.imageAlt}
+                    loading="lazy"
+                    decoding="async"
+                    sizes="(min-width: 1024px) 18rem, 50vw"
+                    className="block h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
+                  />
+                </div>
                 <span className="absolute bottom-3 left-1/2 w-max max-w-[90%] -translate-x-1/2 rounded-lg bg-surface/95 px-4 py-2.5 text-center text-sm font-medium text-foreground shadow-sm transition-colors group-hover:text-accent-dark">
                   {shortcut.label}
                 </span>

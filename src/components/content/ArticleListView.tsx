@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import type { ArticleSummary } from "@/domain/content/article.types";
+import { RichTextRenderer } from "@/lib/content/rich-text";
 
 function ArticleCard({ article }: { article: ArticleSummary }) {
   return (
@@ -37,7 +38,10 @@ function ArticleCard({ article }: { article: ArticleSummary }) {
           {article.title}
         </Link>
       </h2>
-      <p className="mt-2 flex-1 text-sm leading-6 text-foreground-muted">{article.excerpt}</p>
+      <RichTextRenderer
+        value={article.excerpt}
+        className="mt-2 flex-1 text-sm leading-6 text-foreground-muted"
+      />
       <Link
         to="/inspirations/$slug"
         params={{ slug: article.slug }}

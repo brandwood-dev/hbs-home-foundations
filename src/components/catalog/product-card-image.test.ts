@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getProductCardImage } from "./product-card-image";
+import { getProductCardImage, getProductCardSecondaryImage } from "./product-card-image";
 
 describe("product card image selection", () => {
   it("prefers the published product media over a legacy variant URL", () => {
@@ -25,5 +25,55 @@ describe("product card image selection", () => {
         variants: [{ imageUrl: "https://cdn.example.test/variant.jpg" }],
       }),
     ).toBe("https://cdn.example.test/variant.jpg");
+  });
+
+  it("uses the second linked gallery image when the API omits the explicit secondary URL", () => {
+    const product = {
+      images: [
+        {
+          id: "front",
+          url: "https://storage.example.test/front.jpg",
+          alt: "Avant",
+          type: "front" as const,
+        },
+        {
+          id: "detail",
+          url: "https://storage.example.test/detail.jpg",
+          alt: "Détail",
+          type: "lifestyle" as const,
+        },
+      ],
+      variants: [
+        {
+          imageUrl: "https://storage.example.test/front.jpg",
+          imageIds: ["front", "detail"],
+        },
+      ],
+    };
+
+    expect(getProductCardSecondaryImage(product, product.variants[0])).toBe(
+      "https://storage.example.test/detail.jpg",
+    );
+  });
+
+  it("prefers a distinct explicit variant secondary URL", () => {
+    const product = {
+      images: [
+        {
+          id: "front",
+          url: "https://storage.example.test/front.jpg",
+          alt: "Avant",
+          type: "front" as const,
+        },
+      ],
+      variants: [{ imageUrl: "https://storage.example.test/front.jpg" }],
+    };
+
+    expect(
+      getProductCardSecondaryImage(product, {
+        secondaryImageUrl: "https://storage.example.test/secondary.jpg",
+        imageIds: [],
+      }),
+    ).toBe("https://storage.example.test/secondary.jpg");
   });
 });

@@ -32,5 +32,5 @@ export interface ProfessionalLeadRequest {
 export interface ProfessionalLeadSubmissionResult {
   reference: string;
   submittedAt: string;
-  isDemo: boolean;
+  isDemo?: boolean;
 }

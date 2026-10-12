@@ -105,9 +105,13 @@ import { Route as AdminCommandesOrderIdRouteImport } from './routes/admin/comman
 import { Route as AdminContenuAccueilRouteImport } from './routes/admin/contenu.accueil'
 import { Route as AdminContenuArticlesRouteImport } from './routes/admin/contenu.articles'
 import { Route as AdminContenuPagesRouteImport } from './routes/admin/contenu.pages'
+import { Route as AdminDemandesSurMesureIndexRouteImport } from './routes/admin/demandes-sur-mesure.index'
+import { Route as AdminDemandesSurMesureQuoteIdRouteImport } from './routes/admin/demandes-sur-mesure.$quoteId'
 import { Route as AdminProduitsIndexRouteImport } from './routes/admin/produits.index'
 import { Route as AdminProduitsProductIdRouteImport } from './routes/admin/produits.$productId'
 import { Route as AdminProduitsNouveauRouteImport } from './routes/admin/produits.nouveau'
+import { Route as ApiNewsletterOrdersRouteImport } from './routes/api.newsletter.orders'
+import { Route as ApiNewsletterSubscriptionsRouteImport } from './routes/api.newsletter.subscriptions'
 import { Route as AdminContenuAccueilIndexRouteImport } from './routes/admin/contenu.accueil.index'
 import { Route as AdminContenuAccueilBanderoleRouteImport } from './routes/admin/contenu.accueil.banderole'
 import { Route as AdminContenuAccueilHeroRouteImport } from './routes/admin/contenu.accueil.hero'
@@ -596,6 +600,18 @@ const AdminContenuPagesRoute = AdminContenuPagesRouteImport.update({
   path: '/contenu/pages',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminDemandesSurMesureIndexRoute =
+  AdminDemandesSurMesureIndexRouteImport.update({
+    id: '/demandes-sur-mesure/',
+    path: '/demandes-sur-mesure/',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminDemandesSurMesureQuoteIdRoute =
+  AdminDemandesSurMesureQuoteIdRouteImport.update({
+    id: '/demandes-sur-mesure/$quoteId',
+    path: '/demandes-sur-mesure/$quoteId',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 const AdminProduitsIndexRoute = AdminProduitsIndexRouteImport.update({
   id: '/produits/',
   path: '/produits/',
@@ -611,6 +627,17 @@ const AdminProduitsNouveauRoute = AdminProduitsNouveauRouteImport.update({
   path: '/produits/nouveau',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const ApiNewsletterOrdersRoute = ApiNewsletterOrdersRouteImport.update({
+  id: '/api/newsletter/orders',
+  path: '/api/newsletter/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiNewsletterSubscriptionsRoute =
+  ApiNewsletterSubscriptionsRouteImport.update({
+    id: '/api/newsletter/subscriptions',
+    path: '/api/newsletter/subscriptions',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminContenuAccueilIndexRoute =
   AdminContenuAccueilIndexRouteImport.update({
     id: '/',
@@ -730,10 +757,14 @@ export interface FileRoutesByFullPath {
   '/admin/contenu/accueil': typeof AdminContenuAccueilRouteWithChildren
   '/admin/contenu/articles': typeof AdminContenuArticlesRoute
   '/admin/contenu/pages': typeof AdminContenuPagesRoute
+  '/admin/demandes-sur-mesure/$quoteId': typeof AdminDemandesSurMesureQuoteIdRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/api/newsletter/orders': typeof ApiNewsletterOrdersRoute
+  '/api/newsletter/subscriptions': typeof ApiNewsletterSubscriptionsRoute
   '/admin/clients/': typeof AdminClientsIndexRoute
   '/admin/commandes/': typeof AdminCommandesIndexRoute
+  '/admin/demandes-sur-mesure/': typeof AdminDemandesSurMesureIndexRoute
   '/admin/produits/': typeof AdminProduitsIndexRoute
   '/admin/contenu/accueil/banderole': typeof AdminContenuAccueilBanderoleRoute
   '/admin/contenu/accueil/hero': typeof AdminContenuAccueilHeroRoute
@@ -833,10 +864,14 @@ export interface FileRoutesByTo {
   '/admin/commandes/$orderId': typeof AdminCommandesOrderIdRoute
   '/admin/contenu/articles': typeof AdminContenuArticlesRoute
   '/admin/contenu/pages': typeof AdminContenuPagesRoute
+  '/admin/demandes-sur-mesure/$quoteId': typeof AdminDemandesSurMesureQuoteIdRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/api/newsletter/orders': typeof ApiNewsletterOrdersRoute
+  '/api/newsletter/subscriptions': typeof ApiNewsletterSubscriptionsRoute
   '/admin/clients': typeof AdminClientsIndexRoute
   '/admin/commandes': typeof AdminCommandesIndexRoute
+  '/admin/demandes-sur-mesure': typeof AdminDemandesSurMesureIndexRoute
   '/admin/produits': typeof AdminProduitsIndexRoute
   '/admin/contenu/accueil/banderole': typeof AdminContenuAccueilBanderoleRoute
   '/admin/contenu/accueil/hero': typeof AdminContenuAccueilHeroRoute
@@ -939,10 +974,14 @@ export interface FileRoutesById {
   '/admin/contenu/accueil': typeof AdminContenuAccueilRouteWithChildren
   '/admin/contenu/articles': typeof AdminContenuArticlesRoute
   '/admin/contenu/pages': typeof AdminContenuPagesRoute
+  '/admin/demandes-sur-mesure/$quoteId': typeof AdminDemandesSurMesureQuoteIdRoute
   '/admin/produits/$productId': typeof AdminProduitsProductIdRoute
   '/admin/produits/nouveau': typeof AdminProduitsNouveauRoute
+  '/api/newsletter/orders': typeof ApiNewsletterOrdersRoute
+  '/api/newsletter/subscriptions': typeof ApiNewsletterSubscriptionsRoute
   '/admin/clients/': typeof AdminClientsIndexRoute
   '/admin/commandes/': typeof AdminCommandesIndexRoute
+  '/admin/demandes-sur-mesure/': typeof AdminDemandesSurMesureIndexRoute
   '/admin/produits/': typeof AdminProduitsIndexRoute
   '/admin/contenu/accueil/banderole': typeof AdminContenuAccueilBanderoleRoute
   '/admin/contenu/accueil/hero': typeof AdminContenuAccueilHeroRoute
@@ -1046,10 +1085,14 @@ export interface FileRouteTypes {
     | '/admin/contenu/accueil'
     | '/admin/contenu/articles'
     | '/admin/contenu/pages'
+    | '/admin/demandes-sur-mesure/$quoteId'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
+    | '/api/newsletter/orders'
+    | '/api/newsletter/subscriptions'
     | '/admin/clients/'
     | '/admin/commandes/'
+    | '/admin/demandes-sur-mesure/'
     | '/admin/produits/'
     | '/admin/contenu/accueil/banderole'
     | '/admin/contenu/accueil/hero'
@@ -1149,10 +1192,14 @@ export interface FileRouteTypes {
     | '/admin/commandes/$orderId'
     | '/admin/contenu/articles'
     | '/admin/contenu/pages'
+    | '/admin/demandes-sur-mesure/$quoteId'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
+    | '/api/newsletter/orders'
+    | '/api/newsletter/subscriptions'
     | '/admin/clients'
     | '/admin/commandes'
+    | '/admin/demandes-sur-mesure'
     | '/admin/produits'
     | '/admin/contenu/accueil/banderole'
     | '/admin/contenu/accueil/hero'
@@ -1254,10 +1301,14 @@ export interface FileRouteTypes {
     | '/admin/contenu/accueil'
     | '/admin/contenu/articles'
     | '/admin/contenu/pages'
+    | '/admin/demandes-sur-mesure/$quoteId'
     | '/admin/produits/$productId'
     | '/admin/produits/nouveau'
+    | '/api/newsletter/orders'
+    | '/api/newsletter/subscriptions'
     | '/admin/clients/'
     | '/admin/commandes/'
+    | '/admin/demandes-sur-mesure/'
     | '/admin/produits/'
     | '/admin/contenu/accueil/banderole'
     | '/admin/contenu/accueil/hero'
@@ -1343,6 +1394,8 @@ export interface RootRouteChildren {
   StoresIndexRoute: typeof StoresIndexRoute
   VoilagesIndexRoute: typeof VoilagesIndexRoute
   CategorySubcategoryProductSlugRoute: typeof CategorySubcategoryProductSlugRoute
+  ApiNewsletterOrdersRoute: typeof ApiNewsletterOrdersRoute
+  ApiNewsletterSubscriptionsRoute: typeof ApiNewsletterSubscriptionsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -2019,6 +2072,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContenuPagesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/demandes-sur-mesure/': {
+      id: '/admin/demandes-sur-mesure/'
+      path: '/demandes-sur-mesure'
+      fullPath: '/admin/demandes-sur-mesure/'
+      preLoaderRoute: typeof AdminDemandesSurMesureIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/demandes-sur-mesure/$quoteId': {
+      id: '/admin/demandes-sur-mesure/$quoteId'
+      path: '/demandes-sur-mesure/$quoteId'
+      fullPath: '/admin/demandes-sur-mesure/$quoteId'
+      preLoaderRoute: typeof AdminDemandesSurMesureQuoteIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/produits/': {
       id: '/admin/produits/'
       path: '/produits'
@@ -2039,6 +2106,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/produits/nouveau'
       preLoaderRoute: typeof AdminProduitsNouveauRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/api/newsletter/orders': {
+      id: '/api/newsletter/orders'
+      path: '/api/newsletter/orders'
+      fullPath: '/api/newsletter/orders'
+      preLoaderRoute: typeof ApiNewsletterOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/newsletter/subscriptions': {
+      id: '/api/newsletter/subscriptions'
+      path: '/api/newsletter/subscriptions'
+      fullPath: '/api/newsletter/subscriptions'
+      preLoaderRoute: typeof ApiNewsletterSubscriptionsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/contenu/accueil/': {
       id: '/admin/contenu/accueil/'
@@ -2105,10 +2186,12 @@ interface AdminRouteRouteChildren {
   AdminContenuAccueilRoute: typeof AdminContenuAccueilRouteWithChildren
   AdminContenuArticlesRoute: typeof AdminContenuArticlesRoute
   AdminContenuPagesRoute: typeof AdminContenuPagesRoute
+  AdminDemandesSurMesureQuoteIdRoute: typeof AdminDemandesSurMesureQuoteIdRoute
   AdminProduitsProductIdRoute: typeof AdminProduitsProductIdRoute
   AdminProduitsNouveauRoute: typeof AdminProduitsNouveauRoute
   AdminClientsIndexRoute: typeof AdminClientsIndexRoute
   AdminCommandesIndexRoute: typeof AdminCommandesIndexRoute
+  AdminDemandesSurMesureIndexRoute: typeof AdminDemandesSurMesureIndexRoute
   AdminProduitsIndexRoute: typeof AdminProduitsIndexRoute
 }
 
@@ -2129,10 +2212,12 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminContenuAccueilRoute: AdminContenuAccueilRouteWithChildren,
   AdminContenuArticlesRoute: AdminContenuArticlesRoute,
   AdminContenuPagesRoute: AdminContenuPagesRoute,
+  AdminDemandesSurMesureQuoteIdRoute: AdminDemandesSurMesureQuoteIdRoute,
   AdminProduitsProductIdRoute: AdminProduitsProductIdRoute,
   AdminProduitsNouveauRoute: AdminProduitsNouveauRoute,
   AdminClientsIndexRoute: AdminClientsIndexRoute,
   AdminCommandesIndexRoute: AdminCommandesIndexRoute,
+  AdminDemandesSurMesureIndexRoute: AdminDemandesSurMesureIndexRoute,
   AdminProduitsIndexRoute: AdminProduitsIndexRoute,
 }
 
@@ -2230,6 +2315,8 @@ const rootRouteChildren: RootRouteChildren = {
   StoresIndexRoute: StoresIndexRoute,
   VoilagesIndexRoute: VoilagesIndexRoute,
   CategorySubcategoryProductSlugRoute: CategorySubcategoryProductSlugRoute,
+  ApiNewsletterOrdersRoute: ApiNewsletterOrdersRoute,
+  ApiNewsletterSubscriptionsRoute: ApiNewsletterSubscriptionsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

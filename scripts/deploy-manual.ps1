@@ -5,7 +5,10 @@ param(
   [string]$SupabaseUrl = "",
   [string]$SupabasePublishableKey = "",
   [string]$HbsApiBaseUrl = "",
-  [string]$ReleaseSha = ""
+  [string]$ReleaseSha = "",
+  [string]$MetaPixelId = "1291821648742747",
+  [string]$MetaCatalogId = "2267753347359429",
+  [string]$MetaSiteId = "hbs_home_preview"
 )
 
 $ErrorActionPreference = "Stop"
@@ -137,6 +140,9 @@ $env:VITE_SUPABASE_PUBLISHABLE_KEY = $SupabasePublishableKey
 $env:VITE_HBS_API_BASE_URL = $HbsApiBaseUrl
 $env:VITE_APP_ENVIRONMENT = "staging"
 $env:VITE_RELEASE_SHA = $ReleaseSha
+$env:VITE_META_PIXEL_ID = $MetaPixelId
+$env:VITE_META_CATALOG_ID = $MetaCatalogId
+$env:VITE_META_SITE_ID = $MetaSiteId
 if (-not $CloudflareConfigHome) {
   $CloudflareConfigHome = (Resolve-Path ".wrangler-config").Path
 }
