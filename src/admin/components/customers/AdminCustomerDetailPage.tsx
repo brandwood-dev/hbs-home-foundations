@@ -8,7 +8,6 @@ import { AdminPageHeader } from "@/admin/components/ui/AdminPageHeader";
 import {
   AdminCard,
   AdminEmptyState,
-  AdminKpiCard,
   AdminSkeleton,
   AdminStatusBadge,
 } from "@/admin/components/ui/AdminStates";
@@ -64,20 +63,6 @@ export function AdminCustomerDetailPage({ customerId }: { customerId: string }) 
           { label: `${customer.firstName} ${customer.lastName}` },
         ]}
       />
-
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <AdminKpiCard label="Commandes" value={customer.metrics.totalOrders} />
-        <AdminKpiCard label="Livrées" value={customer.metrics.deliveredOrders} tone="success" />
-        <AdminKpiCard
-          label="Total dépensé"
-          value={formatMoney(customer.metrics.totalSpentMinor)}
-          hint="Sous-total des commandes livrées"
-        />
-        <AdminKpiCard
-          label="Panier moyen"
-          value={formatMoney(customer.metrics.averageOrderValueMinor)}
-        />
-      </div>
 
       <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-4">
