@@ -256,9 +256,6 @@ export function computeFacets(products: Product[]): CatalogFacets {
       if (variant.chairPadFastening) productFastenings.add(variant.chairPadFastening);
       if (variant.accessoryFinish) productFinishes.add(variant.accessoryFinish);
       if (variant.plantSize) productPlantSizes.add(variant.plantSize);
-      // A missing dimension is represented by 0 by the API compatibility
-      // mapper for products such as accessories. It is not a selectable
-      // catalogue dimension and must never create a dead-end filter option.
       if (Number.isFinite(variant.widthCm) && variant.widthCm > 0) {
         productWidths.add(String(variant.widthCm));
       }
@@ -372,4 +369,3 @@ export function computeFacets(products: Product[]): CatalogFacets {
     priceMaxMinor: priceMax,
   };
 }
-
