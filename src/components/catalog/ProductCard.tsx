@@ -132,17 +132,17 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           {product.opacityLevel ? ` · ${OPACITY_LABELS[product.opacityLevel]}` : null}
         </p>
 
-        <h3 className="mt-1 min-w-0 break-words text-base leading-snug sm:text-lg">
+        <h3 className="card-title mt-2 min-w-0 break-words line-clamp-3 sm:line-clamp-2">
           <AppLink href={getProductPath(product)} className="hover:text-accent-dark">
             {product.name}
           </AppLink>
         </h3>
 
-        <p className="mt-1 line-clamp-2 text-sm text-foreground-muted">
+        <p className="mt-2 line-clamp-2 text-[13px] leading-[1.45] text-foreground-muted sm:text-sm sm:leading-5">
           {richTextToPlainText(product.shortDescription)}
         </p>
 
-        <div className="mt-2 flex items-center gap-1.5" aria-label="Coloris disponibles">
+        <div className="mt-3 flex items-center gap-1.5" aria-label="Coloris disponibles">
           {uniqueColors.map((color) => (
             <span
               key={color.id}
@@ -156,7 +156,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           )}
         </div>
 
-        <div className="mt-2 flex flex-wrap items-baseline gap-x-2">
+        <div className="mt-3 flex flex-wrap items-baseline gap-x-2">
           <span className="text-base font-semibold">
             {hasMultiplePrices(product) ? "Dès " : ""}
             {formatMoney(startingPrice)}
