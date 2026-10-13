@@ -598,6 +598,9 @@
                 "blindMechanismColor": {
                   "type": "string"
                 },
+                "orientation": {
+                  "type": "string"
+                },
                 "sizeLabel": {
                   "type": "string"
                 },
@@ -4463,6 +4466,11 @@
                       "type": "null"
                     }
                   ]
+                },
+                "panelCount": {
+                  "minimum": 1,
+                  "maximum": 3,
+                  "type": "integer"
                 }
               }
             }
@@ -4973,6 +4981,11 @@
                             "type": "null"
                           }
                         ]
+                      },
+                      "panelCount": {
+                        "minimum": 1,
+                        "maximum": 3,
+                        "type": "integer"
                       }
                     }
                   }
@@ -7302,6 +7315,11 @@
               }
             ]
           },
+          "panelCount": {
+            "minimum": 1,
+            "maximum": 3,
+            "type": "integer"
+          },
           "sku": {
             "type": "string"
           },
@@ -7557,6 +7575,11 @@
                       "type": "null"
                     }
                   ]
+                },
+                "panelCount": {
+                  "minimum": 1,
+                  "maximum": 3,
+                  "type": "integer"
                 },
                 "sku": {
                   "type": "string"
@@ -7964,6 +7987,11 @@
             "minimum": 0,
             "type": "integer"
           },
+          "panelCount": {
+            "minimum": 1,
+            "maximum": 3,
+            "type": "integer"
+          },
           "curtainHeaderLabel": {
             "type": "string"
           },
@@ -8249,6 +8277,11 @@
                   "minimum": 0,
                   "type": "integer"
                 },
+                "panelCount": {
+                  "minimum": 1,
+                  "maximum": 3,
+                  "type": "integer"
+                },
                 "curtainHeaderLabel": {
                   "type": "string"
                 },
@@ -8488,6 +8521,11 @@
                 },
                 "heightCm": {
                   "minimum": 0,
+                  "type": "integer"
+                },
+                "panelCount": {
+                  "minimum": 1,
+                  "maximum": 3,
                   "type": "integer"
                 },
                 "curtainHeaderLabel": {
@@ -9717,6 +9755,7 @@
         "required": [
           "id",
           "reference",
+          "requestType",
           "productType",
           "openings",
           "preferences",
@@ -9738,6 +9777,43 @@
           },
           "reference": {
             "type": "string"
+          },
+          "requestType": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": ["particulier"]
+              },
+              {
+                "type": "string",
+                "enum": ["professionnels"]
+              }
+            ]
+          },
+          "professionalDetails": {
+            "additionalProperties": false,
+            "type": "object",
+            "required": ["companyName", "activity", "projectVolume", "message"],
+            "properties": {
+              "companyName": {
+                "type": "string"
+              },
+              "activity": {
+                "type": "string"
+              },
+              "taxId": {
+                "type": "string"
+              },
+              "projectVolume": {
+                "type": "string"
+              },
+              "desiredDeadline": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
           },
           "productType": {
             "anyOf": [
@@ -9911,6 +9987,7 @@
               "required": [
                 "id",
                 "reference",
+                "requestType",
                 "productType",
                 "openings",
                 "preferences",
@@ -9932,6 +10009,43 @@
                 },
                 "reference": {
                   "type": "string"
+                },
+                "requestType": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": ["particulier"]
+                    },
+                    {
+                      "type": "string",
+                      "enum": ["professionnels"]
+                    }
+                  ]
+                },
+                "professionalDetails": {
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": ["companyName", "activity", "projectVolume", "message"],
+                  "properties": {
+                    "companyName": {
+                      "type": "string"
+                    },
+                    "activity": {
+                      "type": "string"
+                    },
+                    "taxId": {
+                      "type": "string"
+                    },
+                    "projectVolume": {
+                      "type": "string"
+                    },
+                    "desiredDeadline": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
                 },
                 "productType": {
                   "anyOf": [
@@ -10112,280 +10226,6 @@
           "pageCount": {
             "minimum": 1,
             "type": "integer"
-          }
-        }
-      },
-      "CustomQuoteConversionResponse": {
-        "additionalProperties": false,
-        "type": "object",
-        "required": ["quote", "customer", "action"],
-        "properties": {
-          "quote": {
-            "additionalProperties": false,
-            "type": "object",
-            "required": [
-              "id",
-              "reference",
-              "productType",
-              "openings",
-              "preferences",
-              "contact",
-              "attachmentMetadata",
-              "acceptedPrivacy",
-              "createdAt",
-              "readAt",
-              "archivedAt",
-              "emailSentAt",
-              "customerId",
-              "convertedAt",
-              "convertedBy"
-            ],
-            "properties": {
-              "id": {
-                "format": "uuid",
-                "type": "string"
-              },
-              "reference": {
-                "type": "string"
-              },
-              "productType": {
-                "anyOf": [
-                  {
-                    "type": "string",
-                    "enum": ["rideaux"]
-                  },
-                  {
-                    "type": "string",
-                    "enum": ["voilages"]
-                  },
-                  {
-                    "type": "string",
-                    "enum": ["stores"]
-                  },
-                  {
-                    "type": "string",
-                    "enum": ["ensemble_fenetre"]
-                  }
-                ]
-              },
-              "openings": {
-                "type": "array",
-                "items": {}
-              },
-              "preferences": {
-                "type": "object",
-                "additionalProperties": {}
-              },
-              "contact": {
-                "additionalProperties": false,
-                "type": "object",
-                "required": [
-                  "firstName",
-                  "lastName",
-                  "phone",
-                  "governorate",
-                  "city",
-                  "preferredContact"
-                ],
-                "properties": {
-                  "firstName": {
-                    "type": "string"
-                  },
-                  "lastName": {
-                    "type": "string"
-                  },
-                  "phone": {
-                    "type": "string"
-                  },
-                  "email": {
-                    "type": "string"
-                  },
-                  "governorate": {
-                    "type": "string"
-                  },
-                  "city": {
-                    "type": "string"
-                  },
-                  "preferredContact": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "enum": ["phone"]
-                      },
-                      {
-                        "type": "string",
-                        "enum": ["whatsapp"]
-                      },
-                      {
-                        "type": "string",
-                        "enum": ["email"]
-                      }
-                    ]
-                  }
-                }
-              },
-              "attachmentMetadata": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "additionalProperties": {}
-                }
-              },
-              "acceptedPrivacy": {
-                "type": "boolean",
-                "enum": [true]
-              },
-              "createdAt": {
-                "format": "date-time",
-                "type": "string"
-              },
-              "readAt": {
-                "anyOf": [
-                  {
-                    "format": "date-time",
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "archivedAt": {
-                "anyOf": [
-                  {
-                    "format": "date-time",
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "emailSentAt": {
-                "anyOf": [
-                  {
-                    "format": "date-time",
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "customerId": {
-                "anyOf": [
-                  {
-                    "format": "uuid",
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "convertedAt": {
-                "anyOf": [
-                  {
-                    "format": "date-time",
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "convertedBy": {
-                "anyOf": [
-                  {
-                    "format": "uuid",
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              }
-            }
-          },
-          "customer": {
-            "additionalProperties": false,
-            "type": "object",
-            "required": [
-              "id",
-              "firstName",
-              "lastName",
-              "phone",
-              "email",
-              "governorate",
-              "preferredChannel"
-            ],
-            "properties": {
-              "id": {
-                "format": "uuid",
-                "type": "string"
-              },
-              "firstName": {
-                "type": "string"
-              },
-              "lastName": {
-                "type": "string"
-              },
-              "phone": {
-                "type": "string"
-              },
-              "email": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "governorate": {
-                "type": "string"
-              },
-              "preferredChannel": {
-                "anyOf": [
-                  {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "enum": ["phone"]
-                      },
-                      {
-                        "type": "string",
-                        "enum": ["whatsapp"]
-                      },
-                      {
-                        "type": "string",
-                        "enum": ["email"]
-                      }
-                    ]
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              }
-            }
-          },
-          "action": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": ["created"]
-              },
-              {
-                "type": "string",
-                "enum": ["associated"]
-              },
-              {
-                "type": "string",
-                "enum": ["already_associated"]
-              }
-            ]
           }
         }
       }
@@ -11395,6 +11235,9 @@
                                 "blindMechanismColor": {
                                   "type": "string"
                                 },
+                                "orientation": {
+                                  "type": "string"
+                                },
                                 "sizeLabel": {
                                   "type": "string"
                                 },
@@ -12092,6 +11935,9 @@
                             "blindMechanismColor": {
                               "type": "string"
                             },
+                            "orientation": {
+                              "type": "string"
+                            },
                             "sizeLabel": {
                               "type": "string"
                             },
@@ -12622,6 +12468,9 @@
                                 "blindMechanismColor": {
                                   "type": "string"
                                 },
+                                "orientation": {
+                                  "type": "string"
+                                },
                                 "sizeLabel": {
                                   "type": "string"
                                 },
@@ -13146,6 +12995,9 @@
                             "type": "string"
                           },
                           "blindMechanismColor": {
+                            "type": "string"
+                          },
+                          "orientation": {
                             "type": "string"
                           },
                           "sizeLabel": {
@@ -13745,6 +13597,9 @@
                               "type": "string"
                             },
                             "blindMechanismColor": {
+                              "type": "string"
+                            },
+                            "orientation": {
                               "type": "string"
                             },
                             "sizeLabel": {
@@ -34497,6 +34352,11 @@
                                       "type": "null"
                                     }
                                   ]
+                                },
+                                "panelCount": {
+                                  "minimum": 1,
+                                  "maximum": 3,
+                                  "type": "integer"
                                 }
                               }
                             }
@@ -35238,6 +35098,11 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
                           }
                         }
                       }
@@ -36031,6 +35896,11 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
                           }
                         }
                       }
@@ -36924,6 +36794,11 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
                           }
                         }
                       }
@@ -37806,6 +37681,11 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
                           }
                         }
                       }
@@ -38680,6 +38560,11 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
                           }
                         }
                       }
@@ -39506,6 +39391,11 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
                           }
                         }
                       }
@@ -40423,6 +40313,11 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
                           }
                         }
                       }
@@ -41327,6 +41222,11 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
                           }
                         }
                       }
@@ -42211,6 +42111,11 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
                           }
                         }
                       }
@@ -43814,6 +43719,11 @@
                                           "type": "null"
                                         }
                                       ]
+                                    },
+                                    "panelCount": {
+                                      "minimum": 1,
+                                      "maximum": 3,
+                                      "type": "integer"
                                     }
                                   }
                                 }
@@ -48507,6 +48417,11 @@
                                           "type": "null"
                                         }
                                       ]
+                                    },
+                                    "panelCount": {
+                                      "minimum": 1,
+                                      "maximum": 3,
+                                      "type": "integer"
                                     }
                                   }
                                 }
@@ -58950,6 +58865,11 @@
                               }
                             ]
                           },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
+                          },
                           "sku": {
                             "type": "string"
                           },
@@ -59427,6 +59347,11 @@
                               }
                             ]
                           },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
+                          },
                           "sku": {
                             "type": "string"
                           },
@@ -59770,6 +59695,11 @@
                     "maxLength": 80,
                     "type": "string"
                   },
+                  "panelCount": {
+                    "minimum": 1,
+                    "maximum": 3,
+                    "type": "integer"
+                  },
                   "quantity": {
                     "minimum": 1,
                     "maximum": 99,
@@ -59875,6 +59805,11 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
                           },
                           "sku": {
                             "type": "string"
@@ -60514,6 +60449,11 @@
                               }
                             ]
                           },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
+                          },
                           "sku": {
                             "type": "string"
                           },
@@ -61067,6 +61007,11 @@
                               }
                             ]
                           },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
+                          },
                           "sku": {
                             "type": "string"
                           },
@@ -61564,6 +61509,11 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
                           },
                           "sku": {
                             "type": "string"
@@ -62169,6 +62119,11 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
+                            "type": "integer"
                           },
                           "sku": {
                             "type": "string"
@@ -63155,6 +63110,11 @@
                           "maxLength": 80,
                           "type": "string"
                         },
+                        "panelCount": {
+                          "minimum": 1,
+                          "maximum": 3,
+                          "type": "integer"
+                        },
                         "quantity": {
                           "minimum": 1,
                           "maximum": 99,
@@ -63360,6 +63320,11 @@
                           },
                           "heightCm": {
                             "minimum": 0,
+                            "type": "integer"
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
                             "type": "integer"
                           },
                           "curtainHeaderLabel": {
@@ -63769,6 +63734,11 @@
                           },
                           "heightCm": {
                             "minimum": 0,
+                            "type": "integer"
+                          },
+                          "panelCount": {
+                            "minimum": 1,
+                            "maximum": 3,
                             "type": "integer"
                           },
                           "curtainHeaderLabel": {
@@ -69166,117 +69136,274 @@
           "content": {
             "application/json": {
               "schema": {
-                "additionalProperties": false,
-                "type": "object",
-                "required": [
-                  "productType",
-                  "openings",
-                  "preferences",
-                  "contact",
-                  "attachmentMetadata",
-                  "acceptedPrivacy"
-                ],
-                "properties": {
-                  "productType": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "enum": ["rideaux"]
-                      },
-                      {
-                        "type": "string",
-                        "enum": ["voilages"]
-                      },
-                      {
-                        "type": "string",
-                        "enum": ["stores"]
-                      },
-                      {
-                        "type": "string",
-                        "enum": ["ensemble_fenetre"]
-                      }
-                    ]
-                  },
-                  "openings": {
-                    "minItems": 1,
-                    "maxItems": 30,
-                    "type": "array",
-                    "items": {
-                      "additionalProperties": false,
-                      "type": "object",
-                      "required": ["id", "label", "openingType", "widthCm", "heightCm", "quantity"],
-                      "properties": {
-                        "id": {
-                          "minLength": 1,
-                          "maxLength": 80,
-                          "type": "string"
-                        },
-                        "label": {
-                          "minLength": 1,
-                          "maxLength": 120,
-                          "type": "string"
-                        },
-                        "openingType": {
-                          "minLength": 1,
-                          "maxLength": 80,
-                          "type": "string"
-                        },
-                        "widthCm": {
-                          "exclusiveMinimum": 0,
-                          "maximum": 20000,
-                          "type": "number"
-                        },
-                        "heightCm": {
-                          "exclusiveMinimum": 0,
-                          "maximum": 20000,
-                          "type": "number"
-                        },
-                        "quantity": {
-                          "minimum": 1,
-                          "maximum": 1000,
-                          "type": "integer"
-                        },
-                        "installationType": {
-                          "maxLength": 120,
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "preferences": {
-                    "additionalProperties": false,
-                    "type": "object",
-                    "required": ["wantsAccessories"],
-                    "properties": {
-                      "wantsAccessories": {
-                        "type": "boolean"
-                      },
-                      "notes": {
-                        "maxLength": 5000,
-                        "type": "string"
-                      }
-                    }
-                  },
-                  "contact": {
+                "anyOf": [
+                  {
                     "additionalProperties": false,
                     "type": "object",
                     "required": [
-                      "firstName",
-                      "lastName",
-                      "phone",
-                      "governorate",
-                      "city",
-                      "preferredContact"
+                      "productType",
+                      "openings",
+                      "preferences",
+                      "contact",
+                      "attachmentMetadata",
+                      "acceptedPrivacy"
                     ],
                     "properties": {
-                      "firstName": {
+                      "requestType": {
+                        "type": "string",
+                        "enum": ["particulier"]
+                      },
+                      "productType": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": ["rideaux"]
+                          },
+                          {
+                            "type": "string",
+                            "enum": ["voilages"]
+                          },
+                          {
+                            "type": "string",
+                            "enum": ["stores"]
+                          },
+                          {
+                            "type": "string",
+                            "enum": ["ensemble_fenetre"]
+                          }
+                        ]
+                      },
+                      "openings": {
+                        "minItems": 1,
+                        "maxItems": 30,
+                        "type": "array",
+                        "items": {
+                          "additionalProperties": false,
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "label",
+                            "openingType",
+                            "widthCm",
+                            "heightCm",
+                            "quantity"
+                          ],
+                          "properties": {
+                            "id": {
+                              "minLength": 1,
+                              "maxLength": 80,
+                              "type": "string"
+                            },
+                            "label": {
+                              "minLength": 1,
+                              "maxLength": 120,
+                              "type": "string"
+                            },
+                            "openingType": {
+                              "minLength": 1,
+                              "maxLength": 80,
+                              "type": "string"
+                            },
+                            "widthCm": {
+                              "exclusiveMinimum": 0,
+                              "maximum": 20000,
+                              "type": "number"
+                            },
+                            "heightCm": {
+                              "exclusiveMinimum": 0,
+                              "maximum": 20000,
+                              "type": "number"
+                            },
+                            "quantity": {
+                              "minimum": 1,
+                              "maximum": 1000,
+                              "type": "integer"
+                            },
+                            "installationType": {
+                              "maxLength": 120,
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "preferences": {
+                        "additionalProperties": false,
+                        "type": "object",
+                        "required": ["wantsAccessories"],
+                        "properties": {
+                          "wantsAccessories": {
+                            "type": "boolean"
+                          },
+                          "notes": {
+                            "maxLength": 5000,
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "contact": {
+                        "additionalProperties": false,
+                        "type": "object",
+                        "required": [
+                          "firstName",
+                          "lastName",
+                          "phone",
+                          "governorate",
+                          "city",
+                          "preferredContact"
+                        ],
+                        "properties": {
+                          "firstName": {
+                            "minLength": 2,
+                            "maxLength": 60,
+                            "type": "string"
+                          },
+                          "lastName": {
+                            "minLength": 2,
+                            "maxLength": 60,
+                            "type": "string"
+                          },
+                          "phone": {
+                            "minLength": 8,
+                            "maxLength": 20,
+                            "type": "string"
+                          },
+                          "email": {
+                            "format": "email",
+                            "maxLength": 255,
+                            "type": "string"
+                          },
+                          "governorate": {
+                            "minLength": 1,
+                            "maxLength": 120,
+                            "type": "string"
+                          },
+                          "city": {
+                            "minLength": 2,
+                            "maxLength": 120,
+                            "type": "string"
+                          },
+                          "preferredContact": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": ["phone"]
+                              },
+                              {
+                                "type": "string",
+                                "enum": ["whatsapp"]
+                              },
+                              {
+                                "type": "string",
+                                "enum": ["email"]
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "attachmentMetadata": {
+                        "maxItems": 10,
+                        "type": "array",
+                        "items": {
+                          "additionalProperties": false,
+                          "type": "object",
+                          "required": ["id", "name", "size", "type"],
+                          "properties": {
+                            "id": {
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "type": "string"
+                            },
+                            "name": {
+                              "minLength": 1,
+                              "maxLength": 255,
+                              "type": "string"
+                            },
+                            "size": {
+                              "minimum": 0,
+                              "maximum": 25000000,
+                              "type": "integer"
+                            },
+                            "type": {
+                              "maxLength": 120,
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "acceptedPrivacy": {
+                        "type": "boolean",
+                        "enum": [true]
+                      }
+                    }
+                  },
+                  {
+                    "additionalProperties": false,
+                    "type": "object",
+                    "required": [
+                      "requestType",
+                      "companyName",
+                      "activity",
+                      "contactName",
+                      "phone",
+                      "email",
+                      "governorate",
+                      "projectVolume",
+                      "message",
+                      "acceptedPrivacy"
+                    ],
+                    "properties": {
+                      "requestType": {
+                        "type": "string",
+                        "enum": ["professionnels"]
+                      },
+                      "companyName": {
                         "minLength": 2,
-                        "maxLength": 60,
+                        "maxLength": 160,
                         "type": "string"
                       },
-                      "lastName": {
+                      "activity": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": ["hotellerie"]
+                          },
+                          {
+                            "type": "string",
+                            "enum": ["restauration"]
+                          },
+                          {
+                            "type": "string",
+                            "enum": ["bureaux"]
+                          },
+                          {
+                            "type": "string",
+                            "enum": ["architecte"]
+                          },
+                          {
+                            "type": "string",
+                            "enum": ["decorateur"]
+                          },
+                          {
+                            "type": "string",
+                            "enum": ["promoteur"]
+                          },
+                          {
+                            "type": "string",
+                            "enum": ["commerce"]
+                          },
+                          {
+                            "type": "string",
+                            "enum": ["autre"]
+                          }
+                        ]
+                      },
+                      "taxId": {
+                        "maxLength": 80,
+                        "type": "string"
+                      },
+                      "contactName": {
                         "minLength": 2,
-                        "maxLength": 60,
+                        "maxLength": 120,
                         "type": "string"
                       },
                       "phone": {
@@ -69295,63 +69422,45 @@
                         "type": "string"
                       },
                       "city": {
-                        "minLength": 2,
                         "maxLength": 120,
                         "type": "string"
                       },
-                      "preferredContact": {
+                      "projectVolume": {
                         "anyOf": [
                           {
                             "type": "string",
-                            "enum": ["phone"]
+                            "enum": ["moins_10"]
                           },
                           {
                             "type": "string",
-                            "enum": ["whatsapp"]
+                            "enum": ["10_50"]
                           },
                           {
                             "type": "string",
-                            "enum": ["email"]
+                            "enum": ["50_200"]
+                          },
+                          {
+                            "type": "string",
+                            "enum": ["plus_200"]
                           }
                         ]
+                      },
+                      "desiredDeadline": {
+                        "maxLength": 160,
+                        "type": "string"
+                      },
+                      "message": {
+                        "minLength": 20,
+                        "maxLength": 5000,
+                        "type": "string"
+                      },
+                      "acceptedPrivacy": {
+                        "type": "boolean",
+                        "enum": [true]
                       }
                     }
-                  },
-                  "attachmentMetadata": {
-                    "maxItems": 10,
-                    "type": "array",
-                    "items": {
-                      "additionalProperties": false,
-                      "type": "object",
-                      "required": ["id", "name", "size", "type"],
-                      "properties": {
-                        "id": {
-                          "minLength": 1,
-                          "maxLength": 160,
-                          "type": "string"
-                        },
-                        "name": {
-                          "minLength": 1,
-                          "maxLength": 255,
-                          "type": "string"
-                        },
-                        "size": {
-                          "minimum": 0,
-                          "maximum": 25000000,
-                          "type": "integer"
-                        },
-                        "type": {
-                          "maxLength": 120,
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "acceptedPrivacy": {
-                    "type": "boolean",
-                    "enum": [true]
                   }
-                }
+                ]
               }
             }
           }
@@ -69367,6 +69476,7 @@
                   "required": [
                     "id",
                     "reference",
+                    "requestType",
                     "productType",
                     "openings",
                     "preferences",
@@ -69388,6 +69498,43 @@
                     },
                     "reference": {
                       "type": "string"
+                    },
+                    "requestType": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": ["particulier"]
+                        },
+                        {
+                          "type": "string",
+                          "enum": ["professionnels"]
+                        }
+                      ]
+                    },
+                    "professionalDetails": {
+                      "additionalProperties": false,
+                      "type": "object",
+                      "required": ["companyName", "activity", "projectVolume", "message"],
+                      "properties": {
+                        "companyName": {
+                          "type": "string"
+                        },
+                        "activity": {
+                          "type": "string"
+                        },
+                        "taxId": {
+                          "type": "string"
+                        },
+                        "projectVolume": {
+                          "type": "string"
+                        },
+                        "desiredDeadline": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      }
                     },
                     "productType": {
                       "anyOf": [
@@ -69668,6 +69815,23 @@
             "in": "query",
             "name": "includeArchived",
             "required": false
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": ["particulier"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["professionnels"]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "requestType",
+            "required": false
           }
         ],
         "security": [
@@ -69693,6 +69857,7 @@
                         "required": [
                           "id",
                           "reference",
+                          "requestType",
                           "productType",
                           "openings",
                           "preferences",
@@ -69714,6 +69879,43 @@
                           },
                           "reference": {
                             "type": "string"
+                          },
+                          "requestType": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": ["particulier"]
+                              },
+                              {
+                                "type": "string",
+                                "enum": ["professionnels"]
+                              }
+                            ]
+                          },
+                          "professionalDetails": {
+                            "additionalProperties": false,
+                            "type": "object",
+                            "required": ["companyName", "activity", "projectVolume", "message"],
+                            "properties": {
+                              "companyName": {
+                                "type": "string"
+                              },
+                              "activity": {
+                                "type": "string"
+                              },
+                              "taxId": {
+                                "type": "string"
+                              },
+                              "projectVolume": {
+                                "type": "string"
+                              },
+                              "desiredDeadline": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            }
                           },
                           "productType": {
                             "anyOf": [
@@ -70063,6 +70265,7 @@
                   "required": [
                     "id",
                     "reference",
+                    "requestType",
                     "productType",
                     "openings",
                     "preferences",
@@ -70084,6 +70287,43 @@
                     },
                     "reference": {
                       "type": "string"
+                    },
+                    "requestType": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": ["particulier"]
+                        },
+                        {
+                          "type": "string",
+                          "enum": ["professionnels"]
+                        }
+                      ]
+                    },
+                    "professionalDetails": {
+                      "additionalProperties": false,
+                      "type": "object",
+                      "required": ["companyName", "activity", "projectVolume", "message"],
+                      "properties": {
+                        "companyName": {
+                          "type": "string"
+                        },
+                        "activity": {
+                          "type": "string"
+                        },
+                        "taxId": {
+                          "type": "string"
+                        },
+                        "projectVolume": {
+                          "type": "string"
+                        },
+                        "desiredDeadline": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      }
                     },
                     "productType": {
                       "anyOf": [
@@ -70479,6 +70719,7 @@
                       "required": [
                         "id",
                         "reference",
+                        "requestType",
                         "productType",
                         "openings",
                         "preferences",
@@ -70500,6 +70741,43 @@
                         },
                         "reference": {
                           "type": "string"
+                        },
+                        "requestType": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": ["particulier"]
+                            },
+                            {
+                              "type": "string",
+                              "enum": ["professionnels"]
+                            }
+                          ]
+                        },
+                        "professionalDetails": {
+                          "additionalProperties": false,
+                          "type": "object",
+                          "required": ["companyName", "activity", "projectVolume", "message"],
+                          "properties": {
+                            "companyName": {
+                              "type": "string"
+                            },
+                            "activity": {
+                              "type": "string"
+                            },
+                            "taxId": {
+                              "type": "string"
+                            },
+                            "projectVolume": {
+                              "type": "string"
+                            },
+                            "desiredDeadline": {
+                              "type": "string"
+                            },
+                            "message": {
+                              "type": "string"
+                            }
+                          }
                         },
                         "productType": {
                           "anyOf": [
@@ -70936,70 +71214,6 @@
                 }
               }
             }
-          },
-          "409": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": false,
-                  "type": "object",
-                  "required": [
-                    "type",
-                    "title",
-                    "status",
-                    "detail",
-                    "instance",
-                    "code",
-                    "requestId"
-                  ],
-                  "properties": {
-                    "type": {
-                      "type": "string"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "status": {
-                      "minimum": 400,
-                      "maximum": 599,
-                      "type": "integer"
-                    },
-                    "detail": {
-                      "type": "string"
-                    },
-                    "instance": {
-                      "type": "string"
-                    },
-                    "code": {
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "type": "string"
-                    },
-                    "errors": {
-                      "type": "array",
-                      "items": {
-                        "additionalProperties": false,
-                        "type": "object",
-                        "required": ["path", "message", "keyword"],
-                        "properties": {
-                          "path": {
-                            "type": "string"
-                          },
-                          "message": {
-                            "type": "string"
-                          },
-                          "keyword": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
           }
         }
       }
@@ -71036,6 +71250,7 @@
                   "required": [
                     "id",
                     "reference",
+                    "requestType",
                     "productType",
                     "openings",
                     "preferences",
@@ -71057,6 +71272,43 @@
                     },
                     "reference": {
                       "type": "string"
+                    },
+                    "requestType": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": ["particulier"]
+                        },
+                        {
+                          "type": "string",
+                          "enum": ["professionnels"]
+                        }
+                      ]
+                    },
+                    "professionalDetails": {
+                      "additionalProperties": false,
+                      "type": "object",
+                      "required": ["companyName", "activity", "projectVolume", "message"],
+                      "properties": {
+                        "companyName": {
+                          "type": "string"
+                        },
+                        "activity": {
+                          "type": "string"
+                        },
+                        "taxId": {
+                          "type": "string"
+                        },
+                        "projectVolume": {
+                          "type": "string"
+                        },
+                        "desiredDeadline": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      }
                     },
                     "productType": {
                       "anyOf": [
@@ -71447,6 +71699,7 @@
                   "required": [
                     "id",
                     "reference",
+                    "requestType",
                     "productType",
                     "openings",
                     "preferences",
@@ -71468,6 +71721,43 @@
                     },
                     "reference": {
                       "type": "string"
+                    },
+                    "requestType": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": ["particulier"]
+                        },
+                        {
+                          "type": "string",
+                          "enum": ["professionnels"]
+                        }
+                      ]
+                    },
+                    "professionalDetails": {
+                      "additionalProperties": false,
+                      "type": "object",
+                      "required": ["companyName", "activity", "projectVolume", "message"],
+                      "properties": {
+                        "companyName": {
+                          "type": "string"
+                        },
+                        "activity": {
+                          "type": "string"
+                        },
+                        "taxId": {
+                          "type": "string"
+                        },
+                        "projectVolume": {
+                          "type": "string"
+                        },
+                        "desiredDeadline": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      }
                     },
                     "productType": {
                       "anyOf": [

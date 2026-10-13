@@ -11,6 +11,7 @@ export interface CreateOrderItemInput {
   productId: string;
   variantId: string;
   confectionKey?: string;
+  panelCount?: number;
   quantity: number;
   /** Prix unitaire affiché au client — sert uniquement au contrôle de cohérence. */
   expectedUnitPriceMinor: number;

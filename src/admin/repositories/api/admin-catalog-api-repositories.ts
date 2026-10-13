@@ -123,6 +123,7 @@ function mapCategory(category: ApiCategory): AdminCategory {
     name: category.name,
     slug: category.slug,
     ...(category.parentId ? { parentId: category.parentId } : {}),
+    status: category.status,
     order: category.sortOrder,
     isActive: category.status === "active",
     description: category.description ?? "",

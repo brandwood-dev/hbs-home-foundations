@@ -11,6 +11,7 @@ interface ProductPurchasePanelProps {
   quantity: number;
   onQuantityChange: (quantity: number) => void;
   confectionKey?: ConfectionKey | undefined;
+  panelCount?: number | undefined;
 }
 
 export function ProductPurchasePanel({
@@ -19,6 +20,7 @@ export function ProductPurchasePanel({
   quantity,
   onQuantityChange,
   confectionKey,
+  panelCount,
 }: ProductPurchasePanelProps) {
   const unavailable = variant.availability === "out_of_stock";
   const max = Math.max(1, variant.availableQuantity || 1);
@@ -61,6 +63,7 @@ export function ProductPurchasePanel({
             variant={variant}
             quantity={quantity}
             confectionKey={confectionKey}
+            panelCount={panelCount}
             missingOptionLabel="Sélectionnez une dimension"
           />
         </div>

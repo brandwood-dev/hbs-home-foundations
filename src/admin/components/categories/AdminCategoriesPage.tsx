@@ -35,6 +35,7 @@ import { useAdminCategories, useAdminProducts } from "@/admin/hooks/admin.querie
 import { isMfaRequiredError, useAdminMfaOptional } from "@/admin/auth/AdminMfaContext";
 import { useAdminDraftState } from "@/admin/hooks/useAdminDraftState";
 import { adminRepositories } from "@/admin/repositories/adminRepositoryFactory";
+import { buildCategoryProductCounts } from "@/admin/services/categories/admin-category-product-counts";
 import {
   useDeleteAdminCategory,
   useMoveAdminCategory,
@@ -179,18 +180,21 @@ export function AdminCategoriesPage() {
 
   useEffect(() => setPersist(draft !== null), [draft, setPersist]);
 
-  const productCount = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const product of products) {
-      counts.set(product.categoryId, (counts.get(product.categoryId) ?? 0) + 1);
-    }
-    return counts;
-  }, [products]);
+  // Archived categories remain in the API for audit/history, but they must no
+  // longer appear in the operational taxonomy or category selectors.
+  const visibleCategories = useMemo(
+    () => categories.filter((category) => category.status !== "archived"),
+    [categories],
+  );
 
-  const tree = useMemo(() => buildTree(categories), [categories]);
+  const productCount = useMemo(() => {
+    return buildCategoryProductCounts(visibleCategories, products);
+  }, [products, visibleCategories]);
+
+  const tree = useMemo(() => buildTree(visibleCategories), [visibleCategories]);
   const filteredTree = useMemo(() => filterTree(tree, normalizeKey(search)), [search, tree]);
   const rootCount = tree.length;
-  const childCount = categories.length - rootCount;
+  const childCount = visibleCategories.length - rootCount;
 
   function setExpanded(id: string, expanded: boolean) {
     setExpandedIds((current) => {
@@ -202,7 +206,7 @@ export function AdminCategoriesPage() {
   }
 
   function openCreate(parentId = "") {
-    const siblings = categories.filter((category) => (category.parentId ?? "") === parentId);
+    const siblings = visibleCategories.filter((category) => (category.parentId ?? "") === parentId);
     const order = siblings.reduce((max, category) => Math.max(max, category.order), -1) + 1;
     if (parentId) setExpanded(parentId, true);
     setFormErrors({});
@@ -282,7 +286,7 @@ export function AdminCategoriesPage() {
     if (value.name.trim().length < 2) errors.name = "Le nom doit contenir au moins 2 caractères.";
     if (!resolvedSlug) errors.slug = "Le slug est requis.";
     if (
-      categories.some(
+      visibleCategories.some(
         (category) =>
           category.id !== value.id && normalizeKey(category.slug) === normalizeKey(resolvedSlug),
       )
@@ -290,7 +294,7 @@ export function AdminCategoriesPage() {
       errors.slug = "Ce slug existe déjà.";
     }
     if (value.parentId) {
-      const parent = categories.find((category) => category.id === value.parentId);
+      const parent = visibleCategories.find((category) => category.id === value.parentId);
       if (!parent) errors.parentId = "La catégorie parente est introuvable.";
       else if (parent.parentId)
         errors.parentId = "Une sous-catégorie ne peut pas avoir de sous-catégorie.";
@@ -373,7 +377,7 @@ export function AdminCategoriesPage() {
                 {node.name}
               </p>
               <p className="truncate text-xs text-muted-foreground">
-                {categoryPath(node, categories)}
+                {categoryPath(node, visibleCategories)}
                 {isRoot
                   ? ` · ${node.children.length} sous-catégorie${node.children.length > 1 ? "s" : ""}`
                   : ""}
@@ -418,7 +422,7 @@ export function AdminCategoriesPage() {
               size="icon"
               aria-label={`Voir ${node.name} sur le site public`}
               onClick={() =>
-                window.open(categoryPath(node, categories), "_blank", "noopener,noreferrer")
+                window.open(categoryPath(node, visibleCategories), "_blank", "noopener,noreferrer")
               }
             >
               <Eye className="size-4" />
@@ -437,7 +441,11 @@ export function AdminCategoriesPage() {
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() =>
-                  window.open(categoryPath(node, categories), "_blank", "noopener,noreferrer")
+                  window.open(
+                    categoryPath(node, visibleCategories),
+                    "_blank",
+                    "noopener,noreferrer",
+                  )
                 }
               >
                 <Eye className="mr-2 size-4" /> Voir le site public
@@ -517,7 +525,7 @@ export function AdminCategoriesPage() {
         }
         description={
           draft?.parentId
-            ? `Sous-catégorie de ${categories.find((category) => category.id === draft.parentId)?.name ?? "la catégorie sélectionnée"}.`
+            ? `Sous-catégorie de ${visibleCategories.find((category) => category.id === draft.parentId)?.name ?? "la catégorie sélectionnée"}.`
             : "Une catégorie racine organise une famille du catalogue."
         }
         footer={
@@ -593,7 +601,7 @@ export function AdminCategoriesPage() {
                 error={formErrors.parentId}
                 options={[
                   { value: "", label: "Aucune (catégorie racine)" },
-                  ...categories
+                  ...visibleCategories
                     .filter((category) => category.id !== draft.id && !category.parentId)
                     .map((category) => ({ value: category.id, label: category.name })),
                 ]}

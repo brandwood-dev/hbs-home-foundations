@@ -5,6 +5,7 @@ export interface AddCartItemInput {
   variantId: string;
   quantity: number;
   confectionKey?: string | undefined;
+  panelCount?: number | undefined;
 }
 
 /**

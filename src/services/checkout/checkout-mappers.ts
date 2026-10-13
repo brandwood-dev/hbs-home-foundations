@@ -10,6 +10,7 @@ export function toOrderItemInputs(cart: Cart): CreateOrderItemInput[] {
       productId: item.productId,
       variantId: item.variantId,
       ...(item.confectionKey ? { confectionKey: item.confectionKey } : {}),
+      ...(item.panelCount ? { panelCount: item.panelCount } : {}),
       quantity: item.quantity,
       expectedUnitPriceMinor: item.unitPriceMinor,
     }));
@@ -32,6 +33,7 @@ export function toOrderItemSnapshot(item: ResolvedCartItem): OrderItemSnapshot {
     ...(item.colorLabel ? { colorLabel: item.colorLabel } : {}),
     ...(item.widthCm ? { widthCm: item.widthCm } : {}),
     ...(item.heightCm ? { heightCm: item.heightCm } : {}),
+    ...(item.panelCount ? { panelCount: item.panelCount } : {}),
     ...(item.curtainHeaderLabel ? { curtainHeaderLabel: item.curtainHeaderLabel } : {}),
     ...(item.eyeletColorLabel ? { eyeletColorLabel: item.eyeletColorLabel } : {}),
     ...(item.liningLabel ? { liningLabel: item.liningLabel } : {}),

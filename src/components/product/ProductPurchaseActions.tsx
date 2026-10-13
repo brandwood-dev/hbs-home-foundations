@@ -6,6 +6,7 @@ import type { ConfectionKey } from "@/domain/product/confection";
 import { useAddCartItemMutation } from "@/hooks/cart/useCartMutations";
 import { openCartDrawer } from "@/hooks/cart/useCartDrawer";
 import { trackEvent } from "@/lib/analytics/analytics";
+import { panelCountOptionsFor } from "@/domain/product/panel-count";
 
 interface ProductPurchaseActionsProps {
   product: Product;
@@ -15,6 +16,7 @@ interface ProductPurchaseActionsProps {
   missingOptionLabel?: string;
   compact?: boolean;
   confectionKey?: ConfectionKey | undefined;
+  panelCount?: number | undefined;
 }
 
 const ADD_ERROR = "Impossible d'ajouter cet article au panier. Veuillez réessayer.";
@@ -29,6 +31,7 @@ export function ProductPurchaseActions({
   missingOptionLabel,
   compact = false,
   confectionKey,
+  panelCount,
 }: ProductPurchaseActionsProps) {
   const addItem = useAddCartItemMutation();
   const [error, setError] = useState<string | null>(null);
@@ -39,9 +42,15 @@ export function ProductPurchaseActions({
   const maxQuantity = variant ? Math.max(1, variant.availableQuantity || 1) : 0;
   const validQuantity = Number.isInteger(quantity) && quantity >= 1 && quantity <= maxQuantity;
   const requiresConfection = product.category === "rideaux" || product.category === "voilages";
+  const panelOptions = variant
+    ? panelCountOptionsFor(product.category, product.material, variant.widthCm)
+    : [];
+  const validPanelCount =
+    panelOptions.length === 0 || panelOptions.includes(panelCount ?? panelOptions[0] ?? 1);
   const canAdd =
     Boolean(variant) &&
     (!requiresConfection || Boolean(confectionKey)) &&
+    validPanelCount &&
     !unavailable &&
     validQuantity &&
     !addItem.isPending;
@@ -65,7 +74,17 @@ export function ProductPurchaseActions({
     setError(null);
     setAdded(false);
     addItem.mutate(
-      { productId: product.id, variantId: variant.id, quantity, confectionKey },
+      {
+        productId: product.id,
+        variantId: variant.id,
+        quantity,
+        confectionKey,
+        // The API only accepts a panel count for curtains and voilages. The
+        // detail view keeps a default value for the shared purchase controls,
+        // so guard the payload with the resolved panel options instead of
+        // leaking `panelCount: 1` to accessories, cushions or furniture.
+        ...(panelOptions.length > 0 && panelCount ? { panelCount } : {}),
+      },
       {
         onSuccess: () => {
           trackEvent("add_to_cart", {

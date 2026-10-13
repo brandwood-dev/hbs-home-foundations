@@ -62,4 +62,27 @@ describe("admin product publication validation", () => {
       }),
     ).toEqual([]);
   });
+
+  it("does not require curtain dimensions for an accessory variant", () => {
+    expect(
+      validateProductForPublication({
+        ...product,
+        category: "accessoires",
+        sellingMode: "accessory",
+        name: "Tringle extensible test",
+        slug: "tringle-extensible-test",
+        reference: "TRIN-001",
+        variants: [
+          {
+            ...product.variants[0]!,
+            sku: "TRIN-001-VAR-01",
+            colorId: "argente",
+            colorLabel: "Argenté",
+            widthCm: 0,
+            heightCm: 0,
+          },
+        ],
+      }),
+    ).toEqual([]);
+  });
 });

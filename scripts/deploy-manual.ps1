@@ -8,7 +8,9 @@ param(
   [string]$ReleaseSha = "",
   [string]$MetaPixelId = "1291821648742747",
   [string]$MetaCatalogId = "2267753347359429",
-  [string]$MetaSiteId = "hbs_home_preview"
+  [string]$MetaSiteId = "hbs_home_preview",
+  [ValidateSet("browser", "server", "deduplicated")]
+  [string]$MetaPurchaseTransport = "server"
 )
 
 $ErrorActionPreference = "Stop"
@@ -143,6 +145,7 @@ $env:VITE_RELEASE_SHA = $ReleaseSha
 $env:VITE_META_PIXEL_ID = $MetaPixelId
 $env:VITE_META_CATALOG_ID = $MetaCatalogId
 $env:VITE_META_SITE_ID = $MetaSiteId
+$env:VITE_META_PURCHASE_TRANSPORT = $MetaPurchaseTransport
 if (-not $CloudflareConfigHome) {
   $CloudflareConfigHome = (Resolve-Path ".wrangler-config").Path
 }
