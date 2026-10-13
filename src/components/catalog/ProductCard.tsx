@@ -138,7 +138,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           </AppLink>
         </h3>
 
-        <p className="mt-2 line-clamp-2 text-[13px] leading-[1.45] text-foreground-muted sm:text-sm sm:leading-5>
+        <p className="mt-2 line-clamp-2 text-[13px] leading-[1.45] text-foreground-muted sm:text-sm sm:leading-5">
           {richTextToPlainText(product.shortDescription)}
         </p>
 
