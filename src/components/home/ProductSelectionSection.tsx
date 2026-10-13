@@ -46,7 +46,7 @@ const SELECTION_COPY: Record<ProductSelectionFilter, SelectionSectionCopy> = {
 
 const DEFAULT_CTA_HREFS: Record<ProductSelectionFilter, string> = {
   new: "/nouveautes",
-  best_sellers: "/rideaux",
+  best_sellers: "/meilleures-ventes",
   discounted: "/promotions",
 };
 
