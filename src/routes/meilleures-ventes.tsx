@@ -38,7 +38,8 @@ function MeilleuresVentesPage() {
         group: "rideaux",
         path: "/meilleures-ventes",
         title: "Les plus aimées",
-        description: "Découvrez les produits préférés de nos clients, toutes catégories confondues.",
+        description:
+          "Découvrez les produits préférés de nos clients, toutes catégories confondues.",
         seoTitle: title,
         seoDescription: description,
         seoBlock:
