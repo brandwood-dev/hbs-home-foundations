@@ -39,7 +39,7 @@ interface CatalogViewProps {
   search: CatalogSearch;
   onSearchChange: (next: CatalogSearch) => void;
   groupOverride?: CatalogGroup;
-  globalFilter?: "new" | "discounted";
+  globalFilter?: "new" | "discounted" | "best_sellers";
 }
 
 export function CatalogView({
