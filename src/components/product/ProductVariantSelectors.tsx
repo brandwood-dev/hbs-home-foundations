@@ -45,6 +45,7 @@ import {
 } from "@/services/product/product-variants";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { panelCountLabel, panelCountOptionsFor } from "@/domain/product/panel-count";
+import { hasDisplayableSize, isCurtainRodAccessory } from "@/domain/product/variant-display";
 
 interface ProductVariantSelectorsProps {
   product: Product;
@@ -113,6 +114,9 @@ export function ProductVariantSelectors({
     (option) => option.key === selectedConfection,
   );
   const isFurniture = product.category === "mobilier_interieur";
+  const showSizeSelector =
+    !isCurtainRodAccessory(product) &&
+    sizeOptions.some((option) => hasDisplayableSize(option.variant));
 
   const activeColor = product.colors.find((color) => color.id === variant.colorId);
   const sizeFieldLabel =
@@ -277,29 +281,31 @@ export function ProductVariantSelectors({
         </fieldset>
       ) : null}
 
-      {isFurniture && sizeOptions.length <= 1 ? (
-        <div>
-          <Legend label={sizeFieldLabel} value={dimensionsLabel} />
-          <p className="mt-2 text-sm text-foreground-muted">Dimensions fixes pour ce modèle.</p>
-        </div>
-      ) : (
-        <fieldset>
-          <Legend label={sizeFieldLabel} value={dimensionsLabel} />
-          <div className="mt-2 flex flex-wrap gap-2">
-            {sizeOptions.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => onChange("sizeKey", option.value)}
-                aria-pressed={option.value === sizeKeyOf(variant)}
-                className={optionClass(option.value === sizeKeyOf(variant), option.available)}
-              >
-                {labelForSize(option.value)}
-              </button>
-            ))}
+      {showSizeSelector ? (
+        isFurniture && sizeOptions.length <= 1 ? (
+          <div>
+            <Legend label={sizeFieldLabel} value={dimensionsLabel} />
+            <p className="mt-2 text-sm text-foreground-muted">Dimensions fixes pour ce modèle.</p>
           </div>
-        </fieldset>
-      )}
+        ) : (
+          <fieldset>
+            <Legend label={sizeFieldLabel} value={dimensionsLabel} />
+            <div className="mt-2 flex flex-wrap gap-2">
+              {sizeOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => onChange("sizeKey", option.value)}
+                  aria-pressed={option.value === sizeKeyOf(variant)}
+                  className={optionClass(option.value === sizeKeyOf(variant), option.available)}
+                >
+                  {labelForSize(option.value)}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+        )
+      ) : null}
 
       {panelOptions.length > 0 && onPanelCountChange ? (
         <fieldset>
