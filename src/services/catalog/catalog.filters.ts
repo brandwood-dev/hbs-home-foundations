@@ -256,8 +256,12 @@ export function computeFacets(products: Product[]): CatalogFacets {
       if (variant.chairPadFastening) productFastenings.add(variant.chairPadFastening);
       if (variant.accessoryFinish) productFinishes.add(variant.accessoryFinish);
       if (variant.plantSize) productPlantSizes.add(variant.plantSize);
-      productWidths.add(String(variant.widthCm));
-      productHeights.add(String(variant.heightCm));
+      if (Number.isFinite(variant.widthCm) && variant.widthCm > 0) {
+        productWidths.add(String(variant.widthCm));
+      }
+      if (Number.isFinite(variant.heightCm) && variant.heightCm > 0) {
+        productHeights.add(String(variant.heightCm));
+      }
       productAvailability.add(variant.availability);
       const color = product.colors.find((item) => item.id === variant.colorId);
       if (color) productColors.add(color.family);

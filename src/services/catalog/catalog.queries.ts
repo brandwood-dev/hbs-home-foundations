@@ -11,10 +11,28 @@ export function catalogListQuery(params: ProductListParams) {
   });
 }
 
-export function catalogFacetsQuery(routeId: string, scope?: CatalogScope) {
+export type CatalogGlobalFilter = "new" | "discounted";
+
+export function catalogFacetsQuery(
+  routeId: string,
+  scope?: CatalogScope,
+  globalFilter?: CatalogGlobalFilter,
+) {
   return queryOptions({
-    queryKey: ["catalog", "facets", routeId, scope],
-    queryFn: async () => computeFacets(await getProductRepository().listScope(scope)),
+    queryKey: ["catalog", "facets", routeId, scope, globalFilter],
+    queryFn: async () => {
+      const repository = getProductRepository();
+      if (globalFilter) {
+        const result = await repository.list({
+          page: 1,
+          pageSize: 200,
+          sort: "recommended",
+          ...(globalFilter === "discounted" ? { onlyDiscounted: true } : { onlyNew: true }),
+        });
+        return computeFacets(result.items);
+      }
+      return computeFacets(await repository.listScope(scope));
+    },
     staleTime: 5 * 60_000,
   });
 }

@@ -25,4 +25,14 @@ describe("catalog search params", () => {
     expect(search.materials).toEqual(["lin", "velours"]);
     expect(search.widths).toEqual([150, 300]);
   });
+
+  it("ignores zero dimensions from manually edited links", () => {
+    const search = validateCatalogSearch({
+      widths: "0,40",
+      heights: "0",
+    });
+
+    expect(search.widths).toEqual([40]);
+    expect(search.heights).toEqual([]);
+  });
 });

@@ -127,7 +127,7 @@ function parseList(value: unknown): string[] {
 function parseNumberList(value: unknown): number[] {
   return parseList(value)
     .map((entry) => Number(entry))
-    .filter((entry) => Number.isFinite(entry));
+    .filter((entry) => Number.isFinite(entry) && entry > 0);
 }
 
 function parseNumber(value: unknown): number | undefined {
