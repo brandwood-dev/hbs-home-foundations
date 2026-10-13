@@ -26,7 +26,7 @@ describe("catalog search params", () => {
     expect(search.widths).toEqual([150, 300]);
   });
 
-  it("ignores non-dimensions used as missing-value sentinels", () => {
+  it("ignores zero dimensions from manually edited links", () => {
     const search = validateCatalogSearch({
       widths: "0,40",
       heights: "0",
@@ -36,4 +36,3 @@ describe("catalog search params", () => {
     expect(search.heights).toEqual([]);
   });
 });
-
