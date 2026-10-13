@@ -255,4 +255,3 @@ export function toListParams(
     sort: search["sort"],
   };
 }
-
