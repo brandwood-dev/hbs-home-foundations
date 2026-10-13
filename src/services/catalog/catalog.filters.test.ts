@@ -20,4 +20,3 @@ describe("catalog facets", () => {
     expect(facets.heights.map((option) => option.value)).toEqual(["40"]);
   });
 });
-
