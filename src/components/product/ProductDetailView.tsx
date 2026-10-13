@@ -143,8 +143,8 @@ export function ProductDetailView({ product }: { product: Product }) {
                 {product.opacityLevel ? ` · ${OPACITY_LABELS[product.opacityLevel]}` : ""} ·{" "}
                 {SELLING_MODE_LABELS[product.sellingMode]}
               </p>
-              <h1 className="mt-2 text-3xl sm:text-4xl">{product.name}</h1>
-              <div className="mt-4" aria-label="Prix du produit">
+              <h1 className="product-title mt-3">{product.name}</h1>
+              <div className="mt-5" aria-label="Prix du produit">
                 <ProductPrice variant={variant} />
               </div>
               <div className="mt-2">
@@ -152,7 +152,7 @@ export function ProductDetailView({ product }: { product: Product }) {
               </div>
               <RichTextRenderer
                 value={product.shortDescription}
-                className="mt-2 text-sm text-foreground-muted"
+                className="mt-3 text-[15px] leading-6 text-foreground-muted"
               />
               <p className="mt-1 text-xs text-foreground-muted">Référence {variant.sku}</p>
             </header>
