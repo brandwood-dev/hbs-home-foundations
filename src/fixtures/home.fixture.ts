@@ -177,7 +177,8 @@ export const productSelection: ProductSelectionContent = {
   title: "Notre sélection du moment",
   subtitle: "Nouveautés, best-sellers et bonnes affaires, mis à jour régulièrement.",
   ctaLabel: "Voir toute la sélection",
-  // Show the full marked set in the homepage carousel while keeping the UI bounded by the component ceiling.\n  pageSize: 12,
+  // Show the full marked set in the homepage carousel while keeping the UI bounded by the component ceiling.
+  pageSize: 12,
   tabs: [
     { id: "new", label: "Nouveautés", ctaHref: "/nouveautes" },
     { id: "best_sellers", label: "Meilleures ventes", ctaHref: "/rideaux" },
