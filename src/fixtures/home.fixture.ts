@@ -181,7 +181,7 @@ export const productSelection: ProductSelectionContent = {
   pageSize: 12,
   tabs: [
     { id: "new", label: "Nouveautés", ctaHref: "/nouveautes" },
-    { id: "best_sellers", label: "Meilleures ventes", ctaHref: "/rideaux" },
+    { id: "best_sellers", label: "Meilleures ventes", ctaHref: "/meilleures-ventes" },
     { id: "discounted", label: "Promotions", ctaHref: "/promotions" },
   ],
 };

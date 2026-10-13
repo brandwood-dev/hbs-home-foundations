@@ -11,7 +11,7 @@ export function catalogListQuery(params: ProductListParams) {
   });
 }
 
-export type CatalogGlobalFilter = "new" | "discounted";
+export type CatalogGlobalFilter = "new" | "discounted" | "best_sellers";
 
 export function catalogFacetsQuery(
   routeId: string,
@@ -27,7 +27,11 @@ export function catalogFacetsQuery(
           page: 1,
           pageSize: 200,
           sort: "recommended",
-          ...(globalFilter === "discounted" ? { onlyDiscounted: true } : { onlyNew: true }),
+          ...(globalFilter === "discounted"
+            ? { onlyDiscounted: true }
+            : globalFilter === "best_sellers"
+              ? { onlyBestSellers: true }
+              : { onlyNew: true }),
         });
         return computeFacets(result.items);
       }
