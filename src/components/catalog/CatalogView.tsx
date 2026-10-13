@@ -119,7 +119,13 @@ export function CatalogView({
             onlyDiscounted: true,
             sort: search.sort === "recommended" ? "discount" : search.sort,
           }
-        : baseParams;
+        : globalFilter === "best_sellers"
+          ? {
+              ...baseParams,
+              onlyBestSellers: true,
+              sort: search.sort === "recommended" ? "best_sellers" : search.sort,
+            }
+          : baseParams;
   // Once the API is configured, an unpublished/missing category must not
   // silently fall back to the legacy fixture scope. Wait for the category
   // query first, then fetch products and facets using only the API taxonomy.
