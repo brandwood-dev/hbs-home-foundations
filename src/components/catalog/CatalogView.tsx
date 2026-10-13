@@ -143,7 +143,7 @@ export function CatalogView({
     placeholderData: keepPreviousData,
   });
   const facetsQuery = useQuery({
-    ...catalogFacetsQuery(config.routeId, dynamicScope),
+    ...catalogFacetsQuery(config.routeId, dynamicScope, globalFilter),
     enabled: categoryReady,
   });
 
@@ -336,3 +336,4 @@ export function CatalogView({
     </SiteLayout>
   );
 }
+
