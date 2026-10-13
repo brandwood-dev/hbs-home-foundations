@@ -2,6 +2,7 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
+import { toMetaCatalogPlainText } from "./services/marketing/meta-catalog";
 import { getMarketingRuntimeEnv } from "./services/marketing/brevo";
 
 type ServerEntry = {
@@ -253,19 +254,31 @@ async function handleMetaCatalogFeed(request: Request): Promise<Response | null>
         "additional_image_link",
         "brand",
         "item_group_id",
+        "product_type",
+        "custom_label_0",
       ],
     ];
 
     for (const product of products) {
       const name = asTrimmedString(product["name"]);
       const reference = asTrimmedString(product["reference"]);
-      const description =
-        asTrimmedString(product["shortDescription"]) || asTrimmedString(product["longDescription"]);
+      const description = toMetaCatalogPlainText(
+        asTrimmedString(product["shortDescription"]) || asTrimmedString(product["longDescription"]),
+      );
       const variants = Array.isArray(product["variants"])
         ? product["variants"].filter((item): item is Record<string, unknown> => {
             return typeof item === "object" && item !== null;
           })
         : [];
+      const heroVariant =
+        variants.find((variant) => {
+          const sku = asTrimmedString(variant["sku"]);
+          const image = catalogImageUrls(variant, product, url.origin).primary;
+          return Boolean(sku && image && catalogAvailability(variant) !== "out of stock");
+        }) ??
+        variants.find((variant) => Boolean(asTrimmedString(variant["sku"]))) ??
+        null;
+      const heroSku = heroVariant ? asTrimmedString(heroVariant["sku"]) : "";
       const link = absoluteCatalogUrl(catalogProductPath(product), url.origin);
 
       for (const variant of variants) {
@@ -292,6 +305,8 @@ async function handleMetaCatalogFeed(request: Request): Promise<Response | null>
           imageLinks.additional.join(","),
           "HBS HOME",
           reference || asTrimmedString(product["id"]),
+          sku === heroSku ? "hbs_home_hero" : "hbs_home_variant",
+          sku === heroSku ? "hero" : "variant",
         ];
         rows.push(row);
       }
