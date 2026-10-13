@@ -1893,6 +1893,7 @@ export interface components {
                 blindMountingType?: string;
                 blindControlSide?: string;
                 blindMechanismColor?: string;
+                orientation?: string;
                 sizeLabel?: string;
                 cushionContent?: string;
                 cushionClosure?: string;
@@ -2649,6 +2650,7 @@ export interface components {
                 }[];
                 sellingUnitLabel: string;
                 shippingProfile: string | null;
+                panelCount?: number;
             }[];
             subtotalMinor: number;
             shippingMinor: number;
@@ -2736,6 +2738,7 @@ export interface components {
                     }[];
                     sellingUnitLabel: string;
                     shippingProfile: string | null;
+                    panelCount?: number;
                 }[];
                 subtotalMinor: number;
                 shippingMinor: number;
@@ -3221,6 +3224,7 @@ export interface components {
             productReference: string;
             variantId: string;
             confectionKey: string | null;
+            panelCount?: number;
             sku: string;
             quantity: number;
             unitPriceMinor: number;
@@ -3260,6 +3264,7 @@ export interface components {
                 productReference: string;
                 variantId: string;
                 confectionKey: string | null;
+                panelCount?: number;
                 sku: string;
                 quantity: number;
                 unitPriceMinor: number;
@@ -3331,6 +3336,7 @@ export interface components {
             colorLabel?: string;
             widthCm?: number;
             heightCm?: number;
+            panelCount?: number;
             curtainHeaderLabel?: string;
             eyeletColorLabel?: string;
             liningLabel?: string;
@@ -3399,6 +3405,7 @@ export interface components {
                 colorLabel?: string;
                 widthCm?: number;
                 heightCm?: number;
+                panelCount?: number;
                 curtainHeaderLabel?: string;
                 eyeletColorLabel?: string;
                 liningLabel?: string;
@@ -3455,6 +3462,7 @@ export interface components {
                 colorLabel?: string;
                 widthCm?: number;
                 heightCm?: number;
+                panelCount?: number;
                 curtainHeaderLabel?: string;
                 eyeletColorLabel?: string;
                 liningLabel?: string;
@@ -3705,6 +3713,15 @@ export interface components {
             /** Format: uuid */
             id: string;
             reference: string;
+            requestType: "particulier" | "professionnels";
+            professionalDetails?: {
+                companyName: string;
+                activity: string;
+                taxId?: string;
+                projectVolume: string;
+                desiredDeadline?: string;
+                message: string;
+            };
             productType: "rideaux" | "voilages" | "stores" | "ensemble_fenetre";
             openings: unknown[];
             preferences: {
@@ -3738,6 +3755,15 @@ export interface components {
                 /** Format: uuid */
                 id: string;
                 reference: string;
+                requestType: "particulier" | "professionnels";
+                professionalDetails?: {
+                    companyName: string;
+                    activity: string;
+                    taxId?: string;
+                    projectVolume: string;
+                    desiredDeadline?: string;
+                    message: string;
+                };
                 productType: "rideaux" | "voilages" | "stores" | "ensemble_fenetre";
                 openings: unknown[];
                 preferences: {
@@ -3771,51 +3797,6 @@ export interface components {
             page: number;
             pageSize: number;
             pageCount: number;
-        };
-        CustomQuoteConversionResponse: {
-            quote: {
-                /** Format: uuid */
-                id: string;
-                reference: string;
-                productType: "rideaux" | "voilages" | "stores" | "ensemble_fenetre";
-                openings: unknown[];
-                preferences: {
-                    [key: string]: unknown;
-                };
-                contact: {
-                    firstName: string;
-                    lastName: string;
-                    phone: string;
-                    email?: string;
-                    governorate: string;
-                    city: string;
-                    preferredContact: "phone" | "whatsapp" | "email";
-                };
-                attachmentMetadata: {
-                    [key: string]: unknown;
-                }[];
-                /** @enum {boolean} */
-                acceptedPrivacy: true;
-                /** Format: date-time */
-                createdAt: string;
-                readAt: string | null;
-                archivedAt: string | null;
-                emailSentAt: string | null;
-                customerId: string | null;
-                convertedAt: string | null;
-                convertedBy: string | null;
-            };
-            customer: {
-                /** Format: uuid */
-                id: string;
-                firstName: string;
-                lastName: string;
-                phone: string;
-                email: string | null;
-                governorate: string;
-                preferredChannel: ("phone" | "whatsapp" | "email") | null;
-            };
-            action: "created" | "associated" | "already_associated";
         };
     };
     responses: never;
@@ -4109,6 +4090,7 @@ export interface operations {
                                 blindMountingType?: string;
                                 blindControlSide?: string;
                                 blindMechanismColor?: string;
+                                orientation?: string;
                                 sizeLabel?: string;
                                 cushionContent?: string;
                                 cushionClosure?: string;
@@ -4294,6 +4276,7 @@ export interface operations {
                             blindMountingType?: string;
                             blindControlSide?: string;
                             blindMechanismColor?: string;
+                            orientation?: string;
                             sizeLabel?: string;
                             cushionContent?: string;
                             cushionClosure?: string;
@@ -4455,6 +4438,7 @@ export interface operations {
                                 blindMountingType?: string;
                                 blindControlSide?: string;
                                 blindMechanismColor?: string;
+                                orientation?: string;
                                 sizeLabel?: string;
                                 cushionContent?: string;
                                 cushionClosure?: string;
@@ -4616,6 +4600,7 @@ export interface operations {
                             blindMountingType?: string;
                             blindControlSide?: string;
                             blindMechanismColor?: string;
+                            orientation?: string;
                             sizeLabel?: string;
                             cushionContent?: string;
                             cushionClosure?: string;
@@ -4800,6 +4785,7 @@ export interface operations {
                             blindMountingType?: string;
                             blindControlSide?: string;
                             blindMechanismColor?: string;
+                            orientation?: string;
                             sizeLabel?: string;
                             cushionContent?: string;
                             cushionClosure?: string;
@@ -10919,6 +10905,7 @@ export interface operations {
                                 }[];
                                 sellingUnitLabel: string;
                                 shippingProfile: string | null;
+                                panelCount?: number;
                             }[];
                             subtotalMinor: number;
                             shippingMinor: number;
@@ -11087,6 +11074,7 @@ export interface operations {
                             }[];
                             sellingUnitLabel: string;
                             shippingProfile: string | null;
+                            panelCount?: number;
                         }[];
                         subtotalMinor: number;
                         shippingMinor: number;
@@ -11274,6 +11262,7 @@ export interface operations {
                             }[];
                             sellingUnitLabel: string;
                             shippingProfile: string | null;
+                            panelCount?: number;
                         }[];
                         subtotalMinor: number;
                         shippingMinor: number;
@@ -11499,6 +11488,7 @@ export interface operations {
                             }[];
                             sellingUnitLabel: string;
                             shippingProfile: string | null;
+                            panelCount?: number;
                         }[];
                         subtotalMinor: number;
                         shippingMinor: number;
@@ -11724,6 +11714,7 @@ export interface operations {
                             }[];
                             sellingUnitLabel: string;
                             shippingProfile: string | null;
+                            panelCount?: number;
                         }[];
                         subtotalMinor: number;
                         shippingMinor: number;
@@ -11947,6 +11938,7 @@ export interface operations {
                             }[];
                             sellingUnitLabel: string;
                             shippingProfile: string | null;
+                            panelCount?: number;
                         }[];
                         subtotalMinor: number;
                         shippingMinor: number;
@@ -12150,6 +12142,7 @@ export interface operations {
                             }[];
                             sellingUnitLabel: string;
                             shippingProfile: string | null;
+                            panelCount?: number;
                         }[];
                         subtotalMinor: number;
                         shippingMinor: number;
@@ -12378,6 +12371,7 @@ export interface operations {
                             }[];
                             sellingUnitLabel: string;
                             shippingProfile: string | null;
+                            panelCount?: number;
                         }[];
                         subtotalMinor: number;
                         shippingMinor: number;
@@ -12606,6 +12600,7 @@ export interface operations {
                             }[];
                             sellingUnitLabel: string;
                             shippingProfile: string | null;
+                            panelCount?: number;
                         }[];
                         subtotalMinor: number;
                         shippingMinor: number;
@@ -12832,6 +12827,7 @@ export interface operations {
                             }[];
                             sellingUnitLabel: string;
                             shippingProfile: string | null;
+                            panelCount?: number;
                         }[];
                         subtotalMinor: number;
                         shippingMinor: number;
@@ -13251,6 +13247,7 @@ export interface operations {
                                 }[];
                                 sellingUnitLabel: string;
                                 shippingProfile: string | null;
+                                panelCount?: number;
                             }[];
                             subtotalMinor: number;
                             shippingMinor: number;
@@ -14755,6 +14752,7 @@ export interface operations {
                                 }[];
                                 sellingUnitLabel: string;
                                 shippingProfile: string | null;
+                                panelCount?: number;
                             }[];
                             subtotalMinor: number;
                             shippingMinor: number;
@@ -17818,6 +17816,7 @@ export interface operations {
                             productReference: string;
                             variantId: string;
                             confectionKey: string | null;
+                            panelCount?: number;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -17921,6 +17920,7 @@ export interface operations {
                             productReference: string;
                             variantId: string;
                             confectionKey: string | null;
+                            panelCount?: number;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -17985,6 +17985,7 @@ export interface operations {
                     productId: string;
                     variantId: string;
                     confectionKey?: string;
+                    panelCount?: number;
                     quantity: number;
                 };
             };
@@ -18011,6 +18012,7 @@ export interface operations {
                             productReference: string;
                             variantId: string;
                             confectionKey: string | null;
+                            panelCount?: number;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -18160,6 +18162,7 @@ export interface operations {
                             productReference: string;
                             variantId: string;
                             confectionKey: string | null;
+                            panelCount?: number;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -18271,6 +18274,7 @@ export interface operations {
                             productReference: string;
                             variantId: string;
                             confectionKey: string | null;
+                            panelCount?: number;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -18402,6 +18406,7 @@ export interface operations {
                             productReference: string;
                             variantId: string;
                             confectionKey: string | null;
+                            panelCount?: number;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -18549,6 +18554,7 @@ export interface operations {
                             productReference: string;
                             variantId: string;
                             confectionKey: string | null;
+                            panelCount?: number;
                             sku: string;
                             quantity: number;
                             unitPriceMinor: number;
@@ -18871,6 +18877,7 @@ export interface operations {
                         productId: string;
                         variantId: string;
                         confectionKey?: string;
+                        panelCount?: number;
                         quantity: number;
                         expectedUnitPriceMinor: number;
                     }[];
@@ -18919,6 +18926,7 @@ export interface operations {
                             colorLabel?: string;
                             widthCm?: number;
                             heightCm?: number;
+                            panelCount?: number;
                             curtainHeaderLabel?: string;
                             eyeletColorLabel?: string;
                             liningLabel?: string;
@@ -19045,6 +19053,7 @@ export interface operations {
                             colorLabel?: string;
                             widthCm?: number;
                             heightCm?: number;
+                            panelCount?: number;
                             curtainHeaderLabel?: string;
                             eyeletColorLabel?: string;
                             liningLabel?: string;
@@ -20528,6 +20537,8 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
+                    /** @enum {string} */
+                    requestType?: "particulier";
                     productType: "rideaux" | "voilages" | "stores" | "ensemble_fenetre";
                     openings: {
                         id: string;
@@ -20560,6 +20571,23 @@ export interface operations {
                     }[];
                     /** @enum {boolean} */
                     acceptedPrivacy: true;
+                } | {
+                    /** @enum {string} */
+                    requestType: "professionnels";
+                    companyName: string;
+                    activity: "hotellerie" | "restauration" | "bureaux" | "architecte" | "decorateur" | "promoteur" | "commerce" | "autre";
+                    taxId?: string;
+                    contactName: string;
+                    phone: string;
+                    /** Format: email */
+                    email: string;
+                    governorate: string;
+                    city?: string;
+                    projectVolume: "moins_10" | "10_50" | "50_200" | "plus_200";
+                    desiredDeadline?: string;
+                    message: string;
+                    /** @enum {boolean} */
+                    acceptedPrivacy: true;
                 };
             };
         };
@@ -20574,6 +20602,15 @@ export interface operations {
                         /** Format: uuid */
                         id: string;
                         reference: string;
+                        requestType: "particulier" | "professionnels";
+                        professionalDetails?: {
+                            companyName: string;
+                            activity: string;
+                            taxId?: string;
+                            projectVolume: string;
+                            desiredDeadline?: string;
+                            message: string;
+                        };
                         productType: "rideaux" | "voilages" | "stores" | "ensemble_fenetre";
                         openings: unknown[];
                         preferences: {
@@ -20636,6 +20673,7 @@ export interface operations {
                 q?: string;
                 unreadOnly?: boolean;
                 includeArchived?: boolean;
+                requestType?: "particulier" | "professionnels";
             };
             header?: never;
             path?: never;
@@ -20654,6 +20692,15 @@ export interface operations {
                             /** Format: uuid */
                             id: string;
                             reference: string;
+                            requestType: "particulier" | "professionnels";
+                            professionalDetails?: {
+                                companyName: string;
+                                activity: string;
+                                taxId?: string;
+                                projectVolume: string;
+                                desiredDeadline?: string;
+                                message: string;
+                            };
                             productType: "rideaux" | "voilages" | "stores" | "ensemble_fenetre";
                             openings: unknown[];
                             preferences: {
@@ -20757,6 +20804,15 @@ export interface operations {
                         /** Format: uuid */
                         id: string;
                         reference: string;
+                        requestType: "particulier" | "professionnels";
+                        professionalDetails?: {
+                            companyName: string;
+                            activity: string;
+                            taxId?: string;
+                            projectVolume: string;
+                            desiredDeadline?: string;
+                            message: string;
+                        };
                         productType: "rideaux" | "voilages" | "stores" | "ensemble_fenetre";
                         openings: unknown[];
                         preferences: {
@@ -20877,6 +20933,15 @@ export interface operations {
                             /** Format: uuid */
                             id: string;
                             reference: string;
+                            requestType: "particulier" | "professionnels";
+                            professionalDetails?: {
+                                companyName: string;
+                                activity: string;
+                                taxId?: string;
+                                projectVolume: string;
+                                desiredDeadline?: string;
+                                message: string;
+                            };
                             productType: "rideaux" | "voilages" | "stores" | "ensemble_fenetre";
                             openings: unknown[];
                             preferences: {
@@ -20985,28 +21050,6 @@ export interface operations {
                     };
                 };
             };
-            /** @description Default Response */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        type: string;
-                        title: string;
-                        status: number;
-                        detail: string;
-                        instance: string;
-                        code: string;
-                        requestId: string;
-                        errors?: {
-                            path: string;
-                            message: string;
-                            keyword: string;
-                        }[];
-                    };
-                };
-            };
         };
     };
     readAdminCustomQuote: {
@@ -21030,6 +21073,15 @@ export interface operations {
                         /** Format: uuid */
                         id: string;
                         reference: string;
+                        requestType: "particulier" | "professionnels";
+                        professionalDetails?: {
+                            companyName: string;
+                            activity: string;
+                            taxId?: string;
+                            projectVolume: string;
+                            desiredDeadline?: string;
+                            message: string;
+                        };
                         productType: "rideaux" | "voilages" | "stores" | "ensemble_fenetre";
                         openings: unknown[];
                         preferences: {
@@ -21149,6 +21201,15 @@ export interface operations {
                         /** Format: uuid */
                         id: string;
                         reference: string;
+                        requestType: "particulier" | "professionnels";
+                        professionalDetails?: {
+                            companyName: string;
+                            activity: string;
+                            taxId?: string;
+                            projectVolume: string;
+                            desiredDeadline?: string;
+                            message: string;
+                        };
                         productType: "rideaux" | "voilages" | "stores" | "ensemble_fenetre";
                         openings: unknown[];
                         preferences: {

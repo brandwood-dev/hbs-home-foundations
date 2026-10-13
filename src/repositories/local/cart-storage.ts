@@ -8,6 +8,7 @@ const persistedItemSchema = z.object({
   productId: z.string().min(1),
   variantId: z.string().min(1),
   confectionKey: z.string().min(1).optional(),
+  panelCount: z.number().int().min(1).max(3).optional(),
   quantity: z.number().int().positive(),
   priceAtAddMinor: z.number().int().nonnegative(),
   addedAt: z.string().min(1),
@@ -27,7 +28,7 @@ export function createEmptyPersistedCart(): PersistedCart {
 export function dedupeItems(items: PersistedCartItem[]): PersistedCartItem[] {
   const byLine = new Map<string, PersistedCartItem>();
   for (const item of items) {
-    const key = `${item.productId}:${item.variantId}:${item.confectionKey ?? ""}`;
+    const key = `${item.productId}:${item.variantId}:${item.confectionKey ?? ""}:${item.panelCount ?? ""}`;
     const existing = byLine.get(key);
     if (existing) {
       byLine.set(key, { ...existing, quantity: existing.quantity + item.quantity });

@@ -8,11 +8,13 @@ export function ProductStickyBar({
   variant,
   quantity,
   confectionKey,
+  panelCount,
 }: {
   product: Product;
   variant: ProductVariant;
   quantity: number;
   confectionKey?: ConfectionKey | undefined;
+  panelCount?: number | undefined;
 }) {
   return (
     <div
@@ -31,6 +33,7 @@ export function ProductStickyBar({
           variant={variant}
           quantity={quantity}
           confectionKey={confectionKey}
+          panelCount={panelCount}
           compact
         />
       </div>

@@ -194,8 +194,10 @@ export function ProductDetailsAccordion({
 
   return (
     <Accordion
-      type="multiple"
-      defaultValue={hasDescription ? ["description"] : []}
+      type="single"
+      collapsible
+      // Keep the long-form description collapsed so the page opens on the
+      // purchase-critical content and stays compact on desktop and mobile.
       className="w-full"
     >
       {hasDescription ? (
@@ -273,15 +275,6 @@ export function ProductDetailsAccordion({
                 <List items={featureItems.filter(Boolean)} />
               </div>
             ) : null}
-          </AccordionContent>
-        </AccordionItem>
-      ) : null}
-
-      {details.recommendedRooms && details.recommendedRooms.length > 0 ? (
-        <AccordionItem value="rooms">
-          <AccordionTrigger className="text-base">Pièces recommandées</AccordionTrigger>
-          <AccordionContent>
-            <List items={details.recommendedRooms} />
           </AccordionContent>
         </AccordionItem>
       ) : null}

@@ -10,6 +10,7 @@ export interface PersistedCartItem {
   productId: string;
   variantId: string;
   confectionKey?: string | undefined;
+  panelCount?: number | undefined;
   quantity: number;
   /** Prix constaté lors de l'ajout, informatif uniquement. */
   priceAtAddMinor: number;
@@ -41,6 +42,7 @@ export interface ResolvedCartItem {
 
   variantId: string;
   confectionKey?: string;
+  panelCount?: number;
   sku: string;
 
   quantity: number;

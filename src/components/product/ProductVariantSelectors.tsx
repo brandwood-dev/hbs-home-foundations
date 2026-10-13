@@ -1,4 +1,5 @@
-import { Check } from "lucide-react";
+import { useState } from "react";
+import { Check, ChevronDown } from "lucide-react";
 import {
   ACCESSORY_MOUNTING_LABELS,
   BLIND_CONTROL_SIDE_LABELS,
@@ -42,6 +43,8 @@ import {
   selectionOf,
   type VariantAxis,
 } from "@/services/product/product-variants";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { panelCountLabel, panelCountOptionsFor } from "@/domain/product/panel-count";
 
 interface ProductVariantSelectorsProps {
   product: Product;
@@ -49,6 +52,8 @@ interface ProductVariantSelectorsProps {
   onChange: (axis: VariantAxis, value: string) => void;
   selectedConfection?: ConfectionKey | undefined;
   onConfectionChange?: ((value: ConfectionKey) => void) | undefined;
+  selectedPanelCount?: number;
+  onPanelCountChange?: ((value: number) => void) | undefined;
 }
 
 function Legend({ label, value }: { label: string; value: string }) {
@@ -75,7 +80,10 @@ export function ProductVariantSelectors({
   onChange,
   selectedConfection,
   onConfectionChange,
+  selectedPanelCount = 1,
+  onPanelCountChange,
 }: ProductVariantSelectorsProps) {
+  const [confectionOpen, setConfectionOpen] = useState(false);
   const selection = selectionOf(variant);
   const colorOptions = getAxisOptions(product.variants, "colorId", selection);
   const sizeOptions = getAxisOptions(product.variants, "sizeKey", selection);
@@ -101,6 +109,9 @@ export function ProductVariantSelectors({
   const labelForSize = (key: string) => sizeLabels.get(key) ?? `${key.replace("x", " × ")} cm`;
   const confectionOptions = confectionOptionsFor(product.category, product.confectionOptions);
   const showConfection = isCurtainFamily(product.category) && confectionOptions.length > 0;
+  const selectedConfectionOption = confectionOptions.find(
+    (option) => option.key === selectedConfection,
+  );
   const isFurniture = product.category === "mobilier_interieur";
 
   const activeColor = product.colors.find((color) => color.id === variant.colorId);
@@ -113,6 +124,10 @@ export function ProductVariantSelectors({
           ? "Format"
           : "Dimensions (l × h)";
   const dimensionsLabel = variant.sizeLabel ?? `${variant.widthCm} × ${variant.heightCm} cm`;
+  const panelOptions = panelCountOptionsFor(product.category, product.material, variant.widthCm);
+  const effectivePanelCount = panelOptions.includes(selectedPanelCount)
+    ? selectedPanelCount
+    : (panelOptions[0] ?? 1);
 
   return (
     <div className="space-y-6">
@@ -183,49 +198,82 @@ export function ProductVariantSelectors({
 
       {showConfection && onConfectionChange ? (
         <fieldset>
-          <Legend
-            label="Type de confection"
-            value={
-              confectionOptions.find((option) => option.key === selectedConfection)?.label ??
-              "Choisissez une finition"
-            }
-          />
-          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {confectionOptions.map((option) => {
-              const selected = option.key === selectedConfection;
-              return (
-                <button
-                  key={option.key}
-                  type="button"
-                  onClick={() => onConfectionChange(option.key)}
-                  aria-pressed={selected}
-                  className={`group overflow-hidden rounded-sm border text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
-                    selected
-                      ? "border-accent ring-2 ring-accent/30"
-                      : "border-border hover:border-accent"
-                  }`}
-                >
-                  <img
-                    src={option.imageUrl}
-                    alt=""
-                    loading="lazy"
-                    className="aspect-[4/3] w-full object-cover"
-                  />
-                  <span className="block p-2">
-                    <span className="flex items-start gap-1 text-sm font-medium">
-                      {selected ? (
-                        <Check className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                      ) : null}
-                      <span>{option.label}</span>
+          <span className="eyebrow">Type de confection</span>
+          <Popover open={confectionOpen} onOpenChange={setConfectionOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                aria-label="Choisir le type de confection"
+                className="mt-2 flex min-h-14 w-full items-center gap-3 rounded-sm border border-border bg-surface px-2.5 py-2 text-left transition-colors hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              >
+                {selectedConfectionOption ? (
+                  <>
+                    <img
+                      src={selectedConfectionOption.imageUrl}
+                      alt=""
+                      loading="lazy"
+                      className="h-10 w-14 shrink-0 rounded-sm object-cover"
+                    />
+                    <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                      {selectedConfectionOption.label}
                     </span>
-                    <span className="mt-1 block text-xs text-foreground-muted">
-                      {option.description}
-                    </span>
+                  </>
+                ) : (
+                  <span className="min-w-0 flex-1 text-sm text-foreground-muted">
+                    Choisissez une finition
                   </span>
-                </button>
-              );
-            })}
-          </div>
+                )}
+                <ChevronDown
+                  className={`h-4 w-4 shrink-0 text-foreground-muted transition-transform ${
+                    confectionOpen ? "rotate-180" : ""
+                  }`}
+                  aria-hidden="true"
+                />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="start"
+              sideOffset={8}
+              className="w-[min(24rem,calc(100vw-2rem))] p-2 sm:w-[28rem] sm:p-3"
+            >
+              <div className="space-y-1">
+                {confectionOptions.map((option) => {
+                  const selected = option.key === selectedConfection;
+                  return (
+                    <button
+                      key={option.key}
+                      type="button"
+                      onClick={() => {
+                        onConfectionChange(option.key);
+                        setConfectionOpen(false);
+                      }}
+                      aria-pressed={selected}
+                      className={`group flex w-full items-center gap-3 rounded-sm border px-2 py-1.5 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:gap-4 sm:px-2.5 sm:py-2 ${
+                        selected
+                          ? "border-accent bg-accent/10"
+                          : "border-transparent hover:border-border hover:bg-surface-muted"
+                      }`}
+                    >
+                      <img
+                        src={option.imageUrl}
+                        alt=""
+                        loading="lazy"
+                        className="h-11 w-16 shrink-0 rounded-sm object-cover sm:h-12 sm:w-[4.5rem]"
+                      />
+                      <span className="min-w-0 flex-1 text-sm font-medium">
+                        <span className="block truncate">{option.label}</span>
+                      </span>
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center">
+                        {selected ? (
+                          <Check className="h-4 w-4 text-accent" aria-hidden="true" />
+                        ) : null}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </PopoverContent>
+          </Popover>
         </fieldset>
       ) : null}
 
@@ -252,6 +300,36 @@ export function ProductVariantSelectors({
           </div>
         </fieldset>
       )}
+
+      {panelOptions.length > 0 && onPanelCountChange ? (
+        <fieldset>
+          <Legend label="Nombre de panneaux" value={panelCountLabel(effectivePanelCount)} />
+          {panelOptions.length === 1 ? (
+            <p className="mt-2 text-sm text-foreground-muted">
+              Cette dimension est vendue en un seul panneau.
+            </p>
+          ) : (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {panelOptions.map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onPanelCountChange(value)}
+                  aria-pressed={value === effectivePanelCount}
+                  className={optionClass(value === effectivePanelCount, true)}
+                >
+                  {panelCountLabel(value)}
+                </button>
+              ))}
+            </div>
+          )}
+          <p className="mt-1 text-xs text-foreground-muted">
+            {effectivePanelCount > 1
+              ? `Largeur totale ${variant.widthCm} cm, répartie en ${effectivePanelCount} panneaux.`
+              : "La largeur indiquée correspond à un panneau."}
+          </p>
+        </fieldset>
+      ) : null}
 
       {contentOptions.length > 1 && variant.cushionContent && (
         <fieldset>

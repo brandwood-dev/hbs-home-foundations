@@ -324,11 +324,20 @@ export const MOBILIER_REMOVED_ATTRIBUTE_KEYS = [
 export function isAdminAttributeEnabledForCategory(
   category: AdminProductCategoryKey,
   key: string,
+  categorySlug?: string,
 ): boolean {
-  return !(
-    category === "mobilier_interieur" &&
-    (MOBILIER_REMOVED_ATTRIBUTE_KEYS as readonly string[]).includes(key)
-  );
+  const isLegacyFurnitureAttribute = (
+    MOBILIER_REMOVED_ATTRIBUTE_KEYS as readonly string[]
+  ).includes(key);
+  if (category === "mobilier_interieur" && isLegacyFurnitureAttribute) return false;
+  if (
+    category === "accessoires" &&
+    isTringlesCategorySlug(categorySlug) &&
+    isLegacyFurnitureAttribute
+  ) {
+    return false;
+  }
+  return true;
 }
 
 const TEXTILE_MODES: AdminSellingMode[] = [

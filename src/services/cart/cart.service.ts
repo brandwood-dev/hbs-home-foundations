@@ -26,6 +26,7 @@ export function addItemToItems(
   variantId: string,
   quantity: number,
   confectionKey?: string,
+  panelCount?: number,
   now: string = new Date().toISOString(),
 ): AddItemResult {
   const variant = product.variants.find((candidate) => candidate.id === variantId);
@@ -40,10 +41,12 @@ export function addItemToItems(
   }
 
   const max = maxQuantityForVariant(product, variantId);
-  const lineId = createCartLineId(product.id, variantId, confectionKey);
+  const lineId = createCartLineId(product.id, variantId, confectionKey, panelCount);
   const next = [...items];
   const index = next.findIndex(
-    (item) => createCartLineId(item.productId, item.variantId, item.confectionKey) === lineId,
+    (item) =>
+      createCartLineId(item.productId, item.variantId, item.confectionKey, item.panelCount) ===
+      lineId,
   );
 
   const existingQuantity = index >= 0 ? (next[index] as PersistedCartItem).quantity : 0;
@@ -58,6 +61,7 @@ export function addItemToItems(
       productId: product.id,
       variantId,
       ...(confectionKey ? { confectionKey } : {}),
+      ...(panelCount ? { panelCount } : {}),
       quantity: finalQuantity,
       priceAtAddMinor: variant.price.amountMinor,
       addedAt: now,
@@ -74,7 +78,9 @@ export function updateItemQuantity(
   maxQuantity: number,
 ): PersistedCartItem[] {
   const index = items.findIndex(
-    (item) => createCartLineId(item.productId, item.variantId, item.confectionKey) === lineId,
+    (item) =>
+      createCartLineId(item.productId, item.variantId, item.confectionKey, item.panelCount) ===
+      lineId,
   );
   if (index < 0) throw new CartError("line_not_found", "Ligne introuvable");
 
@@ -97,6 +103,8 @@ export function removeItemFromItems(
   lineId: string,
 ): PersistedCartItem[] {
   return items.filter(
-    (item) => createCartLineId(item.productId, item.variantId, item.confectionKey) !== lineId,
+    (item) =>
+      createCartLineId(item.productId, item.variantId, item.confectionKey, item.panelCount) !==
+      lineId,
   );
 }

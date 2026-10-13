@@ -54,6 +54,7 @@ function mapItem(item: ApiOrder["items"][number]): OrderItemSnapshot {
     ...(item.colorLabel ? { colorLabel: item.colorLabel } : {}),
     ...(item.widthCm !== undefined ? { widthCm: item.widthCm } : {}),
     ...(item.heightCm !== undefined ? { heightCm: item.heightCm } : {}),
+    ...(item.panelCount !== undefined ? { panelCount: item.panelCount } : {}),
     ...(item.curtainHeaderLabel ? { curtainHeaderLabel: item.curtainHeaderLabel } : {}),
     ...(item.eyeletColorLabel ? { eyeletColorLabel: item.eyeletColorLabel } : {}),
     ...(item.liningLabel ? { liningLabel: item.liningLabel } : {}),

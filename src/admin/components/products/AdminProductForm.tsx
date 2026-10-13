@@ -172,7 +172,7 @@ function filterFieldsForProductConfig(
   return Object.fromEntries(
     Object.entries(catalogFields).filter(
       ([key]) =>
-        isAdminAttributeEnabledForCategory(category, key) &&
+        isAdminAttributeEnabledForCategory(category, key, categorySlug) &&
         (!ADMIN_PRODUCT_FIELDS[key] || visibleStaticKeys.has(key)),
     ),
   );
@@ -273,7 +273,13 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
                 categorySlug === selectedCatalogCategorySlug || categorySlug === values.category,
             ),
         )
-        .filter((attribute) => isAdminAttributeEnabledForCategory(values.category, attribute.key))
+        .filter((attribute) =>
+          isAdminAttributeEnabledForCategory(
+            values.category,
+            attribute.key,
+            selectedCatalogCategorySlug,
+          ),
+        )
         .sort((left, right) => left.order - right.order || left.name.localeCompare(right.name)),
     [attributes, selectedCatalogCategorySlug, values.category],
   );
