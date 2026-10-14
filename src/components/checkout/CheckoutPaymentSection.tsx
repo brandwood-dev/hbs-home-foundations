@@ -15,14 +15,14 @@ export function CheckoutPaymentSection({
         3. Paiement
       </h2>
 
-      <label className="flex gap-3 rounded-sm border border-accent bg-surface-muted p-4">
+      <label className="flex min-w-0 gap-3 rounded-sm border border-accent bg-surface-muted p-4">
         <input
           type="radio"
           value="cash_on_delivery"
-          className="mt-1 accent-[var(--color-accent)]"
+          className="mt-1 shrink-0 accent-[var(--color-accent)]"
           {...register("paymentMethod")}
         />
-        <span>
+        <span className="min-w-0 flex-1 break-words">
           <span className="block text-sm font-medium">Paiement à la livraison</span>
           <span className="block text-xs text-foreground-muted">
             Vous réglez en espèces au moment de la réception. Aucun paiement en ligne n'est demandé.
@@ -31,14 +31,14 @@ export function CheckoutPaymentSection({
       </label>
 
       <div className="space-y-1.5">
-        <label className="flex items-start gap-3 text-sm">
+        <label className="flex min-w-0 items-start gap-3 text-sm">
           <input
             type="checkbox"
             className="mt-1 size-4 accent-[var(--color-accent)]"
             aria-invalid={errors.acceptedTerms ? true : undefined}
             {...register("acceptedTerms")}
           />
-          <span>
+          <span className="min-w-0 break-words">
             J'accepte les{" "}
             <AppLink href="/cgv" className="underline underline-offset-4">
               conditions générales de vente

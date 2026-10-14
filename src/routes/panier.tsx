@@ -49,7 +49,7 @@ function PanierPage() {
 
   return (
     <SiteLayout>
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-10">
+      <div className="mx-auto min-w-0 max-w-7xl px-4 py-6 sm:px-6 lg:py-10">
         <CatalogBreadcrumbs items={[{ label: "Accueil", href: "/" }, { label: "Panier" }]} />
 
         <h1 className="mt-4 text-3xl sm:text-4xl">Votre panier</h1>
@@ -68,8 +68,8 @@ function PanierPage() {
         ) : cart.lineCount === 0 ? (
           <CartEmptyState />
         ) : (
-          <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-            <div>
+          <div className="mt-8 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+            <div className="min-w-0">
               <ul className="divide-y divide-border border-y border-border">
                 {cart.items.map((item) => (
                   <li key={item.lineId}>
@@ -103,7 +103,7 @@ function PanierPage() {
               </div>
             </div>
 
-            <div className="space-y-3 lg:sticky lg:top-28 lg:self-start">
+            <div className="min-w-0 space-y-3 lg:sticky lg:top-28 lg:self-start">
               <CartPromotionForm cart={cart} />
               <CartSummary cart={cart} />
               {features.checkout ? (
