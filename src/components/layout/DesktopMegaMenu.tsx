@@ -1,8 +1,10 @@
 import { AppLink } from "@/components/ui/app-link";
 import type { MegaMenuColumn, NavMenuShortcut } from "@/types/navigation.types";
+import { getMegaMenuLinkLayout } from "./mega-menu-links";
 
 interface DesktopMegaMenuProps {
   columns: MegaMenuColumn[];
+  categoryHref: string;
   shortcuts?: NavMenuShortcut[] | undefined;
   sectionTitle?: string;
   editorialTitle?: string | undefined;
@@ -26,31 +28,30 @@ function ShortcutFallback({ label }: { label: string }) {
 
 export function DesktopMegaMenu({
   columns,
+  categoryHref,
   shortcuts = [],
   sectionTitle = "À découvrir",
   editorialTitle = DEFAULT_EDITORIAL_TITLE,
   editorialDescription = DEFAULT_EDITORIAL_DESCRIPTION,
   onNavigate,
 }: DesktopMegaMenuProps) {
+  const { links: visibleLinks, hasMore, useColumns } = getMegaMenuLinkLayout(columns);
   const visibleShortcuts = (
     shortcuts.length > 0
       ? shortcuts
-      : columns
-          .flatMap((column) => column.links)
-          .slice(0, 2)
-          .map((link) => ({
-            label: link.label,
-            href: link.href,
-            imageUrl: "",
-            imageAlt: link.label,
-            caption: link.label,
-          }))
+      : visibleLinks.slice(0, 2).map((link) => ({
+          label: link.label,
+          href: link.href,
+          imageUrl: "",
+          imageAlt: link.label,
+          caption: link.label,
+        }))
   ).slice(0, 2);
 
   return (
     <div className="absolute left-0 right-0 top-full z-40 border-b border-border bg-surface/98 shadow-soft backdrop-blur">
       <div className="menu-sans mx-auto grid max-w-7xl items-start gap-7 px-4 py-5 sm:px-6 md:grid-cols-2 lg:grid-cols-[minmax(15rem,0.78fr)_minmax(0,1.1fr)_minmax(0,1.1fr)] lg:gap-6 lg:px-8 lg:py-6">
-        <aside className="flex min-w-0 flex-col px-1 py-1 md:col-span-2 lg:col-span-1 lg:pr-3">
+        <aside className="flex min-w-0 flex-col px-1 py-1 md:col-span-2 lg:col-span-1 lg:border-r lg:border-border lg:pr-6">
           <p className="eyebrow mb-3">Explorer la collection</p>
           <h2 className="menu-editorial max-w-[18rem] text-[clamp(2rem,3vw,2.7rem)] leading-[0.98] font-medium tracking-[-0.02em] text-accent-dark">
             {editorialTitle}
@@ -62,25 +63,39 @@ export function DesktopMegaMenu({
 
           <div className="mt-6 border-t border-border pt-5">
             <p className="eyebrow mb-3">{sectionTitle}</p>
-            <ul className="space-y-1">
-              {columns.flatMap((column) =>
-                column.links.map((link) => (
-                  <li key={`${column.title}-${link.href}-${link.label}`}>
-                    <AppLink
-                      href={link.href}
-                      onClick={onNavigate}
-                      className="group flex min-h-8 items-center gap-2 text-sm text-foreground-muted transition-colors hover:text-accent-dark focus-visible:text-accent-dark"
-                    >
-                      <span
-                        className="h-px w-0 shrink-0 bg-accent transition-all duration-200 group-hover:w-3 group-focus-visible:w-3"
-                        aria-hidden="true"
-                      />
-                      <span>{link.label}</span>
-                    </AppLink>
-                  </li>
-                )),
-              )}
+            <ul
+              className={
+                useColumns ? "grid grid-cols-1 gap-x-5 gap-y-1 sm:grid-cols-2" : "space-y-1"
+              }
+            >
+              {visibleLinks.map((link) => (
+                <li key={link.key}>
+                  <AppLink
+                    href={link.href}
+                    onClick={onNavigate}
+                    className="group flex min-h-8 items-center gap-2 text-sm leading-5 text-foreground-muted transition-colors hover:text-accent-dark focus-visible:text-accent-dark"
+                  >
+                    <span
+                      className="h-px w-0 shrink-0 bg-accent transition-all duration-200 group-hover:w-3 group-focus-visible:w-3"
+                      aria-hidden="true"
+                    />
+                    <span>{link.label}</span>
+                  </AppLink>
+                </li>
+              ))}
             </ul>
+            {hasMore ? (
+              <AppLink
+                href={categoryHref}
+                onClick={onNavigate}
+                className="mt-4 inline-flex min-h-8 items-center gap-2 text-sm font-medium text-accent-dark underline decoration-accent/60 underline-offset-4 transition-colors hover:decoration-accent focus-visible:decoration-accent"
+              >
+                <span>Voir tous les styles</span>
+                <span aria-hidden="true" className="text-base leading-none">
+                  →
+                </span>
+              </AppLink>
+            ) : null}
           </div>
         </aside>
 
