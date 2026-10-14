@@ -965,32 +965,37 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           { label: "Produits", href: "/admin/produits" },
           { label: product ? product.name : "Nouveau" },
         ]}
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant={values.status === "published" ? "default" : "secondary"}>
-              {values.status === "published"
-                ? "Publié"
-                : values.status === "archived"
-                  ? "Archivé"
-                  : "Brouillon"}
-            </Badge>
-            {values.slug ? (
-              <Button variant="outline" size="sm" asChild>
-                <a href={publicProductUrl(values.slug)} target="_blank" rel="noreferrer">
-                  <ExternalLink className="mr-1 size-4" /> Voir la fiche
-                </a>
-              </Button>
-            ) : null}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => (dirty ? setShowLeave(true) : navigate({ to: "/admin/produits" }))}
-            >
-              Retour
-            </Button>
-          </div>
-        }
       />
+
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Badge
+          variant={values.status === "published" ? "default" : "secondary"}
+          className="min-h-10 w-fit px-3"
+        >
+          {values.status === "published"
+            ? "Publié"
+            : values.status === "archived"
+              ? "Archivé"
+              : "Brouillon"}
+        </Badge>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+          {values.slug ? (
+            <Button variant="outline" size="sm" asChild className="min-h-10 w-full sm:w-auto">
+              <a href={publicProductUrl(values.slug)} target="_blank" rel="noreferrer">
+                <ExternalLink className="mr-1 size-4" /> Voir la fiche
+              </a>
+            </Button>
+          ) : null}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => (dirty ? setShowLeave(true) : navigate({ to: "/admin/produits" }))}
+            className="min-h-10 w-full sm:w-auto"
+          >
+            Retour
+          </Button>
+        </div>
+      </div>
 
       {submitted && Object.keys(identityErrors).length > 0 ? (
         <AdminCard className="mb-4 border-red-200 bg-red-50">
