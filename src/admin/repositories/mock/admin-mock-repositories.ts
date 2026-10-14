@@ -802,6 +802,9 @@ export class MockAdminOrderRepository implements AdminOrderRepository {
     const order = mutateDb((db) => {
       const found = findOrder(db, input.orderId);
       const from = found.status;
+      if (input.status === "cancelled") {
+        throw new Error("Utilisez l'action d'annulation pour libérer le stock correctement.");
+      }
       assertStatusTransition(found, input.status, input.reason);
 
       if (
