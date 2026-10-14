@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ImageOff, Printer } from "lucide-react";
+import { Download, ImageOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,10 @@ import { AdminEmptyState, AdminErrorState } from "@/admin/components/ui/AdminSta
 import { AdminOrderTimeline } from "@/admin/components/orders/AdminOrderTimeline";
 import { AdminOrderActionDialog } from "@/admin/components/orders/AdminOrderActionDialog";
 import { AdminPreparationSlip } from "@/admin/components/orders/AdminPreparationSlip";
+import {
+  downloadPreparationSlipPdf,
+  preparePreparationSlipForDownload,
+} from "@/admin/services/orders/admin-preparation-slip-download";
 import { useAdminCustomer, useAdminOrder } from "@/admin/hooks/admin.queries";
 import {
   useAddOrderNote,
@@ -39,6 +43,7 @@ import { canEditOrderDetails } from "@/admin/services/orders/admin-order-validat
 import { formatDateTime } from "@/admin/utils/admin.utils";
 import { formatMoney, toMinor, toUnits } from "@/lib/money/money";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 type DialogState =
   | { kind: "cancel" }
@@ -125,6 +130,7 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
   const [trackingNumber, setTrackingNumber] = useState("");
   const [shippingFee, setShippingFee] = useState("");
   const [note, setNote] = useState("");
+  const [isDownloadingPreparationSlip, setIsDownloadingPreparationSlip] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<AdminOrderStatus | "">("");
   const orderStatus = order?.status;
   const orderIdentifier = order?.id;
@@ -166,19 +172,34 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
   const statusChanged = selectedStatus !== "" && selectedStatus !== order.status;
   const preparationOrder = order;
 
-  function printPreparationSlip() {
-    const documentElement = document.documentElement;
-    const originalTitle = document.title;
-    const cleanup = () => {
-      documentElement.classList.remove("printing-preparation");
-      document.title = originalTitle;
-      window.removeEventListener("afterprint", cleanup);
-    };
+  async function downloadPreparationSlip() {
+    if (isDownloadingPreparationSlip) return;
 
-    documentElement.classList.add("printing-preparation");
-    document.title = `Bon de préparation ${preparationOrder.orderNumber} | HBS HOME`;
-    window.addEventListener("afterprint", cleanup, { once: true });
-    window.requestAnimationFrame(() => window.print());
+    const preparationSlip = document.querySelector<HTMLElement>(".print-preparation-slip");
+    if (!preparationSlip) {
+      toast.error("Le bon de préparation est indisponible.");
+      return;
+    }
+
+    setIsDownloadingPreparationSlip(true);
+    let restorePreparationSlip: (() => void) | undefined;
+    try {
+      restorePreparationSlip = await preparePreparationSlipForDownload(preparationSlip);
+      await downloadPreparationSlipPdf({
+        element: preparationSlip,
+        filename: `bon-de-preparation-${preparationOrder.orderNumber}`,
+      });
+      toast.success("Bon de préparation téléchargé.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Le téléchargement du bon de préparation a échoué.",
+      );
+    } finally {
+      restorePreparationSlip?.();
+      setIsDownloadingPreparationSlip(false);
+    }
   }
 
   return (
@@ -191,9 +212,15 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
           { label: order.orderNumber },
         ]}
         actions={
-          <Button variant="outline" size="sm" onClick={printPreparationSlip}>
-            <Printer className="size-4" aria-hidden />
-            Bon de préparation
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void downloadPreparationSlip()}
+            disabled={isDownloadingPreparationSlip}
+            aria-busy={isDownloadingPreparationSlip}
+          >
+            <Download className="size-4" aria-hidden />
+            {isDownloadingPreparationSlip ? "Génération…" : "Télécharger le bon"}
           </Button>
         }
       />

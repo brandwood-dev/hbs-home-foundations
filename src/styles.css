@@ -632,7 +632,7 @@ body:has(.admin-theme) {
   display: none;
 }
 
-@media print {
+@media print, screen {
   @page {
     size: A4 portrait;
     margin: 10mm 11mm;
@@ -948,7 +948,7 @@ body:has(.admin-theme) {
 }
 
 /* Refined HBS HOME print treatment matching the approved preparation-slip artwork. */
-@media print {
+@media print, screen {
   .print-preparation-slip {
     color: #1f2937;
     font-size: 8.5pt;
