@@ -5,8 +5,8 @@ interface DesktopMegaMenuProps {
   columns: MegaMenuColumn[];
   shortcuts?: NavMenuShortcut[] | undefined;
   sectionTitle?: string;
-  editorialTitle?: string;
-  editorialDescription?: string;
+  editorialTitle?: string | undefined;
+  editorialDescription?: string | undefined;
   onNavigate?: () => void;
 }
 
