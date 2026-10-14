@@ -10,6 +10,7 @@ import { AdminCard, AdminSkeleton, AdminStatusBadge } from "@/admin/components/u
 import { AdminEmptyState, AdminErrorState } from "@/admin/components/ui/AdminStates";
 import { AdminOrderTimeline } from "@/admin/components/orders/AdminOrderTimeline";
 import { AdminOrderActionDialog } from "@/admin/components/orders/AdminOrderActionDialog";
+import { AdminPreparationSlip } from "@/admin/components/orders/AdminPreparationSlip";
 import { useAdminCustomer, useAdminOrder } from "@/admin/hooks/admin.queries";
 import {
   useAddOrderNote,
@@ -163,6 +164,22 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
     ? ORDER_STATUS_OPTIONS
     : [order.status, ...ORDER_STATUS_OPTIONS];
   const statusChanged = selectedStatus !== "" && selectedStatus !== order.status;
+  const preparationOrder = order;
+
+  function printPreparationSlip() {
+    const documentElement = document.documentElement;
+    const originalTitle = document.title;
+    const cleanup = () => {
+      documentElement.classList.remove("printing-preparation");
+      document.title = originalTitle;
+      window.removeEventListener("afterprint", cleanup);
+    };
+
+    documentElement.classList.add("printing-preparation");
+    document.title = `Bon de préparation ${preparationOrder.orderNumber} | HBS HOME`;
+    window.addEventListener("afterprint", cleanup, { once: true });
+    window.requestAnimationFrame(() => window.print());
+  }
 
   return (
     <div className="space-y-4">
@@ -174,7 +191,7 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
           { label: order.orderNumber },
         ]}
         actions={
-          <Button variant="outline" size="sm" onClick={() => window.print()}>
+          <Button variant="outline" size="sm" onClick={printPreparationSlip}>
             <Printer className="size-4" aria-hidden />
             Bon de préparation
           </Button>
@@ -583,6 +600,7 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
           );
         }}
       />
+      <AdminPreparationSlip order={order} customerTags={customer?.tags ?? []} />
     </div>
   );
 }
