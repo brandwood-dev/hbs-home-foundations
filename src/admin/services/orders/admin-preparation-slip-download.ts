@@ -3,6 +3,70 @@ const A4_PAGE_HEIGHT_MM = 297;
 const A4_MARGIN_MM = 10;
 const PREPARATION_SLIP_WIDTH_PX = 710;
 
+const PREPARATION_SLIP_CANVAS_COLOR_FALLBACKS = `
+  .print-preparation-slip {
+    --background: #ffffff;
+    --surface: #ffffff;
+    --surface-muted: #f5f1ec;
+    --section-tint: #faf8f5;
+    --sand: #e4ddd6;
+    --taupe: #948675;
+    --accent: #a87557;
+    --accent-dark: #8a5b43;
+    --foreground: #1f2937;
+    --foreground-muted: #667085;
+    --border: #d9d1c9;
+    --input: #d9d1c9;
+    --success: #4a8f6f;
+    --error: #b64c42;
+    --whatsapp: #21a366;
+    --whatsapp-foreground: #ffffff;
+    --card: #ffffff;
+    --card-foreground: #1f2937;
+    --popover: #ffffff;
+    --popover-foreground: #1f2937;
+    --primary: #a87557;
+    --primary-foreground: #ffffff;
+    --secondary: #f5f1ec;
+    --secondary-foreground: #1f2937;
+    --muted: #f5f1ec;
+    --muted-foreground: #667085;
+    --accent-foreground: #ffffff;
+    --destructive: #b64c42;
+    --destructive-foreground: #ffffff;
+    --color-background: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-muted: #f5f1ec;
+    --color-section-tint: #faf8f5;
+    --color-sand: #e4ddd6;
+    --color-taupe: #948675;
+    --color-accent: #a87557;
+    --color-accent-dark: #8a5b43;
+    --color-foreground: #1f2937;
+    --color-foreground-muted: #667085;
+    --color-border: #d9d1c9;
+    --color-input: #d9d1c9;
+    --color-ring: #a87557;
+    --color-primary: #a87557;
+    --color-primary-foreground: #ffffff;
+    --color-secondary: #f5f1ec;
+    --color-secondary-foreground: #1f2937;
+    --color-muted: #f5f1ec;
+    --color-muted-foreground: #667085;
+    --color-popover: #ffffff;
+    --color-popover-foreground: #1f2937;
+    --color-card: #ffffff;
+    --color-card-foreground: #1f2937;
+    --color-destructive: #b64c42;
+    --color-destructive-foreground: #ffffff;
+    --color-success: #4a8f6f;
+    --color-error: #b64c42;
+    --color-whatsapp: #21a366;
+    --color-whatsapp-foreground: #ffffff;
+    --shadow-soft: none;
+  }
+`;
+
 type DownloadPreparationSlipOptions = {
   element: HTMLElement;
   filename: string;
@@ -103,6 +167,11 @@ export async function downloadPreparationSlipPdf({
     useCORS: true,
     width: PREPARATION_SLIP_WIDTH_PX,
     windowWidth: PREPARATION_SLIP_WIDTH_PX,
+    onclone: (clonedDocument) => {
+      const fallbackStyle = clonedDocument.createElement("style");
+      fallbackStyle.textContent = PREPARATION_SLIP_CANVAS_COLOR_FALLBACKS;
+      clonedDocument.head.appendChild(fallbackStyle);
+    },
   });
 
   const pdf = new jsPDF({
