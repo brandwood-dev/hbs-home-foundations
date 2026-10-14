@@ -16,7 +16,7 @@ const DEFAULT_EDITORIAL_DESCRIPTION =
 
 function ShortcutFallback({ label }: { label: string }) {
   return (
-    <div className="flex h-full min-h-52 items-end bg-gradient-to-br from-sand via-surface-muted to-taupe/30 p-5 sm:min-h-60">
+    <div className="flex h-full min-h-52 items-end bg-gradient-to-br from-sand via-surface-muted to-accent/20 p-5 sm:min-h-60">
       <span className="menu-editorial max-w-[14rem] text-2xl leading-tight text-accent-dark sm:text-3xl">
         {label}
       </span>
@@ -49,7 +49,7 @@ export function DesktopMegaMenu({
 
   return (
     <div className="absolute left-0 right-0 top-full z-40 border-b border-border bg-surface/98 shadow-soft backdrop-blur">
-      <div className="menu-sans mx-auto grid max-w-7xl gap-7 px-4 py-5 sm:px-6 md:grid-cols-2 lg:grid-cols-[minmax(15rem,0.78fr)_minmax(0,1.1fr)_minmax(0,1.1fr)] lg:gap-6 lg:px-8 lg:py-6">
+      <div className="menu-sans mx-auto grid max-w-7xl items-start gap-7 px-4 py-5 sm:px-6 md:grid-cols-2 lg:grid-cols-[minmax(15rem,0.78fr)_minmax(0,1.1fr)_minmax(0,1.1fr)] lg:gap-6 lg:px-8 lg:py-6">
         <aside className="flex min-w-0 flex-col px-1 py-1 md:col-span-2 lg:col-span-1 lg:pr-3">
           <p className="eyebrow mb-3">Explorer la collection</p>
           <h2 className="menu-editorial max-w-[18rem] text-[clamp(2rem,3vw,2.7rem)] leading-[0.98] font-medium tracking-[-0.02em] text-accent-dark">
