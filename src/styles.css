@@ -209,6 +209,14 @@ body:has(.admin-theme) {
   color: var(--color-accent-dark);
 }
 
+@utility menu-editorial {
+  font-family: "Cormorant Garamond", Georgia, serif;
+}
+
+@utility menu-sans {
+  font-family: "Manrope", var(--font-sans);
+}
+
 @utility hero-title {
   font-size: clamp(2rem, 4.4vw, 3.5rem);
   line-height: 1.1;

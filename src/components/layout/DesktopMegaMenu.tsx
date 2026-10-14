@@ -5,92 +5,121 @@ interface DesktopMegaMenuProps {
   columns: MegaMenuColumn[];
   shortcuts?: NavMenuShortcut[] | undefined;
   sectionTitle?: string;
+  editorialTitle?: string;
+  editorialDescription?: string;
   onNavigate?: () => void;
+}
+
+const DEFAULT_EDITORIAL_TITLE = "Sublimez votre intérieur avec style.";
+const DEFAULT_EDITORIAL_DESCRIPTION =
+  "Des collections pensées pour apporter caractère, élégance et douceur à votre intérieur.";
+
+function ShortcutFallback({ label }: { label: string }) {
+  return (
+    <div className="flex h-full min-h-52 items-end bg-gradient-to-br from-sand via-surface-muted to-taupe/30 p-5 sm:min-h-60">
+      <span className="menu-editorial max-w-[14rem] text-2xl leading-tight text-accent-dark sm:text-3xl">
+        {label}
+      </span>
+    </div>
+  );
 }
 
 export function DesktopMegaMenu({
   columns,
   shortcuts = [],
   sectionTitle = "À découvrir",
+  editorialTitle = DEFAULT_EDITORIAL_TITLE,
+  editorialDescription = DEFAULT_EDITORIAL_DESCRIPTION,
   onNavigate,
 }: DesktopMegaMenuProps) {
-  const hasShortcuts = shortcuts.length > 0;
-  const hasSingleShortcut = shortcuts.length === 1;
+  const visibleShortcuts = (
+    shortcuts.length > 0
+      ? shortcuts
+      : columns
+          .flatMap((column) => column.links)
+          .slice(0, 2)
+          .map((link) => ({
+            label: link.label,
+            href: link.href,
+            imageUrl: "",
+            imageAlt: link.label,
+            caption: link.label,
+          }))
+  ).slice(0, 2);
 
   return (
-    <div className="absolute left-0 right-0 top-full z-40 bg-surface">
-      <div
-        className={`mx-auto grid max-w-7xl gap-8 px-6 py-6 ${
-          hasShortcuts ? "lg:grid-cols-[minmax(0,0.78fr)_minmax(30rem,1.22fr)]" : ""
-        }`}
-      >
-        <div className="px-1 py-1">
-          <div className="mb-4">
-            <p className="eyebrow mb-1">Explorer la collection</p>
-            <p className="text-sm text-foreground-muted">
-              Trouvez rapidement le style adapté à votre intérieur.
-            </p>
-          </div>
+    <div className="absolute left-0 right-0 top-full z-40 border-b border-border bg-surface/98 shadow-soft backdrop-blur">
+      <div className="menu-sans mx-auto grid max-w-7xl gap-7 px-4 py-5 sm:px-6 md:grid-cols-2 lg:grid-cols-[minmax(15rem,0.78fr)_minmax(0,1.1fr)_minmax(0,1.1fr)] lg:gap-6 lg:px-8 lg:py-6">
+        <aside className="flex min-w-0 flex-col px-1 py-1 md:col-span-2 lg:col-span-1 lg:pr-3">
+          <p className="eyebrow mb-3">Explorer la collection</p>
+          <h2 className="menu-editorial max-w-[18rem] text-[clamp(2rem,3vw,2.7rem)] leading-[0.98] font-medium tracking-[-0.02em] text-accent-dark">
+            {editorialTitle}
+          </h2>
+          <div className="my-5 h-px w-12 bg-accent" aria-hidden="true" />
+          <p className="max-w-[19rem] text-sm leading-6 text-foreground-muted">
+            {editorialDescription}
+          </p>
 
-          <div
-            className={`grid gap-x-8 gap-y-6 ${columns.length > 1 ? "sm:grid-cols-2 lg:grid-cols-3" : ""}`}
-          >
-            {columns.map((column) => (
-              <div key={column.title}>
-                <h3 className="eyebrow mb-3">
-                  {column.title.toLowerCase() === "sous-catégories" ? sectionTitle : column.title}
-                </h3>
-                <ul className="space-y-2">
-                  {column.links.map((link) => (
-                    <li key={link.label}>
-                      <AppLink
-                        href={link.href}
-                        onClick={onNavigate}
-                        className="group flex items-center gap-2 text-sm text-foreground-muted transition-colors hover:text-accent-dark"
-                      >
-                        <span className="h-px w-0 bg-accent transition-all duration-200 group-hover:w-3" />
-                        {link.label}
-                      </AppLink>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          <div className="mt-6 border-t border-border pt-5">
+            <p className="eyebrow mb-3">{sectionTitle}</p>
+            <ul className="space-y-1">
+              {columns.flatMap((column) =>
+                column.links.map((link) => (
+                  <li key={`${column.title}-${link.href}-${link.label}`}>
+                    <AppLink
+                      href={link.href}
+                      onClick={onNavigate}
+                      className="group flex min-h-8 items-center gap-2 text-sm text-foreground-muted transition-colors hover:text-accent-dark focus-visible:text-accent-dark"
+                    >
+                      <span
+                        className="h-px w-0 shrink-0 bg-accent transition-all duration-200 group-hover:w-3 group-focus-visible:w-3"
+                        aria-hidden="true"
+                      />
+                      <span>{link.label}</span>
+                    </AppLink>
+                  </li>
+                )),
+              )}
+            </ul>
           </div>
-        </div>
+        </aside>
 
-        {hasShortcuts ? (
-          <div
-            className={
-              hasSingleShortcut ? "flex items-start" : "grid items-start gap-4 sm:grid-cols-2"
-            }
-          >
-            {shortcuts.slice(0, 2).map((shortcut) => (
-              <AppLink
-                key={shortcut.href}
-                href={shortcut.href}
-                onClick={onNavigate}
-                className={`group relative block w-full overflow-hidden rounded-xl ${
-                  hasSingleShortcut ? "max-w-72" : ""
-                }`}
-              >
-                <div className="media-frame-editorial w-full overflow-hidden rounded-xl bg-surface-muted">
+        {visibleShortcuts.map((shortcut) => {
+          const hasImage = Boolean(shortcut.imageUrl.trim());
+          return (
+            <AppLink
+              key={shortcut.href}
+              href={shortcut.href}
+              onClick={onNavigate}
+              aria-label={`Découvrir ${shortcut.label}`}
+              className="group min-w-0"
+            >
+              <div className="relative aspect-[1.42] min-h-52 overflow-hidden rounded-lg bg-surface-muted sm:min-h-60">
+                {hasImage ? (
                   <img
                     src={shortcut.imageUrl}
                     alt={shortcut.imageAlt}
                     loading="lazy"
                     decoding="async"
-                    sizes="(min-width: 1024px) 18rem, 50vw"
-                    className="block h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
+                    sizes="(min-width: 1024px) 30vw, 90vw"
+                    className="h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                   />
-                </div>
-                <span className="absolute bottom-3 left-1/2 w-max max-w-[90%] -translate-x-1/2 rounded-lg bg-surface/95 px-4 py-2.5 text-center text-sm font-medium text-foreground shadow-sm transition-colors group-hover:text-accent-dark">
-                  {shortcut.label}
+                ) : (
+                  <ShortcutFallback label={shortcut.label} />
+                )}
+                <span className="absolute bottom-4 left-4 right-4 flex w-fit max-w-[calc(100%-2rem)] items-center gap-3 rounded-md bg-surface/95 px-4 py-2.5 text-sm font-medium text-foreground shadow-sm transition-colors group-hover:text-accent-dark group-focus-visible:text-accent-dark">
+                  <span className="truncate">{shortcut.label}</span>
+                  <span aria-hidden="true" className="text-lg leading-none">
+                    →
+                  </span>
                 </span>
-              </AppLink>
-            ))}
-          </div>
-        ) : null}
+              </div>
+              <p className="eyebrow mt-3 truncate pl-1 text-[0.625rem] tracking-[0.2em]">
+                {shortcut.caption ?? shortcut.label}
+              </p>
+            </AppLink>
+          );
+        })}
       </div>
     </div>
   );
