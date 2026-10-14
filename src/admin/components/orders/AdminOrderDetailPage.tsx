@@ -10,7 +10,7 @@ import { AdminCard, AdminSkeleton, AdminStatusBadge } from "@/admin/components/u
 import { AdminEmptyState, AdminErrorState } from "@/admin/components/ui/AdminStates";
 import { AdminOrderTimeline } from "@/admin/components/orders/AdminOrderTimeline";
 import { AdminOrderActionDialog } from "@/admin/components/orders/AdminOrderActionDialog";
-import { useAdminOrder } from "@/admin/hooks/admin.queries";
+import { useAdminCustomer, useAdminOrder } from "@/admin/hooks/admin.queries";
 import {
   useAddOrderNote,
   useCancelOrder,
@@ -30,12 +30,7 @@ import {
 import { getAllowedPaymentTransitions } from "@/admin/services/orders/admin-order-payment";
 import {
   DELIVERY_METHOD_LABELS,
-  SHIPPING_PROFILE_LABELS,
-  SHIPPING_STATUS_LABELS,
-  SHIPPING_STATUS_TONE,
-  getOrderShippingProfile,
   getShipment,
-  getShippingStatus,
   isShippingToConfirm,
 } from "@/admin/services/orders/admin-order-shipping";
 import { calculateOrderTotalMinor } from "@/admin/services/orders/admin-order-calculations";
@@ -113,6 +108,7 @@ function OrderItemMetrics({ item }: { item: AdminOrderItem }) {
 
 export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
   const { data: order, isLoading, error, refetch } = useAdminOrder(orderId);
+  const { data: customer } = useAdminCustomer(order?.customerId ?? "");
   const updateStatus = useUpdateOrderStatus();
   const updatePayment = useUpdateOrderPaymentStatus();
   const updateShipping = useUpdateOrderShipping();
@@ -190,11 +186,12 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
           label={ORDER_STATUS_LABELS[order.status]}
           tone={ORDER_STATUS_TONE[order.status]}
         />
-        <AdminStatusBadge
-          label={`Frais : ${SHIPPING_STATUS_LABELS[getShippingStatus(order)]}`}
-          tone={SHIPPING_STATUS_TONE[getShippingStatus(order)]}
-        />
-        <AdminStatusBadge label={SHIPPING_PROFILE_LABELS[getOrderShippingProfile(order)]} />
+        {(customer?.tags ?? [])
+          .map((tag) => tag.trim())
+          .filter((tag, index, tags) => tag && tags.indexOf(tag) === index)
+          .map((tag) => (
+            <AdminStatusBadge key={tag} label={tag} />
+          ))}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
