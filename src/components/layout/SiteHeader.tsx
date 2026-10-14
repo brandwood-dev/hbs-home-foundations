@@ -240,6 +240,7 @@ export function SiteHeader() {
               <DesktopMegaMenu
                 key={item.id}
                 columns={item.megaMenu}
+                categoryHref={item.href}
                 shortcuts={item.menuShortcuts}
                 sectionTitle={
                   megaMenuSectionTitles[item.id] ??
