@@ -1,6 +1,7 @@
 import type { MegaMenuColumn, NavLink } from "@/types/navigation.types";
 
 export const MAX_MEGA_MENU_LINKS = 8;
+export const MAX_MEGA_MENU_LINKS_PER_COLUMN = 3;
 
 export interface MegaMenuDisplayLink extends NavLink {
   key: string;
@@ -27,6 +28,6 @@ export function getMegaMenuLinkLayout(columns: MegaMenuColumn[]): MegaMenuLinkLa
   return {
     links: links.slice(0, MAX_MEGA_MENU_LINKS),
     hasMore: links.length > MAX_MEGA_MENU_LINKS,
-    useColumns: links.length > 5,
+    useColumns: links.length > MAX_MEGA_MENU_LINKS_PER_COLUMN,
   };
 }
