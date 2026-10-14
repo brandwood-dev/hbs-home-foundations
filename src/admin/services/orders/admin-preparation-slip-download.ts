@@ -67,6 +67,41 @@ const PREPARATION_SLIP_CANVAS_COLOR_FALLBACKS = `
   }
 `;
 
+const CANVAS_COLOR_PROPERTIES: ReadonlyArray<readonly [string, string]> = [
+  ["color", "#1f2937"],
+  ["background-color", "#ffffff"],
+  ["border-top-color", "#d9d1c9"],
+  ["border-right-color", "#d9d1c9"],
+  ["border-bottom-color", "#d9d1c9"],
+  ["border-left-color", "#d9d1c9"],
+  ["outline-color", "transparent"],
+  ["text-decoration-color", "#806f60"],
+  ["column-rule-color", "#d9d1c9"],
+  ["caret-color", "#1f2937"],
+  ["fill", "#806f60"],
+  ["stroke", "#806f60"],
+  ["box-shadow", "none"],
+  ["text-shadow", "none"],
+  ["background-image", "none"],
+];
+
+function replaceUnsupportedCanvasColors(clonedDocument: Document): void {
+  const clonedWindow = clonedDocument.defaultView;
+  const preparationSlip = clonedDocument.querySelector<HTMLElement>(".print-preparation-slip");
+  if (!clonedWindow || !preparationSlip) return;
+
+  const elements = [preparationSlip, ...Array.from(preparationSlip.querySelectorAll("*"))];
+  for (const element of elements) {
+    const computedStyle = clonedWindow.getComputedStyle(element);
+    const inlineStyle = (element as HTMLElement).style;
+    for (const [property, fallback] of CANVAS_COLOR_PROPERTIES) {
+      if (computedStyle.getPropertyValue(property).includes("oklch")) {
+        inlineStyle.setProperty(property, fallback, "important");
+      }
+    }
+  }
+}
+
 type DownloadPreparationSlipOptions = {
   element: HTMLElement;
   filename: string;
@@ -171,6 +206,7 @@ export async function downloadPreparationSlipPdf({
       const fallbackStyle = clonedDocument.createElement("style");
       fallbackStyle.textContent = PREPARATION_SLIP_CANVAS_COLOR_FALLBACKS;
       clonedDocument.head.appendChild(fallbackStyle);
+      replaceUnsupportedCanvasColors(clonedDocument);
     },
   });
 
