@@ -303,6 +303,7 @@ export function AdminMultiSelectField({
             aria-controls={`${id}-options`}
             className="flex min-h-10 w-full min-w-0 cursor-pointer items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-left text-sm shadow-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             onKeyDown={(event) => {
+              if (event.target !== event.currentTarget) return;
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
                 setOpen((current) => !current);
