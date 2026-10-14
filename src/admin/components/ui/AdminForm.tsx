@@ -1,11 +1,11 @@
-import { useId, useRef, type ChangeEvent, type ReactNode } from "react";
-import { Upload, X } from "lucide-react";
+import { useId, useRef, useState, type ChangeEvent, type ReactNode } from "react";
+import { Check, ChevronDown, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -266,7 +266,7 @@ export function AdminColorSelectField({
   );
 }
 
-/** Liste multi-sélection compacte, utilisable au clavier et confortable sur mobile. */
+/** Dropdown multi-sélection compact, réutilisable pour les attributs à choix multiples. */
 export function AdminMultiSelectField({
   value,
   onChange,
@@ -279,37 +279,109 @@ export function AdminMultiSelectField({
 }) {
   const id = useId();
   const selected = new Set(value);
+  const [open, setOpen] = useState(false);
+  const selectedOptions = options.filter((option) => selected.has(option.value));
+
+  function toggleOption(optionValue: string) {
+    const next = new Set(selected);
+    if (next.has(optionValue)) next.delete(optionValue);
+    else next.add(optionValue);
+    onChange([...next]);
+  }
+
   return (
     <FieldWrapper {...base} id={id}>
-      <div
-        id={id}
-        role="group"
-        aria-label={base.label}
-        className="grid gap-2 rounded-md border border-input bg-background p-3 sm:grid-cols-2"
-      >
-        {options.map((option) => {
-          const checkboxId = `${id}-${option.value}`;
-          return (
-            <label
-              key={option.value}
-              htmlFor={checkboxId}
-              className="flex min-h-9 cursor-pointer items-center gap-2 rounded-md px-2 text-sm hover:bg-muted/50"
-            >
-              <Checkbox
-                id={checkboxId}
-                checked={selected.has(option.value)}
-                onCheckedChange={(checked) => {
-                  const next = new Set(selected);
-                  if (checked === true) next.add(option.value);
-                  else next.delete(option.value);
-                  onChange([...next]);
-                }}
-              />
-              {option.label}
-            </label>
-          );
-        })}
-      </div>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <div
+            id={id}
+            role="combobox"
+            tabIndex={0}
+            aria-label={base.label}
+            aria-expanded={open}
+            aria-haspopup="listbox"
+            aria-controls={`${id}-options`}
+            className="flex min-h-10 w-full min-w-0 cursor-pointer items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-left text-sm shadow-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                setOpen((current) => !current);
+              }
+            }}
+          >
+            <span className="flex min-w-0 flex-1 flex-wrap gap-1.5">
+              {selectedOptions.length > 0 ? (
+                selectedOptions.map((option) => (
+                  <span
+                    key={option.value}
+                    className="inline-flex max-w-full min-w-0 items-center gap-1 rounded-full border border-border bg-muted px-2 py-0.5 text-xs font-medium text-foreground"
+                  >
+                    <span className="min-w-0 truncate">{option.label}</span>
+                    <button
+                      type="button"
+                      aria-label={`Supprimer ${option.label}`}
+                      className="shrink-0 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      onPointerDown={(event) => event.stopPropagation()}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        toggleOption(option.value);
+                      }}
+                    >
+                      <X className="size-3" aria-hidden="true" />
+                    </button>
+                  </span>
+                ))
+              ) : (
+                <span className="text-muted-foreground">Sélectionner…</span>
+              )}
+            </span>
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          </div>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          className="w-[var(--radix-popover-trigger-width)] min-w-52 p-1"
+        >
+          <div
+            id={`${id}-options`}
+            role="listbox"
+            aria-label={base.label}
+            aria-multiselectable="true"
+            className="max-h-60 overflow-y-auto"
+          >
+            {options.length > 0 ? (
+              options.map((option) => {
+                const isSelected = selected.has(option.value);
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    role="option"
+                    aria-selected={isSelected}
+                    className="flex min-h-10 w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm outline-none transition-colors hover:bg-muted focus-visible:bg-muted"
+                    onClick={() => toggleOption(option.value)}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "flex size-4 shrink-0 items-center justify-center rounded-sm border",
+                        isSelected
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-input bg-background",
+                      )}
+                    >
+                      {isSelected ? <Check className="size-3" /> : null}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                  </button>
+                );
+              })
+            ) : (
+              <p className="px-2 py-3 text-sm text-muted-foreground">Aucune option disponible.</p>
+            )}
+          </div>
+        </PopoverContent>
+      </Popover>
     </FieldWrapper>
   );
 }

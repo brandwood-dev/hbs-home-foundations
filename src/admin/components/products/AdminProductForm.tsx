@@ -799,27 +799,26 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
   const advancedFields = specificFields.filter((field) => advancedFieldKeys.has(field.key));
   const isExtendableCurtainRod =
     values.category === "accessoires" && isTringlesCategorySlug(selectedCatalogCategorySlug);
-  const orderedCoreFields = isExtendableCurtainRod
+  const isCurtainOrSheer = values.category === "rideaux" || values.category === "voilages";
+  const coreFieldOrder = isExtendableCurtainRod
+    ? ["accessory_type", "material", "max_length_cm", "min_length_cm", "installation"]
+    : isCurtainOrSheer
+      ? ["material", "opacity", "rooms", "large_width", "installation"]
+      : null;
+  const orderedCoreFields = coreFieldOrder
     ? [...coreFields].sort((left, right) => {
-        const order = [
-          "accessory_type",
-          "material",
-          "max_length_cm",
-          "min_length_cm",
-          "installation",
-        ];
-        const leftIndex = order.indexOf(left.key);
-        const rightIndex = order.indexOf(right.key);
+        const leftIndex = coreFieldOrder.indexOf(left.key);
+        const rightIndex = coreFieldOrder.indexOf(right.key);
         return (
-          (leftIndex === -1 ? order.length : leftIndex) -
-          (rightIndex === -1 ? order.length : rightIndex)
+          (leftIndex === -1 ? coreFieldOrder.length : leftIndex) -
+          (rightIndex === -1 ? coreFieldOrder.length : rightIndex)
         );
       })
     : coreFields;
 
   function renderCoreField(field: (typeof specificFields)[number]) {
     const fieldElement = renderSpecificField(field);
-    if (isExtendableCurtainRod && field.key === "installation") {
+    if ((isExtendableCurtainRod || isCurtainOrSheer) && field.key === "installation") {
       return (
         <div key={`layout-${field.key}`} className="md:col-span-2">
           {fieldElement}
