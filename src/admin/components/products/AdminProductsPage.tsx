@@ -222,55 +222,63 @@ export function AdminProductsPage({ initialQuery = "" }: { initialQuery?: string
         emptyDescription="Ajustez vos filtres ou créez un nouveau produit."
         toolbar={
           <>
-            <AdminSearchInput
-              value={search}
-              onChange={(value) => {
-                setSearch(value);
-              }}
-              placeholder="Nom, référence ou SKU"
-            />
-            <AdminSelectFilter
-              label="Catégorie"
-              value={category}
-              onChange={setCategory}
-              options={categoryOptions}
-            />
-            <AdminSelectFilter
-              label="Statut"
-              value={status}
-              onChange={setStatus_}
-              options={[
-                { value: "published", label: "Publié" },
-                { value: "draft", label: "Brouillon" },
-                { value: "archived", label: "Archivé" },
-              ]}
-            />
-            <AdminSelectFilter
-              label="Promotion"
-              value={promotion}
-              onChange={setPromotion}
-              options={[
-                { value: "promo", label: "En promotion" },
-                { value: "regular", label: "Sans promotion" },
-              ]}
-            />
-            <AdminSelectFilter
-              label="Stock"
-              value={stockFilter}
-              onChange={setStockFilter}
-              options={[
-                { value: "low", label: "Stock faible" },
-                { value: "out", label: "Rupture" },
-              ]}
-            />
-            <div className="flex flex-wrap items-center gap-2 pb-0.5 sm:ml-auto">
+            <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-[minmax(20rem,2fr)_repeat(4,minmax(9rem,1fr))]">
+              <AdminSearchInput
+                value={search}
+                onChange={(value) => {
+                  setSearch(value);
+                }}
+                placeholder="Nom, référence ou SKU"
+                wide
+                className="min-w-0 self-end max-sm:col-span-2 sm:col-span-4 lg:col-span-1"
+              />
+              <AdminSelectFilter
+                label="Catégorie"
+                value={category}
+                onChange={setCategory}
+                options={categoryOptions}
+                className="min-w-0"
+              />
+              <AdminSelectFilter
+                label="Statut"
+                value={status}
+                onChange={setStatus_}
+                options={[
+                  { value: "published", label: "Publié" },
+                  { value: "draft", label: "Brouillon" },
+                  { value: "archived", label: "Archivé" },
+                ]}
+                className="min-w-0"
+              />
+              <AdminSelectFilter
+                label="Promotion"
+                value={promotion}
+                onChange={setPromotion}
+                options={[
+                  { value: "promo", label: "En promotion" },
+                  { value: "regular", label: "Sans promotion" },
+                ]}
+                className="min-w-0"
+              />
+              <AdminSelectFilter
+                label="Stock"
+                value={stockFilter}
+                onChange={setStockFilter}
+                options={[
+                  { value: "low", label: "Stock faible" },
+                  { value: "out", label: "Rupture" },
+                ]}
+                className="min-w-0"
+              />
+            </div>
+            <div className="flex w-full flex-wrap items-center justify-end gap-2 border-t border-border/70 pt-3 sm:pt-2">
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
                 disabled={!hasFilters}
                 onClick={resetFilters}
-                className="text-muted-foreground"
+                className="min-h-10 text-muted-foreground"
               >
                 <RotateCcw className="mr-1.5 size-3.5" aria-hidden />
                 Réinitialiser
@@ -281,7 +289,7 @@ export function AdminProductsPage({ initialQuery = "" }: { initialQuery?: string
                 size="sm"
                 onClick={() => void refetchCategories()}
                 disabled={categoriesLoading || categoriesFetching}
-                className="text-muted-foreground"
+                className="min-h-10 text-muted-foreground"
               >
                 <RefreshCw
                   className={`mr-1.5 size-3.5 ${categoriesFetching ? "animate-spin" : ""}`}

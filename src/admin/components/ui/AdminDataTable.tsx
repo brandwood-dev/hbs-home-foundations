@@ -27,13 +27,17 @@ export function AdminSearchInput({
   value,
   onChange,
   placeholder = "Rechercher…",
+  wide = false,
+  className,
 }: {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  wide?: boolean;
+  className?: string;
 }) {
   return (
-    <div className="relative w-full sm:w-64">
+    <div className={cn("relative w-full", wide ? "sm:flex-1 sm:w-auto" : "sm:w-64", className)}>
       <Search
         className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
         aria-hidden
@@ -59,17 +63,19 @@ export function AdminSelectFilter({
   value,
   onChange,
   options,
+  className,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   options: SelectOption[];
+  className?: string;
 }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className={cn("flex min-w-0 flex-col gap-1", className)}>
       <Label className="text-[11px] text-muted-foreground">{label}</Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="h-10 w-full min-w-[150px] bg-background" aria-label={label}>
+        <SelectTrigger className="h-10 w-full bg-background sm:min-w-[150px]" aria-label={label}>
           <SelectValue placeholder={label} />
         </SelectTrigger>
         <SelectContent>
