@@ -21,7 +21,7 @@ import {
   useUpdateOrderShipping,
   useUpdateOrderStatus,
 } from "@/admin/hooks/admin-sales.mutations";
-import type { AdminOrder, AdminOrderStatus } from "@/admin/types/admin.types";
+import type { AdminOrder, AdminOrderItem, AdminOrderStatus } from "@/admin/types/admin.types";
 import {
   ORDER_STATUS_LABELS,
   ORDER_STATUS_OPTIONS,
@@ -47,6 +47,7 @@ import { calculateOrderTotalMinor } from "@/admin/services/orders/admin-order-ca
 import { canEditOrderDetails } from "@/admin/services/orders/admin-order-validation";
 import { formatDateTime } from "@/admin/utils/admin.utils";
 import { formatMoney, toMinor, toUnits } from "@/lib/money/money";
+import { cn } from "@/lib/utils";
 
 type DialogState =
   | { kind: "status"; status: AdminOrderStatus }
@@ -76,6 +77,43 @@ function OrderItemThumbnail({ src }: { src: string | undefined }) {
         <ImageOff className="size-4 text-muted-foreground" />
       )}
     </div>
+  );
+}
+
+function OrderItemIdentity({ item, className }: { item: AdminOrderItem; className?: string }) {
+  return (
+    <div className={cn("flex min-w-0 items-center gap-3", className)}>
+      <OrderItemThumbnail src={item.imageUrl} />
+      <div className="min-w-0 flex-1">
+        <p className="line-clamp-2 break-words font-medium leading-snug">{item.productName}</p>
+        <p className="mt-1 line-clamp-2 break-words text-xs text-muted-foreground">
+          {item.selectedOptions?.map((option) => option.value).join(" · ") || item.variantLabel}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function OrderItemMetrics({ item }: { item: AdminOrderItem }) {
+  return (
+    <dl className="grid grid-cols-3 gap-3 border-t border-border pt-3 text-xs">
+      <div className="min-w-0">
+        <dt className="text-muted-foreground">PU</dt>
+        <dd className="mt-1 tabular-nums text-sm font-medium">
+          {formatMoney(item.unitPriceMinor)}
+        </dd>
+      </div>
+      <div className="min-w-0 text-center">
+        <dt className="text-muted-foreground">Qté</dt>
+        <dd className="mt-1 tabular-nums text-sm font-medium">{item.quantity}</dd>
+      </div>
+      <div className="min-w-0 text-right">
+        <dt className="text-muted-foreground">Total</dt>
+        <dd className="mt-1 tabular-nums text-sm font-medium">
+          {formatMoney(item.lineTotalMinor)}
+        </dd>
+      </div>
+    </dl>
   );
 }
 
@@ -173,15 +211,42 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
         <div className="space-y-4 lg:col-span-2">
           <AdminCard>
             <h2 className="mb-3 text-sm font-semibold">Articles</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[600px] text-sm">
+            <div className="sm:hidden">
+              <div className="divide-y divide-border">
+                {order.items.map((item) => (
+                  <article
+                    key={`${item.productId}-${item.variantId}`}
+                    className="space-y-3 py-3 first:pt-0 last:pb-0"
+                  >
+                    <OrderItemIdentity item={item} />
+                    <OrderItemMetrics item={item} />
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div className="hidden overflow-x-auto sm:block">
+              <table className="w-full table-fixed text-sm" aria-label="Articles de la commande">
+                <colgroup>
+                  <col className="w-[62%]" />
+                  <col className="w-[13%]" />
+                  <col className="w-[10%]" />
+                  <col className="w-[15%]" />
+                </colgroup>
                 <thead>
                   <tr className="border-b border-border text-left text-xs text-muted-foreground uppercase">
-                    <th className="py-2">Produit</th>
-                    <th className="py-2">SKU</th>
-                    <th className="py-2 text-right">Qté</th>
-                    <th className="py-2 text-right">PU</th>
-                    <th className="py-2 text-right">Total</th>
+                    <th scope="col" className="py-2 pr-4">
+                      Produit
+                    </th>
+                    <th scope="col" className="py-2 px-2 text-right">
+                      PU
+                    </th>
+                    <th scope="col" className="py-2 px-2 text-right">
+                      Qté
+                    </th>
+                    <th scope="col" className="py-2 pl-2 text-right">
+                      Total
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -190,24 +255,16 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
                       key={`${item.productId}-${item.variantId}`}
                       className="border-b border-border last:border-0"
                     >
-                      <td className="py-2">
-                        <div className="flex min-w-0 items-center gap-3">
-                          <OrderItemThumbnail src={item.imageUrl} />
-                          <div className="min-w-0">
-                            <p className="font-medium">{item.productName}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {item.selectedOptions?.map((option) => option.value).join(" · ") ||
-                                item.variantLabel}
-                            </p>
-                          </div>
-                        </div>
+                      <td className="min-w-0 py-3 pr-4">
+                        <OrderItemIdentity item={item} />
                       </td>
-                      <td className="py-2 text-xs">{item.sku}</td>
-                      <td className="py-2 text-right tabular-nums">{item.quantity}</td>
-                      <td className="py-2 text-right tabular-nums">
+                      <td className="py-3 px-2 text-right tabular-nums whitespace-nowrap">
                         {formatMoney(item.unitPriceMinor)}
                       </td>
-                      <td className="py-2 text-right tabular-nums">
+                      <td className="py-3 px-2 text-right tabular-nums whitespace-nowrap">
+                        {item.quantity}
+                      </td>
+                      <td className="py-3 pl-2 text-right tabular-nums whitespace-nowrap">
                         {formatMoney(item.lineTotalMinor)}
                       </td>
                     </tr>
