@@ -23,7 +23,7 @@ export function CartItem({
   onRemove,
 }: CartItemProps) {
   return (
-    <article className="flex gap-3 py-4">
+    <article className="flex min-w-0 gap-3 py-4">
       <div
         className={`${compact ? "h-24 w-20" : "h-32 w-24"} shrink-0 overflow-hidden rounded-sm bg-surface-muted`}
       >
@@ -38,17 +38,17 @@ export function CartItem({
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex min-w-0 items-start justify-between gap-2">
           <div className="min-w-0">
             {item.productSlug ? (
               <AppLink
                 href={getProductPath({ slug: item.productSlug })}
-                className="text-sm font-medium hover:text-accent-dark"
+                className="break-words text-sm font-medium hover:text-accent-dark"
               >
                 {item.productName}
               </AppLink>
             ) : (
-              <span className="text-sm font-medium">{item.productName}</span>
+              <span className="break-words text-sm font-medium">{item.productName}</span>
             )}
             {item.sku ? (
               <p className="text-xs text-foreground-muted">Référence {item.sku}</p>

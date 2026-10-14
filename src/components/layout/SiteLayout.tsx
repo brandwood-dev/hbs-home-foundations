@@ -45,7 +45,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
         </div>
         <SiteHeader />
       </div>
-      <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
+      <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 outline-none">
         <Suspense fallback={<PublicContentFallback />}>{children}</Suspense>
       </main>
       <SiteFooter />
