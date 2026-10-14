@@ -67,7 +67,7 @@ export function adminProductBelongsToCategory(
   categories: readonly AdminCategory[],
 ): boolean {
   const byId = new Map(categories.map((category) => [category.id, category]));
-  let currentId = product.subCategoryId || product.categoryId;
+  let currentId: string | undefined = product.subCategoryId || product.categoryId;
   const visited = new Set<string>();
   while (currentId && !visited.has(currentId)) {
     if (currentId === categoryId) return true;
