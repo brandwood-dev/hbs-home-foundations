@@ -797,6 +797,37 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
 
   const coreFields = specificFields.filter((field) => !advancedFieldKeys.has(field.key));
   const advancedFields = specificFields.filter((field) => advancedFieldKeys.has(field.key));
+  const isExtendableCurtainRod =
+    values.category === "accessoires" && isTringlesCategorySlug(selectedCatalogCategorySlug);
+  const orderedCoreFields = isExtendableCurtainRod
+    ? [...coreFields].sort((left, right) => {
+        const order = [
+          "accessory_type",
+          "material",
+          "max_length_cm",
+          "min_length_cm",
+          "installation",
+        ];
+        const leftIndex = order.indexOf(left.key);
+        const rightIndex = order.indexOf(right.key);
+        return (
+          (leftIndex === -1 ? order.length : leftIndex) -
+          (rightIndex === -1 ? order.length : rightIndex)
+        );
+      })
+    : coreFields;
+
+  function renderCoreField(field: (typeof specificFields)[number]) {
+    const fieldElement = renderSpecificField(field);
+    if (isExtendableCurtainRod && field.key === "installation") {
+      return (
+        <div key={`layout-${field.key}`} className="md:col-span-2">
+          {fieldElement}
+        </div>
+      );
+    }
+    return fieldElement;
+  }
 
   const specificTab = (
     <AdminFormSection
@@ -807,7 +838,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
         <div>
           <h3 className="mb-3 text-sm font-semibold">Informations produit</h3>
           <div className="grid items-start gap-4 md:grid-cols-2">
-            {coreFields.map(renderSpecificField)}
+            {orderedCoreFields.map(renderCoreField)}
           </div>
         </div>
         {advancedFields.length > 0 ? (
