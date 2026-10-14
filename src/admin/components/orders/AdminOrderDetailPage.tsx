@@ -27,11 +27,7 @@ import {
   ORDER_STATUS_OPTIONS,
   ORDER_STATUS_TONE,
 } from "@/admin/services/order-status";
-import {
-  PAYMENT_STATUS_LABELS,
-  PAYMENT_STATUS_TONE,
-  getAllowedPaymentTransitions,
-} from "@/admin/services/orders/admin-order-payment";
+import { getAllowedPaymentTransitions } from "@/admin/services/orders/admin-order-payment";
 import {
   DELIVERY_METHOD_LABELS,
   SHIPPING_PROFILE_LABELS,
@@ -193,10 +189,6 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
         <AdminStatusBadge
           label={ORDER_STATUS_LABELS[order.status]}
           tone={ORDER_STATUS_TONE[order.status]}
-        />
-        <AdminStatusBadge
-          label={`Paiement : ${PAYMENT_STATUS_LABELS[order.paymentStatus]}`}
-          tone={PAYMENT_STATUS_TONE[order.paymentStatus]}
         />
         <AdminStatusBadge
           label={`Frais : ${SHIPPING_STATUS_LABELS[getShippingStatus(order)]}`}
@@ -470,17 +462,6 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
                     Refuser le retour
                   </Button>
                 </>
-              ) : null}
-              {paymentTransitions.includes("collected") ? (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    updatePayment.mutate({ orderId: order.id, paymentStatus: "collected" })
-                  }
-                >
-                  Marquer le paiement encaissé
-                </Button>
               ) : null}
               {paymentTransitions.includes("refunded") ? (
                 <Button size="sm" variant="outline" onClick={() => setDialog({ kind: "refund" })}>
