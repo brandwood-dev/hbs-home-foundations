@@ -17,10 +17,6 @@ import type { AdminOrderListParams, AdminOrderSort } from "@/admin/repositories/
 import type { AdminOrder, AdminOrderStatus } from "@/admin/types/admin.types";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_TONE } from "@/admin/services/order-status";
 import {
-  PAYMENT_STATUS_LABELS,
-  PAYMENT_STATUS_TONE,
-} from "@/admin/services/orders/admin-order-payment";
-import {
   DELIVERY_METHOD_LABELS,
   SHIPPING_PROFILE_LABELS,
   getOrderShippingProfile,
@@ -50,7 +46,6 @@ export function AdminOrdersPage() {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<AdminOrderSort>("newest");
   const [status, setStatus] = useState("all");
-  const [paymentStatus, setPaymentStatus] = useState("all");
   const [deliveryMethod, setDeliveryMethod] = useState("all");
   const [governorate, setGovernorate] = useState("all");
   /** Recherche privée : état local uniquement, jamais persisté. */
@@ -62,15 +57,12 @@ export function AdminOrdersPage() {
       pageSize: PAGE_SIZE,
       sort,
       ...(status !== "all" ? { status: [status as AdminOrderStatus] } : {}),
-      ...(paymentStatus !== "all"
-        ? { paymentStatus: [paymentStatus as AdminOrder["paymentStatus"]] }
-        : {}),
       ...(deliveryMethod !== "all"
         ? { deliveryMethod: [deliveryMethod as AdminOrder["deliveryMethod"]] }
         : {}),
       ...(governorate !== "all" ? { governorates: [governorate] } : {}),
     }),
-    [page, sort, status, paymentStatus, deliveryMethod, governorate],
+    [page, sort, status, deliveryMethod, governorate],
   );
 
   const { data, isLoading, error, refetch } = useAdminOrders(params, search);
@@ -114,16 +106,6 @@ export function AdminOrdersPage() {
       ),
     },
     {
-      id: "payment",
-      header: "Paiement",
-      cell: (order) => (
-        <AdminStatusBadge
-          label={PAYMENT_STATUS_LABELS[order.paymentStatus]}
-          tone={PAYMENT_STATUS_TONE[order.paymentStatus]}
-        />
-      ),
-    },
-    {
       id: "delivery",
       header: "Livraison",
       cell: (order) => (
@@ -154,7 +136,7 @@ export function AdminOrdersPage() {
     <div>
       <AdminPageHeader
         title="Commandes"
-        description="Suivi opérationnel des commandes, du paiement à la livraison."
+        description="Suivi opérationnel des commandes et de la livraison."
         breadcrumbs={[{ label: "Commandes" }]}
       />
 
@@ -179,12 +161,6 @@ export function AdminOrdersPage() {
                   tone="warning"
                 />
               ) : null}
-              {(counters?.paymentPending ?? 0) > 0 ? (
-                <AdminStatusBadge
-                  label={`${counters?.paymentPending} paiement(s) en attente`}
-                  tone="info"
-                />
-              ) : null}
             </div>
             <AdminSearchInput
               value={search}
@@ -202,19 +178,6 @@ export function AdminOrdersPage() {
                 setPage(1);
               }}
               options={STATUS_OPTIONS}
-            />
-            <AdminSelectFilter
-              label="Paiement"
-              value={paymentStatus}
-              onChange={(value) => {
-                setPaymentStatus(value);
-                setPage(1);
-              }}
-              options={[
-                { value: "pending", label: "En attente" },
-                { value: "collected", label: "Encaissé" },
-                { value: "refunded", label: "Remboursé" },
-              ]}
             />
             <AdminSelectFilter
               label="Mode de livraison"
