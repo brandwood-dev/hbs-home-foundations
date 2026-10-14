@@ -466,21 +466,26 @@ export function AdminShell({ children }: { children: ReactNode }) {
     // dialog is currently open.
     if (menuOpen) return;
 
-    const body = document.body;
-    const hasOpenDialog = Boolean(
-      document.querySelector('[data-radix-dialog-content][data-state="open"]'),
-    );
-    if (hasOpenDialog) return;
+    const cleanupScrollLock = () => {
+      const body = document.body;
+      const hasOpenDialog = Boolean(
+        document.querySelector('[data-radix-dialog-content][data-state="open"]'),
+      );
+      const hasStaleScrollLock =
+        body.hasAttribute("data-scroll-locked") ||
+        body.style.overflow === "hidden" ||
+        body.style.pointerEvents === "none";
+      if (hasOpenDialog || !hasStaleScrollLock) return;
 
-    const hasStaleScrollLock =
-      body.hasAttribute("data-scroll-locked") ||
-      body.style.overflow === "hidden" ||
-      body.style.pointerEvents === "none";
-    if (!hasStaleScrollLock) return;
+      body.removeAttribute("data-scroll-locked");
+      body.style.removeProperty("overflow");
+      body.style.removeProperty("pointer-events");
+    };
 
-    body.removeAttribute("data-scroll-locked");
-    body.style.removeProperty("overflow");
-    body.style.removeProperty("pointer-events");
+    cleanupScrollLock();
+    const cleanupAfterClose = window.setTimeout(cleanupScrollLock, 400);
+
+    return () => window.clearTimeout(cleanupAfterClose);
   }, [menuOpen, pathname]);
 
   useEffect(() => {
