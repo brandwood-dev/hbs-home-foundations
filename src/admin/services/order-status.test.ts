@@ -8,10 +8,11 @@ describe("admin order status corrections", () => {
     expect(allowedTransitions("cancelled")).toContain("confirmed");
   });
 
-  it("requires a reason for sensitive or backward changes", () => {
+  it("requires a reason only when cancelling", () => {
     expect(transitionRequiresReason("pending_confirmation", "confirmed")).toBe(false);
-    expect(transitionRequiresReason("preparing", "confirmed")).toBe(true);
-    expect(transitionRequiresReason("shipped", "delivered")).toBe(true);
-    expect(transitionRequiresReason("cancelled", "confirmed")).toBe(true);
+    expect(transitionRequiresReason("preparing", "confirmed")).toBe(false);
+    expect(transitionRequiresReason("shipped", "delivered")).toBe(false);
+    expect(transitionRequiresReason("delivered", "cancelled")).toBe(true);
+    expect(transitionRequiresReason("cancelled", "confirmed")).toBe(false);
   });
 });

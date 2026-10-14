@@ -595,6 +595,16 @@ function pushEvent(order: AdminOrder, event: Omit<AdminOrderEvent, "id" | "at">)
   order.updatedAt = nowIso();
 }
 
+function pushInternalNote(order: AdminOrder, body: string): void {
+  order.notes.unshift({
+    id: adminId("note"),
+    at: nowIso(),
+    author: ACTOR.userName,
+    userId: ACTOR.userId,
+    body,
+  });
+}
+
 function recomputeAvailability(variant: AdminVariant): void {
   if (variant.trackInventory === false || variant.availability === "made_to_order") return;
   if (variant.stock <= 0) variant.availability = "out_of_stock";
@@ -641,12 +651,11 @@ function moveStock(
 }
 
 function deductStock(db: AdminMockDatabase, order: AdminOrder): void {
-  if (order.inventoryState?.deductedAt) return;
+  if (order.inventoryState?.deductedAt && !order.inventoryState.restoredAt) return;
   const shortages = findStockShortages(order, db.products);
   if (shortages.length > 0) throw new Error(stockShortageMessage(shortages));
   const ids = moveStock(db, order, "deduct");
   order.inventoryState = {
-    ...(order.inventoryState ?? {}),
     deductedAt: nowIso(),
     deductionMovementIds: ids,
   };
@@ -793,9 +802,17 @@ export class MockAdminOrderRepository implements AdminOrderRepository {
     const order = mutateDb((db) => {
       const found = findOrder(db, input.orderId);
       const from = found.status;
+      if (input.status === "cancelled") {
+        throw new Error("Utilisez l'action d'annulation pour libérer le stock correctement.");
+      }
       assertStatusTransition(found, input.status, input.reason);
 
-      if (input.status === "confirmed") deductStock(db, found);
+      if (
+        ["confirmed", "preparing", "shipped", "delivered"].includes(input.status) &&
+        (!found.inventoryState?.deductedAt || found.inventoryState.restoredAt)
+      ) {
+        deductStock(db, found);
+      }
       found.status = input.status;
 
       if (input.status === "shipped") {
@@ -832,6 +849,14 @@ export class MockAdminOrderRepository implements AdminOrderRepository {
         ...(input.reason ? { reason: input.reason } : {}),
         ...(input.note ? { note: input.note } : {}),
       });
+      if (input.reason || input.note) {
+        pushInternalNote(
+          found,
+          input.reason
+            ? `Correction de statut : ${ORDER_STATUS_LABELS[from]} → ${ORDER_STATUS_LABELS[input.status]}. Motif : ${input.reason}`
+            : input.note!,
+        );
+      }
       return found;
     });
 
@@ -993,6 +1018,10 @@ export class MockAdminOrderRepository implements AdminOrderRepository {
         reason: input.reason.trim(),
         ...(input.note ? { note: input.note } : {}),
       });
+      pushInternalNote(
+        found,
+        `Commande annulée : ${ORDER_STATUS_LABELS[from]} → ${ORDER_STATUS_LABELS.cancelled}. Motif : ${input.reason.trim()}${input.note ? ` — ${input.note.trim()}` : ""}`,
+      );
       return found;
     });
     logActivity({

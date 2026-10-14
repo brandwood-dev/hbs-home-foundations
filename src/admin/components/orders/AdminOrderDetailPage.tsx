@@ -27,7 +27,6 @@ import {
   ORDER_STATUS_OPTIONS,
   ORDER_STATUS_TONE,
 } from "@/admin/services/order-status";
-import { transitionRequiresReason } from "@/admin/services/orders/admin-order-transitions";
 import {
   PAYMENT_STATUS_LABELS,
   PAYMENT_STATUS_TONE,
@@ -50,7 +49,6 @@ import { formatMoney, toMinor, toUnits } from "@/lib/money/money";
 import { cn } from "@/lib/utils";
 
 type DialogState =
-  | { kind: "status"; status: AdminOrderStatus }
   | { kind: "cancel" }
   | { kind: "return"; action: "request" | "accept" | "refuse" }
   | { kind: "refund" }
@@ -415,20 +413,45 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
                     variant={selectedStatus === "cancelled" ? "destructive" : "default"}
                     onClick={() => {
                       if (!statusChanged) return;
-                      setDialog(
-                        selectedStatus === "cancelled"
-                          ? { kind: "cancel" }
-                          : { kind: "status", status: selectedStatus },
-                      );
+                      if (selectedStatus === "cancelled") {
+                        setDialog({ kind: "cancel" });
+                        return;
+                      }
+                      updateStatus.mutate({
+                        orderId: order.id,
+                        status: selectedStatus,
+                        ...(carrierName ? { carrierName } : {}),
+                        ...(trackingNumber ? { trackingNumber } : {}),
+                      });
                     }}
                   >
                     Mettre à jour
                   </Button>
                 </div>
                 <p id="order-status-help" className="text-xs text-muted-foreground">
-                  Le statut peut être corrigé à tout moment. Les retours en arrière et statuts
-                  sensibles demandent un motif conservé dans l'historique.
+                  Vous pouvez corriger le statut directement. Une justification est demandée
+                  uniquement lors d'une annulation.
                 </p>
+                {selectedStatus === "shipped" ? (
+                  <div className="grid gap-2 pt-1 sm:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="carrier">Transporteur (optionnel)</Label>
+                      <Input
+                        id="carrier"
+                        value={carrierName}
+                        onChange={(event) => setCarrierName(event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="tracking">Numéro de suivi (optionnel)</Label>
+                      <Input
+                        id="tracking"
+                        value={trackingNumber}
+                        onChange={(event) => setTrackingNumber(event.target.value)}
+                      />
+                    </div>
+                  </div>
+                ) : null}
               </div>
               {order.returnInfo?.status === "requested" ? (
                 <>
@@ -487,62 +510,16 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
       </div>
 
       <AdminOrderActionDialog
-        open={dialog?.kind === "status"}
-        onOpenChange={(open) => !open && setDialog(null)}
-        title="Changer le statut"
-        description={
-          dialog?.kind === "status"
-            ? `La commande passera au statut « ${ORDER_STATUS_LABELS[dialog.status]} ».`
-            : ""
-        }
-        confirmLabel="Confirmer"
-        requireReason={
-          dialog?.kind === "status" && transitionRequiresReason(order.status, dialog.status)
-        }
-        isPending={updateStatus.isPending}
-        extra={
-          dialog?.kind === "status" && dialog.status === "shipped" ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label htmlFor="carrier">Transporteur</Label>
-                <Input
-                  id="carrier"
-                  value={carrierName}
-                  onChange={(event) => setCarrierName(event.target.value)}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="tracking">Numéro de suivi</Label>
-                <Input
-                  id="tracking"
-                  value={trackingNumber}
-                  onChange={(event) => setTrackingNumber(event.target.value)}
-                />
-              </div>
-            </div>
-          ) : null
-        }
-        onConfirm={(values) => {
-          if (dialog?.kind !== "status") return;
-          updateStatus.mutate(
-            {
-              orderId: order.id,
-              status: dialog.status,
-              ...(values.reason ? { reason: values.reason } : {}),
-              ...(values.note ? { note: values.note } : {}),
-              ...(carrierName ? { carrierName } : {}),
-              ...(trackingNumber ? { trackingNumber } : {}),
-            },
-            { onSuccess: () => setDialog(null) },
-          );
-        }}
-      />
-
-      <AdminOrderActionDialog
         open={dialog?.kind === "cancel"}
         onOpenChange={(open) => !open && setDialog(null)}
-        title="Annuler la commande"
-        description="Cette action est définitive. Le stock peut être restauré si la commande a été confirmée."
+        title={
+          order.status === "delivered" ? "Corriger le statut et annuler" : "Annuler la commande"
+        }
+        description={
+          order.status === "delivered"
+            ? "Cette correction sera tracée dans l'historique et les notes internes."
+            : "Cette action est définitive. Le stock peut être restauré si nécessaire."
+        }
         confirmLabel="Annuler la commande"
         requireReason
         destructive

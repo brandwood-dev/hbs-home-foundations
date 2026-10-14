@@ -45,7 +45,7 @@ export function getOrderActions(order: AdminOrder): TransitionAction[] {
   return getAllowedOrderTransitions(order.status).map((to) => ({
     to,
     label: ACTION_LABELS[to] ?? ORDER_STATUS_LABELS[to],
-    critical: transitionRequiresReason(order.status, to) || to === "delivered",
+    critical: transitionRequiresReason(order.status, to),
   }));
 }
 
