@@ -15,6 +15,7 @@ export interface NavMenuShortcut {
   href: NavHref;
   imageUrl: string;
   imageAlt: string;
+  caption?: string;
 }
 
 export interface NavItem extends NavLink {

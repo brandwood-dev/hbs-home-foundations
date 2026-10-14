@@ -64,7 +64,7 @@ describe("dynamic catalog navigation", () => {
     expect(result.map((item) => item.id)).toEqual(["coussins", "rideaux", "inspirations"]);
   });
 
-  it("exposes at most two newest sub-category image shortcuts", () => {
+  it("uses admin-managed sub-category cover images in navigation order", () => {
     const rootCategory = categories[0]!;
     const baseChild = rootCategory.children[0]!;
     const category = {
@@ -72,6 +72,7 @@ describe("dynamic catalog navigation", () => {
       children: [
         {
           ...baseChild,
+          imageUrl: "https://cdn.example.test/lin-cover.webp",
           latestProduct: {
             slug: "lin-ancien",
             name: "Lin ancien",
@@ -85,6 +86,7 @@ describe("dynamic catalog navigation", () => {
           slug: "velours",
           name: "Velours",
           path: "/rideaux/velours",
+          imageUrl: "https://cdn.example.test/velours-cover.webp",
           latestProduct: {
             slug: "velours-nouveau",
             name: "Velours nouveau",
@@ -98,6 +100,7 @@ describe("dynamic catalog navigation", () => {
           slug: "satin",
           name: "Satin",
           path: "/rideaux/satin",
+          imageUrl: "https://cdn.example.test/satin-cover.webp",
           latestProduct: {
             slug: "satin-nouveau",
             name: "Satin nouveau",
@@ -112,18 +115,30 @@ describe("dynamic catalog navigation", () => {
 
     expect(result[0]?.menuShortcuts).toEqual([
       {
-        label: "Velours",
-        href: "/rideaux/velours",
-        imageUrl: "https://cdn.example.test/velours-nouveau.webp",
-        imageAlt: "Rideau en velours nouveau",
+        label: "Lin naturel",
+        href: "/rideaux/lin",
+        imageUrl: "https://cdn.example.test/lin-cover.webp",
+        imageAlt: "Lin naturel",
+        caption: "Lin naturel",
       },
       {
-        label: "Satin",
-        href: "/rideaux/satin",
-        imageUrl: "https://cdn.example.test/satin-nouveau.webp",
-        imageAlt: "Rideau en satin nouveau",
+        label: "Velours",
+        href: "/rideaux/velours",
+        imageUrl: "https://cdn.example.test/velours-cover.webp",
+        imageAlt: "Velours",
+        caption: "Velours",
       },
     ]);
+  });
+
+  it("keeps a shortcut when a sub-category has no cover image", () => {
+    const result = mergeCatalogNavigation(fallback, [categories[0]!]);
+
+    expect(result[0]?.menuShortcuts?.[0]).toMatchObject({
+      label: "Lin naturel",
+      imageUrl: "",
+      caption: "Lin naturel",
+    });
   });
 
   it("keeps the fixture navigation during an API outage", () => {
