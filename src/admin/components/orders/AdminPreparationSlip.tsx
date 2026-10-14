@@ -15,14 +15,13 @@ const PREPARATION_SLIP_FALLBACK_IMAGE = "/images/placeholder-product.svg";
 
 function itemOptions(item: AdminOrderItem): string {
   const options = item.selectedOptions?.map((option) => `${option.label}: ${option.value}`) ?? [];
-  return options.join(" · ") || item.variantLabel;
+  const variantLabel =
+    item.variantLabel.trim().toLowerCase() === "accessory" ? "Accessoire" : item.variantLabel;
+  return options.join(" · ") || variantLabel;
 }
 
 function itemQuantity(item: AdminOrderItem): string {
-  const panels = item.panelCount
-    ? ` · ${item.panelCount} panneau${item.panelCount > 1 ? "x" : ""}`
-    : "";
-  return `${item.quantity}${panels}`;
+  return String(item.quantity);
 }
 
 function itemDetails(item: AdminOrderItem): string {
