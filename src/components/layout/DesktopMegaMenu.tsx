@@ -49,8 +49,8 @@ export function DesktopMegaMenu({
   ).slice(0, 2);
 
   return (
-    <div className="absolute left-0 right-0 top-full z-40 border-b border-border bg-surface/98 shadow-soft backdrop-blur">
-      <div className="menu-sans mx-auto grid max-w-7xl items-start gap-7 px-4 py-5 sm:px-6 md:grid-cols-2 lg:grid-cols-[minmax(15rem,0.78fr)_minmax(0,1.1fr)_minmax(0,1.1fr)] lg:gap-6 lg:px-8 lg:py-6">
+    <div className="absolute left-0 right-0 top-full z-40 px-3 pb-3 sm:px-4 sm:pb-4 lg:px-6">
+      <div className="menu-sans mx-auto grid max-h-[calc(100vh-10rem)] max-w-7xl items-start gap-7 overflow-y-auto rounded-2xl border border-border bg-surface px-4 py-5 shadow-soft sm:px-6 md:grid-cols-2 lg:grid-cols-[minmax(15rem,0.78fr)_minmax(0,1.1fr)_minmax(0,1.1fr)] lg:gap-6 lg:px-8 lg:py-6">
         <aside className="flex min-w-0 flex-col px-1 py-1 md:col-span-2 lg:col-span-1 lg:border-r lg:border-border lg:pr-6">
           <p className="eyebrow mb-3">Explorer la collection</p>
           <h2 className="menu-editorial max-w-[18rem] text-[clamp(2rem,3vw,2.7rem)] leading-[0.98] font-medium tracking-[-0.02em] text-accent-dark">
