@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { MegaMenuColumn } from "@/types/navigation.types";
-import { getMegaMenuLinkLayout, MAX_MEGA_MENU_LINKS } from "./mega-menu-links";
+import {
+  getMegaMenuLinkLayout,
+  MAX_MEGA_MENU_LINKS,
+  MAX_MEGA_MENU_LINKS_PER_COLUMN,
+} from "./mega-menu-links";
 
 function makeColumns(count: number): MegaMenuColumn[] {
   return [
@@ -15,7 +19,7 @@ function makeColumns(count: number): MegaMenuColumn[] {
 }
 
 describe("getMegaMenuLinkLayout", () => {
-  it.each([2, 5])("keeps %i links in one column", (count) => {
+  it.each([2, MAX_MEGA_MENU_LINKS_PER_COLUMN])("keeps %i links in one column", (count) => {
     const layout = getMegaMenuLinkLayout(makeColumns(count));
 
     expect(layout.links).toHaveLength(count);
@@ -23,7 +27,15 @@ describe("getMegaMenuLinkLayout", () => {
     expect(layout.hasMore).toBe(false);
   });
 
-  it("uses two columns for eight links without showing the CTA", () => {
+  it("starts a second compact column after three links", () => {
+    const layout = getMegaMenuLinkLayout(makeColumns(MAX_MEGA_MENU_LINKS_PER_COLUMN + 1));
+
+    expect(layout.links).toHaveLength(MAX_MEGA_MENU_LINKS_PER_COLUMN + 1);
+    expect(layout.useColumns).toBe(true);
+    expect(layout.hasMore).toBe(false);
+  });
+
+  it("keeps eight links compact without showing the CTA", () => {
     const layout = getMegaMenuLinkLayout(makeColumns(MAX_MEGA_MENU_LINKS));
 
     expect(layout.links).toHaveLength(MAX_MEGA_MENU_LINKS);
