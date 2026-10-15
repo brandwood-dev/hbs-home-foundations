@@ -205,8 +205,16 @@ body:has(.admin-theme) {
   font-size: 0.6875rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-accent-dark);
+}
+
+@utility menu-editorial {
+  font-family: "Cormorant Garamond", Georgia, serif;
+}
+
+@utility menu-sans {
+  font-family: "Manrope", var(--font-sans);
 }
 
 @utility hero-title {
@@ -218,26 +226,26 @@ body:has(.admin-theme) {
 }
 
 @utility section-title {
-  font-size: clamp(1.375rem, 2.4vw, 1.625rem);
-  line-height: 1.2;
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  line-height: 1.15;
   font-weight: 500;
   letter-spacing: -0.025em;
   text-wrap: balance;
 }
 
 @utility card-title {
-  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-  line-height: 1.3;
+  font-size: clamp(0.9375rem, 0.9rem + 0.18vw, 1.0625rem);
+  line-height: 1.35;
   font-weight: 500;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
   text-wrap: balance;
 }
 
 @utility product-title {
-  font-size: clamp(2rem, 2.5vw, 2.5rem);
-  line-height: 1.08;
+  font-size: clamp(1.75rem, 2.2vw, 2.5rem);
+  line-height: 1.12;
   font-weight: 500;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.025em;
   text-wrap: balance;
 }
 
@@ -617,6 +625,771 @@ body:has(.admin-theme) {
 
 .rich-text-editor:focus {
   box-shadow: inset 0 0 0 2px var(--color-ring);
+}
+
+/* Tailwind's preflight removes native list markers globally. Restore them in
+ * the authoring surface so the list toolbar commands have immediate, visible
+ * feedback while editing. The rendered .rich-text output has the same rules
+ * below, keeping the editor and public preview visually consistent. */
+.rich-text-editor ul,
+.rich-text-editor ol {
+  margin-block: 0.75em;
+  padding-left: 1.35rem;
+}
+
+.rich-text-editor ul {
+  list-style: disc;
+}
+
+.rich-text-editor ol {
+  list-style: decimal;
+}
+
+.rich-text-editor li + li {
+  margin-top: 0.35em;
+}
+
+/* Dedicated A4 layout used by the admin order preparation print action. */
+.print-preparation-slip {
+  display: none;
+}
+
+@media print, screen {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 11mm;
+  }
+
+  html.printing-preparation,
+  html.printing-preparation body {
+    background: #fff !important;
+  }
+
+  html.printing-preparation body {
+    margin: 0;
+  }
+
+  html.printing-preparation .admin-theme {
+    min-height: 0 !important;
+    background: #fff !important;
+  }
+
+  html.printing-preparation .admin-theme > a,
+  html.printing-preparation .admin-theme > .flex > aside,
+  html.printing-preparation .admin-theme > .flex > div > header,
+  html.printing-preparation .admin-theme > .flex > div > footer,
+  html.printing-preparation .admin-theme [data-radix-portal] {
+    display: none !important;
+  }
+
+  html.printing-preparation .admin-theme > .flex,
+  html.printing-preparation .admin-theme > .flex > div,
+  html.printing-preparation .admin-theme main {
+    display: block !important;
+    min-height: 0 !important;
+  }
+
+  html.printing-preparation .admin-theme main {
+    padding: 0 !important;
+  }
+
+  html.printing-preparation .admin-theme main > .space-y-4 > *:not(.print-preparation-slip) {
+    display: none !important;
+  }
+
+  html.printing-preparation .print-preparation-slip {
+    display: block !important;
+    width: 100%;
+    color: #27231f;
+    font-family: var(--font-sans);
+    font-size: 8.5pt;
+    line-height: 1.35;
+    page-break-inside: avoid;
+  }
+
+  .print-preparation-slip__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 2px solid var(--color-primary);
+    padding-bottom: 0.7rem;
+  }
+
+  .print-preparation-slip__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .print-preparation-slip__brand img {
+    width: 2.8rem;
+    height: 2.8rem;
+    object-fit: contain;
+  }
+
+  .print-preparation-slip__eyebrow,
+  .print-preparation-slip__order-ref p,
+  .print-preparation-slip__section-heading span,
+  .print-preparation-slip__footer {
+    color: var(--color-accent-dark);
+    font-size: 7pt;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .print-preparation-slip__eyebrow,
+  .print-preparation-slip__order-ref p,
+  .print-preparation-slip__section-heading span {
+    margin: 0;
+  }
+
+  .print-preparation-slip__title {
+    margin: 0.1rem 0 0;
+    font-size: 16pt;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .print-preparation-slip__order-ref {
+    min-width: 10rem;
+    text-align: right;
+  }
+
+  .print-preparation-slip__order-ref strong,
+  .print-preparation-slip__order-ref span {
+    display: block;
+  }
+
+  .print-preparation-slip__order-ref strong {
+    margin: 0.1rem 0;
+    font-size: 11pt;
+  }
+
+  .print-preparation-slip__order-ref span {
+    color: #6e665f;
+    font-size: 7.5pt;
+  }
+
+  .print-preparation-slip__status-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    padding: 0.65rem 0 0.7rem;
+  }
+
+  .print-preparation-slip__status,
+  .print-preparation-slip__tag {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #d9c3b5;
+    border-radius: 999px;
+    padding: 0.18rem 0.55rem;
+    color: #75472f;
+    font-size: 7.5pt;
+    font-weight: 600;
+  }
+
+  .print-preparation-slip__status {
+    border-color: var(--color-primary);
+    background: #f7eee9;
+  }
+
+  .print-preparation-slip__info-grid,
+  .print-preparation-slip__bottom-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .print-preparation-slip__info-card,
+  .print-preparation-slip__note {
+    min-width: 0;
+    border: 1px solid #e2dcd6;
+    border-radius: 0.3rem;
+    padding: 0.55rem 0.7rem;
+  }
+
+  .print-preparation-slip__info-card h2,
+  .print-preparation-slip__note h2,
+  .print-preparation-slip__section-heading h2 {
+    margin: 0;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .print-preparation-slip__info-card p,
+  .print-preparation-slip__note p {
+    margin: 0.14rem 0 0;
+    overflow-wrap: anywhere;
+  }
+
+  .print-preparation-slip__info-card .print-preparation-slip__strong {
+    margin-top: 0.28rem;
+    font-weight: 600;
+  }
+
+  .print-preparation-slip__items {
+    margin-top: 0.8rem;
+  }
+
+  .print-preparation-slip__section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid var(--color-primary);
+    padding-bottom: 0.25rem;
+  }
+
+  .print-preparation-slip__items table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .print-preparation-slip__items th,
+  .print-preparation-slip__items td {
+    border-bottom: 1px solid #e8e3de;
+    padding: 0.36rem 0.35rem;
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+
+  .print-preparation-slip__items th {
+    color: #6e665f;
+    font-size: 7pt;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .print-preparation-slip__items th:first-child,
+  .print-preparation-slip__items td:first-child {
+    width: 43%;
+    padding-left: 0;
+  }
+
+  .print-preparation-slip__items th:nth-child(2),
+  .print-preparation-slip__items td:nth-child(2) {
+    width: 21%;
+  }
+
+  .print-preparation-slip__items th:nth-child(3),
+  .print-preparation-slip__items td:nth-child(3) {
+    width: 9%;
+  }
+
+  .print-preparation-slip__items th:nth-child(4),
+  .print-preparation-slip__items td:nth-child(4),
+  .print-preparation-slip__items th:nth-child(5),
+  .print-preparation-slip__items td:nth-child(5) {
+    width: 13.5%;
+  }
+
+  .print-preparation-slip__items td strong,
+  .print-preparation-slip__items td span {
+    display: block;
+  }
+
+  .print-preparation-slip__items td strong {
+    font-size: 8.5pt;
+    font-weight: 600;
+  }
+
+  .print-preparation-slip__items td span {
+    margin-top: 0.1rem;
+    color: #6e665f;
+    font-size: 7.5pt;
+  }
+
+  .print-preparation-slip__number {
+    text-align: right !important;
+    white-space: nowrap;
+  }
+
+  .print-preparation-slip__bottom-grid {
+    align-items: start;
+    margin-top: 0.85rem;
+  }
+
+  .print-preparation-slip__note p {
+    color: #4f4944;
+  }
+
+  .print-preparation-slip__totals {
+    margin: 0;
+    padding: 0.1rem 0;
+  }
+
+  .print-preparation-slip__totals > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid #e8e3de;
+    padding: 0.27rem 0;
+  }
+
+  .print-preparation-slip__totals dt {
+    color: #6e665f;
+  }
+
+  .print-preparation-slip__totals dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .print-preparation-slip__totals .print-preparation-slip__total {
+    border-bottom: 0;
+    padding-top: 0.5rem;
+    color: #27231f;
+    font-size: 10pt;
+    font-weight: 700;
+  }
+
+  .print-preparation-slip__footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-top: 1px solid #e2dcd6;
+    margin-top: 1rem;
+    padding-top: 0.45rem;
+  }
+
+  .print-preparation-slip__items tr,
+  .print-preparation-slip__info-card,
+  .print-preparation-slip__bottom-grid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+/* Refined HBS HOME print treatment matching the approved preparation-slip artwork. */
+@media print, screen {
+  .print-preparation-slip {
+    color: #1f2937;
+    font-size: 8.5pt;
+    line-height: 1.35;
+  }
+
+  .print-preparation-slip__header {
+    align-items: center;
+    border-bottom: 0;
+    gap: 1rem;
+    padding: 0 0 0.9rem;
+  }
+
+  .print-preparation-slip__brand {
+    align-items: center;
+    gap: 0.9rem;
+    min-width: 0;
+  }
+
+  .print-preparation-slip__brand img {
+    flex: 0 0 auto;
+    width: 6.2rem;
+    height: 4.3rem;
+    object-fit: contain;
+  }
+
+  .print-preparation-slip__brand-divider {
+    width: 1px;
+    height: 4.3rem;
+    background: #c7b8aa;
+  }
+
+  .print-preparation-slip__heading {
+    min-width: 0;
+  }
+
+  .print-preparation-slip__heading h1 {
+    margin: 0;
+    color: #111827;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 22pt;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+  }
+
+  .print-preparation-slip__heading p,
+  .print-preparation-slip__order-ref p,
+  .print-preparation-slip__section-heading span,
+  .print-preparation-slip__footer,
+  .print-preparation-slip__card-heading h2 {
+    color: #806f60;
+    font-size: 7pt;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .print-preparation-slip__heading p {
+    margin: 0.45rem 0 0;
+  }
+
+  .print-preparation-slip__order-ref {
+    flex: 0 0 9.6rem;
+    min-width: 0;
+    padding-top: 0.15rem;
+    text-align: right;
+  }
+
+  .print-preparation-slip__order-ref p {
+    margin: 0;
+  }
+
+  .print-preparation-slip__order-ref strong,
+  .print-preparation-slip__order-ref span {
+    display: block;
+  }
+
+  .print-preparation-slip__order-ref strong {
+    margin: 0.32rem 0 0.55rem;
+    color: #111827;
+    font-size: 10.5pt;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .print-preparation-slip__order-ref span {
+    border-top: 1px solid #d7cec5;
+    padding-top: 0.45rem;
+    color: #667085;
+    font-size: 8.5pt;
+  }
+
+  .print-preparation-slip__order-ref b {
+    padding: 0 0.45rem;
+    color: #806f60;
+    font-weight: 500;
+  }
+
+  .print-preparation-slip__status-row {
+    gap: 0.45rem;
+    padding: 0.35rem 0 0.95rem;
+  }
+
+  .print-preparation-slip__status,
+  .print-preparation-slip__tag {
+    gap: 0.38rem;
+    border: 1px solid #d9d1c9;
+    border-radius: 999px;
+    padding: 0.34rem 0.8rem;
+    color: #2e3440;
+    font-size: 8pt;
+    font-weight: 500;
+  }
+
+  .print-preparation-slip__status {
+    border-color: transparent;
+    background: #eee9e3;
+    color: #806f60;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  .print-preparation-slip__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    color: #806f60;
+  }
+
+  .print-preparation-slip__icon svg {
+    width: 1rem;
+    height: 1rem;
+    stroke-width: 1.7;
+  }
+
+  .print-preparation-slip__info-grid,
+  .print-preparation-slip__bottom-grid {
+    gap: 0.9rem;
+  }
+
+  .print-preparation-slip__info-card,
+  .print-preparation-slip__bottom-card {
+    min-width: 0;
+    border: 1px solid #d9d1c9;
+    border-radius: 0.35rem;
+    padding: 0.8rem 0.95rem;
+  }
+
+  .print-preparation-slip__card-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.62rem;
+    border-bottom: 1px solid #ddd5ce;
+    padding-bottom: 0.55rem;
+  }
+
+  .print-preparation-slip__card-heading h2 {
+    margin: 0;
+    color: #162033;
+    font-size: 8.5pt;
+    letter-spacing: 0.2em;
+  }
+
+  .print-preparation-slip__card-body {
+    padding-top: 0.5rem;
+  }
+
+  .print-preparation-slip__info-card p,
+  .print-preparation-slip__note p {
+    margin: 0.22rem 0 0;
+    color: #667085;
+    overflow-wrap: anywhere;
+  }
+
+  .print-preparation-slip__info-card .print-preparation-slip__strong {
+    margin-top: 0;
+    color: #162033;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 11pt;
+    font-weight: 700;
+  }
+
+  .print-preparation-slip__with-icon {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+  }
+
+  .print-preparation-slip__with-icon svg {
+    flex: 0 0 auto;
+    width: 0.9rem;
+    height: 0.9rem;
+    margin-top: 0.12rem;
+    color: #806f60;
+  }
+
+  .print-preparation-slip__items {
+    margin-top: 1.15rem;
+  }
+
+  .print-preparation-slip__section-heading {
+    border-bottom: 0;
+    padding-bottom: 0.45rem;
+  }
+
+  .print-preparation-slip__section-heading h2 {
+    margin: 0;
+    color: #162033;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 11.5pt;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .print-preparation-slip__section-heading span {
+    color: #806f60;
+    font-size: 7.5pt;
+  }
+
+  .print-preparation-slip__items table {
+    border: 1px solid #d8d0c8;
+    border-collapse: separate;
+    border-radius: 0.3rem;
+    border-spacing: 0;
+    overflow: hidden;
+  }
+
+  .print-preparation-slip__items th,
+  .print-preparation-slip__items td {
+    border-right: 1px solid #e4ddd6;
+    padding: 0.48rem 0.58rem;
+  }
+
+  .print-preparation-slip__items th:last-child,
+  .print-preparation-slip__items td:last-child {
+    border-right: 0;
+  }
+
+  .print-preparation-slip__items th {
+    border-bottom: 0;
+    background: #948675;
+    color: #fff;
+    font-size: 7.5pt;
+    letter-spacing: 0.19em;
+  }
+
+  .print-preparation-slip__items th:first-child,
+  .print-preparation-slip__items td:first-child {
+    width: 58%;
+    padding-left: 0.72rem;
+  }
+
+  .print-preparation-slip__items th:nth-child(2),
+  .print-preparation-slip__items td:nth-child(2) {
+    width: 12%;
+  }
+
+  .print-preparation-slip__items th:nth-child(3),
+  .print-preparation-slip__items td:nth-child(3),
+  .print-preparation-slip__items th:nth-child(4),
+  .print-preparation-slip__items td:nth-child(4) {
+    width: 15%;
+  }
+
+  .print-preparation-slip__items tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .print-preparation-slip__article {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+  }
+
+  .print-preparation-slip__article > img {
+    flex: 0 0 auto;
+    width: 3.7rem;
+    height: 3.7rem;
+    border-radius: 0.3rem;
+    background: #f0ece7;
+    object-fit: cover;
+  }
+
+  .print-preparation-slip__article > div {
+    min-width: 0;
+  }
+
+  .print-preparation-slip__items td strong,
+  .print-preparation-slip__items td span {
+    display: block;
+  }
+
+  .print-preparation-slip__items td strong {
+    color: #162033;
+    font-size: 9pt;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .print-preparation-slip__items td span {
+    margin-top: 0.2rem;
+    color: #667085;
+    font-size: 7.5pt;
+    line-height: 1.35;
+  }
+
+  .print-preparation-slip__number {
+    text-align: center !important;
+    vertical-align: middle !important;
+  }
+
+  .print-preparation-slip__items td:not(:first-child) {
+    color: #162033;
+    font-size: 9pt;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .print-preparation-slip__bottom-grid {
+    align-items: stretch;
+    margin-top: 0.95rem;
+  }
+
+  .print-preparation-slip__bottom-card {
+    min-height: 7.3rem;
+  }
+
+  .print-preparation-slip__note > p {
+    padding-top: 0.45rem;
+    color: #667085;
+    font-size: 9pt;
+  }
+
+  .print-preparation-slip__totals dl {
+    margin: 0.45rem 0 0;
+  }
+
+  .print-preparation-slip__totals dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid #e4ddd6;
+    padding: 0.22rem 0;
+  }
+
+  .print-preparation-slip__totals dt {
+    color: #667085;
+  }
+
+  .print-preparation-slip__totals dd {
+    margin: 0;
+    color: #162033;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .print-preparation-slip__totals .print-preparation-slip__total {
+    margin: 0.4rem -0.35rem -0.25rem;
+    border-bottom: 0;
+    background: #f5f1ec;
+    padding: 0.45rem 0.35rem;
+  }
+
+  .print-preparation-slip__totals .print-preparation-slip__total dt {
+    color: #162033;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 10.5pt;
+  }
+
+  .print-preparation-slip__totals .print-preparation-slip__total dd {
+    color: #806f60;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 12pt;
+    font-weight: 500;
+  }
+
+  .print-preparation-slip__footer {
+    align-items: flex-end;
+    border-top: 1px solid #b9a99b;
+    margin-top: 1.25rem;
+    padding-top: 0.55rem;
+    color: #806f60;
+  }
+
+  .print-preparation-slip__footer > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .print-preparation-slip__footer strong {
+    font-size: 7pt;
+    letter-spacing: 0.23em;
+    text-transform: uppercase;
+  }
+
+  .print-preparation-slip__footer span {
+    font-size: 7.5pt;
+    letter-spacing: 0.16em;
+  }
+
+  .print-preparation-slip__footer > div span {
+    color: #667085;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 8pt;
+    font-style: italic;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  .print-preparation-slip__items tr,
+  .print-preparation-slip__info-card,
+  .print-preparation-slip__bottom-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

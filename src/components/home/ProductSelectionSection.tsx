@@ -46,7 +46,7 @@ const SELECTION_COPY: Record<ProductSelectionFilter, SelectionSectionCopy> = {
 
 const DEFAULT_CTA_HREFS: Record<ProductSelectionFilter, string> = {
   new: "/nouveautes",
-  best_sellers: "/rideaux",
+  best_sellers: "/meilleures-ventes",
   discounted: "/promotions",
 };
 
@@ -139,10 +139,16 @@ function ProductSelectionBlock({
   );
 }
 
+const HOME_SELECTION_MAX_PAGE_SIZE = 12;
+
 export function ProductSelectionSection({ content }: { content: ProductSelectionContent }) {
-  // Keep the homepage compact: four cards expose each selection, with the
-  // dedicated CTA leading to the full catalogue page.
-  const pageSize = Math.max(1, Math.min(content.pageSize || 4, 4));
+  // Respect the editorial page size so every manually marked product has a
+  // fair chance to appear in the homepage selection. Keep a bounded ceiling
+  // to protect the homepage payload when the setting is changed by Admin.
+  const pageSize = Math.max(
+    1,
+    Math.min(Math.trunc(content.pageSize || 4), HOME_SELECTION_MAX_PAGE_SIZE),
+  );
   const tabsById = new Map(content.tabs.map((tab) => [tab.id, tab]));
   const filters: ProductSelectionFilter[] = ["new", "best_sellers", "discounted"];
 

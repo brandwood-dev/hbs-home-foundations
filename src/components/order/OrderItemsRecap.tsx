@@ -6,14 +6,14 @@ import { formatOptionDetails } from "@/services/product/product-options";
 
 export function OrderItemsRecap({ order }: { order: Order }) {
   return (
-    <section aria-labelledby="order-items" className="space-y-4">
+    <section aria-labelledby="order-items" className="min-w-0 space-y-4">
       <h2 id="order-items" className="text-xl">
         Articles commandés
       </h2>
 
       <ul className="divide-y divide-border border-y border-border">
         {order.items.map((item) => (
-          <li key={`${item.productId}:${item.variantId}`} className="flex gap-3 py-4">
+          <li key={`${item.productId}:${item.variantId}`} className="flex min-w-0 gap-3 py-4">
             <div className="h-20 w-16 shrink-0 overflow-hidden rounded-sm bg-surface-muted">
               {item.imageUrl ? (
                 <img
@@ -27,7 +27,7 @@ export function OrderItemsRecap({ order }: { order: Order }) {
             <div className="min-w-0 flex-1 text-sm">
               <AppLink
                 href={getProductPath({ slug: item.productSlug })}
-                className="font-medium hover:text-accent-dark"
+                className="break-words font-medium hover:text-accent-dark"
               >
                 {item.productName}
               </AppLink>
@@ -53,31 +53,35 @@ export function OrderItemsRecap({ order }: { order: Order }) {
               </p>
               <p className="mt-1 text-xs text-foreground-muted">Quantité : {item.quantity}</p>
             </div>
-            <span className="text-sm">{formatMoney(item.lineTotalMinor)}</span>
+            <span className="shrink-0 whitespace-nowrap text-sm">
+              {formatMoney(item.lineTotalMinor)}
+            </span>
           </li>
         ))}
       </ul>
 
       <dl className="space-y-2 text-sm">
-        <div className="flex items-baseline justify-between">
-          <dt className="text-foreground-muted">Sous-total</dt>
-          <dd>{formatMoney(order.totals.subtotalMinor)}</dd>
+        <div className="flex min-w-0 items-baseline justify-between gap-4">
+          <dt className="min-w-0 break-words text-foreground-muted">Sous-total</dt>
+          <dd className="shrink-0 whitespace-nowrap">{formatMoney(order.totals.subtotalMinor)}</dd>
         </div>
         {order.totals.discountMinor > 0 ? (
-          <div className="flex items-baseline justify-between text-success">
-            <dt>Promotion</dt>
-            <dd>-{formatMoney(order.totals.discountMinor)}</dd>
+          <div className="flex min-w-0 items-baseline justify-between gap-4 text-success">
+            <dt className="min-w-0 break-words">Promotion</dt>
+            <dd className="shrink-0 whitespace-nowrap">
+              -{formatMoney(order.totals.discountMinor)}
+            </dd>
           </div>
         ) : null}
-        <div className="flex items-baseline justify-between">
-          <dt className="text-foreground-muted">Livraison</dt>
-          <dd>
+        <div className="flex min-w-0 items-baseline justify-between gap-4">
+          <dt className="min-w-0 break-words text-foreground-muted">Livraison</dt>
+          <dd className="shrink-0 whitespace-nowrap">
             {order.totals.shippingMinor === 0 ? "Offerte" : formatMoney(order.totals.shippingMinor)}
           </dd>
         </div>
-        <div className="flex items-baseline justify-between border-t border-border pt-2 text-base font-medium">
-          <dt>Total à régler à la livraison</dt>
-          <dd>{formatMoney(order.totals.totalMinor)}</dd>
+        <div className="flex min-w-0 items-baseline justify-between gap-4 border-t border-border pt-2 text-base font-medium">
+          <dt className="min-w-0 break-words">Total à régler à la livraison</dt>
+          <dd className="shrink-0 whitespace-nowrap">{formatMoney(order.totals.totalMinor)}</dd>
         </div>
       </dl>
     </section>

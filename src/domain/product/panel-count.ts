@@ -16,12 +16,7 @@ export function panelCountOptionsFor(
     .replace(/[\s_]+/g, "-")
     .replace(/-+/g, "-");
   if (
-    ![
-      "rideaux",
-      "voilages",
-      "rideaux-voilages",
-      "rideaux-et-voilages",
-    ].includes(normalizedCategory)
+    !["rideaux", "voilages", "rideaux-voilages", "rideaux-et-voilages"].includes(normalizedCategory)
   )
     return [];
 

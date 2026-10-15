@@ -7,9 +7,9 @@ import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-1">
+    <div className="min-w-0 space-y-1">
       <h3 className="text-sm font-medium">{title}</h3>
-      <div className="text-sm text-foreground-muted">{children}</div>
+      <div className="break-words text-sm text-foreground-muted">{children}</div>
     </div>
   );
 }
@@ -21,7 +21,7 @@ export function OrderSummaryCard({ order }: { order: Order }) {
   return (
     <section
       aria-label="Détails de la commande"
-      className="grid gap-6 rounded-sm border border-border bg-surface p-4 sm:grid-cols-2"
+      className="grid min-w-0 gap-6 rounded-sm border border-border bg-surface p-4 sm:grid-cols-2"
     >
       <Block title="Contact">
         <p>

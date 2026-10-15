@@ -188,9 +188,9 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
         void onSubmit(event);
       }}
       noValidate
-      className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_380px]"
+      className="mt-8 grid min-w-0 gap-10 lg:grid-cols-[minmax(0,1fr)_380px]"
     >
-      <div className="space-y-10">
+      <div className="min-w-0 space-y-10">
         <CheckoutErrorBanner error={createOrder.error} />
         <CheckoutContactSection register={register} errors={errors} />
         <CheckoutDeliverySection
@@ -208,19 +208,19 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
         <CheckoutPaymentSection register={register} errors={errors} />
       </div>
 
-      <div className="space-y-4 lg:sticky lg:top-28 lg:self-start">
+      <div className="min-w-0 space-y-4 lg:sticky lg:top-28 lg:self-start">
         <CheckoutSummary cart={cart} deliveryMethod={deliveryMethod} />
 
         <button
           type="submit"
           disabled={busy}
-          className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-sm bg-accent px-6 text-sm font-medium text-accent-foreground hover:bg-accent-dark disabled:opacity-60"
+          className="flex min-h-[52px] min-w-0 w-full items-center justify-center gap-2 rounded-sm bg-accent px-4 text-center text-sm font-medium leading-snug text-accent-foreground hover:bg-accent-dark disabled:opacity-60 sm:px-6"
         >
           {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : null}
           {busy ? "Validation en cours…" : `Confirmer la commande — ${formatMoney(totalMinor)}`}
         </button>
 
-        <p className="flex items-start gap-2 text-xs text-foreground-muted">
+        <p className="flex min-w-0 items-start gap-2 break-words text-xs text-foreground-muted">
           <Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden />
           {ORDER_DEMO_NOTICE}
         </p>

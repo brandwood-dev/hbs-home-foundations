@@ -35,7 +35,7 @@ function ConfirmationPage() {
 
   return (
     <SiteLayout>
-      <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:py-10">
+      <div className="mx-auto min-w-0 max-w-4xl px-4 py-6 sm:px-6 lg:py-10">
         <CatalogBreadcrumbs
           items={[{ label: "Accueil", href: "/" }, { label: "Confirmation de commande" }]}
         />
@@ -65,7 +65,7 @@ function ConfirmationPage() {
                 Commande enregistrée
               </p>
               <h1 className="text-3xl sm:text-4xl">Merci {order.customer.firstName} !</h1>
-              <p className="text-sm text-foreground-muted" aria-live="polite">
+              <p className="break-words text-sm text-foreground-muted" aria-live="polite">
                 Votre numéro de commande est{" "}
                 <span className="font-medium text-foreground">{order.orderNumber}</span>. Nous vous
                 appelons rapidement au {formatTunisianPhone(order.customer.phone)} pour confirmer.
@@ -115,7 +115,7 @@ function ConfirmationPage() {
               </AppLink>
             </div>
 
-            <p className="text-xs text-foreground-muted">{ORDER_DEMO_NOTICE}</p>
+            <p className="break-words text-xs text-foreground-muted">{ORDER_DEMO_NOTICE}</p>
           </div>
         )}
       </div>

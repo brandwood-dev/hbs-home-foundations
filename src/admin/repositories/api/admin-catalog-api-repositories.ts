@@ -968,8 +968,23 @@ export class ApiAdminProductRepository implements AdminProductRepository {
   }
 
   async list(): Promise<AdminProduct[]> {
-    const response = await this.api.listProducts();
-    return response.items.map(mapProduct);
+    // The products screen applies its category/status/promotion filters
+    // locally. Load every catalogue page so a filter never hides products
+    // merely because they are beyond the first API page.
+    const pageSize = 100;
+    let offset = 0;
+    const products: ApiProduct[] = [];
+    let total = 0;
+
+    do {
+      const response = await this.api.listProducts({ limit: pageSize, offset });
+      products.push(...response.items);
+      total = response.total;
+      offset += response.items.length;
+      if (response.items.length === 0) break;
+    } while (products.length < total);
+
+    return products.map(mapProduct);
   }
 
   async getById(id: string): Promise<AdminProduct | null> {

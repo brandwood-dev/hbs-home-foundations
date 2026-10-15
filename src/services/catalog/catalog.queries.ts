@@ -3,7 +3,7 @@ import { getProductRepository } from "@/repositories/repositoryFactory";
 import type { CatalogScope, ProductListParams } from "@/repositories/interfaces/ProductRepository";
 import { computeFacets } from "@/services/catalog/catalog.filters";
 
-export type CatalogGlobalFilter = "new" | "discounted";
+export type CatalogGlobalFilter = "new" | "discounted" | "best_sellers";
 
 export function catalogListQuery(params: ProductListParams) {
   return queryOptions({
@@ -23,17 +23,20 @@ export function catalogFacetsQuery(
     queryFn: async () => {
       const repository = getProductRepository();
 
-      // Global catalogue pages (Promotions / Nouveautés) must derive their
-      // facets from the same filtered product set as the result list. Using
-      // listScope alone would expose dimensions from unrelated products,
-      // such as 40 cm cushions when no cushion is on sale.
+      // Global catalogue pages derive facets from the same filtered product
+      // set as their result list, so contextual dimensions never expose
+      // dead-end values from unrelated products.
       if (globalFilter) {
         const result = await repository.list({
           page: 1,
           pageSize: 200,
           sort: "recommended",
           ...scope,
-          ...(globalFilter === "discounted" ? { onlyDiscounted: true } : { onlyNew: true }),
+          ...(globalFilter === "discounted"
+            ? { onlyDiscounted: true }
+            : globalFilter === "best_sellers"
+              ? { onlyBestSellers: true }
+              : { onlyNew: true }),
         });
         return computeFacets(result.items);
       }

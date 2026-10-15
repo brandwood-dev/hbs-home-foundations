@@ -20,10 +20,6 @@ import {
   ORDER_STATUS_OPTIONS,
   ORDER_STATUS_TONE,
 } from "@/admin/services/order-status";
-import {
-  PAYMENT_STATUS_LABELS,
-  PAYMENT_STATUS_TONE,
-} from "@/admin/services/orders/admin-order-payment";
 import { isShippingToConfirm } from "@/admin/services/orders/admin-order-shipping";
 import { calculateOrderTotalMinor } from "@/admin/services/orders/admin-order-calculations";
 import { formatOrderListDateTime, maskPhone } from "@/admin/utils/admin.utils";
@@ -49,7 +45,6 @@ export function AdminOrdersPage() {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<AdminOrderSort>("newest");
   const [status, setStatus] = useState("all");
-  const [paymentStatus, setPaymentStatus] = useState("all");
   const [governorate, setGovernorate] = useState("all");
   /** Recherche privée : état local uniquement, jamais persisté. */
   const [search, setSearch] = useState("");
@@ -60,12 +55,9 @@ export function AdminOrdersPage() {
       pageSize: PAGE_SIZE,
       sort,
       ...(status !== "all" ? { status: [status as AdminOrderStatus] } : {}),
-      ...(paymentStatus !== "all"
-        ? { paymentStatus: [paymentStatus as AdminOrder["paymentStatus"]] }
-        : {}),
       ...(governorate !== "all" ? { governorates: [governorate] } : {}),
     }),
-    [page, sort, status, paymentStatus, governorate],
+    [page, sort, status, governorate],
   );
 
   const { data, isLoading, error, refetch } = useAdminOrders(params, search);
@@ -105,16 +97,6 @@ export function AdminOrdersPage() {
         <AdminStatusBadge
           label={ORDER_STATUS_LABELS[order.status]}
           tone={ORDER_STATUS_TONE[order.status]}
-        />
-      ),
-    },
-    {
-      id: "payment",
-      header: "Paiement",
-      cell: (order) => (
-        <AdminStatusBadge
-          label={PAYMENT_STATUS_LABELS[order.paymentStatus]}
-          tone={PAYMENT_STATUS_TONE[order.paymentStatus]}
         />
       ),
     },
@@ -185,19 +167,6 @@ export function AdminOrdersPage() {
                 setPage(1);
               }}
               options={STATUS_OPTIONS}
-            />
-            <AdminSelectFilter
-              label="Paiement"
-              value={paymentStatus}
-              onChange={(value) => {
-                setPaymentStatus(value);
-                setPage(1);
-              }}
-              options={[
-                { value: "pending", label: "En attente" },
-                { value: "collected", label: "Encaissé" },
-                { value: "refunded", label: "Remboursé" },
-              ]}
             />
             <AdminSelectFilter
               label="Gouvernorat"

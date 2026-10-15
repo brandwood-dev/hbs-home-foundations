@@ -797,6 +797,36 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
 
   const coreFields = specificFields.filter((field) => !advancedFieldKeys.has(field.key));
   const advancedFields = specificFields.filter((field) => advancedFieldKeys.has(field.key));
+  const isExtendableCurtainRod =
+    values.category === "accessoires" && isTringlesCategorySlug(selectedCatalogCategorySlug);
+  const isCurtainOrSheer = values.category === "rideaux" || values.category === "voilages";
+  const coreFieldOrder = isExtendableCurtainRod
+    ? ["accessory_type", "material", "max_length_cm", "min_length_cm", "installation"]
+    : isCurtainOrSheer
+      ? ["material", "opacity", "rooms", "large_width", "installation"]
+      : null;
+  const orderedCoreFields = coreFieldOrder
+    ? [...coreFields].sort((left, right) => {
+        const leftIndex = coreFieldOrder.indexOf(left.key);
+        const rightIndex = coreFieldOrder.indexOf(right.key);
+        return (
+          (leftIndex === -1 ? coreFieldOrder.length : leftIndex) -
+          (rightIndex === -1 ? coreFieldOrder.length : rightIndex)
+        );
+      })
+    : coreFields;
+
+  function renderCoreField(field: (typeof specificFields)[number]) {
+    const fieldElement = renderSpecificField(field);
+    if ((isExtendableCurtainRod || isCurtainOrSheer) && field.key === "installation") {
+      return (
+        <div key={`layout-${field.key}`} className="md:col-span-2">
+          {fieldElement}
+        </div>
+      );
+    }
+    return fieldElement;
+  }
 
   const specificTab = (
     <AdminFormSection
@@ -807,7 +837,7 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
         <div>
           <h3 className="mb-3 text-sm font-semibold">Informations produit</h3>
           <div className="grid items-start gap-4 md:grid-cols-2">
-            {coreFields.map(renderSpecificField)}
+            {orderedCoreFields.map(renderCoreField)}
           </div>
         </div>
         {advancedFields.length > 0 ? (
@@ -965,32 +995,37 @@ export function AdminProductForm({ product }: { product?: AdminProduct }) {
           { label: "Produits", href: "/admin/produits" },
           { label: product ? product.name : "Nouveau" },
         ]}
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant={values.status === "published" ? "default" : "secondary"}>
-              {values.status === "published"
-                ? "Publié"
-                : values.status === "archived"
-                  ? "Archivé"
-                  : "Brouillon"}
-            </Badge>
-            {values.slug ? (
-              <Button variant="outline" size="sm" asChild>
-                <a href={publicProductUrl(values.slug)} target="_blank" rel="noreferrer">
-                  <ExternalLink className="mr-1 size-4" /> Voir la fiche
-                </a>
-              </Button>
-            ) : null}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => (dirty ? setShowLeave(true) : navigate({ to: "/admin/produits" }))}
-            >
-              Retour
-            </Button>
-          </div>
-        }
       />
+
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Badge
+          variant={values.status === "published" ? "default" : "secondary"}
+          className="min-h-10 w-fit px-3"
+        >
+          {values.status === "published"
+            ? "Publié"
+            : values.status === "archived"
+              ? "Archivé"
+              : "Brouillon"}
+        </Badge>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+          {values.slug ? (
+            <Button variant="outline" size="sm" asChild className="min-h-10 w-full sm:w-auto">
+              <a href={publicProductUrl(values.slug)} target="_blank" rel="noreferrer">
+                <ExternalLink className="mr-1 size-4" /> Voir la fiche
+              </a>
+            </Button>
+          ) : null}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => (dirty ? setShowLeave(true) : navigate({ to: "/admin/produits" }))}
+            className="min-h-10 w-full sm:w-auto"
+          >
+            Retour
+          </Button>
+        </div>
+      </div>
 
       {submitted && Object.keys(identityErrors).length > 0 ? (
         <AdminCard className="mb-4 border-red-200 bg-red-50">

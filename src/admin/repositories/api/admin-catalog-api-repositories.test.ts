@@ -213,6 +213,29 @@ describe("Admin catalog API adapters", () => {
     );
   });
 
+  it("loads subsequent API pages for catalogue-wide Admin filters", async () => {
+    const secondProduct = { ...product, id: "product-2", slug: "rideau-velours" };
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json({ items: [product], total: 2, limit: 100, offset: 0 }))
+      .mockResolvedValueOnce(
+        Response.json({ items: [secondProduct], total: 2, limit: 100, offset: 1 }),
+      );
+    const api = new AdminCatalogApi(
+      new HbsApiClient({ baseUrl: "https://api.example.test", fetch: fetchImplementation }),
+      async () => "admin-token",
+    );
+
+    await expect(new ApiAdminProductRepository(api).list()).resolves.toHaveLength(2);
+    expect(fetchImplementation).toHaveBeenCalledTimes(2);
+    expect(fetchImplementation).toHaveBeenLastCalledWith(
+      "https://api.example.test/api/v1/admin/products?limit=100&offset=1",
+      expect.objectContaining({
+        headers: expect.objectContaining({ authorization: "Bearer admin-token" }),
+      }),
+    );
+  });
+
   it("refreshes the product version and retries a stale variant update", async () => {
     const mapped = mapProduct(product);
     const originalVariant = mapped.variants[0];

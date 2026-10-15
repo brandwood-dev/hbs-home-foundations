@@ -25,6 +25,7 @@ import { Route as InspirationsRouteImport } from './routes/inspirations'
 import { Route as LivraisonEtRetoursRouteImport } from './routes/livraison-et-retours'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as NouveautesRouteImport } from './routes/nouveautes'
+import { Route as MeilleuresVentesRouteImport } from './routes/meilleures-ventes'
 import { Route as PanierRouteImport } from './routes/panier'
 import { Route as PolitiqueDeConfidentialiteRouteImport } from './routes/politique-de-confidentialite'
 import { Route as ProfessionnelsRouteImport } from './routes/professionnels'
@@ -195,6 +196,11 @@ const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
 const NouveautesRoute = NouveautesRouteImport.update({
   id: '/nouveautes',
   path: '/nouveautes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeilleuresVentesRoute = MeilleuresVentesRouteImport.update({
+  id: '/meilleures-ventes',
+  path: '/meilleures-ventes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PanierRoute = PanierRouteImport.update({
@@ -679,6 +685,7 @@ export interface FileRoutesByFullPath {
   '/livraison-et-retours': typeof LivraisonEtRetoursRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/nouveautes': typeof NouveautesRoute
+  '/meilleures-ventes': typeof MeilleuresVentesRoute
   '/panier': typeof PanierRoute
   '/politique-de-confidentialite': typeof PolitiqueDeConfidentialiteRoute
   '/professionnels': typeof ProfessionnelsRoute
@@ -787,6 +794,7 @@ export interface FileRoutesByTo {
   '/livraison-et-retours': typeof LivraisonEtRetoursRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/nouveautes': typeof NouveautesRoute
+  '/meilleures-ventes': typeof MeilleuresVentesRoute
   '/panier': typeof PanierRoute
   '/politique-de-confidentialite': typeof PolitiqueDeConfidentialiteRoute
   '/professionnels': typeof ProfessionnelsRoute
@@ -896,6 +904,7 @@ export interface FileRoutesById {
   '/livraison-et-retours': typeof LivraisonEtRetoursRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/nouveautes': typeof NouveautesRoute
+  '/meilleures-ventes': typeof MeilleuresVentesRoute
   '/panier': typeof PanierRoute
   '/politique-de-confidentialite': typeof PolitiqueDeConfidentialiteRoute
   '/professionnels': typeof ProfessionnelsRoute
@@ -1333,6 +1342,7 @@ export interface RootRouteChildren {
   LivraisonEtRetoursRoute: typeof LivraisonEtRetoursRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   NouveautesRoute: typeof NouveautesRoute
+  MeilleuresVentesRoute: typeof MeilleuresVentesRoute
   PanierRoute: typeof PanierRoute
   PolitiqueDeConfidentialiteRoute: typeof PolitiqueDeConfidentialiteRoute
   ProfessionnelsRoute: typeof ProfessionnelsRoute
@@ -1510,6 +1520,13 @@ declare module '@tanstack/react-router' {
       path: '/nouveautes'
       fullPath: '/nouveautes'
       preLoaderRoute: typeof NouveautesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/meilleures-ventes': {
+      id: '/meilleures-ventes'
+      path: '/meilleures-ventes'
+      fullPath: '/meilleures-ventes'
+      preLoaderRoute: typeof MeilleuresVentesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/panier': {
@@ -2254,6 +2271,7 @@ const rootRouteChildren: RootRouteChildren = {
   LivraisonEtRetoursRoute: LivraisonEtRetoursRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   NouveautesRoute: NouveautesRoute,
+  MeilleuresVentesRoute: MeilleuresVentesRoute,
   PanierRoute: PanierRoute,
   PolitiqueDeConfidentialiteRoute: PolitiqueDeConfidentialiteRoute,
   ProfessionnelsRoute: ProfessionnelsRoute,

@@ -32,29 +32,20 @@ function orderedCategories(categories: readonly PublicCategory[]): PublicCategor
 }
 
 function categoryMenuShortcuts(category: PublicCategory): NonNullable<NavItem["menuShortcuts"]> {
-  const ranked = category.children
-    .map((child, index) => ({ child, index }))
-    .filter(({ child }) => {
-      const preview = child.latestProduct;
-      return Boolean(preview?.imageUrl && preview.imageUrl.trim());
-    });
-
-  ranked.sort((left, right) => {
-    const rightDate = right.child.latestProduct?.createdAt ?? "";
-    const leftDate = left.child.latestProduct?.createdAt ?? "";
-    const byDate = rightDate.localeCompare(leftDate);
-    return byDate !== 0 ? byDate : left.index - right.index;
-  });
-
-  return ranked.slice(0, 2).map(({ child }) => {
-    const preview = child.latestProduct!;
-    return {
+  // The cover is editorial category content managed from Admin > Catégories.
+  // Keep the first two navigation children in their configured order and let
+  // the menu component render an intentional visual fallback when a cover is
+  // not configured yet. This removes the previous dependency on product
+  // creation dates and keeps category image updates cache-refreshable.
+  return orderedCategories(category.children)
+    .slice(0, 2)
+    .map((child) => ({
       label: child.name,
       href: child.path,
-      imageUrl: preview.imageUrl,
-      imageAlt: preview.imageAlt || child.name,
-    };
-  });
+      imageUrl: child.imageUrl?.trim() ?? "",
+      imageAlt: child.name,
+      caption: child.name,
+    }));
 }
 
 /**

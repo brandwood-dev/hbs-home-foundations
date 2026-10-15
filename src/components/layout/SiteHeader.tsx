@@ -16,11 +16,53 @@ import { mergeCatalogNavigation } from "@/services/catalog/catalog-navigation";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 
 const megaMenuSectionTitles: Record<string, string> = {
+  rideaux: "Styles de rideaux",
   "Rideaux & Voilages": "Styles de rideaux",
+  coussins: "Collections de coussins",
   Coussins: "Collections de coussins",
+  accessoires: "Essentiels pour vos fenêtres",
   Accessoires: "Essentiels pour vos fenêtres",
+  mobilier: "Pièces pour votre intérieur",
   "Mobilier d'intérieur": "Pièces pour votre intérieur",
+  "plantes-deco": "Univers végétal",
   "Plantes & déco": "Univers végétal",
+};
+
+const megaMenuEditorialByKey: Record<string, { title: string; description: string }> = {
+  rideaux: {
+    title: "Sublimez vos fenêtres avec style.",
+    description:
+      "Des rideaux et voilages pensés pour apporter caractère, élégance et douceur à votre intérieur.",
+  },
+  "Rideaux & Voilages": {
+    title: "Sublimez vos fenêtres avec style.",
+    description:
+      "Des rideaux et voilages pensés pour apporter caractère, élégance et douceur à votre intérieur.",
+  },
+  coussins: {
+    title: "Ajoutez une touche de confort.",
+    description: "Des textures et des couleurs pensées pour rendre chaque espace plus chaleureux.",
+  },
+  Coussins: {
+    title: "Ajoutez une touche de confort.",
+    description: "Des textures et des couleurs pensées pour rendre chaque espace plus chaleureux.",
+  },
+  accessoires: {
+    title: "Les détails qui font la différence.",
+    description: "Des essentiels élégants pour installer, habiller et finaliser vos fenêtres.",
+  },
+  Accessoires: {
+    title: "Les détails qui font la différence.",
+    description: "Des essentiels élégants pour installer, habiller et finaliser vos fenêtres.",
+  },
+  mobilier: {
+    title: "Composez un intérieur qui vous ressemble.",
+    description: "Des pièces choisies pour créer un intérieur harmonieux et accueillant.",
+  },
+  "Mobilier d'intérieur": {
+    title: "Composez un intérieur qui vous ressemble.",
+    description: "Des pièces choisies pour créer un intérieur harmonieux et accueillant.",
+  },
 };
 
 export function SiteHeader() {
@@ -198,8 +240,21 @@ export function SiteHeader() {
               <DesktopMegaMenu
                 key={item.id}
                 columns={item.megaMenu}
+                categoryHref={item.href}
                 shortcuts={item.menuShortcuts}
-                sectionTitle={megaMenuSectionTitles[item.label] ?? "À découvrir"}
+                sectionTitle={
+                  megaMenuSectionTitles[item.id] ??
+                  megaMenuSectionTitles[item.label] ??
+                  "À découvrir"
+                }
+                editorialTitle={
+                  megaMenuEditorialByKey[item.id]?.title ??
+                  megaMenuEditorialByKey[item.label]?.title
+                }
+                editorialDescription={
+                  megaMenuEditorialByKey[item.id]?.description ??
+                  megaMenuEditorialByKey[item.label]?.description
+                }
                 onNavigate={() => setOpenMenuId(null)}
               />
             ) : null,

@@ -455,6 +455,38 @@ export function AdminTopbar({
 export function AdminShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  useEffect(() => {
+    // Radix Sheet and the public mobile menu temporarily lock the body while
+    // they are open. If navigation happens during the closing animation, the
+    // cleanup can race with the AdminShell mount and leave the lock behind,
+    // making every admin page appear stuck at the top. The admin shell owns
+    // the page scroll, so clear only a stale global lock when no admin menu or
+    // dialog is currently open.
+    if (menuOpen) return;
+
+    const cleanupScrollLock = () => {
+      const body = document.body;
+      const hasOpenDialog = Boolean(
+        document.querySelector('[data-radix-dialog-content][data-state="open"]'),
+      );
+      const hasStaleScrollLock =
+        body.hasAttribute("data-scroll-locked") ||
+        body.style.overflow === "hidden" ||
+        body.style.pointerEvents === "none";
+      if (hasOpenDialog || !hasStaleScrollLock) return;
+
+      body.removeAttribute("data-scroll-locked");
+      body.style.removeProperty("overflow");
+      body.style.removeProperty("pointer-events");
+    };
+
+    cleanupScrollLock();
+    const cleanupAfterClose = window.setTimeout(cleanupScrollLock, 400);
+
+    return () => window.clearTimeout(cleanupAfterClose);
+  }, [menuOpen, pathname]);
 
   useEffect(() => {
     setSidebarCollapsed(window.localStorage.getItem("hbs-admin-sidebar-collapsed") === "true");

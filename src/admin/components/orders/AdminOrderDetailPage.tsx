@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ImageOff, Printer } from "lucide-react";
+import { Download, ImageOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,12 @@ import { AdminCard, AdminSkeleton, AdminStatusBadge } from "@/admin/components/u
 import { AdminEmptyState, AdminErrorState } from "@/admin/components/ui/AdminStates";
 import { AdminOrderTimeline } from "@/admin/components/orders/AdminOrderTimeline";
 import { AdminOrderActionDialog } from "@/admin/components/orders/AdminOrderActionDialog";
-import { useAdminOrder } from "@/admin/hooks/admin.queries";
+import { AdminPreparationSlip } from "@/admin/components/orders/AdminPreparationSlip";
+import {
+  downloadPreparationSlipPdf,
+  preparePreparationSlipForDownload,
+} from "@/admin/services/orders/admin-preparation-slip-download";
+import { useAdminCustomer, useAdminOrder } from "@/admin/hooks/admin.queries";
 import {
   useAddOrderNote,
   useCancelOrder,
@@ -21,35 +26,26 @@ import {
   useUpdateOrderShipping,
   useUpdateOrderStatus,
 } from "@/admin/hooks/admin-sales.mutations";
-import type { AdminOrder, AdminOrderStatus } from "@/admin/types/admin.types";
+import type { AdminOrder, AdminOrderItem, AdminOrderStatus } from "@/admin/types/admin.types";
 import {
   ORDER_STATUS_LABELS,
   ORDER_STATUS_OPTIONS,
   ORDER_STATUS_TONE,
 } from "@/admin/services/order-status";
-import { transitionRequiresReason } from "@/admin/services/orders/admin-order-transitions";
-import {
-  PAYMENT_STATUS_LABELS,
-  PAYMENT_STATUS_TONE,
-  getAllowedPaymentTransitions,
-} from "@/admin/services/orders/admin-order-payment";
+import { getAllowedPaymentTransitions } from "@/admin/services/orders/admin-order-payment";
 import {
   DELIVERY_METHOD_LABELS,
-  SHIPPING_PROFILE_LABELS,
-  SHIPPING_STATUS_LABELS,
-  SHIPPING_STATUS_TONE,
-  getOrderShippingProfile,
   getShipment,
-  getShippingStatus,
   isShippingToConfirm,
 } from "@/admin/services/orders/admin-order-shipping";
 import { calculateOrderTotalMinor } from "@/admin/services/orders/admin-order-calculations";
 import { canEditOrderDetails } from "@/admin/services/orders/admin-order-validation";
 import { formatDateTime } from "@/admin/utils/admin.utils";
 import { formatMoney, toMinor, toUnits } from "@/lib/money/money";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 type DialogState =
-  | { kind: "status"; status: AdminOrderStatus }
   | { kind: "cancel" }
   | { kind: "return"; action: "request" | "accept" | "refuse" }
   | { kind: "refund" }
@@ -79,8 +75,46 @@ function OrderItemThumbnail({ src }: { src: string | undefined }) {
   );
 }
 
+function OrderItemIdentity({ item, className }: { item: AdminOrderItem; className?: string }) {
+  return (
+    <div className={cn("flex min-w-0 items-center gap-3", className)}>
+      <OrderItemThumbnail src={item.imageUrl} />
+      <div className="min-w-0 flex-1">
+        <p className="line-clamp-2 break-words font-medium leading-snug">{item.productName}</p>
+        <p className="mt-1 line-clamp-2 break-words text-xs text-muted-foreground">
+          {item.selectedOptions?.map((option) => option.value).join(" · ") || item.variantLabel}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function OrderItemMetrics({ item }: { item: AdminOrderItem }) {
+  return (
+    <dl className="grid grid-cols-3 gap-3 border-t border-border pt-3 text-xs">
+      <div className="min-w-0">
+        <dt className="text-muted-foreground">PU</dt>
+        <dd className="mt-1 tabular-nums text-sm font-medium">
+          {formatMoney(item.unitPriceMinor)}
+        </dd>
+      </div>
+      <div className="min-w-0 text-center">
+        <dt className="text-muted-foreground">Qté</dt>
+        <dd className="mt-1 tabular-nums text-sm font-medium">{item.quantity}</dd>
+      </div>
+      <div className="min-w-0 text-right">
+        <dt className="text-muted-foreground">Total</dt>
+        <dd className="mt-1 tabular-nums text-sm font-medium">
+          {formatMoney(item.lineTotalMinor)}
+        </dd>
+      </div>
+    </dl>
+  );
+}
+
 export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
   const { data: order, isLoading, error, refetch } = useAdminOrder(orderId);
+  const { data: customer } = useAdminCustomer(order?.customerId ?? "");
   const updateStatus = useUpdateOrderStatus();
   const updatePayment = useUpdateOrderPaymentStatus();
   const updateShipping = useUpdateOrderShipping();
@@ -92,10 +126,9 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
 
   const [dialog, setDialog] = useState<DialogState>(null);
   const [restoreStock, setRestoreStock] = useState(true);
-  const [carrierName, setCarrierName] = useState("");
-  const [trackingNumber, setTrackingNumber] = useState("");
   const [shippingFee, setShippingFee] = useState("");
   const [note, setNote] = useState("");
+  const [isDownloadingPreparationSlip, setIsDownloadingPreparationSlip] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<AdminOrderStatus | "">("");
   const orderStatus = order?.status;
   const orderIdentifier = order?.id;
@@ -135,6 +168,37 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
     ? ORDER_STATUS_OPTIONS
     : [order.status, ...ORDER_STATUS_OPTIONS];
   const statusChanged = selectedStatus !== "" && selectedStatus !== order.status;
+  const preparationOrder = order;
+
+  async function downloadPreparationSlip() {
+    if (isDownloadingPreparationSlip) return;
+
+    const preparationSlip = document.querySelector<HTMLElement>(".print-preparation-slip");
+    if (!preparationSlip) {
+      toast.error("Le bon de préparation est indisponible.");
+      return;
+    }
+
+    setIsDownloadingPreparationSlip(true);
+    let restorePreparationSlip: (() => void) | undefined;
+    try {
+      restorePreparationSlip = await preparePreparationSlipForDownload(preparationSlip);
+      await downloadPreparationSlipPdf({
+        element: preparationSlip,
+        filename: `bon-de-preparation-${preparationOrder.orderNumber}`,
+      });
+      toast.success("Bon de préparation téléchargé.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Le téléchargement du bon de préparation a échoué.",
+      );
+    } finally {
+      restorePreparationSlip?.();
+      setIsDownloadingPreparationSlip(false);
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -146,9 +210,15 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
           { label: order.orderNumber },
         ]}
         actions={
-          <Button variant="outline" size="sm" onClick={() => window.print()}>
-            <Printer className="size-4" aria-hidden />
-            Bon de préparation
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void downloadPreparationSlip()}
+            disabled={isDownloadingPreparationSlip}
+            aria-busy={isDownloadingPreparationSlip}
+          >
+            <Download className="size-4" aria-hidden />
+            {isDownloadingPreparationSlip ? "Génération…" : "Télécharger le bon"}
           </Button>
         }
       />
@@ -158,30 +228,54 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
           label={ORDER_STATUS_LABELS[order.status]}
           tone={ORDER_STATUS_TONE[order.status]}
         />
-        <AdminStatusBadge
-          label={`Paiement : ${PAYMENT_STATUS_LABELS[order.paymentStatus]}`}
-          tone={PAYMENT_STATUS_TONE[order.paymentStatus]}
-        />
-        <AdminStatusBadge
-          label={`Frais : ${SHIPPING_STATUS_LABELS[getShippingStatus(order)]}`}
-          tone={SHIPPING_STATUS_TONE[getShippingStatus(order)]}
-        />
-        <AdminStatusBadge label={SHIPPING_PROFILE_LABELS[getOrderShippingProfile(order)]} />
+        {(customer?.tags ?? [])
+          .map((tag) => tag.trim())
+          .filter((tag, index, tags) => tag && tags.indexOf(tag) === index)
+          .map((tag) => (
+            <AdminStatusBadge key={tag} label={tag} />
+          ))}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           <AdminCard>
             <h2 className="mb-3 text-sm font-semibold">Articles</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[600px] text-sm">
+            <div className="sm:hidden">
+              <div className="divide-y divide-border">
+                {order.items.map((item) => (
+                  <article
+                    key={`${item.productId}-${item.variantId}`}
+                    className="space-y-3 py-3 first:pt-0 last:pb-0"
+                  >
+                    <OrderItemIdentity item={item} />
+                    <OrderItemMetrics item={item} />
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div className="hidden overflow-x-auto sm:block">
+              <table className="w-full table-fixed text-sm" aria-label="Articles de la commande">
+                <colgroup>
+                  <col className="w-[62%]" />
+                  <col className="w-[13%]" />
+                  <col className="w-[10%]" />
+                  <col className="w-[15%]" />
+                </colgroup>
                 <thead>
                   <tr className="border-b border-border text-left text-xs text-muted-foreground uppercase">
-                    <th className="py-2">Produit</th>
-                    <th className="py-2">SKU</th>
-                    <th className="py-2 text-right">Qté</th>
-                    <th className="py-2 text-right">PU</th>
-                    <th className="py-2 text-right">Total</th>
+                    <th scope="col" className="py-2 pr-4">
+                      Produit
+                    </th>
+                    <th scope="col" className="py-2 px-2 text-right">
+                      PU
+                    </th>
+                    <th scope="col" className="py-2 px-2 text-right">
+                      Qté
+                    </th>
+                    <th scope="col" className="py-2 pl-2 text-right">
+                      Total
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -190,24 +284,16 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
                       key={`${item.productId}-${item.variantId}`}
                       className="border-b border-border last:border-0"
                     >
-                      <td className="py-2">
-                        <div className="flex min-w-0 items-center gap-3">
-                          <OrderItemThumbnail src={item.imageUrl} />
-                          <div className="min-w-0">
-                            <p className="font-medium">{item.productName}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {item.selectedOptions?.map((option) => option.value).join(" · ") ||
-                                item.variantLabel}
-                            </p>
-                          </div>
-                        </div>
+                      <td className="min-w-0 py-3 pr-4">
+                        <OrderItemIdentity item={item} />
                       </td>
-                      <td className="py-2 text-xs">{item.sku}</td>
-                      <td className="py-2 text-right tabular-nums">{item.quantity}</td>
-                      <td className="py-2 text-right tabular-nums">
+                      <td className="py-3 px-2 text-right tabular-nums whitespace-nowrap">
                         {formatMoney(item.unitPriceMinor)}
                       </td>
-                      <td className="py-2 text-right tabular-nums">
+                      <td className="py-3 px-2 text-right tabular-nums whitespace-nowrap">
+                        {item.quantity}
+                      </td>
+                      <td className="py-3 pl-2 text-right tabular-nums whitespace-nowrap">
                         {formatMoney(item.lineTotalMinor)}
                       </td>
                     </tr>
@@ -358,19 +444,22 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
                     variant={selectedStatus === "cancelled" ? "destructive" : "default"}
                     onClick={() => {
                       if (!statusChanged) return;
-                      setDialog(
-                        selectedStatus === "cancelled"
-                          ? { kind: "cancel" }
-                          : { kind: "status", status: selectedStatus },
-                      );
+                      if (selectedStatus === "cancelled") {
+                        setDialog({ kind: "cancel" });
+                        return;
+                      }
+                      updateStatus.mutate({
+                        orderId: order.id,
+                        status: selectedStatus,
+                      });
                     }}
                   >
                     Mettre à jour
                   </Button>
                 </div>
                 <p id="order-status-help" className="text-xs text-muted-foreground">
-                  Le statut peut être corrigé à tout moment. Les retours en arrière et statuts
-                  sensibles demandent un motif conservé dans l'historique.
+                  Vous pouvez corriger le statut directement. Une justification est demandée
+                  uniquement lors d'une annulation.
                 </p>
               </div>
               {order.returnInfo?.status === "requested" ? (
@@ -390,17 +479,6 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
                     Refuser le retour
                   </Button>
                 </>
-              ) : null}
-              {paymentTransitions.includes("collected") ? (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    updatePayment.mutate({ orderId: order.id, paymentStatus: "collected" })
-                  }
-                >
-                  Marquer le paiement encaissé
-                </Button>
               ) : null}
               {paymentTransitions.includes("refunded") ? (
                 <Button size="sm" variant="outline" onClick={() => setDialog({ kind: "refund" })}>
@@ -430,62 +508,16 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
       </div>
 
       <AdminOrderActionDialog
-        open={dialog?.kind === "status"}
-        onOpenChange={(open) => !open && setDialog(null)}
-        title="Changer le statut"
-        description={
-          dialog?.kind === "status"
-            ? `La commande passera au statut « ${ORDER_STATUS_LABELS[dialog.status]} ».`
-            : ""
-        }
-        confirmLabel="Confirmer"
-        requireReason={
-          dialog?.kind === "status" && transitionRequiresReason(order.status, dialog.status)
-        }
-        isPending={updateStatus.isPending}
-        extra={
-          dialog?.kind === "status" && dialog.status === "shipped" ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label htmlFor="carrier">Transporteur</Label>
-                <Input
-                  id="carrier"
-                  value={carrierName}
-                  onChange={(event) => setCarrierName(event.target.value)}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="tracking">Numéro de suivi</Label>
-                <Input
-                  id="tracking"
-                  value={trackingNumber}
-                  onChange={(event) => setTrackingNumber(event.target.value)}
-                />
-              </div>
-            </div>
-          ) : null
-        }
-        onConfirm={(values) => {
-          if (dialog?.kind !== "status") return;
-          updateStatus.mutate(
-            {
-              orderId: order.id,
-              status: dialog.status,
-              ...(values.reason ? { reason: values.reason } : {}),
-              ...(values.note ? { note: values.note } : {}),
-              ...(carrierName ? { carrierName } : {}),
-              ...(trackingNumber ? { trackingNumber } : {}),
-            },
-            { onSuccess: () => setDialog(null) },
-          );
-        }}
-      />
-
-      <AdminOrderActionDialog
         open={dialog?.kind === "cancel"}
         onOpenChange={(open) => !open && setDialog(null)}
-        title="Annuler la commande"
-        description="Cette action est définitive. Le stock peut être restauré si la commande a été confirmée."
+        title={
+          order.status === "delivered" ? "Corriger le statut et annuler" : "Annuler la commande"
+        }
+        description={
+          order.status === "delivered"
+            ? "Cette correction sera tracée dans l'historique et les notes internes."
+            : "Cette action est définitive. Le stock peut être restauré si nécessaire."
+        }
         confirmLabel="Annuler la commande"
         requireReason
         destructive
@@ -571,6 +603,7 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
           );
         }}
       />
+      <AdminPreparationSlip order={order} customerTags={customer?.tags ?? []} />
     </div>
   );
 }

@@ -29,9 +29,9 @@ export const PAYMENT_STATUS_LABELS = {
 } as const;
 
 /**
- * Les statuts de commande restent corrigeables par l'équipe Admin. Les
- * transitions métier sensibles sont confirmées dans la boîte de dialogue et
- * la validation serveur conserve la trace de chaque changement.
+ * Les statuts de commande restent corrigeables librement par l'équipe Admin.
+ * Les contrôles métier sensibles (annulation, stock et paiement) sont
+ * appliqués dans leurs workflows dédiés et tracés côté serveur.
  */
 const EDITABLE_STATUSES: AdminOrderStatus[] = [
   "received",
@@ -43,20 +43,16 @@ const EDITABLE_STATUSES: AdminOrderStatus[] = [
   "cancelled",
 ];
 
-const NORMAL_EDITABLE_STATUSES = EDITABLE_STATUSES.filter((status) => status !== "cancelled");
-
 const TRANSITIONS: Record<AdminOrderStatus, AdminOrderStatus[]> = {
-  received: NORMAL_EDITABLE_STATUSES.filter((status) => status !== "received"),
-  pending_confirmation: NORMAL_EDITABLE_STATUSES.filter(
-    (status) => status !== "pending_confirmation",
-  ),
-  confirmed: NORMAL_EDITABLE_STATUSES.filter((status) => status !== "confirmed"),
-  preparing: NORMAL_EDITABLE_STATUSES.filter((status) => status !== "preparing"),
-  shipped: NORMAL_EDITABLE_STATUSES.filter((status) => status !== "shipped"),
-  delivered: NORMAL_EDITABLE_STATUSES.filter((status) => status !== "delivered"),
-  cancelled: NORMAL_EDITABLE_STATUSES,
-  return_requested: ["returned", "delivered"],
-  returned: ["pending_confirmation", "confirmed", "preparing", "shipped", "delivered", "cancelled"],
+  received: EDITABLE_STATUSES.filter((status) => status !== "received"),
+  pending_confirmation: EDITABLE_STATUSES.filter((status) => status !== "pending_confirmation"),
+  confirmed: EDITABLE_STATUSES.filter((status) => status !== "confirmed"),
+  preparing: EDITABLE_STATUSES.filter((status) => status !== "preparing"),
+  shipped: EDITABLE_STATUSES.filter((status) => status !== "shipped"),
+  delivered: EDITABLE_STATUSES.filter((status) => status !== "delivered"),
+  cancelled: EDITABLE_STATUSES.filter((status) => status !== "cancelled"),
+  return_requested: EDITABLE_STATUSES,
+  returned: EDITABLE_STATUSES,
 };
 
 export function allowedTransitions(from: AdminOrderStatus): AdminOrderStatus[] {
@@ -71,19 +67,9 @@ export function transitionError(from: AdminOrderStatus, to: AdminOrderStatus): s
   return `Transition impossible : « ${ORDER_STATUS_LABELS[from]} » → « ${ORDER_STATUS_LABELS[to]} ».`;
 }
 
-/**
- * Un retour vers une étape précédente ou un statut critique doit être
- * explicitement justifié afin de protéger l'historique opérationnel.
- */
-export function transitionRequiresReason(from: AdminOrderStatus, to: AdminOrderStatus): boolean {
-  if (from === to) return false;
-  if (to === "cancelled" || to === "delivered") return true;
-  if (["delivered", "cancelled", "returned"].includes(from)) return true;
-
-  const order = ["received", "pending_confirmation", "confirmed", "preparing", "shipped"];
-  const fromIndex = order.indexOf(from);
-  const toIndex = order.indexOf(to);
-  return fromIndex >= 0 && toIndex >= 0 && toIndex < fromIndex;
+/** Seule l'annulation requiert une justification dans le workflow Admin. */
+export function transitionRequiresReason(_from: AdminOrderStatus, to: AdminOrderStatus): boolean {
+  return to === "cancelled";
 }
 
 export const CRITICAL_STATUSES: AdminOrderStatus[] = ["cancelled", "delivered", "returned"];

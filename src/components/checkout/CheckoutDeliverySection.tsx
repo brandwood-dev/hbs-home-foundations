@@ -7,7 +7,7 @@ import { formatMoney } from "@/lib/money/money";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 const optionClass =
-  "flex cursor-pointer gap-3 rounded-sm border p-4 text-left transition-colors hover:bg-surface-muted";
+  "flex min-w-0 cursor-pointer gap-3 rounded-sm border p-4 text-left transition-colors hover:bg-surface-muted";
 
 export function CheckoutDeliverySection({
   register,
@@ -38,10 +38,10 @@ export function CheckoutDeliverySection({
           <input
             type="radio"
             value="home_delivery"
-            className="mt-1 accent-[var(--color-accent)]"
+            className="mt-1 shrink-0 accent-[var(--color-accent)]"
             {...register("deliveryMethod")}
           />
-          <span>
+          <span className="min-w-0 flex-1 break-words">
             <span className="block text-sm font-medium">Livraison à domicile</span>
             <span className="block text-xs text-foreground-muted">
               Partout en Tunisie — {storeSettings.shipping.estimatedDeliveryLabel} —{" "}
@@ -57,10 +57,10 @@ export function CheckoutDeliverySection({
             <input
               type="radio"
               value="store_pickup"
-              className="mt-1 accent-[var(--color-accent)]"
+              className="mt-1 shrink-0 accent-[var(--color-accent)]"
               {...register("deliveryMethod")}
             />
-            <span>
+            <span className="min-w-0 flex-1 break-words">
               <span className="block text-sm font-medium">Retrait en magasin — gratuit</span>
               <span className="block text-xs text-foreground-muted">
                 {storeSettings.shipping.pickupAddress || storeSettings.store.address}. Nous vous

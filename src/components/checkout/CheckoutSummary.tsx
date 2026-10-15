@@ -34,7 +34,7 @@ export function CheckoutSummary({
   return (
     <section
       aria-label="Récapitulatif de la commande"
-      className="space-y-4 rounded-sm border border-border bg-surface p-4"
+      className="min-w-0 space-y-4 rounded-sm border border-border bg-surface p-4"
     >
       <div className="flex items-baseline justify-between">
         <h2 className="text-lg">Votre commande</h2>
@@ -47,7 +47,7 @@ export function CheckoutSummary({
         {cart.items
           .filter((item) => item.canPurchase)
           .map((item) => (
-            <li key={item.lineId} className="flex gap-3">
+            <li key={item.lineId} className="flex min-w-0 gap-3">
               <div className="h-16 w-14 shrink-0 overflow-hidden rounded-sm bg-surface-muted">
                 {item.imageUrl ? (
                   <img
@@ -60,7 +60,7 @@ export function CheckoutSummary({
               </div>
               <div className="min-w-0 flex-1 text-sm">
                 <p className="truncate font-medium">{item.productName}</p>
-                <p className="text-xs text-foreground-muted">
+                <p className="break-words text-xs text-foreground-muted">
                   {[
                     formatOptionDetails(item.selectedOptions) ||
                       [
@@ -77,27 +77,31 @@ export function CheckoutSummary({
                     .join(" · ")}
                 </p>
               </div>
-              <span className="text-sm">{formatMoney(item.lineTotalMinor)}</span>
+              <span className="shrink-0 whitespace-nowrap text-sm">
+                {formatMoney(item.lineTotalMinor)}
+              </span>
             </li>
           ))}
       </ul>
 
       <dl className="space-y-2 border-t border-border pt-3 text-sm">
-        <div className="flex items-baseline justify-between">
-          <dt className="text-foreground-muted">Sous-total</dt>
-          <dd>{formatMoney(subtotalMinor)}</dd>
+        <div className="flex min-w-0 items-baseline justify-between gap-4">
+          <dt className="min-w-0 break-words text-foreground-muted">Sous-total</dt>
+          <dd className="shrink-0 whitespace-nowrap">{formatMoney(subtotalMinor)}</dd>
         </div>
         {discountMinor > 0 ? (
-          <div className="flex items-baseline justify-between text-success">
-            <dt>Promotion{cart.promotion?.code ? ` (${cart.promotion.code})` : ""}</dt>
-            <dd>-{formatMoney(discountMinor)}</dd>
+          <div className="flex min-w-0 items-baseline justify-between gap-4 text-success">
+            <dt className="min-w-0 break-words">
+              Promotion{cart.promotion?.code ? ` (${cart.promotion.code})` : ""}
+            </dt>
+            <dd className="shrink-0 whitespace-nowrap">-{formatMoney(discountMinor)}</dd>
           </div>
         ) : null}
-        <div className="flex items-baseline justify-between">
-          <dt className="text-foreground-muted">
+        <div className="flex min-w-0 items-baseline justify-between gap-4">
+          <dt className="min-w-0 break-words text-foreground-muted">
             {deliveryMethod === "store_pickup" ? "Retrait en magasin" : "Livraison"}
           </dt>
-          <dd>
+          <dd className="shrink-0 whitespace-nowrap">
             {quoteRequired && deliveryMethod !== "store_pickup"
               ? "Sur devis"
               : shippingMinor === 0
@@ -105,20 +109,20 @@ export function CheckoutSummary({
                 : formatMoney(shippingMinor)}
           </dd>
         </div>
-        <div className="flex items-baseline justify-between border-t border-border pt-2 text-base font-medium">
-          <dt>Total à payer</dt>
-          <dd>{formatMoney(totalMinor)}</dd>
+        <div className="flex min-w-0 items-baseline justify-between gap-4 border-t border-border pt-2 text-base font-medium">
+          <dt className="min-w-0 break-words">Total à payer</dt>
+          <dd className="shrink-0 whitespace-nowrap">{formatMoney(totalMinor)}</dd>
         </div>
       </dl>
 
       {quoteRequired && deliveryMethod !== "store_pickup" ? (
-        <p className="rounded-sm bg-surface-muted p-3 text-xs text-foreground">
+        <p className="break-words rounded-sm bg-surface-muted p-3 text-xs text-foreground">
           Article volumineux : les frais de livraison et le créneau de mise en place sont confirmés
           par téléphone avant l&apos;expédition.
         </p>
       ) : null}
 
-      <p className="text-xs text-foreground-muted">{CART_ESTIMATE_NOTICE}</p>
+      <p className="break-words text-xs text-foreground-muted">{CART_ESTIMATE_NOTICE}</p>
     </section>
   );
 }

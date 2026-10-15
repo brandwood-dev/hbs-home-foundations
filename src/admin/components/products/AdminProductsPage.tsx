@@ -1,33 +1,31 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { Plus, RefreshCw, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { AdminPageHeader } from "@/admin/components/ui/AdminPageHeader";
 import {
   AdminDataTable,
-  AdminPagination,
   AdminSearchInput,
   AdminSelectFilter,
   type AdminColumn,
 } from "@/admin/components/ui/AdminDataTable";
 import { AdminActionMenu, AdminConfirmDialog } from "@/admin/components/ui/AdminOverlays";
 import { AdminStatusBadge } from "@/admin/components/ui/AdminStates";
-import { useAdminProductsPage } from "@/admin/hooks/admin.queries";
+import { useAdminCategories, useAdminProducts } from "@/admin/hooks/admin.queries";
 import {
   useDeleteAdminProduct,
   useDuplicateAdminProduct,
   useSetAdminProductStatus,
 } from "@/admin/hooks/admin-catalog.mutations";
-import {
-  ADMIN_PRODUCT_CATEGORY_LABELS,
-  type AdminProduct,
-  type AdminProductCategoryKey,
-} from "@/admin/types/admin.types";
-import { SELLING_MODE_LABELS } from "@/admin/config/admin-product-fields.config";
+import type { AdminProduct } from "@/admin/types/admin.types";
 import { formatMoney } from "@/lib/money/money";
-import { formatDate } from "@/admin/utils/admin.utils";
 import { validateProductForPublication } from "@/admin/services/products/admin-product-validation";
+import {
+  adminProductBelongsToCategory,
+  adminProductCategoryLabel,
+  buildAdminProductCategoryOptions,
+} from "@/admin/services/products/admin-product-table";
 
 const STATUS_LABELS: Record<
   AdminProduct["status"],
@@ -52,7 +50,6 @@ function totalStock(product: AdminProduct): number {
 
 export function AdminProductsPage({ initialQuery = "" }: { initialQuery?: string }) {
   const navigate = useNavigate();
-  const [page, setPage] = useState(1);
   const duplicateProduct = useDuplicateAdminProduct();
   const deleteProduct = useDeleteAdminProduct();
   const setStatus = useSetAdminProductStatus();
@@ -60,47 +57,94 @@ export function AdminProductsPage({ initialQuery = "" }: { initialQuery?: string
   const [search, setSearch] = useState(initialQuery);
   const [category, setCategory] = useState("all");
   const [status, setStatus_] = useState("all");
+  const [promotion, setPromotion] = useState("all");
   const [stockFilter, setStockFilter] = useState("all");
   const [pendingDelete, setPendingDelete] = useState<AdminProduct | null>(null);
+  const { data: products = [], isLoading, error, refetch: refetchProducts } = useAdminProducts();
+  const {
+    data: categories = [],
+    isLoading: categoriesLoading,
+    isFetching: categoriesFetching,
+    refetch: refetchCategories,
+  } = useAdminCategories();
+
   useEffect(() => {
     setSearch(initialQuery);
-    setPage(1);
   }, [initialQuery]);
 
-  const params = useMemo(
-    () => ({
-      page,
-      pageSize: 20,
-      ...(search.trim() ? { query: search.trim() } : {}),
-      ...(category !== "all" ? { category } : {}),
-      ...(status !== "all" ? { status: status as AdminProduct["status"] } : {}),
-      ...(stockFilter !== "all" ? { stock: stockFilter as "low" | "out" } : {}),
-    }),
-    [page, search, category, status, stockFilter],
-  );
-  const { data, isLoading, error, refetch } = useAdminProductsPage(params);
-  const rows = data?.items ?? [];
+  const categoryOptions = useMemo(() => buildAdminProductCategoryOptions(categories), [categories]);
+  const rows = useMemo(() => {
+    const normalizedSearch = search.trim().toLocaleLowerCase();
+    return products.filter((product) => {
+      const matchesSearch = normalizedSearch
+        ? `${product.name} ${product.reference} ${product.slug} ${product.variants
+            .map((variant) => variant.sku)
+            .join(" ")}`
+            .toLocaleLowerCase()
+            .includes(normalizedSearch)
+        : true;
+      const matchesCategory =
+        category === "all" || adminProductBelongsToCategory(product, category, categories);
+      const matchesStatus = status === "all" || product.status === status;
+      const matchesPromotion =
+        promotion === "all" ||
+        (promotion === "promo" ? product.isOnSale === true : !product.isOnSale);
+      const matchesStock =
+        stockFilter === "all" ||
+        (stockFilter === "out"
+          ? totalStock(product) <= 0
+          : product.variants.some(
+              (variant) => variant.stock > 0 && variant.stock <= variant.lowStockThreshold,
+            ));
+      return matchesSearch && matchesCategory && matchesStatus && matchesPromotion && matchesStock;
+    });
+  }, [categories, category, products, promotion, search, status, stockFilter]);
+
+  useEffect(() => {
+    if (category !== "all" && !categoryOptions.some((option) => option.value === category)) {
+      setCategory("all");
+    }
+  }, [category, categoryOptions]);
+
+  const hasFilters =
+    Boolean(search.trim()) ||
+    category !== "all" ||
+    status !== "all" ||
+    promotion !== "all" ||
+    stockFilter !== "all";
+  const resetFilters = () => {
+    setSearch("");
+    setCategory("all");
+    setStatus_("all");
+    setPromotion("all");
+    setStockFilter("all");
+  };
 
   const columns: AdminColumn<AdminProduct>[] = [
     {
       id: "name",
       header: "Produit",
+      className: "w-[22rem] max-w-[22rem]",
       cell: (product) => (
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 max-w-[21rem] items-center gap-2.5">
           {product.imageUrl ? (
             <img
               src={product.imageUrl}
               alt=""
-              className="size-10 rounded border border-border object-cover"
+              className="size-9 shrink-0 rounded border border-border object-cover"
             />
           ) : (
-            <span className="size-10 rounded border border-dashed border-border" aria-hidden />
+            <span
+              className="size-9 shrink-0 rounded border border-dashed border-border"
+              aria-hidden
+            />
           )}
           <div className="min-w-0">
             <Link
               to="/admin/produits/$productId"
               params={{ productId: product.id }}
-              className="block truncate font-medium hover:underline"
+              className="block line-clamp-2 text-sm font-medium leading-snug hover:underline"
+              title={product.name}
             >
               {product.name}
             </Link>
@@ -113,32 +157,20 @@ export function AdminProductsPage({ initialQuery = "" }: { initialQuery?: string
     {
       id: "category",
       header: "Catégorie",
-      cell: (product) => (product.category ? ADMIN_PRODUCT_CATEGORY_LABELS[product.category] : "—"),
-    },
-    {
-      id: "mode",
-      header: "Vente",
-      cell: (product) => SELLING_MODE_LABELS[product.sellingMode],
+      className: "w-[19rem] max-w-[19rem]",
+      cell: (product) => {
+        const label = adminProductCategoryLabel(product, categories);
+        return (
+          <span className="block max-w-[18rem] truncate" title={label}>
+            {label}
+          </span>
+        );
+      },
     },
     {
       id: "price",
       header: "Prix",
       cell: (product) => priceRange(product),
-    },
-    {
-      id: "stock",
-      header: "Stock",
-      cell: (product) => {
-        const stock = totalStock(product);
-        const low = product.variants.some((v) => v.stock > 0 && v.stock <= v.lowStockThreshold);
-        return (
-          <AdminStatusBadge
-            label={`${stock} u.`}
-            tone={stock === 0 ? "danger" : low ? "warning" : "neutral"}
-          />
-        );
-      },
-      sortValue: (product) => totalStock(product),
     },
     {
       id: "variants",
@@ -155,10 +187,14 @@ export function AdminProductsPage({ initialQuery = "" }: { initialQuery?: string
       },
     },
     {
-      id: "updatedAt",
-      header: "Mise à jour",
-      cell: (product) => formatDate(product.updatedAt),
-      sortValue: (product) => product.updatedAt,
+      id: "promotion",
+      header: "En promotion",
+      cell: (product) => (
+        <AdminStatusBadge
+          label={product.isOnSale ? "Oui" : "Non"}
+          tone={product.isOnSale ? "warning" : "neutral"}
+        />
+      ),
     },
   ];
 
@@ -181,56 +217,87 @@ export function AdminProductsPage({ initialQuery = "" }: { initialQuery?: string
         rowKey={(product) => product.id}
         isLoading={isLoading}
         error={error}
-        onRetry={() => void refetch()}
+        onRetry={() => void refetchProducts()}
         emptyTitle="Aucun produit"
         emptyDescription="Ajustez vos filtres ou créez un nouveau produit."
         toolbar={
           <>
-            <AdminSearchInput
-              value={search}
-              onChange={(value) => {
-                setSearch(value);
-                setPage(1);
-              }}
-              placeholder="Nom, référence ou SKU"
-            />
-            <AdminSelectFilter
-              label="Catégorie"
-              value={category}
-              onChange={(value) => {
-                setCategory(value);
-                setPage(1);
-              }}
-              options={Object.entries(ADMIN_PRODUCT_CATEGORY_LABELS).map(([value, label]) => ({
-                value: value as AdminProductCategoryKey,
-                label,
-              }))}
-            />
-            <AdminSelectFilter
-              label="Statut"
-              value={status}
-              onChange={(value) => {
-                setStatus_(value);
-                setPage(1);
-              }}
-              options={[
-                { value: "published", label: "Publié" },
-                { value: "draft", label: "Brouillon" },
-                { value: "archived", label: "Archivé" },
-              ]}
-            />
-            <AdminSelectFilter
-              label="Stock"
-              value={stockFilter}
-              onChange={(value) => {
-                setStockFilter(value);
-                setPage(1);
-              }}
-              options={[
-                { value: "low", label: "Stock faible" },
-                { value: "out", label: "Rupture" },
-              ]}
-            />
+            <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-[minmax(20rem,2fr)_repeat(4,minmax(9rem,1fr))]">
+              <AdminSearchInput
+                value={search}
+                onChange={(value) => {
+                  setSearch(value);
+                }}
+                placeholder="Nom, référence ou SKU"
+                wide
+                className="min-w-0 self-end max-sm:col-span-2 sm:col-span-4 lg:col-span-1"
+              />
+              <AdminSelectFilter
+                label="Catégorie"
+                value={category}
+                onChange={setCategory}
+                options={categoryOptions}
+                className="min-w-0"
+              />
+              <AdminSelectFilter
+                label="Statut"
+                value={status}
+                onChange={setStatus_}
+                options={[
+                  { value: "published", label: "Publié" },
+                  { value: "draft", label: "Brouillon" },
+                  { value: "archived", label: "Archivé" },
+                ]}
+                className="min-w-0"
+              />
+              <AdminSelectFilter
+                label="Promotion"
+                value={promotion}
+                onChange={setPromotion}
+                options={[
+                  { value: "promo", label: "En promotion" },
+                  { value: "regular", label: "Sans promotion" },
+                ]}
+                className="min-w-0"
+              />
+              <AdminSelectFilter
+                label="Stock"
+                value={stockFilter}
+                onChange={setStockFilter}
+                options={[
+                  { value: "low", label: "Stock faible" },
+                  { value: "out", label: "Rupture" },
+                ]}
+                className="min-w-0"
+              />
+            </div>
+            <div className="flex w-full flex-wrap items-center justify-end gap-2 border-t border-border/70 pt-3 sm:pt-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                disabled={!hasFilters}
+                onClick={resetFilters}
+                className="min-h-10 text-muted-foreground"
+              >
+                <RotateCcw className="mr-1.5 size-3.5" aria-hidden />
+                Réinitialiser
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => void refetchCategories()}
+                disabled={categoriesLoading || categoriesFetching}
+                className="min-h-10 text-muted-foreground"
+              >
+                <RefreshCw
+                  className={`mr-1.5 size-3.5 ${categoriesFetching ? "animate-spin" : ""}`}
+                  aria-hidden
+                />
+                Actualiser les catégories
+              </Button>
+            </div>
           </>
         }
         rowActions={(product) => (
@@ -271,17 +338,6 @@ export function AdminProductsPage({ initialQuery = "" }: { initialQuery?: string
           </AdminActionMenu>
         )}
       />
-
-      {data && data.pageCount > 1 ? (
-        <div className="mt-3 rounded-lg border border-border bg-card">
-          <AdminPagination
-            page={data.page}
-            pageCount={data.pageCount}
-            total={data.total}
-            onPageChange={setPage}
-          />
-        </div>
-      ) : null}
 
       <AdminConfirmDialog
         open={pendingDelete !== null}
