@@ -144,12 +144,6 @@ export function AdminOrdersPage() {
                   tone="warning"
                 />
               ) : null}
-              {(counters?.paymentPending ?? 0) > 0 ? (
-                <AdminStatusBadge
-                  label={`${counters?.paymentPending} paiement(s) en attente`}
-                  tone="info"
-                />
-              ) : null}
             </div>
             <AdminSearchInput
               value={search}
