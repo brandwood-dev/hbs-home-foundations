@@ -126,8 +126,6 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
 
   const [dialog, setDialog] = useState<DialogState>(null);
   const [restoreStock, setRestoreStock] = useState(true);
-  const [carrierName, setCarrierName] = useState("");
-  const [trackingNumber, setTrackingNumber] = useState("");
   const [shippingFee, setShippingFee] = useState("");
   const [note, setNote] = useState("");
   const [isDownloadingPreparationSlip, setIsDownloadingPreparationSlip] = useState(false);
@@ -453,8 +451,6 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
                       updateStatus.mutate({
                         orderId: order.id,
                         status: selectedStatus,
-                        ...(carrierName ? { carrierName } : {}),
-                        ...(trackingNumber ? { trackingNumber } : {}),
                       });
                     }}
                   >
@@ -465,26 +461,6 @@ export function AdminOrderDetailPage({ orderId }: { orderId: string }) {
                   Vous pouvez corriger le statut directement. Une justification est demandée
                   uniquement lors d'une annulation.
                 </p>
-                {selectedStatus === "shipped" ? (
-                  <div className="grid gap-2 pt-1 sm:grid-cols-2">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="carrier">Transporteur (optionnel)</Label>
-                      <Input
-                        id="carrier"
-                        value={carrierName}
-                        onChange={(event) => setCarrierName(event.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="tracking">Numéro de suivi (optionnel)</Label>
-                      <Input
-                        id="tracking"
-                        value={trackingNumber}
-                        onChange={(event) => setTrackingNumber(event.target.value)}
-                      />
-                    </div>
-                  </div>
-                ) : null}
               </div>
               {order.returnInfo?.status === "requested" ? (
                 <>
