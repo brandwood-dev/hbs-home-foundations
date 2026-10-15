@@ -25,6 +25,7 @@ export function useAddCartItemMutation() {
       variantId: string;
       quantity: number;
       confectionKey?: string | undefined;
+      panelCount?: number | undefined;
     }) => getCartRepository().addItem(input),
     ...options,
   });

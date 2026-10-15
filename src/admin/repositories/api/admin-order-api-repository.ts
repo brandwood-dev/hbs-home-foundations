@@ -84,6 +84,7 @@ function mapItem(item: ApiOrder["items"][number]): AdminOrder["items"][number] {
     variantLabel: item.variantLabel,
     sku: item.sku,
     quantity: item.quantity,
+    ...(item.panelCount !== undefined ? { panelCount: item.panelCount } : {}),
     unitPriceMinor: item.unitPriceMinor,
     lineTotalMinor: item.lineTotalMinor,
     ...(item.productReference ? { productReference: item.productReference } : {}),

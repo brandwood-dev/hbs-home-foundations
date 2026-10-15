@@ -82,9 +82,12 @@ function bodyText(article: AdminArticle): string {
 function toDraft(article: AdminArticle): ArticleDraft {
   const revision = article.draft ?? article.published;
   return {
-    ...(article.draft ? { id: article.id } : {}),
+    // The API creates a draft revision on the first save of a published
+    // article. Keep the article id so edits update the existing article
+    // instead of opening a misleading "new article" flow.
+    id: article.id,
     status: article.status,
-    ...(article.draft?.version ? { version: article.draft.version } : {}),
+    ...(revision?.version ? { version: revision.version } : {}),
     slug: article.slug,
     title: revision?.title ?? "",
     excerpt: revision?.excerpt ?? "",
@@ -260,7 +263,7 @@ export function AdminArticlesPage() {
         }
         rowActions={(article) => (
           <AdminActionMenu>
-            {article.status === "draft" ? (
+            {article.status === "draft" || article.draft ? (
               <DropdownMenuItem onClick={() => publishArticle.mutate(article.id)}>
                 <Send className="size-4" aria-hidden /> Publier
               </DropdownMenuItem>
@@ -320,7 +323,7 @@ export function AdminArticlesPage() {
         title={draft?.id ? "Modifier l'article" : "Nouvel article"}
         description={
           draft?.status === "published"
-            ? "Cet article est publié. Dupliquez-le pour créer une nouvelle version."
+            ? "Les modifications seront enregistrées dans un brouillon, sans modifier immédiatement la version publiée."
             : "Enregistrez un brouillon puis publiez-le lorsque son contenu est validé."
         }
         footer={
@@ -334,14 +337,7 @@ export function AdminArticlesPage() {
             >
               Annuler
             </Button>
-            <Button
-              onClick={submit}
-              disabled={
-                Boolean(draft?.status === "published") ||
-                createArticle.isPending ||
-                updateArticle.isPending
-              }
-            >
+            <Button onClick={submit} disabled={createArticle.isPending || updateArticle.isPending}>
               Enregistrer le brouillon
             </Button>
           </>
@@ -353,7 +349,6 @@ export function AdminArticlesPage() {
               label="Titre"
               required
               value={draft.title}
-              disabled={draft.status === "published"}
               onChange={(value) => setDraft({ ...draft, title: value })}
             />
             <AdminField
@@ -361,14 +356,12 @@ export function AdminArticlesPage() {
               required
               value={draft.slug}
               hint="Ex. comment-mesurer-une-fenetre"
-              disabled={draft.status === "published"}
               onChange={(value) => setDraft({ ...draft, slug: value })}
             />
             <AdminSelectField
               label="Catégorie"
               value={draft.categoryId || "__none"}
               options={categoryOptions}
-              disabled={draft.status === "published"}
               onChange={(value) =>
                 setDraft({ ...draft, categoryId: value === "__none" ? "" : value })
               }
@@ -377,7 +370,6 @@ export function AdminArticlesPage() {
               label="Extrait"
               required
               value={draft.excerpt}
-              disabled={draft.status === "published"}
               onChange={(value) => setDraft({ ...draft, excerpt: value })}
               hint="Le formatage, les emojis et les retours à la ligne sont conservés dans l’aperçu et la fiche article."
             />
@@ -385,7 +377,6 @@ export function AdminArticlesPage() {
               label="Image de couverture"
               value={draft.coverMediaAssetId || "__none"}
               options={mediaOptions}
-              disabled={draft.status === "published"}
               onChange={(value) =>
                 setDraft({ ...draft, coverMediaAssetId: value === "__none" ? "" : value })
               }
@@ -395,25 +386,21 @@ export function AdminArticlesPage() {
               required
               value={draft.body}
               hint="Le texte est enregistré comme bloc éditorial sécurisé."
-              disabled={draft.status === "published"}
               onChange={(value) => setDraft({ ...draft, body: value })}
             />
             <AdminField
               label="Temps de lecture (minutes)"
               value={draft.readingTimeMinutes}
-              disabled={draft.status === "published"}
               onChange={(value) => setDraft({ ...draft, readingTimeMinutes: value })}
             />
             <AdminField
               label="Auteur"
               value={draft.authorName}
-              disabled={draft.status === "published"}
               onChange={(value) => setDraft({ ...draft, authorName: value })}
             />
             <AdminField
               label="Titre SEO"
               value={draft.seoTitle}
-              disabled={draft.status === "published"}
               onChange={(value) => setDraft({ ...draft, seoTitle: value })}
             />
             <AdminField
@@ -421,7 +408,6 @@ export function AdminArticlesPage() {
               value={draft.seoDescription}
               multiline
               rows={3}
-              disabled={draft.status === "published"}
               onChange={(value) => setDraft({ ...draft, seoDescription: value })}
             />
             {formError ? (

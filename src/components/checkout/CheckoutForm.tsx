@@ -25,8 +25,7 @@ import {
 } from "@/services/checkout/checkout-calculations";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
 import { getNewsletterRepository } from "@/repositories/repositoryFactory";
-import { trackEvent } from "@/lib/analytics/analytics";
-import { sendMetaServerEvent } from "@/lib/analytics/meta";
+import { trackEvent, trackPurchase } from "@/lib/analytics/analytics";
 import { hasMetaTrackingConsent } from "@/lib/analytics/consent";
 
 const defaultValues: CheckoutFormInput = {
@@ -161,26 +160,9 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
     }
 
     if (hasMetaTrackingConsent()) {
-      const eventId = trackEvent("purchase", {
-        event_id: `purchase-${order.orderNumber}`,
-        content_ids: order.items.map((item) => item.sku),
-        contents: order.items.map((item) => ({ id: item.sku, quantity: item.quantity })),
-        content_type: "product",
-        num_items: order.items.reduce((sum, item) => sum + item.quantity, 0),
-        value: order.totals.totalMinor / 1000,
-        currency: "TND",
-        order_id: order.orderNumber,
-      });
-      const eventSourceUrl = typeof window !== "undefined" ? window.location.href : undefined;
-      void sendMetaServerEvent({
-        eventName: "Purchase",
-        eventId,
-        ...(eventSourceUrl ? { eventSourceUrl } : {}),
-        userData: {
-          ...(customer.email ? { email: customer.email } : {}),
-          phone: customer.phone,
-        },
-        customData: {
+      trackPurchase(
+        {
+          event_id: `purchase-${order.orderNumber}`,
           content_ids: order.items.map((item) => item.sku),
           contents: order.items.map((item) => ({ id: item.sku, quantity: item.quantity })),
           content_type: "product",
@@ -189,7 +171,11 @@ export function CheckoutForm({ cart }: { cart: Cart }) {
           currency: "TND",
           order_id: order.orderNumber,
         },
-      });
+        {
+          ...(customer.email ? { email: customer.email } : {}),
+          phone: customer.phone,
+        },
+      );
     }
 
     void order;

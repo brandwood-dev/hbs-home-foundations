@@ -15,23 +15,22 @@ import { useAdminOrders } from "@/admin/hooks/admin.queries";
 import { useBulkUpdateOrderStatus } from "@/admin/hooks/admin-sales.mutations";
 import type { AdminOrderListParams, AdminOrderSort } from "@/admin/repositories/interfaces";
 import type { AdminOrder, AdminOrderStatus } from "@/admin/types/admin.types";
-import { ORDER_STATUS_LABELS, ORDER_STATUS_TONE } from "@/admin/services/order-status";
+import {
+  ORDER_STATUS_LABELS,
+  ORDER_STATUS_OPTIONS,
+  ORDER_STATUS_TONE,
+} from "@/admin/services/order-status";
 import {
   PAYMENT_STATUS_LABELS,
   PAYMENT_STATUS_TONE,
 } from "@/admin/services/orders/admin-order-payment";
-import {
-  DELIVERY_METHOD_LABELS,
-  SHIPPING_PROFILE_LABELS,
-  getOrderShippingProfile,
-  isShippingToConfirm,
-} from "@/admin/services/orders/admin-order-shipping";
+import { isShippingToConfirm } from "@/admin/services/orders/admin-order-shipping";
 import { calculateOrderTotalMinor } from "@/admin/services/orders/admin-order-calculations";
-import { formatDateTime, maskPhone } from "@/admin/utils/admin.utils";
+import { formatOrderListDateTime, maskPhone } from "@/admin/utils/admin.utils";
 import { formatMoney } from "@/lib/money/money";
 import { toast } from "sonner";
 
-const STATUS_OPTIONS = (Object.keys(ORDER_STATUS_LABELS) as AdminOrderStatus[]).map((status) => ({
+const STATUS_OPTIONS = ORDER_STATUS_OPTIONS.map((status) => ({
   value: status,
   label: ORDER_STATUS_LABELS[status],
 }));
@@ -51,7 +50,6 @@ export function AdminOrdersPage() {
   const [sort, setSort] = useState<AdminOrderSort>("newest");
   const [status, setStatus] = useState("all");
   const [paymentStatus, setPaymentStatus] = useState("all");
-  const [deliveryMethod, setDeliveryMethod] = useState("all");
   const [governorate, setGovernorate] = useState("all");
   /** Recherche privée : état local uniquement, jamais persisté. */
   const [search, setSearch] = useState("");
@@ -65,12 +63,9 @@ export function AdminOrdersPage() {
       ...(paymentStatus !== "all"
         ? { paymentStatus: [paymentStatus as AdminOrder["paymentStatus"]] }
         : {}),
-      ...(deliveryMethod !== "all"
-        ? { deliveryMethod: [deliveryMethod as AdminOrder["deliveryMethod"]] }
-        : {}),
       ...(governorate !== "all" ? { governorates: [governorate] } : {}),
     }),
-    [page, sort, status, paymentStatus, deliveryMethod, governorate],
+    [page, sort, status, paymentStatus, governorate],
   );
 
   const { data, isLoading, error, refetch } = useAdminOrders(params, search);
@@ -92,7 +87,7 @@ export function AdminOrdersPage() {
         </AppLink>
       ),
     },
-    { id: "date", header: "Date", cell: (order) => formatDateTime(order.createdAt) },
+    { id: "date", header: "Date", cell: (order) => formatOrderListDateTime(order.createdAt) },
     {
       id: "customer",
       header: "Client",
@@ -121,18 +116,6 @@ export function AdminOrdersPage() {
           label={PAYMENT_STATUS_LABELS[order.paymentStatus]}
           tone={PAYMENT_STATUS_TONE[order.paymentStatus]}
         />
-      ),
-    },
-    {
-      id: "delivery",
-      header: "Livraison",
-      cell: (order) => (
-        <div className="space-y-1">
-          <p>{DELIVERY_METHOD_LABELS[order.deliveryMethod]}</p>
-          <p className="text-xs text-muted-foreground">
-            {order.governorate} — {SHIPPING_PROFILE_LABELS[getOrderShippingProfile(order)]}
-          </p>
-        </div>
       ),
     },
     {
@@ -214,18 +197,6 @@ export function AdminOrdersPage() {
                 { value: "pending", label: "En attente" },
                 { value: "collected", label: "Encaissé" },
                 { value: "refunded", label: "Remboursé" },
-              ]}
-            />
-            <AdminSelectFilter
-              label="Mode de livraison"
-              value={deliveryMethod}
-              onChange={(value) => {
-                setDeliveryMethod(value);
-                setPage(1);
-              }}
-              options={[
-                { value: "home_delivery", label: "Livraison à domicile" },
-                { value: "store_pickup", label: "Retrait en boutique" },
               ]}
             />
             <AdminSelectFilter

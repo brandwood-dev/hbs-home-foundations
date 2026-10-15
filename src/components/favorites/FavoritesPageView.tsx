@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { AppLink } from "@/components/ui/app-link";
 import { ProductCardSkeleton } from "@/components/catalog/ProductCardSkeleton";
@@ -6,27 +7,90 @@ import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { FavoritesEmptyState } from "@/components/favorites/FavoritesEmptyState";
 import { FavoritesToolbar } from "@/components/favorites/FavoritesToolbar";
 import { ClearFavoritesDialog } from "@/components/favorites/ClearFavoritesDialog";
+import { CATEGORY_LABELS } from "@/domain/product/product.constants";
 import type { ProductCategory } from "@/domain/product/product.types";
+import type { ResolvedFavoriteItem } from "@/domain/favorites/favorites.types";
 import { useFavorites } from "@/hooks/favorites/useFavorites";
 import { useFavoritesActions } from "@/hooks/favorites/useFavoritesActions";
 import { trackEvent } from "@/lib/analytics/analytics";
 import {
   countFavoritesByCategory,
+  fallbackFavoriteCategoryLabel,
   filterFavoritesByCategory,
+  favoriteCategoryKey,
   sortFavorites,
   type FavoritesSort,
 } from "@/services/favorites/favorites-sort";
+import { catalogNavigationQuery } from "@/services/catalog/catalog-category.queries";
+import type { PublicCategory } from "@/repositories/interfaces/CategoryRepository";
+
+function normalizeCategoryToken(value: string): string {
+  return value
+    .trim()
+    .replace(/^\/+|\/+$/g, "")
+    .toLocaleLowerCase("fr");
+}
+
+function createCategoryLabelIndex(categories: readonly PublicCategory[]): Map<string, string> {
+  const index = new Map<string, string>();
+  const visit = (category: PublicCategory) => {
+    const label = category.name.trim();
+    if (label) {
+      index.set(normalizeCategoryToken(category.slug), label);
+      if (category.parentSlug === null) {
+        index.set(normalizeCategoryToken(category.path.split("/").filter(Boolean)[0] ?? ""), label);
+      }
+    }
+    category.children.forEach(visit);
+  };
+  categories.forEach(visit);
+  return index;
+}
+
+function buildFavoriteCategoryLabels(
+  items: readonly ResolvedFavoriteItem[],
+  categories: readonly PublicCategory[] | undefined,
+): Record<string, string> {
+  const dynamicIndex = createCategoryLabelIndex(categories ?? []);
+  const labels: Record<string, string> = {};
+
+  for (const item of items) {
+    const key = favoriteCategoryKey(item.product);
+    const canonicalRoot = item.product.canonicalPath
+      ?.split("/")
+      .map((segment) => segment.trim())
+      .find((segment) => segment.length > 0 && segment !== "produit");
+    const dynamicLabel = [canonicalRoot, key]
+      .map((candidate) =>
+        candidate ? dynamicIndex.get(normalizeCategoryToken(candidate)) : undefined,
+      )
+      .find((label): label is string => Boolean(label));
+
+    labels[key] =
+      dynamicLabel ?? CATEGORY_LABELS[key as ProductCategory] ?? fallbackFavoriteCategoryLabel(key);
+  }
+
+  return labels;
+}
 
 export function FavoritesPageView() {
   const { favorites, hydrated, isPending, isError } = useFavorites();
   const { clearFavorites, isClearing } = useFavoritesActions();
-  const [category, setCategory] = useState<ProductCategory | undefined>(undefined);
+  const [category, setCategory] = useState<string | undefined>(undefined);
   const [sort, setSort] = useState<FavoritesSort>("recent");
   const [clearOpen, setClearOpen] = useState(false);
+  const categoriesQuery = useQuery({
+    ...catalogNavigationQuery(),
+    enabled: hydrated,
+  });
 
   const showSkeleton = !hydrated || isPending;
 
   const counts = useMemo(() => countFavoritesByCategory(favorites.items), [favorites.items]);
+  const categoryLabels = useMemo(
+    () => buildFavoriteCategoryLabels(favorites.items, categoriesQuery.data),
+    [favorites.items, categoriesQuery.data],
+  );
   const visible = useMemo(
     () => sortFavorites(filterFavoritesByCategory(favorites.items, category), sort),
     [favorites.items, category, sort],
@@ -99,6 +163,7 @@ export function FavoritesPageView() {
               counts={counts}
               total={favorites.count}
               activeCategory={category}
+              categoryLabels={categoryLabels}
               sort={sort}
               onCategoryChange={setCategory}
               onSortChange={setSort}

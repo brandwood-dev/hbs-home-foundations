@@ -33,7 +33,11 @@ export class LocalCartRepository implements CartRepository {
 
     const changed =
       reconciled.length !== persisted.items.length ||
-      reconciled.some((item, index) => item.quantity !== persisted.items[index]?.quantity);
+      reconciled.some(
+        (item, index) =>
+          item.quantity !== persisted.items[index]?.quantity ||
+          item.panelCount !== persisted.items[index]?.panelCount,
+      );
     if (changed) writePersistedCart(reconciled);
 
     return buildCart(reconciled, map);
@@ -50,6 +54,7 @@ export class LocalCartRepository implements CartRepository {
       input.variantId,
       input.quantity,
       input.confectionKey,
+      input.panelCount,
     );
     const saved = writePersistedCart(items);
     const map = await this.productsById(saved.items.map((item) => item.productId));

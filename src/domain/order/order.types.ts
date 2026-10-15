@@ -36,6 +36,7 @@ export interface OrderItemSnapshot {
   colorLabel?: string;
   widthCm?: number;
   heightCm?: number;
+  panelCount?: number;
   curtainHeaderLabel?: string;
   eyeletColorLabel?: string;
   liningLabel?: string;

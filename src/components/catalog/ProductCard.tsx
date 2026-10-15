@@ -132,13 +132,13 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           {product.opacityLevel ? ` · ${OPACITY_LABELS[product.opacityLevel]}` : null}
         </p>
 
-        <h3 className="mt-1 min-w-0 break-words text-base leading-snug sm:text-lg">
+        <h3 className="card-title mt-1 min-w-0 break-words">
           <AppLink href={getProductPath(product)} className="hover:text-accent-dark">
             {product.name}
           </AppLink>
         </h3>
 
-        <p className="mt-1 line-clamp-2 text-sm text-foreground-muted">
+        <p className="mt-1 line-clamp-2 text-[13px] leading-[1.45] text-foreground-muted sm:text-sm sm:leading-5">
           {richTextToPlainText(product.shortDescription)}
         </p>
 

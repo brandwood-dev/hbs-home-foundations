@@ -7,20 +7,25 @@ export function createCartLineId(
   productId: string,
   variantId: string,
   confectionKey?: string,
+  panelCount?: number,
 ): string {
-  return `${productId}:${variantId}:${confectionKey ?? ""}`;
+  return `${productId}:${variantId}:${confectionKey ?? ""}:${panelCount ?? ""}`;
 }
 
 export function parseCartLineId(
   lineId: string,
-): { productId: string; variantId: string; confectionKey?: string } | null {
+): { productId: string; variantId: string; confectionKey?: string; panelCount?: number } | null {
   const parts = lineId.split(":");
   if (parts.length < 2 || !parts[0] || !parts[1]) return null;
-  const confectionKey = parts.slice(2).join(":");
+  const confectionKey = parts[2] ?? "";
+  const parsedPanelCount = Number(parts[3]);
+  const panelCount =
+    Number.isInteger(parsedPanelCount) && parsedPanelCount > 0 ? parsedPanelCount : undefined;
   return {
     productId: parts[0],
     variantId: parts[1],
     ...(confectionKey ? { confectionKey } : {}),
+    ...(panelCount ? { panelCount } : {}),
   };
 }
 

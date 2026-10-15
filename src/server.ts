@@ -48,6 +48,7 @@ const META_EVENT_NAMES = new Set([
 
 const META_CATALOG_FEED_PAGE_SIZE = 100;
 const META_CATALOG_FEED_MAX_PAGES = 50;
+const META_CATALOG_IMAGE_URL_VERSION = "20261012-10";
 
 function envString(env: unknown, key: keyof MarketingEnv): string {
   if (typeof env !== "object" || env === null) return "";
@@ -130,6 +131,28 @@ function catalogImageAssetUrl(image: Record<string, unknown>, origin: string): s
   return value && !isCatalogPlaceholder(value) ? absoluteCatalogUrl(value, origin) : "";
 }
 
+/**
+ * Meta's catalog image validator accepts JPEG and PNG, while the storefront
+ * can legitimately store product media as WebP. Supabase's render endpoint
+ * returns a JPEG and preserves the image inside a stable square canvas, so
+ * use it as the source fetched by Meta for every Supabase public asset.
+ */
+function metaCatalogImageSource(value: string): string {
+  try {
+    const source = new URL(value);
+    const match = source.pathname.match(/^\/storage\/v1\/object\/public\/(.+)$/);
+    if (!match || !source.hostname.endsWith(".supabase.co")) return value;
+    source.pathname = `/storage/v1/render/image/public/${match[1]}`;
+    source.search = "";
+    source.searchParams.set("width", "1254");
+    source.searchParams.set("height", "1254");
+    source.searchParams.set("resize", "contain");
+    return source.toString();
+  } catch {
+    return value;
+  }
+}
+
 function catalogImageUrls(
   variant: Record<string, unknown>,
   product: Record<string, unknown>,
@@ -161,6 +184,223 @@ function catalogImageUrls(
     .filter((imageUrl, index, values) => Boolean(imageUrl) && values.indexOf(imageUrl) === index);
   const additional = allUrls.filter((imageUrl) => imageUrl !== primary).slice(0, 10);
   return { primary, additional };
+}
+
+/**
+ * Give every catalog variant a distinct image URL. Meta can cache an image
+ * fetch per URL while importing a feed; adding the SKU as a query parameter
+ * makes an updated variant image a new fetch without changing the asset in
+ * Supabase Storage.
+ */
+function metaCatalogImageUrl(value: string, sku: string, origin: string, slot = 0): string {
+  if (!value || !sku) return value;
+  const proxy = new URL(
+    `/api/meta/catalog-image/${encodeURIComponent(sku)}/${slot}/${META_CATALOG_IMAGE_URL_VERSION}.png`,
+    origin,
+  );
+  // Keep each proxy request self-contained. Meta can fetch variant URLs
+  // concurrently across Worker isolates, so no per-isolate catalog lookup is
+  // needed during the import burst.
+  proxy.searchParams.set("source", metaCatalogImageSource(value));
+  return proxy.toString();
+}
+
+type MetaCatalogImageSet = { primary: string; additional: string[] };
+
+function writeUint32(target: Uint8Array, offset: number, value: number): void {
+  target[offset] = (value >>> 24) & 0xff;
+  target[offset + 1] = (value >>> 16) & 0xff;
+  target[offset + 2] = (value >>> 8) & 0xff;
+  target[offset + 3] = value & 0xff;
+}
+
+function crc32(bytes: Uint8Array): number {
+  let crc = 0xffffffff;
+  for (const byte of bytes) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) {
+      crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
+    }
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function addPngVariantMarker(bytes: Uint8Array, sku: string): Uint8Array {
+  const pngSignature = [137, 80, 78, 71, 13, 10, 26, 10];
+  if (
+    bytes.length < 33 ||
+    !pngSignature.every((value, index) => bytes[index] === value) ||
+    String.fromCharCode(...bytes.slice(bytes.length - 8, bytes.length - 4)) !== "IEND"
+  ) {
+    return bytes;
+  }
+
+  const text = new TextEncoder().encode(`hbs_variant=${sku}`);
+  const type = new TextEncoder().encode("tEXt");
+  const chunkData = new Uint8Array(type.length + text.length);
+  chunkData.set(type, 0);
+  chunkData.set(text, type.length);
+  const chunk = new Uint8Array(12 + text.length);
+  writeUint32(chunk, 0, text.length);
+  chunk.set(type, 4);
+  chunk.set(text, 8);
+  writeUint32(chunk, 8 + text.length, crc32(chunkData));
+
+  const insertAt = bytes.length - 12;
+  const output = new Uint8Array(bytes.length + chunk.length);
+  output.set(bytes.slice(0, insertAt), 0);
+  output.set(chunk, insertAt);
+  output.set(bytes.slice(insertAt), insertAt + chunk.length);
+  return output;
+}
+
+/**
+ * Keep JPEG payloads distinct when several catalog variants intentionally use
+ * the same source image. Meta can otherwise deduplicate the binary payload
+ * while validating variants and leave one of the items without media.
+ * A JPEG COM segment is metadata-only and does not change the rendered image.
+ */
+function addJpegVariantMarker(bytes: Uint8Array, sku: string): Uint8Array {
+  if (bytes.length < 2 || bytes[0] !== 0xff || bytes[1] !== 0xd8) {
+    return bytes;
+  }
+
+  const payload = new TextEncoder().encode(`hbs_variant=${sku}`);
+  const segment = new Uint8Array(payload.length + 4);
+  segment[0] = 0xff;
+  segment[1] = 0xfe; // COM marker
+  const segmentLength = payload.length + 2;
+  segment[2] = (segmentLength >>> 8) & 0xff;
+  segment[3] = segmentLength & 0xff;
+  segment.set(payload, 4);
+
+  const output = new Uint8Array(bytes.length + segment.length);
+  output.set(bytes.slice(0, 2), 0); // SOI
+  output.set(segment, 2);
+  output.set(bytes.slice(2), 2 + segment.length);
+  return output;
+}
+
+let metaCatalogImageSourcesPromise: Promise<Map<string, MetaCatalogImageSet>> | undefined;
+let metaCatalogImageSourcesExpiresAt = 0;
+
+async function loadMetaCatalogImageSources(
+  origin: string,
+): Promise<Map<string, MetaCatalogImageSet>> {
+  const now = Date.now();
+  if (metaCatalogImageSourcesPromise && now < metaCatalogImageSourcesExpiresAt) {
+    return metaCatalogImageSourcesPromise;
+  }
+  metaCatalogImageSourcesExpiresAt = now + 60_000;
+  metaCatalogImageSourcesPromise = loadCatalogFeedProducts().then((products) => {
+    const sources = new Map<string, MetaCatalogImageSet>();
+    for (const product of products) {
+      const variants = Array.isArray(product["variants"])
+        ? product["variants"].filter((item): item is Record<string, unknown> => {
+            return typeof item === "object" && item !== null;
+          })
+        : [];
+      for (const variant of variants) {
+        const sku = asTrimmedString(variant["sku"]);
+        if (!sku) continue;
+        const imageLinks = catalogImageUrls(variant, product, origin);
+        if (imageLinks.primary) sources.set(sku, imageLinks);
+      }
+    }
+    return sources;
+  });
+  return metaCatalogImageSourcesPromise;
+}
+
+async function handleMetaCatalogImage(request: Request): Promise<Response | null> {
+  const url = new URL(request.url);
+  const match = url.pathname.match(/^\/api\/meta\/catalog-image\/([^/]+)\/(\d+)\/[^/]+\.png$/);
+  if (!match) return null;
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return new Response("Method Not Allowed", {
+      status: 405,
+      headers: { allow: "GET, HEAD" },
+    });
+  }
+
+  const sku = decodeURIComponent(match[1] ?? "");
+  const slot = Number.parseInt(match[2] ?? "-1", 10);
+  const suppliedSource = url.searchParams.get("source")?.trim() ?? "";
+  let source = suppliedSource;
+  if (!source) {
+    const sources = await loadMetaCatalogImageSources(url.origin);
+    const imageSet = sources.get(sku);
+    source = slot === 0 ? (imageSet?.primary ?? "") : (imageSet?.additional[slot - 1] ?? "");
+  }
+  if (!source) return new Response("Image unavailable.", { status: 404 });
+
+  let sourceUrl: URL;
+  try {
+    sourceUrl = new URL(source);
+  } catch {
+    return new Response("Invalid image source.", { status: 400 });
+  }
+
+  const isAllowedHost =
+    sourceUrl.protocol === "https:" &&
+    (sourceUrl.hostname === url.hostname || sourceUrl.hostname.endsWith(".supabase.co"));
+  if (!isAllowedHost) return new Response("Invalid image source.", { status: 400 });
+
+  try {
+    const cacheKey = new Request(sourceUrl.toString(), { method: "GET" });
+    const edgeCache = (caches as unknown as { default: Cache }).default;
+    let upstream = await edgeCache.match(cacheKey);
+    if (!upstream) {
+      // Meta may request many variants in parallel. Retry transient upstream
+      // failures so a single Supabase/edge blip does not make a catalog item
+      // permanently appear as “image missing” in Commerce Manager.
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+          upstream = await fetch(sourceUrl, {
+            headers: { accept: "image/jpeg,image/png,image/*;q=0.8" },
+          });
+        } catch {
+          upstream = undefined;
+        }
+        if (upstream?.ok && upstream.body) break;
+        if (
+          upstream &&
+          upstream.status >= 400 &&
+          upstream.status < 500 &&
+          upstream.status !== 429
+        ) {
+          break;
+        }
+      }
+      if (!upstream) return new Response("Image unavailable.", { status: 502 });
+      if (upstream.ok && upstream.body) {
+        await edgeCache.put(cacheKey, upstream.clone());
+      }
+    }
+    const contentType = upstream.headers.get("content-type") || "";
+    if (!upstream.ok || !upstream.body || !/^image\/(?:jpeg|png)\b/i.test(contentType)) {
+      return new Response("Image unavailable.", { status: 502 });
+    }
+
+    const sourceBytes = new Uint8Array(await upstream.arrayBuffer());
+    const imageBytes = /^image\/png\b/i.test(contentType)
+      ? addPngVariantMarker(sourceBytes, sku)
+      : /^image\/jpeg\b/i.test(contentType)
+        ? addJpegVariantMarker(sourceBytes, sku)
+        : sourceBytes;
+
+    const headers = new Headers({
+      "cache-control": "public, max-age=31536000, immutable",
+      "content-type": contentType,
+    });
+    headers.set("content-length", String(imageBytes.byteLength));
+    return new Response(request.method === "HEAD" ? null : (imageBytes.buffer as ArrayBuffer), {
+      status: 200,
+      headers,
+    });
+  } catch {
+    return new Response("Image unavailable.", { status: 502 });
+  }
 }
 
 function catalogProductPath(product: Record<string, unknown>): string {
@@ -230,7 +470,9 @@ async function loadCatalogFeedProducts(): Promise<Record<string, unknown>[]> {
 
 async function handleMetaCatalogFeed(request: Request): Promise<Response | null> {
   const url = new URL(request.url);
-  if (url.pathname !== "/api/meta/catalog-feed") return null;
+  if (url.pathname !== "/api/meta/catalog-feed" && url.pathname !== "/api/meta/catalog-feed-v2") {
+    return null;
+  }
   if (request.method !== "GET" && request.method !== "HEAD") {
     return new Response("Method Not Allowed", {
       status: 405,
@@ -292,6 +534,10 @@ async function handleMetaCatalogFeed(request: Request): Promise<Response | null>
           Number.isFinite(width) && Number.isFinite(height) ? ` · ${width}×${height} cm` : "";
         const title = `${name}${colorLabel ? ` — ${colorLabel}` : ""}${dimensions}`.slice(0, 150);
         const imageLinks = catalogImageUrls(variant, product, url.origin);
+        const primaryImageLink = metaCatalogImageUrl(imageLinks.primary, sku, url.origin);
+        const additionalImageLinks = imageLinks.additional.map((image, index) =>
+          metaCatalogImageUrl(image, sku, url.origin, index + 1),
+        );
         const row = [
           sku,
           title,
@@ -301,8 +547,8 @@ async function handleMetaCatalogFeed(request: Request): Promise<Response | null>
           prices.price,
           prices.salePrice,
           link,
-          imageLinks.primary,
-          imageLinks.additional.join(","),
+          primaryImageLink,
+          additionalImageLinks.join(","),
           "HBS HOME",
           reference || asTrimmedString(product["id"]),
           sku === heroSku ? "hbs_home_hero" : "hbs_home_variant",
@@ -315,7 +561,7 @@ async function handleMetaCatalogFeed(request: Request): Promise<Response | null>
     const body = rows.map((row) => row.map(csvCell).join("\t")).join("\n");
     const headers = {
       "content-type": "text/tab-separated-values; charset=utf-8",
-      "cache-control": "public, max-age=900, s-maxage=900",
+      "cache-control": "no-store, max-age=0",
       "content-disposition": 'inline; filename="hbs-home-catalog.tsv"',
     };
     return new Response(request.method === "HEAD" ? null : body, { status: 200, headers });
@@ -670,6 +916,9 @@ function withDeliveryHeaders(response: Response): Response {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const catalogImageResponse = await handleMetaCatalogImage(request);
+      if (catalogImageResponse) return withDeliveryHeaders(catalogImageResponse);
+
       const catalogFeedResponse = await handleMetaCatalogFeed(request);
       if (catalogFeedResponse) return withDeliveryHeaders(catalogFeedResponse);
 

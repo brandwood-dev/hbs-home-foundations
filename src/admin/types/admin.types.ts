@@ -134,6 +134,8 @@ export interface AdminCategory {
   name: string;
   slug: string;
   parentId?: string;
+  /** API lifecycle state; archived categories are retained for audit history. */
+  status?: "draft" | "active" | "archived";
   order: number;
   isActive: boolean;
   description: string;
@@ -242,6 +244,7 @@ export interface AdminOrderItem {
   variantLabel: string;
   sku: string;
   quantity: number;
+  panelCount?: number;
   unitPriceMinor: number;
   lineTotalMinor: number;
   /** Snapshots additifs — immuables après création de la commande. */

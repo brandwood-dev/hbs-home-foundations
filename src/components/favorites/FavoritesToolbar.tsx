@@ -1,15 +1,20 @@
 import { CATEGORY_LABELS } from "@/domain/product/product.constants";
 import type { ProductCategory } from "@/domain/product/product.types";
-import { FAVORITES_SORT_LABELS, type FavoritesSort } from "@/services/favorites/favorites-sort";
+import {
+  FAVORITES_SORT_LABELS,
+  fallbackFavoriteCategoryLabel,
+  type FavoritesSort,
+} from "@/services/favorites/favorites-sort";
 import { cn } from "@/lib/utils";
 
 interface FavoritesToolbarProps {
-  counts: Partial<Record<ProductCategory, number>>;
+  counts: Readonly<Record<string, number>>;
   total: number;
-  activeCategory: ProductCategory | undefined;
+  activeCategory: string | undefined;
   sort: FavoritesSort;
-  onCategoryChange: (category: ProductCategory | undefined) => void;
+  onCategoryChange: (category: string | undefined) => void;
   onSortChange: (sort: FavoritesSort) => void;
+  categoryLabels?: Readonly<Record<string, string>>;
 }
 
 export function FavoritesToolbar({
@@ -19,10 +24,14 @@ export function FavoritesToolbar({
   sort,
   onCategoryChange,
   onSortChange,
+  categoryLabels,
 }: FavoritesToolbarProps) {
-  const categories = (Object.keys(counts) as ProductCategory[]).filter(
-    (category) => (counts[category] ?? 0) > 0,
-  );
+  const categories = Object.keys(counts).filter((category) => (counts[category] ?? 0) > 0);
+
+  const labelForCategory = (category: string): string =>
+    categoryLabels?.[category]?.trim() ||
+    CATEGORY_LABELS[category as ProductCategory] ||
+    fallbackFavoriteCategoryLabel(category);
 
   return (
     <div className="flex flex-col gap-4 border-b border-border pb-4 lg:flex-row lg:items-center lg:justify-between">
@@ -40,7 +49,7 @@ export function FavoritesToolbar({
           {categories.map((category) => (
             <CategoryChip
               key={category}
-              label={`${CATEGORY_LABELS[category]} (${counts[category]})`}
+              label={`${labelForCategory(category)} (${counts[category]})`}
               active={activeCategory === category}
               onClick={() => onCategoryChange(category)}
             />

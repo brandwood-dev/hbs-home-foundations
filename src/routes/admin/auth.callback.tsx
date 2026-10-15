@@ -25,11 +25,6 @@ type AuthCallbackParams =
 type SessionRestoreResult =
   { success: true; session: Session } | { success: false; message: string };
 
-function requiresMfaForPasswordChange(reason: unknown): boolean {
-  const message = reason instanceof Error ? reason.message : String(reason);
-  return /aal2 session is required/i.test(message) || /when mfa is enabled/i.test(message);
-}
-
 function validPassword(password: string): boolean {
   return (
     password.length >= 12 &&
@@ -46,14 +41,11 @@ function AdminInviteCallbackPage() {
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [verificationRequested, setVerificationRequested] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resetDone, setResetDone] = useState(false);
   const [restoringSession, setRestoringSession] = useState(false);
   const [restoreError, setRestoreError] = useState<string | null>(null);
-  const [mfaRequired, setMfaRequired] = useState(false);
-  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
-  const [mfaCode, setMfaCode] = useState("");
-  const [mfaLoading, setMfaLoading] = useState(false);
   const restoreAttempted = useRef(false);
   const recoveredSession = useRef<Session | null>(null);
 
@@ -216,69 +208,15 @@ function AdminInviteCallbackPage() {
     return restoreSessionFromAuthLink();
   }, [auth.client, restoreSessionFromAuthLink]);
 
-  const prepareMfaStepUp = useCallback(async (): Promise<boolean> => {
-    if (!auth.client) return false;
-
-    setMfaLoading(true);
-    try {
-      const { data, error: factorsError } = await auth.client.auth.mfa.listFactors();
-      if (factorsError) throw factorsError;
-
-      const verifiedFactor = data.totp.find((factor) => factor.status === "verified");
-      if (!verifiedFactor) {
-        setError(
-          "Une vérification MFA est requise pour modifier ce mot de passe, mais aucun authentificateur vérifié n’est disponible pour ce compte.",
-        );
-        setMfaRequired(false);
-        setMfaFactorId(null);
-        return false;
-      }
-
-      setMfaFactorId(verifiedFactor.id);
-      setMfaCode("");
-      setMfaRequired(true);
-      setError(null);
-      return true;
-    } catch (reason) {
-      setError(
-        reason instanceof Error
-          ? reason.message
-          : "Impossible de préparer la vérification MFA. Demandez un nouveau lien puis réessayez.",
-      );
-      return false;
-    } finally {
-      setMfaLoading(false);
-    }
-  }, [auth.client]);
-
-  const verifyMfaStepUp = useCallback(async () => {
-    if (!auth.client || !mfaFactorId) {
-      throw new Error("La vérification MFA n’est pas disponible pour cette session.");
-    }
-
-    if (!/^\d{6}$/.test(mfaCode)) {
-      throw new Error("Saisissez le code MFA à 6 chiffres.");
-    }
-
-    const { data: challenge, error: challengeError } = await auth.client.auth.mfa.challenge({
-      factorId: mfaFactorId,
-    });
-    if (challengeError) throw challengeError;
-
-    const { error: verifyError } = await auth.client.auth.mfa.verify({
-      factorId: mfaFactorId,
-      challengeId: challenge.id,
-      code: mfaCode,
-    });
-    if (verifyError) throw verifyError;
-
-    setMfaRequired(false);
-    setMfaFactorId(null);
-    setMfaCode("");
-  }, [auth.client, mfaCode, mfaFactorId]);
-
   useEffect(() => {
-    if (auth.status === "loading" || auth.status === "unconfigured" || !hasAuthLink) return;
+    if (
+      auth.status === "loading" ||
+      auth.status === "unconfigured" ||
+      !hasAuthLink ||
+      (isRecoveryFlow && !verificationRequested)
+    ) {
+      return;
+    }
     // The provider restores the URL once. Only fall back to this component
     // when no session exists, and never replay the same recovery link when
     // the provider emits an auth-state change.
@@ -299,7 +237,15 @@ function AdminInviteCallbackPage() {
     return () => {
       cancelled = true;
     };
-  }, [auth.status, auth.session, hasAuthLink, restoreError, restoreSessionFromAuthLink]);
+  }, [
+    auth.status,
+    auth.session,
+    hasAuthLink,
+    isRecoveryFlow,
+    restoreError,
+    restoreSessionFromAuthLink,
+    verificationRequested,
+  ]);
 
   if (auth.status === "loading") {
     return (
@@ -327,6 +273,33 @@ function AdminInviteCallbackPage() {
     return (
       <AdminAuthPage title="Validation du lien" description="Restauration de la session en cours.">
         <p className="text-sm text-muted-foreground">Veuillez patienter.</p>
+      </AdminAuthPage>
+    );
+  }
+
+  // Email security scanners (including Gmail) may prefetch links. Keep the
+  // one-time recovery token untouched until the user explicitly confirms the
+  // action in this page, so a scanner cannot consume it before the user does.
+  if (isRecoveryFlow && hasAuthLink && !auth.session && !verificationRequested && !restoreError) {
+    return (
+      <AdminAuthPage
+        title="Confirmer le lien de réinitialisation"
+        description="Le lien est prêt à être vérifié."
+      >
+        <p className="text-sm text-muted-foreground">
+          Pour éviter qu’un système de sécurité de messagerie ne consomme le lien avant vous,
+          cliquez sur le bouton ci-dessous pour commencer la réinitialisation.
+        </p>
+        <Button
+          className="mt-4 w-full"
+          onClick={() => {
+            setRestoreError(null);
+            setError(null);
+            setVerificationRequested(true);
+          }}
+        >
+          Vérifier le lien et continuer
+        </Button>
       </AdminAuthPage>
     );
   }
@@ -406,11 +379,6 @@ function AdminInviteCallbackPage() {
       return;
     }
 
-    if (mfaRequired && !/^\d{6}$/.test(mfaCode)) {
-      setError("Saisissez le code MFA à 6 chiffres.");
-      return;
-    }
-
     setSubmitting(true);
     setError(null);
 
@@ -422,9 +390,6 @@ function AdminInviteCallbackPage() {
       }
 
       try {
-        if (mfaRequired) {
-          await verifyMfaStepUp();
-        }
         await auth.updatePassword(password);
         setResetDone(true);
         stripAuthTokensFromUrl();
@@ -432,10 +397,6 @@ function AdminInviteCallbackPage() {
       } catch (reason) {
         const rawMessage =
           reason instanceof Error ? reason.message : "Le mot de passe n’a pas pu être défini.";
-        if (requiresMfaForPasswordChange(reason)) {
-          await prepareMfaStepUp();
-          return;
-        }
         if (rawMessage === "Auth session missing!") {
           const restored = await restoreSessionFromAuthLink();
           if (!restored) throw reason;
@@ -495,47 +456,13 @@ function AdminInviteCallbackPage() {
         <p className="text-xs text-muted-foreground">
           Minimum 12 caractères, avec une majuscule, une minuscule, un chiffre et un symbole.
         </p>
-        {mfaRequired ? (
-          <div className="space-y-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
-            <div>
-              <p className="text-sm font-medium text-amber-950">Vérification MFA requise</p>
-              <p className="mt-1 text-xs text-amber-900">
-                Saisissez le code à 6 chiffres affiché par votre application d’authentification,
-                puis validez à nouveau.
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="mfa-code">Code MFA</Label>
-              <Input
-                id="mfa-code"
-                value={mfaCode}
-                onChange={(event) => setMfaCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                pattern="[0-9]{6}"
-                minLength={6}
-                maxLength={6}
-                required
-                autoFocus
-              />
-            </div>
-          </div>
-        ) : null}
         {error ? (
           <p role="alert" className="text-sm text-red-700">
             {error}
           </p>
         ) : null}
-        <Button className="w-full" type="submit" disabled={submitting || mfaLoading}>
-          {submitting
-            ? mfaRequired
-              ? "Vérification…"
-              : isRecovery
-                ? "Réinitialisation…"
-                : "Activation…"
-            : mfaRequired
-              ? "Vérifier et continuer"
-              : submitLabel}
+        <Button className="w-full" type="submit" disabled={submitting}>
+          {submitting ? (isRecovery ? "Réinitialisation…" : "Activation…") : submitLabel}
         </Button>
       </form>
     </AdminAuthPage>

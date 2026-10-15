@@ -36,6 +36,7 @@ import { getProductTaxonomyPath } from "@/services/product/product-breadcrumbs";
 import { RichTextRenderer } from "@/lib/content/rich-text";
 import { trackEvent } from "@/lib/analytics/analytics";
 import { getMetaTrackingConsent, META_CONSENT_EVENT } from "@/lib/analytics/consent";
+import { panelCountOptionsFor } from "@/domain/product/panel-count";
 
 export function ProductDetailView({ product }: { product: Product }) {
   const [variant, setVariant] = useState(() => getInitialVariant(product));
@@ -44,6 +45,7 @@ export function ProductDetailView({ product }: { product: Product }) {
     return initial ?? confectionOptionsFor(product.category, product.confectionOptions)[0]?.key;
   });
   const [quantity, setQuantity] = useState(1);
+  const [panelCount, setPanelCount] = useState(1);
   // A product can render before the visitor makes a privacy choice. Keep the
   // consent state in the dependency list so accepting the banner replays the
   // ViewContent event for the product that is already visible.
@@ -67,6 +69,14 @@ export function ProductDetailView({ product }: { product: Product }) {
     const next = changeAxis(product, variant, axis, value);
     setVariant(next);
     setQuantity((current) => Math.min(current, Math.max(1, next.availableQuantity || 1)));
+    const availablePanelCounts = panelCountOptionsFor(
+      product.category,
+      product.material,
+      next.widthCm,
+    );
+    setPanelCount((current) =>
+      availablePanelCounts.includes(current) ? current : (availablePanelCounts[0] ?? 1),
+    );
   };
 
   const onConfectionChange = (value: ConfectionKey) => {
@@ -143,7 +153,7 @@ export function ProductDetailView({ product }: { product: Product }) {
                 {product.opacityLevel ? ` · ${OPACITY_LABELS[product.opacityLevel]}` : ""} ·{" "}
                 {SELLING_MODE_LABELS[product.sellingMode]}
               </p>
-              <h1 className="mt-2 text-3xl sm:text-4xl">{product.name}</h1>
+              <h1 className="product-title mt-2">{product.name}</h1>
               <div className="mt-4" aria-label="Prix du produit">
                 <ProductPrice variant={variant} />
               </div>
@@ -152,7 +162,7 @@ export function ProductDetailView({ product }: { product: Product }) {
               </div>
               <RichTextRenderer
                 value={product.shortDescription}
-                className="mt-2 text-sm text-foreground-muted"
+                className="mt-2 text-[15px] leading-6 text-foreground-muted"
               />
               <p className="mt-1 text-xs text-foreground-muted">Référence {variant.sku}</p>
             </header>
@@ -163,6 +173,8 @@ export function ProductDetailView({ product }: { product: Product }) {
               onChange={onAxisChange}
               selectedConfection={confectionKey}
               onConfectionChange={onConfectionChange}
+              selectedPanelCount={panelCount}
+              onPanelCountChange={setPanelCount}
             />
 
             <ProductPurchasePanel
@@ -171,6 +183,7 @@ export function ProductDetailView({ product }: { product: Product }) {
               quantity={quantity}
               onQuantityChange={setQuantity}
               confectionKey={confectionKey}
+              panelCount={panelCount}
             />
 
             <ProductTrustPoints />
@@ -192,6 +205,7 @@ export function ProductDetailView({ product }: { product: Product }) {
         variant={variant}
         quantity={quantity}
         confectionKey={confectionKey}
+        panelCount={panelCount}
       />
     </SiteLayout>
   );

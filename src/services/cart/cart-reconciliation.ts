@@ -19,6 +19,7 @@ import {
   createCartLineId,
 } from "@/services/cart/cart-calculations";
 import { getVariantDisplayOptions } from "@/services/product/product-options";
+import { panelCountLabel, panelCountOptionsFor } from "@/domain/product/panel-count";
 
 const MISSING_IMAGE_ALT = "Article indisponible";
 
@@ -28,13 +29,14 @@ function unavailableLine(
   product?: Product,
 ): ResolvedCartItem {
   return {
-    lineId: createCartLineId(item.productId, item.variantId, item.confectionKey),
+    lineId: createCartLineId(item.productId, item.variantId, item.confectionKey, item.panelCount),
     productId: item.productId,
     productSlug: product?.slug ?? "",
     productName: product?.name ?? "Article indisponible",
     productReference: product?.reference ?? "",
     variantId: item.variantId,
     ...(item.confectionKey ? { confectionKey: item.confectionKey } : {}),
+    ...(item.panelCount ? { panelCount: item.panelCount } : {}),
     sku: "",
     quantity: item.quantity,
     unitPriceMinor: 0,
@@ -88,14 +90,22 @@ export function resolveCartItem(
   const color = product.colors.find((candidate) => candidate.id === variant.colorId);
   const image = variantImage(product, variant);
 
+  const panelOptions = panelCountOptionsFor(product.category, product.material, variant.widthCm);
+  const panelCount = panelOptions.length
+    ? panelOptions.includes(item.panelCount ?? 1)
+      ? (item.panelCount ?? 1)
+      : panelOptions[0]
+    : undefined;
+
   return {
-    lineId: createCartLineId(product.id, variant.id, item.confectionKey),
+    lineId: createCartLineId(product.id, variant.id, item.confectionKey, panelCount),
     productId: product.id,
     productSlug: product.slug,
     productName: product.name,
     productReference: product.reference,
     variantId: variant.id,
     ...(item.confectionKey ? { confectionKey: item.confectionKey } : {}),
+    ...(panelCount ? { panelCount } : {}),
     sku: variant.sku,
     quantity,
     unitPriceMinor,
@@ -116,6 +126,7 @@ export function resolveCartItem(
     ...(variant.lining ? { liningLabel: LINING_LABELS[variant.lining] } : {}),
     selectedOptions: [
       ...getVariantDisplayOptions(product, variant),
+      ...(panelCount ? [{ label: "Panneaux", value: panelCountLabel(panelCount) }] : []),
       ...(isCurtainFamily(product.category) && item.confectionKey
         ? (() => {
             const option = confectionOptionsFor(product.category, product.confectionOptions).find(
@@ -158,9 +169,24 @@ export function reconcilePersistedItems(
   return items.map((item) => {
     const product = productsById.get(item.productId);
     const variant = product?.variants.find((candidate) => candidate.id === item.variantId);
-    if (!variant || variant.availability === "out_of_stock") return item;
+    if (!product || !variant || variant.availability === "out_of_stock") return item;
     const max = Math.max(1, variant.availableQuantity || 1);
-    return item.quantity > max ? { ...item, quantity: max } : item;
+    const panelOptions = panelCountOptionsFor(product.category, product.material, variant.widthCm);
+    const panelCount = panelOptions.length
+      ? panelOptions.includes(item.panelCount ?? 1)
+        ? (item.panelCount ?? 1)
+        : panelOptions[0]
+      : undefined;
+    const quantity = item.quantity > max ? max : item.quantity;
+    const panelChanged = panelCount !== item.panelCount;
+    if (quantity !== item.quantity || panelChanged) {
+      return {
+        ...item,
+        quantity,
+        ...(panelCount ? { panelCount } : { panelCount: undefined }),
+      };
+    }
+    return item;
   });
 }
 

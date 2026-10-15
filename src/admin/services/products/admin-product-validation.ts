@@ -1,4 +1,5 @@
 import type { AdminProduct } from "@/admin/types/admin.types";
+import { ADMIN_VARIANT_AXES_BY_CATEGORY } from "@/admin/config/admin-variant-axes.config";
 import { normalizeKey } from "@/admin/utils/admin.utils";
 import { variantCombinationKey } from "@/admin/services/products/admin-variant-validation";
 import { hasRichTextContent } from "@/lib/content/rich-text";
@@ -82,6 +83,9 @@ export function validateProductForPublication(product: AdminProduct): string[] {
   }
 
   const activeVariants = product.variants.filter((variant) => variant.isActive);
+  const requiresDimensions = Boolean(
+    product.category && ADMIN_VARIANT_AXES_BY_CATEGORY[product.category]?.includes("dimensions"),
+  );
   if (activeVariants.length === 0) blocking.push("Au moins une variante active est requise.");
   if (activeVariants.length > 0 && activeVariants.every((variant) => variant.priceMinor <= 0)) {
     blocking.push("Au moins une variante doit avoir un prix valide.");
@@ -92,7 +96,7 @@ export function validateProductForPublication(product: AdminProduct): string[] {
   activeVariants.forEach((variant, index) => {
     const label = `La variante ${index + 1}`;
     if (!variant.colorId.trim()) blocking.push(`${label} doit avoir une couleur sélectionnée.`);
-    if (variant.widthCm <= 0 || variant.heightCm <= 0) {
+    if (requiresDimensions && (variant.widthCm <= 0 || variant.heightCm <= 0)) {
       blocking.push(`${label} doit avoir une largeur et une hauteur supérieures à 0 cm.`);
     }
   });

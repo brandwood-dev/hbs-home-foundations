@@ -42,6 +42,25 @@ export function formatDateTime(iso: string): string {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "short", timeStyle: "short" }).format(date);
 }
 
+/** Format compact utilisé dans les listes de commandes : 13 oct. 2026 20:30. */
+export function formatOrderListDateTime(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  const datePart = new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+  const timePart = new Intl.DateTimeFormat("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(date);
+
+  return `${datePart} ${timePart}`;
+}
+
 export function toDateInput(iso: string | undefined): string {
   if (!iso) return "";
   return iso.slice(0, 10);

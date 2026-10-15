@@ -102,5 +102,18 @@ describe("admin mobilier fields", () => {
     expect(isAdminAttributeEnabledForCategory("mobilier_interieur", "package_count")).toBe(false);
     expect(isAdminAttributeEnabledForCategory("mobilier_interieur", "frame_material")).toBe(true);
     expect(isAdminAttributeEnabledForCategory("rideaux", "depth_cm")).toBe(true);
+    expect(
+      isAdminAttributeEnabledForCategory("accessoires", "depth_cm", "accessoires-tringles"),
+    ).toBe(false);
+    expect(
+      isAdminAttributeEnabledForCategory(
+        "accessoires",
+        "free_shipping_eligible",
+        "accessoires-tringles",
+      ),
+    ).toBe(false);
+    expect(
+      isAdminAttributeEnabledForCategory("accessoires", "depth_cm", "accessoires-embrasses"),
+    ).toBe(true);
   });
 });
