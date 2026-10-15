@@ -214,7 +214,11 @@ function mediaOptions(media: AdminMedia[], selectedId: string) {
   ];
 }
 
-function productOptions(products: AdminProduct[], selectedId: string) {
+function productOptions(
+  products: AdminProduct[],
+  selectedId: string,
+  excludedIds: ReadonlySet<string> = new Set(),
+) {
   // Drafts may keep a link to a product that is not published yet. It must
   // remain selectable in the editor so changing an unrelated section (such as
   // the promo banner) does not turn the existing hotspot into an opaque
@@ -233,11 +237,24 @@ function productOptions(products: AdminProduct[], selectedId: string) {
       : selectedId && !selected
         ? [{ value: selectedId, label: "Produit introuvable — à remplacer" }]
         : []),
-    ...available.map((product) => ({
-      value: product.id,
-      label: product.status === "draft" ? `${product.name} (brouillon)` : product.name,
-    })),
+    ...available
+      .filter((product) => product.id === selectedId || !excludedIds.has(product.id))
+      .map((product) => ({
+        value: product.id,
+        label: product.status === "draft" ? `${product.name} (brouillon)` : product.name,
+      })),
   ];
+}
+
+function duplicateHotspotProductIds(hotspots: HotspotDraft[]): Set<string> {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const hotspot of hotspots) {
+    if (!hotspot.productId) continue;
+    if (seen.has(hotspot.productId)) duplicates.add(hotspot.productId);
+    seen.add(hotspot.productId);
+  }
+  return duplicates;
 }
 
 function linkedProductNotice(products: AdminProduct[], productId: string): string | null {
@@ -369,11 +386,18 @@ export function AdminHomeSectionEditor({ sectionKey }: { sectionKey: AdminHomeSe
     const id = stableId("hotspot");
     updateSection((section) => ({
       ...section,
+      // Never seed a new point with a product already linked to another point.
+      // The API enforces one hotspot per product within a section.
       hotspots: [
         ...section.hotspots,
         {
           id,
-          productId: products.find((product) => product.status === "published")?.id ?? "",
+          productId:
+            products.find(
+              (product) =>
+                product.status === "published" &&
+                !section.hotspots.some((hotspot) => hotspot.productId === product.id),
+            )?.id ?? "",
           xPercent: 50,
           yPercent: 50,
           label: "",
@@ -431,6 +455,15 @@ export function AdminHomeSectionEditor({ sectionKey }: { sectionKey: AdminHomeSe
     if (sectionKey === "shop_the_look" && draft.hotspots.some((hotspot) => !hotspot.productId)) {
       setFormError("Chaque point Shop the Look doit être lié à un produit.");
       return;
+    }
+    if (sectionKey === "shop_the_look") {
+      const duplicateProductIds = duplicateHotspotProductIds(draft.hotspots);
+      if (duplicateProductIds.size > 0) {
+        setFormError(
+          "Chaque produit ne peut être associé qu’à un seul point Shop the Look. Remplacez le produit répété avant l’enregistrement.",
+        );
+        return;
+      }
     }
     updateHomeSection.mutate(
       { sectionKey, section: toSectionInput(draft) },
@@ -1013,7 +1046,16 @@ function ShopTheLookEditor({
                 label="Produit associé"
                 required
                 value={hotspot.productId || "__none"}
-                options={productOptions(products, hotspot.productId)}
+                options={productOptions(
+                  products,
+                  hotspot.productId,
+                  new Set(
+                    section.hotspots
+                      .filter((otherHotspot) => otherHotspot.id !== hotspot.id)
+                      .map((otherHotspot) => otherHotspot.productId)
+                      .filter(Boolean),
+                  ),
+                )}
                 onChange={(value) =>
                   onUpdate(hotspot.id, { productId: value === "__none" ? "" : value })
                 }
@@ -1067,3 +1109,4 @@ function ShopTheLookEditor({
     </div>
   );
 }
+
